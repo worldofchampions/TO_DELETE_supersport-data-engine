@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperSportDataEngine.Applic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperSportDataEngine.Application.Service.InboundIngestServer", "SuperSportDataEngine.Application.Service.InboundIngestServer\SuperSportDataEngine.Application.Service.InboundIngestServer.csproj", "{E69C3988-4CBB-42C2-8BF8-471ADBC11078}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperSportDataEngine.Application.WebApi.SystemApi", "SuperSportDataEngine.Application.WebApi.SystemApi\SuperSportDataEngine.Application.WebApi.SystemApi.csproj", "{322380EE-E9B2-4374-965C-95D3BD341910}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{E69C3988-4CBB-42C2-8BF8-471ADBC11078}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E69C3988-4CBB-42C2-8BF8-471ADBC11078}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E69C3988-4CBB-42C2-8BF8-471ADBC11078}.Release|Any CPU.Build.0 = Release|Any CPU
+		{322380EE-E9B2-4374-965C-95D3BD341910}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{322380EE-E9B2-4374-965C-95D3BD341910}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{322380EE-E9B2-4374-965C-95D3BD341910}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{322380EE-E9B2-4374-965C-95D3BD341910}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
