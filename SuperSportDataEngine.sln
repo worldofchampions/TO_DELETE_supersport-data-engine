@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperSportDataEngine.Reposi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperSportDataEngine.Repository.EntityFramework.SystemSportData", "SuperSportDataEngine.Repository.EntityFramework.SystemSportData\SuperSportDataEngine.Repository.EntityFramework.SystemSportData.csproj", "{D7820AE4-EFB5-4BDA-B672-FE89A40F468A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperSportDataEngine.Repository.MongoDb.PayloadData", "SuperSportDataEngine.Repository.MongoDb.PayloadData\SuperSportDataEngine.Repository.MongoDb.PayloadData.csproj", "{BC67A79A-3884-4022-B1B6-04C7C58CFA2D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +77,10 @@ Global
 		{D7820AE4-EFB5-4BDA-B672-FE89A40F468A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D7820AE4-EFB5-4BDA-B672-FE89A40F468A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D7820AE4-EFB5-4BDA-B672-FE89A40F468A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC67A79A-3884-4022-B1B6-04C7C58CFA2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC67A79A-3884-4022-B1B6-04C7C58CFA2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC67A79A-3884-4022-B1B6-04C7C58CFA2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC67A79A-3884-4022-B1B6-04C7C58CFA2D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
