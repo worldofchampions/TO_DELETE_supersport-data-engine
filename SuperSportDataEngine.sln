@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperSportDataEngine.Applic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperSportDataEngine.Application.WebApi.InboundApi", "SuperSportDataEngine.Application.WebApi.InboundApi\SuperSportDataEngine.Application.WebApi.InboundApi.csproj", "{71B65743-D529-418C-BDB3-94C6F1FE43FD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperSportDataEngine.Application.WebApi.LegacyFeed", "SuperSportDataEngine.Application.WebApi.LegacyFeed\SuperSportDataEngine.Application.WebApi.LegacyFeed.csproj", "{385B4757-4A74-46DD-95F4-F6424662F8FE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{71B65743-D529-418C-BDB3-94C6F1FE43FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{71B65743-D529-418C-BDB3-94C6F1FE43FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{71B65743-D529-418C-BDB3-94C6F1FE43FD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{385B4757-4A74-46DD-95F4-F6424662F8FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{385B4757-4A74-46DD-95F4-F6424662F8FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{385B4757-4A74-46DD-95F4-F6424662F8FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{385B4757-4A74-46DD-95F4-F6424662F8FE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
