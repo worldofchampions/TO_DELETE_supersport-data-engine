@@ -13,15 +13,18 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
         protected override Task<HttpResponseMessage> SendAsync(
                         HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            var newUri = new Uri(
-                $"http://{SuperSportDataApplicationSettingsHelper.GetSuperSportFeedHost()}" +
-                $"{request.RequestUri.GetComponents(UriComponents.PathAndQuery, UriFormat.Unescaped)}"
-                );
-            var requestOldFeed = ChangeHostRequest(request, newUri);
-            var client = new HttpClient();
-            var response = client.SendAsync(requestOldFeed);
-            Task.WaitAll(new Task[] { response });
-            return response;
+            if (!IsRugbyRequest(request))
+            {
+                var newUri = new Uri(
+                    $"http://{SuperSportDataApplicationSettingsHelper.GetSuperSportFeedHost()}" +
+                    $"{request.RequestUri.GetComponents(UriComponents.PathAndQuery, UriFormat.Unescaped)}"
+                    );
+                var requestOldFeed = ChangeHostRequest(request, newUri);
+                var client = new HttpClient();
+                var response = client.SendAsync(requestOldFeed);
+                return response;                
+            }
+            return base.SendAsync(request, cancellationToken);
         }
 
         private bool IsRugbyRequest(HttpRequestMessage message)
@@ -31,7 +34,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
             return match.Success;
         }
 
-        public HttpRequestMessage ChangeHostRequest(HttpRequestMessage req, Uri newUri)
+        private HttpRequestMessage ChangeHostRequest( HttpRequestMessage req, Uri newUri)
         {
             var clone = new HttpRequestMessage(req.Method, newUri);
 
