@@ -4,16 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{CAA05A7F-7D77-42AB-936B-BA9A23A843D3}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <RootNamespace>SuperSportDataEngine.Application.Service.SchedulerIngestServer</RootNamespace>
-    <AssemblyName>SuperSportDataEngine.Application.Service.SchedulerIngestServer</AssemblyName>
+    <ProjectGuid>{333E8272-0D55-4398-899B-7E357FF5F3F3}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SuperSportDataEngine.Application.Container</RootNamespace>
+    <AssemblyName>SuperSportDataEngine.Application.Container</AssemblyName>
     <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -23,7 +22,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -32,18 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Hangfire.Core, Version=1.6.14.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Hangfire.Core.1.6.14\lib\net45\Hangfire.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Hangfire.SqlServer, Version=1.6.14.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Hangfire.SqlServer.1.6.14\lib\net45\Hangfire.SqlServer.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin, Version=3.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.3.1.0\lib\net45\Microsoft.Owin.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=3.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.3.1.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
@@ -56,12 +42,6 @@
     <Reference Include="Microsoft.Practices.Unity.RegistrationByConvention, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
       <HintPath>..\packages\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.RegistrationByConvention.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
-      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -70,23 +50,15 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="Topshelf, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b800c4cfcdeea87b, processorArchitecture=MSIL">
-      <HintPath>..\packages\Topshelf.4.0.3\lib\net452\Topshelf.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Program.cs" />
+    <Compile Include="UnityConfigurationManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SuperSportDataEngine.Application.Container\SuperSportDataEngine.Application.Container.csproj">
-      <Project>{333e8272-0d55-4398-899b-7e357ff5f3f3}</Project>
-      <Name>SuperSportDataEngine.Application.Container</Name>
-    </ProjectReference>
     <ProjectReference Include="..\SuperSportDataEngine.ApplicationLogic\SuperSportDataEngine.ApplicationLogic.csproj">
       <Project>{f420939c-b6a6-4c3a-975e-e30e654c4a90}</Project>
       <Name>SuperSportDataEngine.ApplicationLogic</Name>
@@ -94,6 +66,30 @@
     <ProjectReference Include="..\SuperSportDataEngine.Common\SuperSportDataEngine.Common.csproj">
       <Project>{bbe845af-8b84-4b61-abd7-724aca22ab69}</Project>
       <Name>SuperSportDataEngine.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SuperSportDataEngine.Gateway.Ftp.Common\SuperSportDataEngine.Gateway.Ftp.Common.csproj">
+      <Project>{93fdb966-6726-4f6a-8b57-79f78f5e8f77}</Project>
+      <Name>SuperSportDataEngine.Gateway.Ftp.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SuperSportDataEngine.Gateway.Http.Common\SuperSportDataEngine.Gateway.Http.Common.csproj">
+      <Project>{cd67700a-1c91-4d24-83c0-cfcc4ce7b4d3}</Project>
+      <Name>SuperSportDataEngine.Gateway.Http.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SuperSportDataEngine.Gateway.Http.StatsProzone\SuperSportDataEngine.Gateway.Http.StatsProzone.csproj">
+      <Project>{90e43dad-2892-4438-92e1-b1966b6aaaec}</Project>
+      <Name>SuperSportDataEngine.Gateway.Http.StatsProzone</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SuperSportDataEngine.Repository.EntityFramework.PublicSportData\SuperSportDataEngine.Repository.EntityFramework.PublicSportData.csproj">
+      <Project>{f770c6d0-4b92-40d7-a53f-da1ad9240324}</Project>
+      <Name>SuperSportDataEngine.Repository.EntityFramework.PublicSportData</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SuperSportDataEngine.Repository.EntityFramework.SystemSportData\SuperSportDataEngine.Repository.EntityFramework.SystemSportData.csproj">
+      <Project>{d7820ae4-efb5-4bda-b672-fe89a40f468a}</Project>
+      <Name>SuperSportDataEngine.Repository.EntityFramework.SystemSportData</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SuperSportDataEngine.Repository.MongoDb.PayloadData\SuperSportDataEngine.Repository.MongoDb.PayloadData.csproj">
+      <Project>{bc67a79a-3884-4022-b1b6-04c7c58cfa2d}</Project>
+      <Name>SuperSportDataEngine.Repository.MongoDb.PayloadData</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

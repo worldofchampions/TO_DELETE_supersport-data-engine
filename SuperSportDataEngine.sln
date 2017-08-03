@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperSportDataEngine.Gatewa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperSportDataEngine.Gateway.Ftp.Common", "SuperSportDataEngine.Gateway.Ftp.Common\SuperSportDataEngine.Gateway.Ftp.Common.csproj", "{93FDB966-6726-4F6A-8B57-79F78F5E8F77}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperSportDataEngine.Application.Container", "SuperSportDataEngine.Application.Container\SuperSportDataEngine.Application.Container.csproj", "{333E8272-0D55-4398-899B-7E357FF5F3F3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -99,6 +101,10 @@ Global
 		{93FDB966-6726-4F6A-8B57-79F78F5E8F77}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{93FDB966-6726-4F6A-8B57-79F78F5E8F77}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{93FDB966-6726-4F6A-8B57-79F78F5E8F77}.Release|Any CPU.Build.0 = Release|Any CPU
+		{333E8272-0D55-4398-899B-7E357FF5F3F3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{333E8272-0D55-4398-899B-7E357FF5F3F3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{333E8272-0D55-4398-899B-7E357FF5F3F3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{333E8272-0D55-4398-899B-7E357FF5F3F3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
