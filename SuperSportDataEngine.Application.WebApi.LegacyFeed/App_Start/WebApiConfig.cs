@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
@@ -16,9 +17,11 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed
 
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",
-                routeTemplate: "api/{controller}/{id}",
-                defaults: new { id = RouteParameter.Optional }
+                routeTemplate: "api/{sport}/{category}",
+                defaults: new { category = RouteParameter.Optional, type = RouteParameter.Optional , id = RouteParameter.Optional } 
             );
+            
+            config.MessageHandlers.Add(new FeedRequestHandler());
         }
     }
 }
