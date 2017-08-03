@@ -1,0 +1,27 @@
+namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.App_Start
+{
+    using Microsoft.Practices.Unity;
+    using SuperSportDataEngine.Application.Container;
+    using System;
+
+    /// <summary>Specifies the Unity configuration for the main container.</summary>
+    public class UnityConfig
+    {
+        private static Lazy<IUnityContainer> container = new Lazy<IUnityContainer>(() =>
+        {
+            var container = new UnityContainer();
+            RegisterTypes(container);
+            return container;
+        });
+
+        public static IUnityContainer GetConfiguredContainer()
+        {
+            return container.Value;
+        }
+
+        private static void RegisterTypes(IUnityContainer container)
+        {
+            UnityConfigurationManager.RegisterTypes(container);
+        }
+    }
+}
