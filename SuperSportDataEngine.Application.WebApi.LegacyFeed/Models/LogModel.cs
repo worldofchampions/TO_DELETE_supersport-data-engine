@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models
 {
-    [Serializable]
+   
     public class LogModel
     {
         public string GroupName
