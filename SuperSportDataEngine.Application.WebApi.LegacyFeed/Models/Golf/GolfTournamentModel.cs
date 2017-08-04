@@ -1,0 +1,26 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Golf
+{
+    [Serializable]
+    public class GolfTournamentModel
+    {
+        public int Id { get; set; }
+        public string Category { get; set; }
+        public string Name { get; set; }
+        public string ShortName { get; set; }
+        public string Venue1 { get; set; }
+        public string Venue2 { get; set; }
+        public string Champion { get; set; }
+        public string PrizeMoney { get; set; }
+        public string Report { get; set; }
+        public bool isMajor { get; set; }
+        public string leaderboardId { get; set; }
+        public List<string> channels { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public List<MatchVideoModel> Videos { get; set; }
+        public List<MatchLiveVideoModel> LiveVideos { get; set; }
+    }
+}
