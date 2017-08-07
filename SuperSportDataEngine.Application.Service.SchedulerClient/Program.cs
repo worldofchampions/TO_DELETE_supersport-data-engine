@@ -4,6 +4,11 @@
     using SuperSportDataEngine.Application.Container;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using System;
+    using Hangfire;
+    using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
+    using SuperSportDataEngine.Application.Service.Common.Hangfire.Filters;
+    using System.Threading;
+    using SuperSportDataEngine.ApplicationLogic.Services;
 
     internal class Program
     {
@@ -16,7 +21,21 @@
             var temporaryExampleService = container.Resolve<ITemporaryExampleService>();
 
             Console.WriteLine(temporaryExampleService.HelloMessage());
-            Console.ReadLine();
+
+            var ingestService = container.Resolve<IIngestWorkerService>();
+
+            GlobalConfiguration.Configuration.UseStorage(HangfireConfigurationSettings.JOB_STORAGE);
+            GlobalJobFilters.Filters.Add(new ExpirationTimeAttribute());
+
+            while(true)
+            {
+                JobStorage.Current = HangfireConfigurationSettings.JOB_STORAGE;
+
+                // Schedule CRON jobs here.
+
+                // Pause execution.
+                Thread.Sleep(2000);
+            }
         }
     }
 }

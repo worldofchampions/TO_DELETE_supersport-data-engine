@@ -13,6 +13,7 @@
         {
             container.RegisterType<ITemporaryExampleService, TemporaryExampleService>();
             container.RegisterType<ITemporaryExampleMongoDbRepository, TemporaryExampleMongoDbRepository>();
+            container.RegisterType<IIngestWorkerService, IngestWorkerService>();
         }
     }
 }
