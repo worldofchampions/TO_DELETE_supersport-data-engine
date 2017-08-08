@@ -9,6 +9,7 @@
     using SuperSportDataEngine.Application.Service.Common.Hangfire.Filters;
     using System.Threading;
     using SuperSportDataEngine.ApplicationLogic.Services;
+    using Hangfire.SqlServer;
 
     internal class Program
     {
@@ -16,15 +17,11 @@
         {
             // TODO: [Davide] Finalize the DI handling here after integrating with TopShelf, Hangfire etc.
             var container = new UnityContainer();
-            UnityConfigurationManager.RegisterTypes(container);
-
-            var temporaryExampleService = container.Resolve<ITemporaryExampleService>();
-
-            Console.WriteLine(temporaryExampleService.HelloMessage());
+            UnityConfigurationManager.RegisterTypes(container);            
 
             var ingestService = container.Resolve<IIngestWorkerService>();
-
             GlobalConfiguration.Configuration.UseStorage(HangfireConfigurationSettings.JOB_STORAGE);
+
             GlobalJobFilters.Filters.Add(new ExpirationTimeAttribute());
 
             while(true)
@@ -32,6 +29,10 @@
                 JobStorage.Current = HangfireConfigurationSettings.JOB_STORAGE;
 
                 // Schedule CRON jobs here.
+
+                // Get reference data
+                RecurringJob.AddOrUpdate("ingestReferenceData", () => Console.WriteLine(ingestService.IngestReferenceData()), Cron.Minutely());
+                // Get list of active tournaments
 
                 // Pause execution.
                 Thread.Sleep(2000);

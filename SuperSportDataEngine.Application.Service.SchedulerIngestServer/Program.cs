@@ -2,6 +2,7 @@
 using Hangfire;
 using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
 using SuperSportDataEngine.Application.Service.Common.Hangfire.Filters;
+using Hangfire.SqlServer;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerIngestServer
 {
@@ -15,7 +16,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerIngestServer
             using (var server = new BackgroundJobServer())
             {
                 JobStorage.Current = HangfireConfigurationSettings.JOB_STORAGE;
-
                 // Processing of jobs happen here.
 
                 Console.ReadLine();

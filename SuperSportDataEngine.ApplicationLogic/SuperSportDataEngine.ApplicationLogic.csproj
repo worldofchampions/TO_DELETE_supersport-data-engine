@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Boundaries\ApplicationLogic\Interfaces\IIngestWorkerService.cs" />
+    <Compile Include="Boundaries\ApplicationLogic\Gateway.Http.StatsProzone\Interfaces\IStatsProzoneIngestService.cs" />
     <Compile Include="Boundaries\ApplicationLogic\Interfaces\ITemporaryExampleService.cs" />
     <Compile Include="Boundaries\Repository.MongoDb.PayloadData\Interfaces\ITemporaryExampleMongoDbRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

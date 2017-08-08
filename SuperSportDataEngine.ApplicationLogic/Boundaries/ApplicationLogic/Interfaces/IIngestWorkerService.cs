@@ -8,6 +8,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 {
     public interface IIngestWorkerService
     {
-        
+        Task<string> IngestReferenceData();
     }
 }
