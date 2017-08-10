@@ -4,6 +4,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Inte
 {
     public interface IStatsProzoneIngestService
     {
-        Task<string> GetReferenceData();
+        void IngestReferenceData();
     }
 }

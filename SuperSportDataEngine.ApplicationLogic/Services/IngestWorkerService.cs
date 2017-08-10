@@ -13,9 +13,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             _statsProzoneIngestService = statsProzoneIngestService;
         }
 
-        public async Task<string> IngestReferenceData()
+        public void IngestReferenceData()
         {
-            return await _statsProzoneIngestService.GetReferenceData();
+            _statsProzoneIngestService.IngestReferenceData();
         }
     }
 }
