@@ -1,5 +1,11 @@
-﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+﻿using Newtonsoft.Json;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+using SuperSportDataEngine.Gateway.Http.StatsProzone.Models;
+using System;
+using System.IO;
+using System.Net;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
@@ -8,13 +14,20 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
     {
         public void IngestReferenceData()
         {
-            // Do provider call here.
-            var client = new HttpClient();
-            client.DefaultRequestHeaders.Authorization = 
-                new System.Net.Http.Headers.AuthenticationHeaderValue(
-                    "Basic", "c3VwZXJzcG9ydDpvYTNuZzcrMjlmMw==");
+            WebRequest request = WebRequest.Create("http://rugbyunion-api.stats.com/api/ru/configuration/entities");
+            request.Method = "GET";
 
-            var response = client.GetStringAsync("http://rugbyunion-api.stats.com/api/ru/configuration/entities");
+            request.Headers["Authorization"] = "Basic c3VwZXJzcG9ydDpvYTNuZzcrMjlmMw==";
+            request.ContentType = "application/json; charset=UTF-8";
+            
+            using (WebResponse response = request.GetResponse())
+            {
+                using (Stream responseStream = response.GetResponseStream())
+                {
+                    StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
+                    var entities = JsonConvert.DeserializeObject<Entities>(reader.ReadToEnd());
+                }
+            }
         }
     }
 }
