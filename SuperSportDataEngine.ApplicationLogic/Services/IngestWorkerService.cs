@@ -1,6 +1,4 @@
 ﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-using System;
-using System.Threading.Tasks;
 
 namespace SuperSportDataEngine.ApplicationLogic.Services
 {

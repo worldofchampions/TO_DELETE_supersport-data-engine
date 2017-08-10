@@ -2,14 +2,11 @@
 {
     using Microsoft.Practices.Unity;
     using SuperSportDataEngine.Application.Container;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-    using System;
     using Hangfire;
     using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
     using SuperSportDataEngine.Application.Service.Common.Hangfire.Filters;
     using System.Threading;
     using SuperSportDataEngine.ApplicationLogic.Services;
-    using Hangfire.SqlServer;
 
     internal class Program
     {

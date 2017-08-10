@@ -2,7 +2,6 @@
 using Hangfire;
 using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
 using SuperSportDataEngine.Application.Service.Common.Hangfire.Filters;
-using Hangfire.SqlServer;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerIngestServer
 {
