@@ -1,6 +1,7 @@
 ﻿using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.News;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
 using System.Collections.Generic;
 using System.Web.Http;
 using System.Web.Http.Description;
@@ -13,6 +14,13 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
     [RoutePrefix("rugby")]
     public class RugbyController : ApiController
     {
+        private readonly IRugbyService _rugbyService;
+
+        public RugbyController(IRugbyService rugbyService)
+        {
+            _rugbyService = rugbyService;
+        }
+
         /// <summary>
         /// Match Details
         /// </summary>
@@ -74,7 +82,8 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         [ResponseType(typeof(List<LogModel>))]
         public IHttpActionResult GetLogs()
         {
-            return Ok();
+            var logs = _rugbyService.GetLogs();
+            return Ok(logs);
         }
 
         /// <summary>
@@ -101,7 +110,5 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         {
             return Ok();
         }
-
-
     }
 }

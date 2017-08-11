@@ -9,6 +9,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
     {
         public List<LogEntity> GetLogs()
         {
+            //TODO: Get data from the DB
             return new List<LogEntity>();
         }
     }
