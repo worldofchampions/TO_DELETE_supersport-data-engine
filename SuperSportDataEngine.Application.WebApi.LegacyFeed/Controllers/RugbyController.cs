@@ -1,8 +1,10 @@
 ﻿using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models;
+using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.News;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
 
@@ -82,7 +84,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         [ResponseType(typeof(List<LogModel>))]
         public IHttpActionResult GetLogs()
         {
-            var logs = _rugbyService.GetLogs();
+            var logs = _rugbyService.GetLogs().Select(log => LogModelMapper.MapToModel(log));
             return Ok(logs);
         }
 

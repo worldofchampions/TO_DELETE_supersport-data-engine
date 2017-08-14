@@ -234,6 +234,7 @@
     <Compile Include="Models\LeaderboardItemModel.cs" />
     <Compile Include="Models\LogModel.cs" />
     <Compile Include="Models\ManagementModel.cs" />
+    <Compile Include="Models\Mappers\LogModelMapper.cs" />
     <Compile Include="Models\MarginModel.cs" />
     <Compile Include="Models\MatchDetailsModel.cs" />
     <Compile Include="Models\MatchEventModel.cs" />
