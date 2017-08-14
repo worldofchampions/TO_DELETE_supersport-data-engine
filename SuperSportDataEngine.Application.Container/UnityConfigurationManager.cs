@@ -11,7 +11,13 @@
     {
         public static void RegisterTypes(IUnityContainer container)
         {
+            #region Services
+
             container.RegisterType<ITemporaryExampleService, TemporaryExampleService>();
+            container.RegisterType<IRugbyService, RugbyService>();
+
+            #endregion Services
+
             container.RegisterType<ITemporaryExampleMongoDbRepository, TemporaryExampleMongoDbRepository>();
         }
     }
