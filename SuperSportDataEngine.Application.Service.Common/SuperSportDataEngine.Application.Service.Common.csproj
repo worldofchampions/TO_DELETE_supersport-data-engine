@@ -60,7 +60,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Hangfire.Filters\ExpirationTimeAttribute.cs" />
-    <Compile Include="Hangfire.Configuration\HangfireConfigurationSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+using SuperSportDataEngine.Boundaries.ApplicationLogic.Interfaces;
 using SuperSportDataEngine.Gateway.Http.StatsProzone.Models;
 using System.IO;
 using System.Net;
@@ -9,7 +9,7 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 {
     public class StatsProzoneIngestService : IStatsProzoneIngestService
     {
-        public void IngestReferenceData()
+        public Entities IngestReferenceData()
         {
             WebRequest request = WebRequest.Create("http://rugbyunion-api.stats.com/api/ru/configuration/entities");
             request.Method = "GET";
@@ -22,7 +22,7 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
                 using (Stream responseStream = response.GetResponseStream())
                 {
                     StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
-                    var entities = JsonConvert.DeserializeObject<Entities>(reader.ReadToEnd());
+                    return JsonConvert.DeserializeObject<Entities>(reader.ReadToEnd());
                 }
             }
         }

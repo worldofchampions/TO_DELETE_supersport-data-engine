@@ -3,10 +3,13 @@
     using Microsoft.Practices.Unity;
     using SuperSportDataEngine.Application.Container;
     using Hangfire;
-    using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
-    using SuperSportDataEngine.Application.Service.Common.Hangfire.Filters;
     using System.Threading;
     using SuperSportDataEngine.ApplicationLogic.Services;
+    using Hangfire.SqlServer;
+    using Hangfire.Common;
+    using System.Configuration;
+    using System;
+    using SuperSportDataEngine.Application.Service.Common.Hangfire.Filters;
 
     internal class Program
     {
@@ -14,21 +17,29 @@
         {
             // TODO: [Davide] Finalize the DI handling here after integrating with TopShelf, Hangfire etc.
             var container = new UnityContainer();
-            UnityConfigurationManager.RegisterTypes(container);            
+            UnityConfigurationManager.RegisterTypes(container);
+
+            SqlServerStorageOptions Options = new SqlServerStorageOptions { PrepareSchemaIfNecessary = false };
+
+            JobStorage JOB_STORAGE =
+            new SqlServerStorage(
+                    ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString,
+                    Options
+                );
 
             var ingestService = container.Resolve<IIngestWorkerService>();
-            GlobalConfiguration.Configuration.UseStorage(HangfireConfigurationSettings.JOB_STORAGE);
+            GlobalConfiguration.Configuration.UseStorage(JOB_STORAGE);
 
             GlobalJobFilters.Filters.Add(new ExpirationTimeAttribute());
 
             while(true)
             {
-                JobStorage.Current = HangfireConfigurationSettings.JOB_STORAGE;
+                JobStorage.Current = JOB_STORAGE;
 
                 // Schedule CRON jobs here.
 
                 // Get reference data
-                RecurringJob.AddOrUpdate("ingestReferenceData", () => ingestService.IngestReferenceData(), Cron.Minutely());
+                RecurringJob.AddOrUpdate("ingestReferenceData", () => Console.WriteLine(ingestService.IngestReferenceData()), Cron.Minutely());
                 // Get list of active tournaments
 
                 // Pause execution.

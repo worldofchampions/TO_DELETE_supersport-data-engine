@@ -63,7 +63,11 @@
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.InteropServices.RuntimeInformation.4.0.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -88,7 +92,7 @@
       <Name>SuperSportDataEngine.Application.Container</Name>
     </ProjectReference>
     <ProjectReference Include="..\SuperSportDataEngine.Application.Service.Common\SuperSportDataEngine.Application.Service.Common.csproj">
-      <Project>{dfc450e7-2c81-48a8-9b3e-8acc3a32fa12}</Project>
+      <Project>{DFC450E7-2C81-48A8-9B3E-8ACC3A32FA12}</Project>
       <Name>SuperSportDataEngine.Application.Service.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\SuperSportDataEngine.ApplicationLogic\SuperSportDataEngine.ApplicationLogic.csproj">

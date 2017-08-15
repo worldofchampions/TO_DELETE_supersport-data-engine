@@ -1,6 +1,7 @@
 ﻿using System;
 using Hangfire;
-using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
+using Hangfire.SqlServer;
+using System.Configuration;
 using SuperSportDataEngine.Application.Service.Common.Hangfire.Filters;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerIngestServer
@@ -9,12 +10,20 @@ namespace SuperSportDataEngine.Application.Service.SchedulerIngestServer
     {
         private static void Main(string[] args)
         {
-            GlobalConfiguration.Configuration.UseStorage(HangfireConfigurationSettings.JOB_STORAGE);
+            SqlServerStorageOptions Options = new SqlServerStorageOptions { PrepareSchemaIfNecessary = false };
+
+            JobStorage JOB_STORAGE =
+            new SqlServerStorage(
+                    ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString,
+                    Options
+                );
+
+            GlobalConfiguration.Configuration.UseStorage(JOB_STORAGE);
             GlobalJobFilters.Filters.Add(new ExpirationTimeAttribute());
 
             using (var server = new BackgroundJobServer())
             {
-                JobStorage.Current = HangfireConfigurationSettings.JOB_STORAGE;
+                JobStorage.Current = JOB_STORAGE;
                 // Processing of jobs happen here.
 
                 Console.ReadLine();
