@@ -39,7 +39,7 @@
                 // Schedule CRON jobs here.
 
                 // Get reference data
-                RecurringJob.AddOrUpdate("ingestReferenceData", () => ingestService.IngestReferenceData(), Cron.Minutely());
+                RecurringJob.AddOrUpdate("ingestReferenceData", () => Console.WriteLine(ingestService.IngestReferenceData()), Cron.Minutely());
                 // Get list of active tournaments
 
                 // Pause execution.

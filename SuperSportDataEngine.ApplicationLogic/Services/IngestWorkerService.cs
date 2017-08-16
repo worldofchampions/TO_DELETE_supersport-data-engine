@@ -6,19 +6,20 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 {
     public class IngestWorkerService : IIngestWorkerService
     {
-        private readonly IStatsProzoneRequestService _statsProzoneIngestService;
+        private readonly IStatsProzoneIngestService _statsProzoneIngestService;
         private readonly IMongoDbRepository _mongoDbRepository;
 
-        public IngestWorkerService(IStatsProzoneRequestService statsProzoneIngestService, IMongoDbRepository mongoDbRepository)
+        public IngestWorkerService(IStatsProzoneIngestService statsProzoneIngestService, IMongoDbRepository mongoDbRepository)
         {
             _statsProzoneIngestService = statsProzoneIngestService;
             _mongoDbRepository = mongoDbRepository;
         }
 
-        public void IngestReferenceData()
+        public Entities IngestReferenceData()
         {
-            var entities = _statsProzoneIngestService.RequestReferenceData();
+            var entities = _statsProzoneIngestService.IngestReferenceData();
             _mongoDbRepository.Save(entities);
+            return entities;
         }
     }
 }

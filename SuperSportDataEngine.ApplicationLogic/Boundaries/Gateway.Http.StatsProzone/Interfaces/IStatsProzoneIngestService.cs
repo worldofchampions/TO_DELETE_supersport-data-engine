@@ -2,8 +2,8 @@
 {
     using SuperSportDataEngine.Gateway.Http.StatsProzone.Models;
 
-    public interface IStatsProzoneRequestService
+    public interface IStatsProzoneIngestService
     {
-        Entities RequestReferenceData();
+        Entities IngestReferenceData();
     }
 }

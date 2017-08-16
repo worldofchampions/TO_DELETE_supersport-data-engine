@@ -7,9 +7,9 @@ using System.Text;
 
 namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 {
-    public class StatsProzoneIngestService : IStatsProzoneRequestService
+    public class StatsProzoneIngestService : IStatsProzoneIngestService
     {
-        public Entities RequestReferenceData()
+        public Entities IngestReferenceData()
         {
             WebRequest request = WebRequest.Create("http://rugbyunion-api.stats.com/api/ru/configuration/entities");
             request.Method = "GET";

@@ -4,6 +4,6 @@
 
     public interface IIngestWorkerService
     {
-        void IngestReferenceData();
+        Entities IngestReferenceData();
     }
 }
