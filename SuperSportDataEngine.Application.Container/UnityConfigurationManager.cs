@@ -13,7 +13,7 @@
     {
         public static void RegisterTypes(IUnityContainer container)
         {
-            container.RegisterType<IStatsProzoneIngestService, StatsProzoneIngestService>();
+            container.RegisterType<IStatsProzoneRequestService, StatsProzoneIngestService>();
             container.RegisterType<ITemporaryExampleService, TemporaryExampleService>();
             container.RegisterType<ITemporaryExampleMongoDbRepository, TemporaryExampleMongoDbRepository>();
             container.RegisterType<IIngestWorkerService, IngestWorkerService>();

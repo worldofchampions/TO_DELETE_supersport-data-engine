@@ -37,7 +37,7 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
             var mongoEntities = Mapper.Map<Entities, MongoEntities>(entities);
 
             // Get the Mongo DB.
-            var client = new MongoClient();
+            var client = new MongoClient("mongodb://127.0.0.1");
             var db = client.GetDatabase("data");
 
             // Add to the collection.
