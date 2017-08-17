@@ -4,7 +4,6 @@
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Services;
-    using SuperSportDataEngine.Boundaries.ApplicationLogic.Interfaces;
     using SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories;
     using SuperSportDataEngine.Gateway.Http.StatsProzone.Services;
 

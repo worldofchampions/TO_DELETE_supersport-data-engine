@@ -1,14 +1,14 @@
-﻿using Newtonsoft.Json;
-using SuperSportDataEngine.Boundaries.ApplicationLogic.Interfaces;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.ResponseModels;
-using System.IO;
-using System.Net;
-using System.Text;
-using System;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models;
-
-namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
+﻿namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 {
+    using System.IO;
+    using System.Net;
+    using System.Text;
+    using System;
+    using Newtonsoft.Json;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.ResponseModels;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models;
+
     public class StatsProzoneIngestService : IStatsProzoneIngestService
     {
         public EntitiesResponse IngestReferenceData()
