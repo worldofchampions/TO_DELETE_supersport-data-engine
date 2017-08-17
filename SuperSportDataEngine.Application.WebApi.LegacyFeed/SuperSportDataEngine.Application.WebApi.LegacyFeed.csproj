@@ -198,7 +198,7 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
-    <Compile Include="Controllers\SuperSportFeedController.cs" />
+    <Compile Include="Controllers\RugbyController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -234,6 +234,7 @@
     <Compile Include="Models\LeaderboardItemModel.cs" />
     <Compile Include="Models\LogModel.cs" />
     <Compile Include="Models\ManagementModel.cs" />
+    <Compile Include="Models\Mappers\LogModelMapper.cs" />
     <Compile Include="Models\MarginModel.cs" />
     <Compile Include="Models\MatchDetailsModel.cs" />
     <Compile Include="Models\MatchEventModel.cs" />
@@ -252,6 +253,7 @@
     <Compile Include="Models\Motorsport\RaceModel.cs" />
     <Compile Include="Models\Motorsport\ResultMotorsportModel.cs" />
     <Compile Include="Models\Motorsport\StageModel.cs" />
+    <Compile Include="Models\News\NewsModel.cs" />
     <Compile Include="Models\OfficialModel.cs" />
     <Compile Include="Models\PersonModel.cs" />
     <Compile Include="Models\PlayerModel.cs" />
@@ -353,6 +355,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Views\Rugby\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
