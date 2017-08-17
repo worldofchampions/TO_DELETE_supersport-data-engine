@@ -2,8 +2,14 @@
 {
     using Microsoft.Practices.Unity;
     using SuperSportDataEngine.Application.Container;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+    using Hangfire;
+    using System.Threading;
+    using SuperSportDataEngine.ApplicationLogic.Services;
+    using Hangfire.SqlServer;
+    using Hangfire.Common;
+    using System.Configuration;
     using System;
+    using SuperSportDataEngine.Application.Service.Common.Hangfire.Filters;
 
     internal class Program
     {
@@ -13,10 +19,32 @@
             var container = new UnityContainer();
             UnityConfigurationManager.RegisterTypes(container);
 
-            var temporaryExampleService = container.Resolve<ITemporaryExampleService>();
+            SqlServerStorageOptions Options = new SqlServerStorageOptions { PrepareSchemaIfNecessary = false };
 
-            Console.WriteLine(temporaryExampleService.HelloMessage());
-            Console.ReadLine();
+            JobStorage JOB_STORAGE =
+            new SqlServerStorage(
+                    ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString,
+                    Options
+                );
+
+            var ingestService = container.Resolve<IIngestWorkerService>();
+            GlobalConfiguration.Configuration.UseStorage(JOB_STORAGE);
+
+            GlobalJobFilters.Filters.Add(new ExpirationTimeAttribute());
+
+            while(true)
+            {
+                JobStorage.Current = JOB_STORAGE;
+
+                // Schedule CRON jobs here.
+
+                // Get reference data
+                RecurringJob.AddOrUpdate("ingestReferenceData", () => Console.WriteLine(ingestService.IngestReferenceData()), Cron.Minutely());
+                // Get list of active tournaments
+
+                // Pause execution.
+                Thread.Sleep(2000);
+            }
         }
     }
 }

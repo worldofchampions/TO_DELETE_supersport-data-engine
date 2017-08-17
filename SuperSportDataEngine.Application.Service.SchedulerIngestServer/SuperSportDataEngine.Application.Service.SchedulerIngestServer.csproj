@@ -63,6 +63,7 @@
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -86,6 +87,10 @@
     <ProjectReference Include="..\SuperSportDataEngine.Application.Container\SuperSportDataEngine.Application.Container.csproj">
       <Project>{333e8272-0d55-4398-899b-7e357ff5f3f3}</Project>
       <Name>SuperSportDataEngine.Application.Container</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SuperSportDataEngine.Application.Service.Common\SuperSportDataEngine.Application.Service.Common.csproj">
+      <Project>{DFC450E7-2C81-48A8-9B3E-8ACC3A32FA12}</Project>
+      <Name>SuperSportDataEngine.Application.Service.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\SuperSportDataEngine.ApplicationLogic\SuperSportDataEngine.ApplicationLogic.csproj">
       <Project>{f420939c-b6a6-4c3a-975e-e30e654c4a90}</Project>
