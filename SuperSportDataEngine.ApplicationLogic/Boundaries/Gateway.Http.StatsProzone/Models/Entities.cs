@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Models
+namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models
 {
     public class GroundCondition
     {

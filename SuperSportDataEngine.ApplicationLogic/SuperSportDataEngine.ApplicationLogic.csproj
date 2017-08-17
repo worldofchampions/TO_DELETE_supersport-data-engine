@@ -43,12 +43,15 @@
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\Models\Entities.cs" />
     <Compile Include="Boundaries\ApplicationLogic\Interfaces\IIngestWorkerService.cs" />
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\Interfaces\IStatsProzoneIngestService.cs" />
+    <Compile Include="Boundaries\ApplicationLogic\Interfaces\IRugbyService.cs" />
     <Compile Include="Boundaries\ApplicationLogic\Interfaces\ITemporaryExampleService.cs" />
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\ResponseModels\EntitiesResponse.cs" />
     <Compile Include="Boundaries\Repository.MongoDb.PayloadData\Interfaces\IMongoDbRepository.cs" />
     <Compile Include="Boundaries\Repository.MongoDb.PayloadData\Interfaces\ITemporaryExampleMongoDbRepository.cs" />
+    <Compile Include="Entities\LogEntity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\IngestWorkerService.cs" />
+    <Compile Include="Services\RugbyService.cs" />
     <Compile Include="Services\TemporaryExampleService.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

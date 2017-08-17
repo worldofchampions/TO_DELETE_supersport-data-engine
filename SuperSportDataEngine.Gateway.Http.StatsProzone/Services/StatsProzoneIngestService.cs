@@ -1,11 +1,11 @@
 ﻿using Newtonsoft.Json;
 using SuperSportDataEngine.Boundaries.ApplicationLogic.Interfaces;
-using SuperSportDataEngine.Gateway.Http.StatsProzone.Models;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.ResponseModels;
 using System.IO;
 using System.Net;
 using System.Text;
 using System;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models;
 
 namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 {

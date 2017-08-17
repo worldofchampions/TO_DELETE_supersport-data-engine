@@ -1,8 +1,7 @@
-﻿using SuperSportDataEngine.Gateway.Http.StatsProzone.Models;
-using System;
-
-namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.ResponseModels
+﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.ResponseModels
 {
+    using System;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models;
     public class EntitiesResponse
     {
         public Entities Entities { get; set; }
