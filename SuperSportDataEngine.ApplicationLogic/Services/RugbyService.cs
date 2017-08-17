@@ -1,6 +1,7 @@
 ﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Entities;
 using SuperSportDataEngine.Common.Boundaries;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -23,7 +24,13 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             if (logs == null)
             {
                 //TODO: Get data from the DB
-                logs = new List<LogEntity>();
+                logs = new List<LogEntity>()
+                {
+                    new LogEntity
+                    {
+                        GroupShortName = DateTime.Now.ToLongTimeString()
+                    }
+                };
 
                 _cache.Add(cacheKey, logs);
             }
