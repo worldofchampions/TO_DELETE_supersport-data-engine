@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models
+﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models
 {
-   
     public class LogModel
     {
         public string GroupName
@@ -44,13 +38,11 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models
             set;
         }
 
-
         public string TeamID
         {
             get;
             set;
         }
-
 
         public int Position
         {
