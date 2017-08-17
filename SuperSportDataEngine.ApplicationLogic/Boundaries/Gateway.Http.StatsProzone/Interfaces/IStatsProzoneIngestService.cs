@@ -1,9 +1,9 @@
 ﻿namespace SuperSportDataEngine.Boundaries.ApplicationLogic.Interfaces
 {
-    using SuperSportDataEngine.Gateway.Http.StatsProzone.Models;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.ResponseModels;
 
     public interface IStatsProzoneIngestService
     {
-        Entities IngestReferenceData();
+        EntitiesResponse IngestReferenceData();
     }
 }

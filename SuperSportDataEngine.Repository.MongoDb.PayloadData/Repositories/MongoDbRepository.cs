@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using MongoDB.Driver;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.ResponseModels;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
 using SuperSportDataEngine.Gateway.Http.StatsProzone.Models;
 using SuperSportDataEngine.Repository.MongoDb.PayloadData.Models;
@@ -29,16 +30,17 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 
     public class MongoDbRepository : IMongoDbRepository
     {
-        public void Save(Entities entities)
+        public void Save(EntitiesResponse entitiesResponse)
         {
             Mapper.Initialize(c => c.AddProfile<MappingProfile>());
 
             // Map the provider data to a type mongo understands.
-            var mongoEntities = Mapper.Map<Entities, MongoEntities>(entities);
+            var mongoEntities = Mapper.Map<Entities, MongoEntities>(entitiesResponse.Entities);
+            mongoEntities.RequestTime = entitiesResponse.RequestTime;
 
             // Get the Mongo DB.
-            var client = new MongoClient();
-            var db = client.GetDatabase("data");
+            var client = new MongoClient("mongodb://RND-MDODS-QA.dstvo.local:27017");
+            var db = client.GetDatabase("supersport-dataengine");
 
             // Add to the collection.
             var collection = db.GetCollection<MongoEntities>("entities");

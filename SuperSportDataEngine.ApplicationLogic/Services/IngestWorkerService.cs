@@ -1,4 +1,5 @@
-﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
+﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.ResponseModels;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
 using SuperSportDataEngine.Boundaries.ApplicationLogic.Interfaces;
 using SuperSportDataEngine.Gateway.Http.StatsProzone.Models;
 
@@ -15,11 +16,11 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             _mongoDbRepository = mongoDbRepository;
         }
 
-        public Entities IngestReferenceData()
+        public EntitiesResponse IngestReferenceData()
         {
-            var entities = _statsProzoneIngestService.IngestReferenceData();
-            _mongoDbRepository.Save(entities);
-            return entities;
+            var entitiesResponse = _statsProzoneIngestService.IngestReferenceData();
+            _mongoDbRepository.Save(entitiesResponse);
+            return entitiesResponse;
         }
     }
 }

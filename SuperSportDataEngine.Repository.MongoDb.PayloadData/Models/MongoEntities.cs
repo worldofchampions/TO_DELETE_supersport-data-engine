@@ -1,4 +1,5 @@
 ﻿using MongoDB.Bson.Serialization.Attributes;
+using System;
 using System.Collections.Generic;
 
 namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Models
@@ -137,6 +138,8 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Models
 
     public class MongoEntities
     {
+        [BsonElement("provider_request_time")]
+        public DateTime RequestTime { get; set; }
         [BsonElement("ground_conditions")]
         public List<GroundCondition> groundConditions { get; set; }
         [BsonElement("fantasy_rules")]
