@@ -1,8 +1,9 @@
 ﻿namespace SuperSportDataEngine.Application.WebApi.PublicApi.Controllers.Api
 {
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using System.Web.Http;
+    using System.Web.Http.Description;
 
     // TODO: [Davide] Temporary example reference code for team (delete this later).
     public class TemporaryExampleController : ApiController
@@ -15,10 +16,15 @@
         }
 
         // GET: api/TemporaryExample
-        public IEnumerable<string> Get()
+        [ResponseType(typeof(string[]))]
+        public async Task<IHttpActionResult> Get()
         {
+            await _temporaryExampleService.SqlDatabaseTemporaryExampleInsertData();
+            await _temporaryExampleService.SqlDatabaseTemporaryExampleQueryData();
+
             //return new string[] { "value1", "value2" };
-            return new string[] { _temporaryExampleService.HelloMessage() };
+            var result = new string[] { _temporaryExampleService.HelloMessage() };
+            return Ok(result);
         }
 
         // GET: api/TemporaryExample/5
