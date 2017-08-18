@@ -33,6 +33,10 @@
                     entitiesResponse.Entities = 
                         JsonConvert.DeserializeObject<Entities>(reader.ReadToEnd());
 
+                    // Not to be confused with the DateTime.Now call more above.
+                    // This might be delayed due to provider being slow to process request,
+                    // and is intended.
+                    entitiesResponse.ResponseTime = DateTime.Now;
                     return entitiesResponse;
                 }
             }

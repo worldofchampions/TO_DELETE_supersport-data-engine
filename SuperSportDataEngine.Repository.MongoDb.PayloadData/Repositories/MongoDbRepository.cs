@@ -37,6 +37,7 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
             // Map the provider data to a type mongo understands.
             var mongoEntities = Mapper.Map<Entities, MongoEntities>(entitiesResponse.Entities);
             mongoEntities.RequestTime = entitiesResponse.RequestTime;
+            mongoEntities.ResponseTime = entitiesResponse.ResponseTime;
 
             // Get the Mongo DB.
             var client = new MongoClient("mongodb://RND-MDODS-QA.dstvo.local:27017");
