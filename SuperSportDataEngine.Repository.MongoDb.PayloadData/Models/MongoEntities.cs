@@ -140,6 +140,8 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Models
     {
         [BsonElement("provider_request_time")]
         public DateTime RequestTime { get; set; }
+        [BsonElement("provider_response_time")]
+        public DateTime ResponseTime { get; set; }
         [BsonElement("ground_conditions")]
         public List<GroundCondition> groundConditions { get; set; }
         [BsonElement("fantasy_rules")]

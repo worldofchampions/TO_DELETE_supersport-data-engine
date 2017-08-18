@@ -6,5 +6,6 @@
     {
         public Entities Entities { get; set; }
         public DateTime RequestTime { get; set; }
+        public DateTime ResponseTime { get; set; }
     }
 }

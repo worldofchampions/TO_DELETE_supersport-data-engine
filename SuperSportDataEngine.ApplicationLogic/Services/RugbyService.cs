@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Entities;
+using System.Collections.Generic;
 
 namespace SuperSportDataEngine.ApplicationLogic.Services
 {
