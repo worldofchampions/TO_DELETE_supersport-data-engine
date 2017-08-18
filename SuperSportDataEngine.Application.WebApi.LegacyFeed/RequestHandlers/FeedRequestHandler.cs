@@ -51,7 +51,14 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
         private bool IsRugbyRequest(HttpRequestMessage message)
         {
             var requestUrl = message.RequestUri.ToString();
-            var match = Regex.Match(requestUrl, @"/rugby/");
+            var testUrl = requestUrl.Remove(requestUrl.IndexOf('?'));
+            if(testUrl.Contains("/matchdetails") && testUrl.Contains("/rugby/"))
+            {
+                return true;
+            }
+            var match = Regex.Match(testUrl, @"\/rugby\/((?:\w+-)+\w+)\/fixtures
+                                                    |\/rugby\/((?:\w+-)+\w+)\/logs
+                                                    |\/rugby\/((?:\w+-)+\w+)\/results");
             return match.Success;
         }
 
