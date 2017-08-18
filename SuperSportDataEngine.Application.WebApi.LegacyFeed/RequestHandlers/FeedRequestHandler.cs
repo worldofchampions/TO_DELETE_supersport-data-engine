@@ -17,6 +17,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
     {
         private readonly ILegacyAuthService _legacyAuthService;
         private readonly UnityContainer container = new UnityContainer();
+
         public FeedRequestHandler()
         {
             var container = new UnityContainer();
@@ -29,10 +30,10 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
         {
             var queryDictionary = HttpUtility.ParseQueryString(request.RequestUri.Query.ToString());
             int siteId;
-            Int32.TryParse(queryDictionary.Get("site"),out siteId);
+            Int32.TryParse(queryDictionary.Get("site"), out siteId);
             var auth = queryDictionary.Get("auth");
 
-            var authorised = _legacyAuthService.IsAuthorised(auth,siteId);
+            var authorised = _legacyAuthService.IsAuthorised(auth, siteId);
             if (!authorised)
             {
                 var response = new HttpResponseMessage(HttpStatusCode.Forbidden);
@@ -41,7 +42,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
                     return response;
                 });
             }
-            if (!IsRugbyRequest(request))
+            if (!IsRugbyRequest(request) && !IsAuthRequest(request))
             {
                 var newUri = new Uri(
                     $"http://{SuperSportDataApplicationSettingsHelper.GetSuperSportFeedHost()}" +
@@ -59,7 +60,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
         {
             var requestUrl = message.RequestUri.ToString();
             var testUrl = requestUrl.Remove(requestUrl.IndexOf('?'));
-            if(testUrl.Contains("/matchdetails") && testUrl.Contains("/rugby/"))
+            if (testUrl.Contains("/matchdetails") && testUrl.Contains("/rugby/"))
             {
                 return true;
             }
@@ -67,6 +68,12 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
                                                     |\/rugby\/((?:\w+-)+\w+)\/logs
                                                     |\/rugby\/((?:\w+-)+\w+)\/results");
             return match.Success;
+        }
+
+        private bool IsAuthRequest(HttpRequestMessage message)
+        {
+            var requestUrl = message.RequestUri.ToString();
+            return requestUrl.Contains("/Auth/");
         }
 
         private HttpRequestMessage ChangeHostRequest(HttpRequestMessage req, Uri newUri)

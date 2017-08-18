@@ -3,6 +3,7 @@ using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfac
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
 using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
+using SuperSportDataEngine.ApplicationLogic.Entities.Legacy.Mappers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -41,7 +42,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         public async Task<bool> ImportZoneSiteRecords(IEnumerable<LegacyZoneSiteEntity> models)
         {
             var legacyModels = models.Select(entity => Mapper.Map<LegacyZoneSite>(entity));
-            _legacyZoneSiteRepository.AddRange(legacyModels);
+            _legacyZoneSiteRepository.AddRange(new HashSet<LegacyZoneSite>(legacyModels));
             await _legacyZoneSiteRepository.SaveAsync();
 
             return true;
@@ -49,8 +50,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<bool> ImportAuthFeedRecords(IEnumerable<LegacyAuthFeedConsumerEntity> models)
         {
-            var legacyModels = models.Select(entity => Mapper.Map<LegacyAuthFeedConsumer>(entity));
-            _legacyAuthFeedConsumerRepository.AddRange(legacyModels);
+            var legacyModels = models.Select(entity => LegacyAuthFeedConsumerMapper.MapToModel(entity));
+            _legacyAuthFeedConsumerRepository.AddRange(new HashSet<LegacyAuthFeedConsumer>(legacyModels));
             await _legacyAuthFeedConsumerRepository.SaveAsync();
 
             return true;
