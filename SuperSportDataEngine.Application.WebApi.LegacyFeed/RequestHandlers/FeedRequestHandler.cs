@@ -73,7 +73,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
         private bool IsAuthRequest(HttpRequestMessage message)
         {
             var requestUrl = message.RequestUri.ToString();
-            return requestUrl.Contains("/Auth/");
+            return (requestUrl.Contains("/Auth/") | requestUrl.Contains("/auth/"));
         }
 
         private HttpRequestMessage ChangeHostRequest(HttpRequestMessage req, Uri newUri)
