@@ -47,11 +47,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
+    <Compile Include="Context\ModelConfiguration.cs" />
+    <Compile Include="Context\PublicSportDataContext.cs" />
+    <Compile Include="Migrations\201708171158341_Initial_migration.cs" />
+    <Compile Include="Migrations\201708171158341_Initial_migration.Designer.cs">
+      <DependentUpon>201708171158341_Initial_migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -63,6 +68,15 @@
       <Project>{bbe845af-8b84-4b61-abd7-724aca22ab69}</Project>
       <Name>SuperSportDataEngine.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SuperSportDataEngine.Repository.EntityFramework.Common\SuperSportDataEngine.Repository.EntityFramework.Common.csproj">
+      <Project>{4339ee97-496e-485d-a790-ca34258a27ed}</Project>
+      <Name>SuperSportDataEngine.Repository.EntityFramework.Common</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\201708171158341_Initial_migration.resx">
+      <DependentUpon>201708171158341_Initial_migration.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
