@@ -1,4 +1,7 @@
-﻿using SuperSportDataEngine.Application.WebApi.LegacyFeed.Helpers.AppSettings;
+﻿using Microsoft.Practices.Unity;
+using SuperSportDataEngine.Application.Container;
+using SuperSportDataEngine.Application.WebApi.LegacyFeed.Helpers.AppSettings;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -10,9 +13,27 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
 {
     public class FeedRequestHandler : DelegatingHandler
     {
+        private readonly ITemporaryExampleService _temporaryExampleService;
+        private readonly UnityContainer container = new UnityContainer();
+        public FeedRequestHandler()
+        {
+            var container = new UnityContainer();
+            UnityConfigurationManager.RegisterTypes(container);
+            _temporaryExampleService = container.Resolve<ITemporaryExampleService>();
+        }
+
         protected override Task<HttpResponseMessage> SendAsync(
                         HttpRequestMessage request, CancellationToken cancellationToken)
         {
+            var authorised = _temporaryExampleService.HelloMessage().Contains(""); // service for authenticating
+            if (authorised)
+            {
+                var response = new HttpResponseMessage(System.Net.HttpStatusCode.Forbidden);
+                return Task.Run(() =>
+                {
+                    return response;
+                });
+            }
             if (!IsRugbyRequest(request))
             {
                 var newUri = new Uri(
@@ -22,7 +43,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
                 var requestOldFeed = ChangeHostRequest(request, newUri);
                 var client = new HttpClient();
                 var response = client.SendAsync(requestOldFeed);
-                return response;                
+                return response;
             }
             return base.SendAsync(request, cancellationToken);
         }
@@ -34,7 +55,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
             return match.Success;
         }
 
-        private HttpRequestMessage ChangeHostRequest( HttpRequestMessage req, Uri newUri)
+        private HttpRequestMessage ChangeHostRequest(HttpRequestMessage req, Uri newUri)
         {
             var clone = new HttpRequestMessage(req.Method, newUri);
 
