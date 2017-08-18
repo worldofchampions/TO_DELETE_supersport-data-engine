@@ -4,31 +4,38 @@ using SuperSportDataEngine.Application.WebApi.LegacyFeed.Helpers.AppSettings;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
 {
     public class FeedRequestHandler : DelegatingHandler
     {
-        private readonly ITemporaryExampleService _temporaryExampleService;
+        private readonly ILegacyAuthService _legacyAuthService;
         private readonly UnityContainer container = new UnityContainer();
         public FeedRequestHandler()
         {
             var container = new UnityContainer();
             UnityConfigurationManager.RegisterTypes(container);
-            _temporaryExampleService = container.Resolve<ITemporaryExampleService>();
+            _legacyAuthService = container.Resolve<ILegacyAuthService>();
         }
 
         protected override Task<HttpResponseMessage> SendAsync(
                         HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            var authorised = _temporaryExampleService.HelloMessage().Contains(""); // service for authenticating
-            if (authorised)
+            var queryDictionary = HttpUtility.ParseQueryString(request.RequestUri.Query.ToString());
+            int siteId;
+            Int32.TryParse(queryDictionary.Get("site"),out siteId);
+            var auth = queryDictionary.Get("auth");
+
+            var authorised = _legacyAuthService.IsAuthorised(auth,siteId);
+            if (!authorised)
             {
-                var response = new HttpResponseMessage(System.Net.HttpStatusCode.Forbidden);
+                var response = new HttpResponseMessage(HttpStatusCode.Forbidden);
                 return Task.Run(() =>
                 {
                     return response;

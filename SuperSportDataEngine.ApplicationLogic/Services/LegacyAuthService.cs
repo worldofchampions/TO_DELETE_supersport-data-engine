@@ -1,9 +1,11 @@
-﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+﻿using AutoMapper;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
 using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SuperSportDataEngine.ApplicationLogic.Services
 {
@@ -19,7 +21,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             _legacyAuthFeedConsumerRepository = legacyAuthFeedConsumerRepository;
         }
 
-        public bool IsAuthorised(string authKey, int? siteId = null)
+        public bool IsAuthorised(string authKey, int siteId = 0)
         {
             var legacyAuthFeed = _legacyAuthFeedConsumerRepository.Where(c => c.AuthKey == authKey).FirstOrDefault();
             if (legacyAuthFeed == null)
@@ -27,7 +29,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 return false;
             }
 
-            if (siteId != null)
+            if (siteId != 0)
             {
                 var legacyZone = _legacyZoneSiteRepository.Where(c => c.Id == siteId).FirstOrDefault();
                 return legacyZone.Feed == legacyAuthFeed.Name.Replace("  ", string.Empty).ToLowerInvariant();
@@ -36,17 +38,21 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             return true;
         }
 
-        public bool ImportZoneSiteRecords(IEnumerable<LegacyZoneSiteEntity> models)
+        public async Task<bool> ImportZoneSiteRecords(IEnumerable<LegacyZoneSiteEntity> models)
         {
-            //var legacyModels = 
-            //_legacyAuthFeedConsumerRepository.AddRange()
+            var legacyModels = models.Select(entity => Mapper.Map<LegacyZoneSite>(entity));
+            _legacyZoneSiteRepository.AddRange(legacyModels);
+            await _legacyZoneSiteRepository.SaveAsync();
+
             return true;
         }
 
-        public bool ImportAuthFeedRecords(IEnumerable<LegacyAuthFeedConsumerEntity> models)
+        public async Task<bool> ImportAuthFeedRecords(IEnumerable<LegacyAuthFeedConsumerEntity> models)
         {
-            //var legacyModels = 
-            //_legacyAuthFeedConsumerRepository.AddRange()
+            var legacyModels = models.Select(entity => Mapper.Map<LegacyAuthFeedConsumer>(entity));
+            _legacyAuthFeedConsumerRepository.AddRange(legacyModels);
+            await _legacyAuthFeedConsumerRepository.SaveAsync();
+
             return true;
         }
     }
