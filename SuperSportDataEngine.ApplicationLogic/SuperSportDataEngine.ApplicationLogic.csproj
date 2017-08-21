@@ -46,6 +46,7 @@
     <Compile Include="Boundaries\ApplicationLogic\Interfaces\IRugbyService.cs" />
     <Compile Include="Boundaries\ApplicationLogic\Interfaces\ITemporaryExampleService.cs" />
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\ResponseModels\EntitiesResponse.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Log.cs" />
     <Compile Include="Boundaries\Repository.MongoDb.PayloadData\Interfaces\IMongoDbRepository.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.Common\Interfaces\IBaseEntityFrameworkRepository.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Player.cs" />

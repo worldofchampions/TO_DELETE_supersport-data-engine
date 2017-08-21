@@ -15,6 +15,10 @@
             modelBuilder.Entity<Sport>()
                 .Property(x => x.Id)
                 .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+
+            modelBuilder.Entity<Log>()
+                .Property(x => x.Id)
+                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
         }
     }
 }
