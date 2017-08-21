@@ -30,6 +30,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
@@ -47,6 +53,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.Web" />
@@ -84,6 +91,10 @@
     <ProjectReference Include="..\SuperSportDataEngine.Gateway.Http.StatsProzone\SuperSportDataEngine.Gateway.Http.StatsProzone.csproj">
       <Project>{90e43dad-2892-4438-92e1-b1966b6aaaec}</Project>
       <Name>SuperSportDataEngine.Gateway.Http.StatsProzone</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SuperSportDataEngine.Repository.EntityFramework.Common\SuperSportDataEngine.Repository.EntityFramework.Common.csproj">
+      <Project>{4339ee97-496e-485d-a790-ca34258a27ed}</Project>
+      <Name>SuperSportDataEngine.Repository.EntityFramework.Common</Name>
     </ProjectReference>
     <ProjectReference Include="..\SuperSportDataEngine.Repository.EntityFramework.PublicSportData\SuperSportDataEngine.Repository.EntityFramework.PublicSportData.csproj">
       <Project>{f770c6d0-4b92-40d7-a53f-da1ad9240324}</Project>
