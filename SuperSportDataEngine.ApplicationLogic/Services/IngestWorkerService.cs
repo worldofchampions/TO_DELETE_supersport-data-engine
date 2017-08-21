@@ -15,7 +15,7 @@
             _mongoDbRepository = mongoDbRepository;
         }
 
-        public EntitiesResponse IngestReferenceData()
+        public RugbyEntitiesResponse IngestReferenceData()
         {
             var entitiesResponse = _statsProzoneIngestService.IngestReferenceData();
             _mongoDbRepository.Save(entitiesResponse);

@@ -4,6 +4,6 @@
 
     public interface IStatsProzoneIngestService
     {
-        EntitiesResponse IngestReferenceData();
+        RugbyEntitiesResponse IngestReferenceData();
     }
 }

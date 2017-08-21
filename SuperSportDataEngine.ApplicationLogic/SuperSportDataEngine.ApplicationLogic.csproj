@@ -40,12 +40,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Boundaries\Gateway.Http.StatsProzone\Models\Entities.cs" />
+    <Compile Include="Boundaries\Gateway.Http.StatsProzone\Models\RugbyEntities.cs" />
     <Compile Include="Boundaries\ApplicationLogic\Interfaces\IIngestWorkerService.cs" />
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\Interfaces\IStatsProzoneIngestService.cs" />
     <Compile Include="Boundaries\ApplicationLogic\Interfaces\IRugbyService.cs" />
     <Compile Include="Boundaries\ApplicationLogic\Interfaces\ITemporaryExampleService.cs" />
-    <Compile Include="Boundaries\Gateway.Http.StatsProzone\ResponseModels\EntitiesResponse.cs" />
+    <Compile Include="Boundaries\Gateway.Http.StatsProzone\ResponseModels\RugbyEntitiesResponse.cs" />
     <Compile Include="Boundaries\Repository.MongoDb.PayloadData\Interfaces\IMongoDbRepository.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.Common\Interfaces\IBaseEntityFrameworkRepository.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Player.cs" />
