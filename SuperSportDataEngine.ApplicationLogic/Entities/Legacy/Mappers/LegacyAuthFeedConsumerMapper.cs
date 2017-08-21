@@ -33,12 +33,11 @@ namespace SuperSportDataEngine.ApplicationLogic.Entities.Legacy.Mappers
             };
         }
 
-        private static LegacyMethodAccess MapTo(LegacyMethodAccessEntity model)
+        private static LegacyMethodAccess MapTo(string methodAccess)
         {
             return new LegacyMethodAccess
             {
-                Id = model.Id,
-                Name = model.Name
+                Name = methodAccess
             };
         }
     }

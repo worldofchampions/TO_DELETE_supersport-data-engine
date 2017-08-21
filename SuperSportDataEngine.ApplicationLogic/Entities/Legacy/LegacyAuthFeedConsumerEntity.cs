@@ -9,7 +9,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Entities.Legacy
         public bool AllowAll { get; set; }
         public string AuthKey { get; set; }
         public int Id { get; set; }
-        public List<LegacyMethodAccessEntity> MethodAccess { get; set; }
+        public List<string> MethodAccess { get; set; }
         public string Name { get; set; }
     }
 
