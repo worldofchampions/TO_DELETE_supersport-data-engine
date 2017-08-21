@@ -33,6 +33,10 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             if (siteId != 0)
             {
                 var legacyZone = _legacyZoneSiteRepository.Where(c => c.Id == siteId).FirstOrDefault();
+                if (legacyZone == null)
+                {
+                    return false;
+                }
                 return legacyZone.Feed == legacyAuthFeed.Name.Replace("  ", string.Empty).ToLowerInvariant();
             }
 
