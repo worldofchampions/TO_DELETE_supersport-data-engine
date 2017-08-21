@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models.Legacy;
 using System.Web.Http;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed
@@ -25,6 +26,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed
             Mapper.Initialize(cfg =>
             {
                 cfg.AddProfile<LogModelMapperProfile>();
+                cfg.AddProfile<LogEntityMapperProfile>();
             });
 #if DEBUG
             Mapper.AssertConfigurationIsValid();
