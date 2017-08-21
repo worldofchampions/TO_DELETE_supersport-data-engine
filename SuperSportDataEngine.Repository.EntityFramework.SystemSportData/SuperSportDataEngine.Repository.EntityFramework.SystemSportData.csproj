@@ -53,6 +53,10 @@
     <Compile Include="Migrations\201708171201439_Initial_migration.Designer.cs">
       <DependentUpon>201708171201439_Initial_migration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201708211351510_AddLegacyZoneSiteAndLegacyAuthFeedConsumerTablesToDB.cs" />
+    <Compile Include="Migrations\201708211351510_AddLegacyZoneSiteAndLegacyAuthFeedConsumerTablesToDB.Designer.cs">
+      <DependentUpon>201708211351510_AddLegacyZoneSiteAndLegacyAuthFeedConsumerTablesToDB.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -76,6 +80,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201708171201439_Initial_migration.resx">
       <DependentUpon>201708171201439_Initial_migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708211351510_AddLegacyZoneSiteAndLegacyAuthFeedConsumerTablesToDB.resx">
+      <DependentUpon>201708211351510_AddLegacyZoneSiteAndLegacyAuthFeedConsumerTablesToDB.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

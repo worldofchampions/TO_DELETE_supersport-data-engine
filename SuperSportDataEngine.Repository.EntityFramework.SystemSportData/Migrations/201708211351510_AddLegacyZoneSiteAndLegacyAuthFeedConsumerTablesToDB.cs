@@ -1,9 +1,9 @@
-namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations
+namespace SuperSportDataEngine.Repository.EntityFramework.SystemSportData.Migrations
 {
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class AddLegacyModelsEF : DbMigration
+    public partial class AddLegacyZoneSiteAndLegacyAuthFeedConsumerTablesToDB : DbMigration
     {
         public override void Up()
         {
@@ -39,8 +39,11 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                     {
                         Id = c.Int(nullable: false, identity: true),
                         Name = c.String(),
+                        LegacyAuthFeedConsumer_Id = c.Int(),
                     })
-                .PrimaryKey(t => t.Id);
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.LegacyAuthFeedConsumers", t => t.LegacyAuthFeedConsumer_Id)
+                .Index(t => t.LegacyAuthFeedConsumer_Id);
             
             CreateTable(
                 "dbo.LegacyZoneSites",
@@ -66,7 +69,9 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
         
         public override void Down()
         {
+            DropForeignKey("dbo.LegacyMethodAccesses", "LegacyAuthFeedConsumer_Id", "dbo.LegacyAuthFeedConsumers");
             DropForeignKey("dbo.LegacyAccessItems", "LegacyAuthFeedConsumer_Id", "dbo.LegacyAuthFeedConsumers");
+            DropIndex("dbo.LegacyMethodAccesses", new[] { "LegacyAuthFeedConsumer_Id" });
             DropIndex("dbo.LegacyAccessItems", new[] { "LegacyAuthFeedConsumer_Id" });
             DropTable("dbo.LegacyZoneSites");
             DropTable("dbo.LegacyMethodAccesses");

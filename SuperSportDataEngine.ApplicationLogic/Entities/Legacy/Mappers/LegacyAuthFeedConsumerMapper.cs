@@ -1,4 +1,4 @@
-﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -19,7 +19,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Entities.Legacy.Mappers
                 AuthKey = model.AuthKey,
                 MethodAccess = new HashSet<LegacyMethodAccess>(methodAccessItems),
                 Name = model.Name
-                
             };
         }
 
