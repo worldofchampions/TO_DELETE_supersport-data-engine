@@ -13,11 +13,11 @@ namespace SuperSportDataEngine.Application.Service.SchedulerIngestServer
     {
         private static void Main(string[] args)
         {
-            SqlServerStorageOptions Options = new SqlServerStorageOptions { PrepareSchemaIfNecessary = false };
+            SqlServerStorageOptions Options = new SqlServerStorageOptions { PrepareSchemaIfNecessary = true };
 
             JobStorage JOB_STORAGE =
             new SqlServerStorage(
-                    ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString,
+                    ConfigurationManager.ConnectionStrings["SqlDatabase_Hangfire"].ConnectionString,
                     Options
                 );
 
