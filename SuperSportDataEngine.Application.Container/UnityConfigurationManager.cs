@@ -2,11 +2,13 @@
 {
     using Microsoft.Practices.Unity;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Services;
+    using SuperSportDataEngine.Gateway.Http.StatsProzone.Services;
     using SuperSportDataEngine.Repository.EntityFramework.Common.Repositories.Base;
     using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
     using SuperSportDataEngine.Repository.EntityFramework.SystemSportData.Context;
@@ -24,7 +26,13 @@
             ApplyRegistrationsForApplicationLogic(container);
             ApplyRegistrationsForRepositoryEntityFrameworkPublicSportData(container);
             ApplyRegistrationsForRepositoryEntityFrameworkSystemSportData(container);
+            ApplyRegistrationsForStatsProzone(container);
             ApplyRegistrationsForRepositoryMongoDbPayloadData(container);
+        }
+
+        private static void ApplyRegistrationsForStatsProzone(IUnityContainer container)
+        {
+            container.RegisterType<IStatsProzoneIngestService, StatsProzoneIngestService>();
         }
 
         private static void ApplyRegistrationsForApplicationLogic(IUnityContainer container)

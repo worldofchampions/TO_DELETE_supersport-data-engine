@@ -4,6 +4,6 @@
 
     public interface IIngestWorkerService
     {
-        EntitiesResponse IngestReferenceData();
+        RugbyEntitiesResponse IngestReferenceData();
     }
 }
