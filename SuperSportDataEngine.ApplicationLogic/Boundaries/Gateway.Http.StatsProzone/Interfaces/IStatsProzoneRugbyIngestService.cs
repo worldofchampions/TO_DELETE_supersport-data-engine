@@ -1,4 +1,4 @@
-﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces
+﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces
 {
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.ResponseModels;
 

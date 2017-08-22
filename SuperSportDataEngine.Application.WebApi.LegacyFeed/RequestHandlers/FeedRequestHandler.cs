@@ -1,19 +1,48 @@
-﻿using SuperSportDataEngine.Application.WebApi.LegacyFeed.Helpers.AppSettings;
+﻿using Microsoft.Practices.Unity;
+using SuperSportDataEngine.Application.Container;
+using SuperSportDataEngine.Application.WebApi.LegacyFeed.Helpers.AppSettings;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
 {
     public class FeedRequestHandler : DelegatingHandler
     {
+        private readonly ILegacyAuthService _legacyAuthService;
+        private readonly UnityContainer container = new UnityContainer();
+
+        public FeedRequestHandler()
+        {
+            var container = new UnityContainer();
+            UnityConfigurationManager.RegisterTypes(container);
+            _legacyAuthService = container.Resolve<ILegacyAuthService>();
+        }
+
         protected override Task<HttpResponseMessage> SendAsync(
                         HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            if (!IsRugbyRequest(request))
+            var queryDictionary = HttpUtility.ParseQueryString(request.RequestUri.Query.ToString());
+            int siteId;
+            Int32.TryParse(queryDictionary.Get("site"), out siteId);
+            var auth = queryDictionary.Get("auth");
+
+            var authorised = _legacyAuthService.IsAuthorised(auth, siteId);
+            if (!authorised)
+            {
+                var response = new HttpResponseMessage(HttpStatusCode.Forbidden);
+                return Task.Run(() =>
+                {
+                    return response;
+                });
+            }
+            if (!IsRugbyRequest(request) && !IsAuthRequest(request))
             {
                 var newUri = new Uri(
                     $"http://{SuperSportDataApplicationSettingsHelper.GetSuperSportFeedHost()}" +
@@ -22,7 +51,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
                 var requestOldFeed = ChangeHostRequest(request, newUri);
                 var client = new HttpClient();
                 var response = client.SendAsync(requestOldFeed);
-                return response;                
+                return response;
             }
             return base.SendAsync(request, cancellationToken);
         }
@@ -31,7 +60,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
         {
             var requestUrl = message.RequestUri.ToString();
             var testUrl = requestUrl.Remove(requestUrl.IndexOf('?'));
-            if(testUrl.Contains("/matchdetails") && testUrl.Contains("/rugby/"))
+            if (testUrl.Contains("/matchdetails") && testUrl.Contains("/rugby/"))
             {
                 return true;
             }
@@ -41,7 +70,13 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
             return match.Success;
         }
 
-        private HttpRequestMessage ChangeHostRequest( HttpRequestMessage req, Uri newUri)
+        private bool IsAuthRequest(HttpRequestMessage message)
+        {
+            var requestUrl = message.RequestUri.ToString();
+            return (requestUrl.Contains("/Auth/") | requestUrl.Contains("/auth/"));
+        }
+
+        private HttpRequestMessage ChangeHostRequest(HttpRequestMessage req, Uri newUri)
         {
             var clone = new HttpRequestMessage(req.Method, newUri);
 

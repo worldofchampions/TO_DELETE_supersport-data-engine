@@ -2,18 +2,18 @@
 {
     using Microsoft.Practices.Unity;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Services;
+    using SuperSportDataEngine.Gateway.Http.StatsProzone.Services;
     using SuperSportDataEngine.Repository.EntityFramework.Common.Repositories.Base;
     using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
     using SuperSportDataEngine.Repository.EntityFramework.SystemSportData.Context;
     using SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories;
     using System.Data.Entity;
-    using SuperSportDataEngine.Gateway.Http.StatsProzone.Services;
-    using System;
 
     // TODO: [Davide] Add a feature to apply registrations according to the running application scope.
     public static class UnityConfigurationManager
@@ -39,6 +39,7 @@
         {
             container.RegisterType<ITemporaryExampleService, TemporaryExampleService>();
             container.RegisterType<IRugbyService, RugbyService>();
+            container.RegisterType<ILegacyAuthService, LegacyAuthService>();
         }
 
         private static void ApplyRegistrationsForRepositoryEntityFrameworkPublicSportData(IUnityContainer container)
@@ -58,6 +59,12 @@
 
             container.RegisterType<IBaseEntityFrameworkRepository<SportTournament>, BaseEntityFrameworkRepository<SportTournament>>(
                 new InjectionFactory((x) => new BaseEntityFrameworkRepository<SportTournament>(container.Resolve<DbContext>(SystemSportDataRepository))));
+
+            container.RegisterType<IBaseEntityFrameworkRepository<LegacyAuthFeedConsumer>, BaseEntityFrameworkRepository<LegacyAuthFeedConsumer>>(
+              new InjectionFactory((x) => new BaseEntityFrameworkRepository<LegacyAuthFeedConsumer>(container.Resolve<DbContext>(SystemSportDataRepository))));
+
+            container.RegisterType<IBaseEntityFrameworkRepository<LegacyZoneSite>, BaseEntityFrameworkRepository<LegacyZoneSite>>(
+               new InjectionFactory((x) => new BaseEntityFrameworkRepository<LegacyZoneSite>(container.Resolve<DbContext>(SystemSportDataRepository))));
         }
 
         private static void ApplyRegistrationsForRepositoryMongoDbPayloadData(IUnityContainer container)
