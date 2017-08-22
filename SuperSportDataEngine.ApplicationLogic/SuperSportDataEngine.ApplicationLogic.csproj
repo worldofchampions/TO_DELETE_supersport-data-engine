@@ -54,7 +54,7 @@
     <Compile Include="Boundaries\Repository.MongoDb.PayloadData\Interfaces\ITemporaryExampleMongoDbRepository.cs" />
     <Compile Include="Entities\LogEntity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\IngestWorkerService.cs" />
+    <Compile Include="Services\RugbyIngestWorkerService.cs" />
     <Compile Include="Services\RugbyService.cs" />
     <Compile Include="Services\TemporaryExampleService.cs" />
   </ItemGroup>
