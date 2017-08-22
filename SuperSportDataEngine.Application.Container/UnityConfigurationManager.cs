@@ -3,6 +3,7 @@
     using Microsoft.Practices.Unity;
     using StackExchange.Redis;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
@@ -10,6 +11,7 @@
     using SuperSportDataEngine.ApplicationLogic.Services;
     using SuperSportDataEngine.Common.Boundaries;
     using SuperSportDataEngine.Common.Caching;
+    using SuperSportDataEngine.Gateway.Http.StatsProzone.Services;
     using SuperSportDataEngine.Repository.EntityFramework.Common.Repositories.Base;
     using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
     using SuperSportDataEngine.Repository.EntityFramework.SystemSportData.Context;
@@ -28,13 +30,20 @@
             ApplyRegistrationsForApplicationLogic(container);
             ApplyRegistrationsForRepositoryEntityFrameworkPublicSportData(container);
             ApplyRegistrationsForRepositoryEntityFrameworkSystemSportData(container);
+            ApplyRegistrationsForStatsProzone(container);
             ApplyRegistrationsForRepositoryMongoDbPayloadData(container);
+        }
+
+        private static void ApplyRegistrationsForStatsProzone(IUnityContainer container)
+        {
+            container.RegisterType<IStatsProzoneRugbyIngestService, StatsProzoneRugbyIngestService>();
         }
 
         private static void ApplyRegistrationsForApplicationLogic(IUnityContainer container)
         {
             container.RegisterType<ITemporaryExampleService, TemporaryExampleService>();
             container.RegisterType<IRugbyService, RugbyService>();
+            container.RegisterType<ILegacyAuthService, LegacyAuthService>();
         }
 
         private static void ApplyRegistrationsForRepositoryEntityFrameworkPublicSportData(IUnityContainer container)
@@ -52,6 +61,9 @@
 
             container.RegisterType<IBaseEntityFrameworkRepository<Sport>, BaseEntityFrameworkRepository<Sport>>(
                 new InjectionFactory((x) => new BaseEntityFrameworkRepository<Sport>(container.Resolve<DbContext>(PublicSportDataRepository))));
+
+            container.RegisterType<IBaseEntityFrameworkRepository<Log>, BaseEntityFrameworkRepository<Log>>(
+                new InjectionFactory((x) => new BaseEntityFrameworkRepository<Log>(container.Resolve<DbContext>(PublicSportDataRepository))));
         }
 
         private static void ApplyRegistrationsForRepositoryEntityFrameworkSystemSportData(IUnityContainer container)
@@ -60,13 +72,19 @@
 
             container.RegisterType<IBaseEntityFrameworkRepository<SportTournament>, BaseEntityFrameworkRepository<SportTournament>>(
                 new InjectionFactory((x) => new BaseEntityFrameworkRepository<SportTournament>(container.Resolve<DbContext>(SystemSportDataRepository))));
+
+            container.RegisterType<IBaseEntityFrameworkRepository<LegacyAuthFeedConsumer>, BaseEntityFrameworkRepository<LegacyAuthFeedConsumer>>(
+              new InjectionFactory((x) => new BaseEntityFrameworkRepository<LegacyAuthFeedConsumer>(container.Resolve<DbContext>(SystemSportDataRepository))));
+
+            container.RegisterType<IBaseEntityFrameworkRepository<LegacyZoneSite>, BaseEntityFrameworkRepository<LegacyZoneSite>>(
+               new InjectionFactory((x) => new BaseEntityFrameworkRepository<LegacyZoneSite>(container.Resolve<DbContext>(SystemSportDataRepository))));
         }
 
         private static void ApplyRegistrationsForRepositoryMongoDbPayloadData(IUnityContainer container)
         {
             container.RegisterType<ITemporaryExampleMongoDbRepository, TemporaryExampleMongoDbRepository>();
-            container.RegisterType<IIngestWorkerService, IngestWorkerService>();
-            container.RegisterType<IMongoDbRepository, MongoDbRepository>();
+            container.RegisterType<IRugbyIngestWorkerService, RugbyIngestWorkerService>();
+            container.RegisterType<IMongoDbRugbyRepository, MongoDbRugbyRepository>();
         }
     }
 }

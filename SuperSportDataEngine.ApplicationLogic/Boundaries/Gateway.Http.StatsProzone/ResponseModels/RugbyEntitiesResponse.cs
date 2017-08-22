@@ -2,9 +2,9 @@
 {
     using System;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models;
-    public class EntitiesResponse
+    public class RugbyEntitiesResponse
     {
-        public Entities Entities { get; set; }
+        public RugbyEntities Entities { get; set; }
         public DateTime RequestTime { get; set; }
         public DateTime ResponseTime { get; set; }
     }

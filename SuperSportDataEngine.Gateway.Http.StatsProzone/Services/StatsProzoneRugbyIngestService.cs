@@ -8,10 +8,11 @@
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.ResponseModels;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
 
-    public class StatsProzoneIngestService : IStatsProzoneIngestService
+    public class StatsProzoneRugbyIngestService : IStatsProzoneRugbyIngestService
     {
-        public EntitiesResponse IngestReferenceData()
+        public RugbyEntitiesResponse IngestRugbyReferenceData()
         {
             WebRequest request = WebRequest.Create("http://rugbyunion-api.stats.com/api/ru/configuration/entities");
             request.Method = "GET";
@@ -20,7 +21,7 @@
             request.ContentType = "application/json; charset=UTF-8";
 
             var entitiesResponse =
-                new EntitiesResponse()
+                new RugbyEntitiesResponse()
                 {
                     RequestTime = DateTime.Now
                 };
@@ -31,7 +32,7 @@
                 {
                     StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
                     entitiesResponse.Entities = 
-                        JsonConvert.DeserializeObject<Entities>(reader.ReadToEnd());
+                        JsonConvert.DeserializeObject<RugbyEntities>(reader.ReadToEnd());
 
                     // Not to be confused with the DateTime.Now call more above.
                     // This might be delayed due to provider being slow to process request,

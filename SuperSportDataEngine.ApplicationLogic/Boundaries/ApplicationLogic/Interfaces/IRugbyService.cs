@@ -6,6 +6,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Inte
 {
     public interface IRugbyService
     {
-        Task<List<LogEntity>> GetLogs(string tournamentName);
+        Task<IEnumerable<LogEntity>> GetLogs(string tournamentName);
     }
 }

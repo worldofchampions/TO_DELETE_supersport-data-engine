@@ -30,6 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AutoMapper, Version=6.1.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.6.1.1\lib\net45\AutoMapper.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -40,29 +43,40 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Boundaries\Gateway.Http.StatsProzone\Models\Entities.cs" />
-    <Compile Include="Boundaries\ApplicationLogic\Interfaces\IIngestWorkerService.cs" />
-    <Compile Include="Boundaries\Gateway.Http.StatsProzone\Interfaces\IStatsProzoneIngestService.cs" />
+    <Compile Include="Boundaries\ApplicationLogic\Interfaces\ILegacyAuthService.cs" />
+    <Compile Include="Boundaries\ApplicationLogic\Interfaces\IRugbyIngestWorkerService.cs" />
+    <Compile Include="Boundaries\Gateway.Http.StatsProzone\Models\RugbyEntities.cs" />
+    <Compile Include="Boundaries\Gateway.Http.StatsProzone\Interfaces\IStatsProzoneRugbyIngestService.cs" />
     <Compile Include="Boundaries\ApplicationLogic\Interfaces\IRugbyService.cs" />
     <Compile Include="Boundaries\ApplicationLogic\Interfaces\ITemporaryExampleService.cs" />
-    <Compile Include="Boundaries\Gateway.Http.StatsProzone\ResponseModels\EntitiesResponse.cs" />
-    <Compile Include="Boundaries\Repository.MongoDb.PayloadData\Interfaces\IMongoDbRepository.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Legacy\LogEntityMapperProfile.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Log.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\LegacyAuthFeedConsumer.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\LegacyZoneSite.cs" />
+    <Compile Include="Boundaries\Gateway.Http.StatsProzone\ResponseModels\RugbyEntitiesResponse.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.Common\Interfaces\IBaseEntityFrameworkRepository.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Player.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Sport.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\SportTournament.cs" />
+    <Compile Include="Boundaries\Repository.MongoDb.PayloadData\Interfaces\IMongoDbRugbyRepository.cs" />
     <Compile Include="Boundaries\Repository.MongoDb.PayloadData\Interfaces\ITemporaryExampleMongoDbRepository.cs" />
+    <Compile Include="Entities\Legacy\LegacyZoneSiteEntity.cs" />
+    <Compile Include="Entities\Legacy\LegacyAuthFeedConsumerEntity.cs" />
+    <Compile Include="Entities\Legacy\Mappers\LegacyAuthFeedConsumerMapper.cs" />
+    <Compile Include="Entities\Legacy\Mappers\LegacyAuthMappingProfile.cs" />
     <Compile Include="Entities\LogEntity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\IngestWorkerService.cs" />
+    <Compile Include="Services\LegacyAuthService.cs" />
+    <Compile Include="Services\RugbyIngestWorkerService.cs" />
     <Compile Include="Services\RugbyService.cs" />
     <Compile Include="Services\TemporaryExampleService.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SuperSportDataEngine.Common\SuperSportDataEngine.Common.csproj">
+   <ProjectReference Include="..\SuperSportDataEngine.Common\SuperSportDataEngine.Common.csproj">
       <Project>{BBE845AF-8B84-4B61-ABD7-724ACA22AB69}</Project>
       <Name>SuperSportDataEngine.Common</Name>
     </ProjectReference>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

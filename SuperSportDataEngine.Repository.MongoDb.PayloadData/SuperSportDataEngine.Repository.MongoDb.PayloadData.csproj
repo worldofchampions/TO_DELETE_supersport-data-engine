@@ -58,14 +58,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\MongoEntities.cs" />
+    <Compile Include="Models\MongoRugbyEntities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repositories\MongoDbRepository.cs" />
+    <Compile Include="Repositories\MongoDbRugbyRepository.cs" />
     <Compile Include="Repositories\TemporaryExampleMongoDbRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SuperSportDataEngine.ApplicationLogic\SuperSportDataEngine.ApplicationLogic.csproj">
-      <Project>{f420939c-b6a6-4c3a-975e-e30e654c4a90}</Project>
+      <Project>{F420939C-B6A6-4C3A-975E-E30E654C4A90}</Project>
       <Name>SuperSportDataEngine.ApplicationLogic</Name>
     </ProjectReference>
     <ProjectReference Include="..\SuperSportDataEngine.Common\SuperSportDataEngine.Common.csproj">

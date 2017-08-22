@@ -11,7 +11,7 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
     {
         public MappingProfile()
         {
-            Mapper.CreateMap<Entities, MongoEntities>().ReverseMap();
+            Mapper.CreateMap<RugbyEntities, MongoRugbyEntities>().ReverseMap();
             Mapper.CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.GroundCondition, Models.GroundCondition>().ReverseMap();
             Mapper.CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Competition, Models.Competition>().ReverseMap();
             Mapper.CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Player, Models.Player>().ReverseMap();
@@ -28,23 +28,23 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
         }
     }
 
-    public class MongoDbRepository : IMongoDbRepository
+    public class MongoDbRugbyRepository : IMongoDbRugbyRepository
     {
-        public void Save(EntitiesResponse entitiesResponse)
+        public void Save(RugbyEntitiesResponse entitiesResponse)
         {
             Mapper.Initialize(c => c.AddProfile<MappingProfile>());
 
             // Map the provider data to a type mongo understands.
-            var mongoEntities = Mapper.Map<Entities, MongoEntities>(entitiesResponse.Entities);
+            var mongoEntities = Mapper.Map<RugbyEntities, MongoRugbyEntities>(entitiesResponse.Entities);
             mongoEntities.RequestTime = entitiesResponse.RequestTime;
             mongoEntities.ResponseTime = entitiesResponse.ResponseTime;
 
             // Get the Mongo DB.
-            var client = new MongoClient("mongodb://RND-MDODS-QA.dstvo.local:27017");
+            var client = new MongoClient("mongodb://localhost:27017");
             var db = client.GetDatabase("supersport-dataengine");
 
             // Add to the collection.
-            var collection = db.GetCollection<MongoEntities>("entities");
+            var collection = db.GetCollection<MongoRugbyEntities>("entities");
             collection.InsertOneAsync(mongoEntities);
         }
     }
