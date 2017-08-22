@@ -32,7 +32,7 @@
 
         private static void ApplyRegistrationsForStatsProzone(IUnityContainer container)
         {
-            container.RegisterType<IStatsProzoneIngestService, StatsProzoneIngestService>();
+            container.RegisterType<IStatsProzoneRugbyIngestService, StatsProzoneRugbyIngestService>();
         }
 
         private static void ApplyRegistrationsForApplicationLogic(IUnityContainer container)
@@ -70,8 +70,8 @@
         private static void ApplyRegistrationsForRepositoryMongoDbPayloadData(IUnityContainer container)
         {
             container.RegisterType<ITemporaryExampleMongoDbRepository, TemporaryExampleMongoDbRepository>();
-            container.RegisterType<IIngestWorkerService, IngestWorkerService>();
-            container.RegisterType<IMongoDbRepository, MongoDbRepository>();
+            container.RegisterType<IRugbyIngestWorkerService, RugbyIngestWorkerService>();
+            container.RegisterType<IMongoDbRugbyRepository, MongoDbRugbyRepository>();
         }
     }
 }

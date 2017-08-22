@@ -2,8 +2,8 @@
 {
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.ResponseModels;
 
-    public interface IIngestWorkerService
+    public interface IRugbyIngestWorkerService
     {
-        RugbyEntitiesResponse IngestReferenceData();
+        RugbyEntitiesResponse IngestRugbyReferenceData();
     }
 }

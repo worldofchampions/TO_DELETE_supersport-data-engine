@@ -28,7 +28,7 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
         }
     }
 
-    public class MongoDbRepository : IMongoDbRepository
+    public class MongoDbRugbyRepository : IMongoDbRugbyRepository
     {
         public void Save(RugbyEntitiesResponse entitiesResponse)
         {
