@@ -40,7 +40,7 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
             mongoEntities.ResponseTime = entitiesResponse.ResponseTime;
 
             // Get the Mongo DB.
-            var client = new MongoClient("mongodb://RND-MDODS-QA.dstvo.local:27017");
+            var client = new MongoClient("mongodb://localhost:27017");
             var db = client.GetDatabase("supersport-dataengine");
 
             // Add to the collection.
