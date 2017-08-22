@@ -11,6 +11,10 @@
 
         public DbSet<SportTournament> SportTournaments { get; set; }
 
+        public DbSet<LegacyZoneSite> LegacyZoneSites { get; set; }
+
+        public DbSet<LegacyAuthFeedConsumer> LegacyAuthFeedConsumers { get; set; }
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

@@ -11,6 +11,26 @@
             modelBuilder.Entity<SportTournament>()
                 .Property(x => x.Id)
                 .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+
+            #region LegacyEF
+
+            modelBuilder.Entity<LegacyAuthFeedConsumer>()
+                .Property(x => x.Id)
+                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+
+            modelBuilder.Entity<LegacyAccessItem>()
+                .Property(x => x.Id)
+                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+
+            modelBuilder.Entity<LegacyMethodAccess>()
+                            .Property(x => x.Id)
+                            .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+
+            modelBuilder.Entity<LegacyZoneSite>()
+                            .Property(x => x.Id)
+                            .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+
+            #endregion LegacyEF
         }
     }
 }
