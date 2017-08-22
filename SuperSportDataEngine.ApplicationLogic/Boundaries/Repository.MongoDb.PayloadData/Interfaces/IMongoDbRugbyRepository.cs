@@ -2,8 +2,8 @@
 
 namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces
 {
-    public interface IMongoDbRepository
+    public interface IMongoDbRugbyRepository
     {
-        void Save(EntitiesResponse entities);
+        void Save(RugbyEntitiesResponse entities);
     }
 }

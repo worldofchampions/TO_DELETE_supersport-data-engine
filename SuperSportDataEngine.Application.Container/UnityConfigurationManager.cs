@@ -13,6 +13,7 @@
     using SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories;
     using System.Data.Entity;
     using SuperSportDataEngine.Gateway.Http.StatsProzone.Services;
+    using System;
 
     // TODO: [Davide] Add a feature to apply registrations according to the running application scope.
     public static class UnityConfigurationManager
@@ -25,7 +26,13 @@
             ApplyRegistrationsForApplicationLogic(container);
             ApplyRegistrationsForRepositoryEntityFrameworkPublicSportData(container);
             ApplyRegistrationsForRepositoryEntityFrameworkSystemSportData(container);
+            ApplyRegistrationsForStatsProzone(container);
             ApplyRegistrationsForRepositoryMongoDbPayloadData(container);
+        }
+
+        private static void ApplyRegistrationsForStatsProzone(IUnityContainer container)
+        {
+            container.RegisterType<IStatsProzoneRugbyIngestService, StatsProzoneRugbyIngestService>();
         }
 
         private static void ApplyRegistrationsForApplicationLogic(IUnityContainer container)
@@ -59,8 +66,8 @@
         private static void ApplyRegistrationsForRepositoryMongoDbPayloadData(IUnityContainer container)
         {
             container.RegisterType<ITemporaryExampleMongoDbRepository, TemporaryExampleMongoDbRepository>();
-            container.RegisterType<IIngestWorkerService, IngestWorkerService>();
-            container.RegisterType<IMongoDbRepository, MongoDbRepository>();
+            container.RegisterType<IRugbyIngestWorkerService, RugbyIngestWorkerService>();
+            container.RegisterType<IMongoDbRugbyRepository, MongoDbRugbyRepository>();
         }
     }
 }

@@ -19,15 +19,15 @@
             var container = new UnityContainer();
             UnityConfigurationManager.RegisterTypes(container);
 
-            SqlServerStorageOptions Options = new SqlServerStorageOptions { PrepareSchemaIfNecessary = false };
+            SqlServerStorageOptions Options = new SqlServerStorageOptions { PrepareSchemaIfNecessary = true };
 
             JobStorage JOB_STORAGE =
             new SqlServerStorage(
-                    ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString,
+                    ConfigurationManager.ConnectionStrings["SqlDatabase_Hangfire"].ConnectionString,
                     Options
                 );
 
-            var ingestService = container.Resolve<IIngestWorkerService>();
+            var ingestService = container.Resolve<IRugbyIngestWorkerService>();
             GlobalConfiguration.Configuration.UseStorage(JOB_STORAGE);
 
             GlobalJobFilters.Filters.Add(new ExpirationTimeAttribute());
@@ -39,8 +39,14 @@
                 // Schedule CRON jobs here.
 
                 // Get reference data
-                RecurringJob.AddOrUpdate("ingestReferenceData", () => Console.WriteLine(ingestService.IngestReferenceData()), Cron.Minutely());
-                // Get list of active tournaments
+                RecurringJob.AddOrUpdate("ingestReferenceData", () => Console.WriteLine(ingestService.IngestRugbyReferenceData()), Cron.Minutely());
+                //// Get list of active tournaments
+                //var list = GetListOfActiveTournaments()
+
+                //    for each item in list
+                //    {
+                //        Create new job for tournament id 
+                //    }
 
                 // Pause execution.
                 Thread.Sleep(2000);
