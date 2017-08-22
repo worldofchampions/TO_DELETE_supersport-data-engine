@@ -64,10 +64,12 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
             {
                 return true;
             }
-            var match = Regex.Match(testUrl, @"\/rugby\/((?:\w+-)+\w+)\/fixtures
-                                                    |\/rugby\/((?:\w+-)+\w+)\/logs
-                                                    |\/rugby\/((?:\w+-)+\w+)\/results");
-            return match.Success;
+
+            var matchFixtures = Regex.Match(testUrl, @"\/rugby\/((?:\w+-)+\w+)\/fixtures");
+            var matchLogs = Regex.Match(testUrl, @"\/rugby\/((?:\w+-)+\w+)\/logs");
+            var matchResults = Regex.Match(testUrl, @"\/rugby\/((?:\w+-)+\w+)\/results");
+
+            return matchFixtures.Success | matchLogs.Success | matchResults.Success;
         }
 
         private bool IsAuthRequest(HttpRequestMessage message)

@@ -5,6 +5,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Inte
 {
     public interface IRugbyService
     {
-        List<LogEntity> GetLogs();
+        IEnumerable<LogEntity> GetLogs();
     }
 }
