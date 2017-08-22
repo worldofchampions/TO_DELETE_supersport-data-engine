@@ -4,18 +4,18 @@
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
 
-    public class IngestWorkerService : IIngestWorkerService
+    public class RugbyIngestWorkerService : IRugbyIngestWorkerService
     {
         private readonly IStatsProzoneRugbyIngestService _statsProzoneIngestService;
         private readonly IMongoDbRugbyRepository _mongoDbRepository;
 
-        public IngestWorkerService(IStatsProzoneRugbyIngestService statsProzoneIngestService, IMongoDbRugbyRepository mongoDbRepository)
+        public RugbyIngestWorkerService(IStatsProzoneRugbyIngestService statsProzoneIngestService, IMongoDbRugbyRepository mongoDbRepository)
         {
             _statsProzoneIngestService = statsProzoneIngestService;
             _mongoDbRepository = mongoDbRepository;
         }
 
-        public RugbyEntitiesResponse IngestReferenceData()
+        public RugbyEntitiesResponse IngestRugbyReferenceData()
         {
             var entitiesResponse = _statsProzoneIngestService.IngestRugbyReferenceData();
             _mongoDbRepository.Save(entitiesResponse);

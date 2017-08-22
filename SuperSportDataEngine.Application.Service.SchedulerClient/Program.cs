@@ -27,7 +27,7 @@
                     Options
                 );
 
-            var ingestService = container.Resolve<IIngestWorkerService>();
+            var ingestService = container.Resolve<IRugbyIngestWorkerService>();
             GlobalConfiguration.Configuration.UseStorage(JOB_STORAGE);
 
             GlobalJobFilters.Filters.Add(new ExpirationTimeAttribute());
@@ -39,7 +39,7 @@
                 // Schedule CRON jobs here.
 
                 // Get reference data
-                RecurringJob.AddOrUpdate("ingestReferenceData", () => Console.WriteLine(ingestService.IngestReferenceData()), Cron.Minutely());
+                RecurringJob.AddOrUpdate("ingestReferenceData", () => Console.WriteLine(ingestService.IngestRugbyReferenceData()), Cron.Minutely());
                 //// Get list of active tournaments
                 //var list = GetListOfActiveTournaments()
 

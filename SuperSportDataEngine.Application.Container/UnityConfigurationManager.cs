@@ -63,7 +63,7 @@
         private static void ApplyRegistrationsForRepositoryMongoDbPayloadData(IUnityContainer container)
         {
             container.RegisterType<ITemporaryExampleMongoDbRepository, TemporaryExampleMongoDbRepository>();
-            container.RegisterType<IIngestWorkerService, IngestWorkerService>();
+            container.RegisterType<IRugbyIngestWorkerService, RugbyIngestWorkerService>();
             container.RegisterType<IMongoDbRugbyRepository, MongoDbRugbyRepository>();
         }
     }

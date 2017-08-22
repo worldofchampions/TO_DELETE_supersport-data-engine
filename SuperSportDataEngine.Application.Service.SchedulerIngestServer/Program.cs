@@ -23,7 +23,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerIngestServer
 
             var container = new UnityContainer();
             UnityConfigurationManager.RegisterTypes(container);
-            var ingestService = container.Resolve<IIngestWorkerService>();
+            var ingestService = container.Resolve<IRugbyIngestWorkerService>();
 
             GlobalConfiguration.Configuration.UseStorage(JOB_STORAGE);
             GlobalJobFilters.Filters.Add(new ExpirationTimeAttribute());
