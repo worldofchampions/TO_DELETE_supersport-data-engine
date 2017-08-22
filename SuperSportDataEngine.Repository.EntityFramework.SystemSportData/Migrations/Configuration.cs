@@ -1,28 +1,44 @@
 namespace SuperSportDataEngine.Repository.EntityFramework.SystemSportData.Migrations
 {
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
+    using SuperSportDataEngine.Repository.EntityFramework.SystemSportData.Context;
+    using System.Collections.Generic;
     using System.Data.Entity.Migrations;
 
-    internal sealed class Configuration : DbMigrationsConfiguration<SuperSportDataEngine.Repository.EntityFramework.SystemSportData.Context.SystemSportDataContext>
+    internal sealed class Configuration : DbMigrationsConfiguration<SystemSportDataContext>
     {
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
         }
 
-        protected override void Seed(SuperSportDataEngine.Repository.EntityFramework.SystemSportData.Context.SystemSportDataContext context)
+        protected override void Seed(SystemSportDataContext context)
         {
-            //  This method will be called after migrating to the latest version.
-
-            //  You can use the DbSet<T>.AddOrUpdate() helper extension method
-            //  to avoid creating duplicate seed data. E.g.
-            //
-            //    context.People.AddOrUpdate(
-            //      p => p.FullName,
-            //      new Person { FullName = "Andrew Peters" },
-            //      new Person { FullName = "Brice Lambson" },
-            //      new Person { FullName = "Rowan Miller" }
-            //    );
-            //
+            context.LegacyAuthFeedConsumers.AddOrUpdate(
+              p => p.Name,
+              new LegacyAuthFeedConsumer
+              {
+                  Name = "iMMedia",
+                  Active = true,
+                  AllowAll = true,
+                  AuthKey = "A22C8A7F-844C-4E19-97FB-0A63A71BA290",
+                  MethodAccess = new HashSet<LegacyMethodAccess>()
+                  {
+                          new LegacyMethodAccess
+                          {
+                              Name = "MATCHDETAILS"
+                          },
+                          new LegacyMethodAccess
+                          {
+                              Name = "VIDEO"
+                          },
+                          new LegacyMethodAccess
+                          {
+                              Name = "LIVE"
+                          }
+                  }
+              }
+            );
         }
     }
 }
