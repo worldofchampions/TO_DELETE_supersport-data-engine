@@ -5,6 +5,7 @@ using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 
@@ -82,9 +83,9 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         [HttpGet]
         [Route("{category}/logs")]
         [ResponseType(typeof(List<LogModel>))]
-        public IHttpActionResult GetLogs()
+        public async Task<IHttpActionResult> GetLogs(string category)
         {
-            var logs = _rugbyService.GetLogs().Select(log => Mapper.Map<LogModel>(log));
+            var logs = (await _rugbyService.GetLogs(category)).Select(log => Mapper.Map<LogModel>(log));
             return Ok(logs);
         }
 
