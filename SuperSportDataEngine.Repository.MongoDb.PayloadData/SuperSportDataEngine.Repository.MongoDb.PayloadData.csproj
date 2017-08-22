@@ -60,7 +60,7 @@
   <ItemGroup>
     <Compile Include="Models\MongoRugbyEntities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repositories\MongoDbRepository.cs" />
+    <Compile Include="Repositories\MongoDbRugbyRepository.cs" />
     <Compile Include="Repositories\TemporaryExampleMongoDbRepository.cs" />
   </ItemGroup>
   <ItemGroup>

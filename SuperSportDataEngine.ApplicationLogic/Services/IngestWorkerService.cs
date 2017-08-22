@@ -6,10 +6,10 @@
 
     public class IngestWorkerService : IIngestWorkerService
     {
-        private readonly IStatsProzoneIngestService _statsProzoneIngestService;
-        private readonly IMongoDbRepository _mongoDbRepository;
+        private readonly IStatsProzoneRugbyIngestService _statsProzoneIngestService;
+        private readonly IMongoDbRugbyRepository _mongoDbRepository;
 
-        public IngestWorkerService(IStatsProzoneIngestService statsProzoneIngestService, IMongoDbRepository mongoDbRepository)
+        public IngestWorkerService(IStatsProzoneRugbyIngestService statsProzoneIngestService, IMongoDbRugbyRepository mongoDbRepository)
         {
             _statsProzoneIngestService = statsProzoneIngestService;
             _mongoDbRepository = mongoDbRepository;
@@ -17,7 +17,7 @@
 
         public RugbyEntitiesResponse IngestReferenceData()
         {
-            var entitiesResponse = _statsProzoneIngestService.IngestReferenceData();
+            var entitiesResponse = _statsProzoneIngestService.IngestRugbyReferenceData();
             _mongoDbRepository.Save(entitiesResponse);
             return entitiesResponse;
         }

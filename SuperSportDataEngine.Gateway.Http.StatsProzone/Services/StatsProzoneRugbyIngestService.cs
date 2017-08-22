@@ -9,9 +9,9 @@
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.ResponseModels;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models;
 
-    public class StatsProzoneIngestService : IStatsProzoneIngestService
+    public class StatsProzoneRugbyIngestService : IStatsProzoneRugbyIngestService
     {
-        public RugbyEntitiesResponse IngestReferenceData()
+        public RugbyEntitiesResponse IngestRugbyReferenceData()
         {
             WebRequest request = WebRequest.Create("http://rugbyunion-api.stats.com/api/ru/configuration/entities");
             request.Method = "GET";
