@@ -381,6 +381,10 @@
       <Project>{333e8272-0d55-4398-899b-7e357ff5f3f3}</Project>
       <Name>SuperSportDataEngine.Application.Container</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SuperSportDataEngine.Application.WebApi.Common\SuperSportDataEngine.Application.WebApi.Common.csproj">
+      <Project>{06f1d111-a5d6-430f-a0a9-09921cc82a54}</Project>
+      <Name>SuperSportDataEngine.Application.WebApi.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SuperSportDataEngine.ApplicationLogic\SuperSportDataEngine.ApplicationLogic.csproj">
       <Project>{f420939c-b6a6-4c3a-975e-e30e654c4a90}</Project>
       <Name>SuperSportDataEngine.ApplicationLogic</Name>
