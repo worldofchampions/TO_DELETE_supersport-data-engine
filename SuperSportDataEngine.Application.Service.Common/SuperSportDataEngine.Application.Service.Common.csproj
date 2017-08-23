@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Hangfire.Filters\ExpirationTimeAttribute.cs" />
+    <Compile Include="Interfaces\IWindowsServiceContract.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
