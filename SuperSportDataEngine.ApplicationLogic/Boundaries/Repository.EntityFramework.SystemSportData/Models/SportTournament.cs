@@ -6,6 +6,7 @@
     public class SportTournament
     {
         public Guid Id { get; set; }
+        public int TournamentIndex { get; set; }
         public string TournamentName { get; set; }
         public bool IsEnabled { get; set; }
     }

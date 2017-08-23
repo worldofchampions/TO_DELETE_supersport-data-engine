@@ -44,6 +44,7 @@
                 {
                     _sportTournamentRepository.Add(new SportTournament
                     {
+                        TournamentIndex = competition.id,
                         TournamentName = competition.name,
                         IsEnabled = false
                     });
@@ -52,6 +53,7 @@
                 {
                     _sportTournamentRepository.Update(new SportTournament
                     {
+                        TournamentIndex = competition.id,
                         TournamentName = competition.name,
                         IsEnabled = false
                     });
