@@ -1,40 +1,31 @@
-﻿using System;
-using Hangfire;
-using Hangfire.SqlServer;
-using System.Configuration;
-using SuperSportDataEngine.Application.Service.Common.Hangfire.Filters;
-using SuperSportDataEngine.ApplicationLogic.Services;
-using SuperSportDataEngine.Application.Container;
-using Microsoft.Practices.Unity;
-
-namespace SuperSportDataEngine.Application.Service.SchedulerIngestServer
+﻿namespace SuperSportDataEngine.Application.Service.SchedulerIngestServer
 {
+    using Microsoft.Practices.Unity;
+    using SuperSportDataEngine.Application.Container;
+    using Topshelf;
+
     internal class Program
     {
-        private static void Main(string[] args)
+        private static void Main()
         {
-            SqlServerStorageOptions Options = new SqlServerStorageOptions { PrepareSchemaIfNecessary = true };
-
-            JobStorage JOB_STORAGE =
-            new SqlServerStorage(
-                    ConfigurationManager.ConnectionStrings["SqlDatabase_Hangfire"].ConnectionString,
-                    Options
-                );
-
             var container = new UnityContainer();
             UnityConfigurationManager.RegisterTypes(container);
-            var ingestService = container.Resolve<IRugbyIngestWorkerService>();
 
-            GlobalConfiguration.Configuration.UseStorage(JOB_STORAGE);
-            GlobalJobFilters.Filters.Add(new ExpirationTimeAttribute());
-
-            using (var server = new BackgroundJobServer())
+            HostFactory.Run(hostConfigurator =>
             {
-                JobStorage.Current = JOB_STORAGE;
-                // Processing of jobs happen here.
+                hostConfigurator.Service<WindowsService>(serviceConfigurator =>
+                {
+                    serviceConfigurator.ConstructUsing(service => new WindowsService(container));
+                    serviceConfigurator.WhenStarted(service => service.StartService());
+                    serviceConfigurator.WhenStopped(service => service.StartService());
+                });
 
-                Console.ReadLine();
-            }
+                hostConfigurator.RunAsLocalService();
+
+                hostConfigurator.SetServiceName("SuperSportDataEngine.Application.Service.SchedulerIngestServer");
+                hostConfigurator.SetDisplayName("SuperSportDataEngine - Scheduler Ingest Server");
+                hostConfigurator.SetDescription("Performs the execution of scheduled Hangfire job definitions, hosts the job execution workers, etc. This service can be deployed across multiple servers (supports horizontal scaling).");
+            });
         }
     }
 }
