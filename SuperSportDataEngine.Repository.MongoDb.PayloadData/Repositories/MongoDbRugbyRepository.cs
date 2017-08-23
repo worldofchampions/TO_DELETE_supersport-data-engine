@@ -11,20 +11,20 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
     {
         public MappingProfile()
         {
-            Mapper.CreateMap<RugbyEntities, MongoRugbyEntities>().ReverseMap();
-            Mapper.CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.GroundCondition, Models.GroundCondition>().ReverseMap();
-            Mapper.CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Competition, Models.Competition>().ReverseMap();
-            Mapper.CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Player, Models.Player>().ReverseMap();
-            Mapper.CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Position, Models.Position>().ReverseMap();
-            Mapper.CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Round, Models.Round>().ReverseMap();
-            Mapper.CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.ScoringMethod, Models.ScoringMethod>().ReverseMap();
-            Mapper.CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Season, Models.Season>().ReverseMap();
-            Mapper.CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Statistic, Models.Statistic>().ReverseMap();
-            Mapper.CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Team, Models.Team>().ReverseMap();
-            Mapper.CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Venue, Models.Venue>().ReverseMap();
-            Mapper.CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.WeatherCondition, Models.WeatherCondition>().ReverseMap();
-            Mapper.CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.GameState, Models.GameState>().ReverseMap();
-            Mapper.CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Official, Models.Official>().ReverseMap();
+            CreateMap<RugbyEntities, MongoRugbyEntities>().ReverseMap();
+            CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.GroundCondition, Models.GroundCondition>().ReverseMap();
+            CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Competition, Models.Competition>().ReverseMap();
+            CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Player, Models.Player>().ReverseMap();
+            CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Position, Models.Position>().ReverseMap();
+            CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Round, Models.Round>().ReverseMap();
+            CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.ScoringMethod, Models.ScoringMethod>().ReverseMap();
+            CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Season, Models.Season>().ReverseMap();
+            CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Statistic, Models.Statistic>().ReverseMap();
+            CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Team, Models.Team>().ReverseMap();
+            CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Venue, Models.Venue>().ReverseMap();
+            CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.WeatherCondition, Models.WeatherCondition>().ReverseMap();
+            CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.GameState, Models.GameState>().ReverseMap();
+            CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Official, Models.Official>().ReverseMap();
         }
     }
 
