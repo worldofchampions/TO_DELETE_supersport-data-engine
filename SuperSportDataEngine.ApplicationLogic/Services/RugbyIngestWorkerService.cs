@@ -38,7 +38,7 @@
         {
             foreach(var competition in entitiesResponse.Entities.competitions)
             {
-                var entry = _sportTournamentRepository.Where(c => c.TournamentName == competition.name);
+                var entry = _sportTournamentRepository.Where(c => c.TournamentIndex == competition.id);
 
                 if(entry == null)
                 {
