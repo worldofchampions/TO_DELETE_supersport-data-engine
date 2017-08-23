@@ -7,6 +7,8 @@ using SuperSportDataEngine.Common.Boundaries;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
+using System.Linq;
 
 namespace SuperSportDataEngine.ApplicationLogic.Services
 {
@@ -14,12 +16,15 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
     {
         private readonly ICache _cache;
         private readonly IBaseEntityFrameworkRepository<Log> _logRepository;
+        private readonly IBaseEntityFrameworkRepository<SportTournament> _sportTournamentRepository;
 
         public RugbyService(ICache cache,
-            IBaseEntityFrameworkRepository<Log> logRepository)
+            IBaseEntityFrameworkRepository<Log> logRepository,
+            IBaseEntityFrameworkRepository<SportTournament> sportTournamentRepository)
         {
             _cache = cache;
             _logRepository = logRepository;
+            _sportTournamentRepository = sportTournamentRepository;
         }
 
         public async Task<IEnumerable<LogEntity>> GetLogs(string tournamentName)
@@ -35,6 +40,11 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 _cache.Add(cacheKey, logs);
             }
             return logs;
+        }
+
+        public Task<IEnumerable<SportTournament>> GetActiveTournaments()
+        {
+            return _sportTournamentRepository.WhereAsync(c => c.IsEnabled);
         }
     }
 }

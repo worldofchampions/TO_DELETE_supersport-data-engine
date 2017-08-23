@@ -4,23 +4,59 @@
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
+    using System;
 
     public class RugbyIngestWorkerService : IRugbyIngestWorkerService
     {
         private readonly IStatsProzoneRugbyIngestService _statsProzoneIngestService;
         private readonly IMongoDbRugbyRepository _mongoDbRepository;
+        private readonly IBaseEntityFrameworkRepository<SportTournament> _sportTournamentRepository;
 
-        public RugbyIngestWorkerService(IStatsProzoneRugbyIngestService statsProzoneIngestService, IMongoDbRugbyRepository mongoDbRepository)
+        public RugbyIngestWorkerService(
+            IStatsProzoneRugbyIngestService statsProzoneIngestService, 
+            IMongoDbRugbyRepository mongoDbRepository,
+            IBaseEntityFrameworkRepository<SportTournament> sportTournamentRepository)
         {
             _statsProzoneIngestService = statsProzoneIngestService;
             _mongoDbRepository = mongoDbRepository;
+            _sportTournamentRepository = sportTournamentRepository;
         }
 
         public RugbyEntitiesResponse IngestRugbyReferenceData()
         {
             var entitiesResponse = _statsProzoneIngestService.IngestRugbyReferenceData();
+
+            PersistSportTournamentsInrepository(entitiesResponse);
+
             _mongoDbRepository.Save(entitiesResponse);
             return entitiesResponse;
+        }
+
+        private void PersistSportTournamentsInrepository(RugbyEntitiesResponse entitiesResponse)
+        {
+            foreach(var competition in entitiesResponse.Entities.competitions)
+            {
+                var entry = _sportTournamentRepository.Where(c => c.TournamentName == competition.name);
+
+                if(entry == null)
+                {
+                    _sportTournamentRepository.Add(new SportTournament
+                    {
+                        TournamentName = competition.name,
+                        IsEnabled = false
+                    });
+                }
+                else
+                {
+                    _sportTournamentRepository.Update(new SportTournament
+                    {
+                        TournamentName = competition.name,
+                        IsEnabled = false
+                    });
+                }
+            }
         }
     }
 }

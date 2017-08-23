@@ -1,4 +1,5 @@
-﻿using SuperSportDataEngine.ApplicationLogic.Entities;
+﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
+using SuperSportDataEngine.ApplicationLogic.Entities;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -7,5 +8,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Inte
     public interface IRugbyService
     {
         Task<IEnumerable<LogEntity>> GetLogs(string tournamentName);
+        Task<IEnumerable<SportTournament>> GetActiveTournaments();
     }
 }
