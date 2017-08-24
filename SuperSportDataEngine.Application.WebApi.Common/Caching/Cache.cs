@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 using StackExchange.Redis;
-using SuperSportDataEngine.Application.WebApi.Common.Interface;
+using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
 using System;
 using System.Linq;
 using System.Threading.Tasks;

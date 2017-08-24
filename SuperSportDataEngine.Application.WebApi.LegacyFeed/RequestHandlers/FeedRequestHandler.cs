@@ -1,6 +1,6 @@
 ﻿using Microsoft.Practices.Unity;
 using SuperSportDataEngine.Application.Container;
-using SuperSportDataEngine.Application.WebApi.Common.Interface;
+using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Helpers.AppSettings;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;

@@ -3,7 +3,7 @@
     using Microsoft.Practices.Unity;
     using StackExchange.Redis;
     using SuperSportDataEngine.Application.WebApi.Common.Caching;
-    using SuperSportDataEngine.Application.WebApi.Common.Interface;
+    using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
