@@ -1,11 +1,11 @@
 ﻿using Newtonsoft.Json;
 using StackExchange.Redis;
-using SuperSportDataEngine.Common.Boundaries;
+using SuperSportDataEngine.Application.WebApi.Common.Boundaries;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SuperSportDataEngine.Common.Caching 
+namespace SuperSportDataEngine.Application.WebApi.Common.Caching
 {
     public class Cache : ICache
     {

@@ -18,9 +18,12 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
     public class RugbyController : ApiController
     {
         private readonly IRugbyService _rugbyService;
+        private readonly ICache _cache;
 
-        public RugbyController(IRugbyService rugbyService)
+        public RugbyController(IRugbyService rugbyService,
+            ICache _cache)
         {
+            _cache = cache;
             _rugbyService = rugbyService;
         }
 
@@ -84,8 +87,16 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         [Route("{category}/logs")]
         [ResponseType(typeof(List<LogModel>))]
         public async Task<IHttpActionResult> GetLogs(string category)
+
         {
-            var logs = (await _rugbyService.GetLogs(category)).Select(log => Mapper.Map<LogModel>(log));
+            var cacheKey = $"rugby/{tournamentName}/logs";
+            var logs = await _cache.GetAsync<IEnumerable<LogEntity>>(cacheKey);
+
+            if (logs == null)
+            {
+                logs = (await _rugbyService.GetLogs(category)).Select(log => Mapper.Map<LogModel>(log));
+                _cache.Add(cacheKey, logs);
+            }
             return Ok(logs);
         }
 
