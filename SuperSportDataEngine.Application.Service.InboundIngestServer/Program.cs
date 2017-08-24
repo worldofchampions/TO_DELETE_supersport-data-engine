@@ -17,7 +17,7 @@
                 {
                     serviceConfigurator.ConstructUsing(service => new WindowsService(container));
                     serviceConfigurator.WhenStarted(service => service.StartService());
-                    serviceConfigurator.WhenStopped(service => service.StartService());
+                    serviceConfigurator.WhenStopped(service => service.StopService());
                 });
 
                 hostConfigurator.RunAsLocalService();
