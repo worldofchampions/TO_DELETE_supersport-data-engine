@@ -1,11 +1,11 @@
 ﻿using Newtonsoft.Json;
 using StackExchange.Redis;
-using SuperSportDataEngine.Common.Boundaries;
+using SuperSportDataEngine.Application.WebApi.Common.Interface;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SuperSportDataEngine.Common.Caching 
+namespace SuperSportDataEngine.Application.WebApi.Common.Caching
 {
     public class Cache : ICache
     {
@@ -26,7 +26,7 @@ namespace SuperSportDataEngine.Common.Caching
 
         public void Add<T>(string key, T cacheObject, TimeSpan? ttl = null, string parentKey = null) where T : class
         {
-            if(ttl == null)
+            if (ttl == null)
             {
                 ttl = TimeSpan.FromSeconds(20);
             }

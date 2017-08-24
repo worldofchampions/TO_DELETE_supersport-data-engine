@@ -25,7 +25,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public bool IsAuthorised(string authKey, int siteId = 0)
         {
-            var legacyAuthFeed = _legacyAuthFeedConsumerRepository.Where(c => c.AuthKey == authKey).FirstOrDefault();
+            var legacyAuthFeed = _legacyAuthFeedConsumerRepository.Where(c => c.AuthKey == authKey && c.Active).FirstOrDefault();
             if (legacyAuthFeed == null)
             {
                 return false;
