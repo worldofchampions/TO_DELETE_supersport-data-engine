@@ -25,6 +25,7 @@
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -214,6 +215,7 @@
     </Compile>
     <Compile Include="Helpers\AppSettings\SuperSportDataApplicationSettingsHelper.cs" />
     <Compile Include="Models\AlternateCommentsModel.cs" />
+    <Compile Include="Models\AuthModel.cs" />
     <Compile Include="Models\CardsModel.cs" />
     <Compile Include="Models\ChannelRegionsModel.cs" />
     <Compile Include="Models\ClubDetailsModel.cs" />

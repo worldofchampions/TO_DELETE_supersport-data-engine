@@ -2,8 +2,8 @@
 {
     using Microsoft.Practices.Unity;
     using StackExchange.Redis;
-    using SuperSportDataEngine.Application.WebApi.Common.Boundaries;
     using SuperSportDataEngine.Application.WebApi.Common.Caching;
+    using SuperSportDataEngine.Application.WebApi.Common.Interface;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
@@ -27,6 +27,7 @@
 
         public static void RegisterTypes(IUnityContainer container)
         {
+            ApplyRegistrationsForCache(container);
             ApplyRegistrationsForApplicationLogic(container);
             ApplyRegistrationsForRepositoryEntityFrameworkPublicSportData(container);
             ApplyRegistrationsForRepositoryEntityFrameworkSystemSportData(container);
@@ -37,6 +38,11 @@
         private static void ApplyRegistrationsForStatsProzone(IUnityContainer container)
         {
             container.RegisterType<IStatsProzoneRugbyIngestService, StatsProzoneRugbyIngestService>();
+        }
+
+        private static void ApplyRegistrationsForCache(IUnityContainer container)
+        {
+            container.RegisterInstance<ICache>(new Cache(ConnectionMultiplexer.Connect(WebConfigurationManager.ConnectionStrings["Redis"].ConnectionString)));
         }
 
         private static void ApplyRegistrationsForApplicationLogic(IUnityContainer container)
@@ -52,12 +58,6 @@
 
             container.RegisterType<IBaseEntityFrameworkRepository<Player>, BaseEntityFrameworkRepository<Player>>(
                 new InjectionFactory((x) => new BaseEntityFrameworkRepository<Player>(container.Resolve<DbContext>(PublicSportDataRepository))));
-
-            #region Cache
-
-            container.RegisterInstance<ICache>(new Cache(ConnectionMultiplexer.Connect(WebConfigurationManager.ConnectionStrings["Redis"].ConnectionString)));
-
-            #endregion Cache
 
             container.RegisterType<IBaseEntityFrameworkRepository<Sport>, BaseEntityFrameworkRepository<Sport>>(
                 new InjectionFactory((x) => new BaseEntityFrameworkRepository<Sport>(container.Resolve<DbContext>(PublicSportDataRepository))));

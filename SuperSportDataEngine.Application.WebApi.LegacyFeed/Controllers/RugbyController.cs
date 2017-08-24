@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using SuperSportDataEngine.Application.WebApi.Common.Boundaries;
+using SuperSportDataEngine.Application.WebApi.Common.Interface;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.News;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby;
