@@ -29,13 +29,13 @@
         {
             var entitiesResponse = _statsProzoneIngestService.IngestRugbyReferenceData();
 
-            PersistSportTournamentsInrepository(entitiesResponse);
+            PersistSportTournamentsInRepository(entitiesResponse);
 
             _mongoDbRepository.Save(entitiesResponse);
             return entitiesResponse;
         }
 
-        private void PersistSportTournamentsInrepository(RugbyEntitiesResponse entitiesResponse)
+        private void PersistSportTournamentsInRepository(RugbyEntitiesResponse entitiesResponse)
         {
             foreach(var competition in entitiesResponse.Entities.competitions)
             {
