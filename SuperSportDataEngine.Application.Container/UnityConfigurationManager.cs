@@ -44,7 +44,7 @@
 
         private static void ApplyRegistrationsForCache(IUnityContainer container)
         {
-            //container.RegisterInstance<ICache>(new Cache(ConnectionMultiplexer.Connect(WebConfigurationManager.ConnectionStrings["Redis"].ConnectionString)));
+            container.RegisterInstance<ICache>(new Cache(ConnectionMultiplexer.Connect(WebConfigurationManager.ConnectionStrings["Redis"].ConnectionString)));
         }
 
         private static void ApplyRegistrationsForApplicationLogic(IUnityContainer container)
