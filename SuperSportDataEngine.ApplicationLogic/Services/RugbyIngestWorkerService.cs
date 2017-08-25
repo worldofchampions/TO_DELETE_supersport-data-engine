@@ -29,15 +29,15 @@
         {
             var entitiesResponse = _statsProzoneIngestService.IngestRugbyReferenceData();
 
-            PersistSportTournamentsInRepository(entitiesResponse);
+            PersistSportTournamentsInRepositoryAsync(entitiesResponse);
 
             _mongoDbRepository.Save(entitiesResponse);
             return entitiesResponse;
         }
 
-        private void PersistSportTournamentsInRepository(RugbyEntitiesResponse entitiesResponse)
+        private async System.Threading.Tasks.Task PersistSportTournamentsInRepositoryAsync(RugbyEntitiesResponse entitiesResponse)
         {
-            foreach(var competition in entitiesResponse.Entities.competitions)
+            foreach (var competition in entitiesResponse.Entities.competitions)
             {
                 var entry = _sportTournamentRepository
                     .Where(c => c.TournamentIndex == competition.id)
@@ -60,7 +60,14 @@
                 }
             }
 
-            _sportTournamentRepository.SaveAsync();
+            try
+            {
+                await _sportTournamentRepository.SaveAsync();
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
     }
 }
