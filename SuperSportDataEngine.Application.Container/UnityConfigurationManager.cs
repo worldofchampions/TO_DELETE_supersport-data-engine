@@ -1,6 +1,7 @@
 ﻿namespace SuperSportDataEngine.Application.Container
 {
     using Microsoft.Practices.Unity;
+    using MongoDB.Driver;
     using StackExchange.Redis;
     using SuperSportDataEngine.Application.WebApi.Common.Caching;
     using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
@@ -16,6 +17,7 @@
     using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
     using SuperSportDataEngine.Repository.EntityFramework.SystemSportData.Context;
     using SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories;
+    using System.Configuration;
     using System.Data.Entity;
     using System.Web.Configuration;
 
@@ -42,7 +44,7 @@
 
         private static void ApplyRegistrationsForCache(IUnityContainer container)
         {
-            container.RegisterInstance<ICache>(new Cache(ConnectionMultiplexer.Connect(WebConfigurationManager.ConnectionStrings["Redis"].ConnectionString)));
+            //container.RegisterInstance<ICache>(new Cache(ConnectionMultiplexer.Connect(WebConfigurationManager.ConnectionStrings["Redis"].ConnectionString)));
         }
 
         private static void ApplyRegistrationsForApplicationLogic(IUnityContainer container)
@@ -83,8 +85,14 @@
         private static void ApplyRegistrationsForRepositoryMongoDbPayloadData(IUnityContainer container)
         {
             container.RegisterType<ITemporaryExampleMongoDbRepository, TemporaryExampleMongoDbRepository>();
-            container.RegisterType<IRugbyIngestWorkerService, RugbyIngestWorkerService>();
+
+            container.RegisterType<IMongoClient, MongoClient>(
+                new ContainerControlledLifetimeManager(), 
+                new InjectionFactory((x) => new MongoClient(ConfigurationManager.ConnectionStrings["MongoDB"].ConnectionString)));
+
             container.RegisterType<IMongoDbRugbyRepository, MongoDbRugbyRepository>();
+            container.RegisterType<IRugbyIngestWorkerService, RugbyIngestWorkerService>();
+            
         }
     }
 }

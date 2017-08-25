@@ -44,7 +44,7 @@
                     // Schedule CRON jobs here.
 
                     // Get reference data
-                    RecurringJob.AddOrUpdate("ingestReferenceData", () => Console.WriteLine(ingestService.IngestRugbyReferenceData()), Cron.Minutely());
+                    RecurringJob.AddOrUpdate("ingestReferenceData", () => ingestService.IngestRugbyReferenceData(), Cron.Minutely());
 
                     // Pause execution.
                     Thread.Sleep(2000);

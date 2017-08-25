@@ -31,6 +31,8 @@
             var ingestService = _container.Resolve<IRugbyIngestWorkerService>();
 
             GlobalConfiguration.Configuration.UseStorage(JOB_STORAGE);
+            GlobalConfiguration.Configuration.UseActivator(new ContainerJobActivator(_container));
+
             GlobalJobFilters.Filters.Add(new ExpirationTimeAttribute());
 
             using (var server = new BackgroundJobServer())

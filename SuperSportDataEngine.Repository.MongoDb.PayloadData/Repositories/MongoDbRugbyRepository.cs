@@ -30,6 +30,13 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 
     public class MongoDbRugbyRepository : IMongoDbRugbyRepository
     {
+        private IMongoClient _mongoClient;
+
+        public MongoDbRugbyRepository(IMongoClient mongoClient)
+        {
+            _mongoClient = mongoClient;
+        }
+
         public void Save(RugbyEntitiesResponse entitiesResponse)
         {
             Mapper.Initialize(c => c.AddProfile<MappingProfile>());
@@ -40,8 +47,7 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
             mongoEntities.ResponseTime = entitiesResponse.ResponseTime;
 
             // Get the Mongo DB.
-            var client = new MongoClient("mongodb://localhost:27017");
-            var db = client.GetDatabase("supersport-dataengine");
+            var db = _mongoClient.GetDatabase("supersport-dataengine");
 
             // Add to the collection.
             var collection = db.GetCollection<MongoRugbyEntities>("entities");
