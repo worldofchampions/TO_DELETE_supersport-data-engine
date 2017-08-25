@@ -2,6 +2,7 @@
 {
     using Microsoft.Practices.Unity;
     using SuperSportDataEngine.Application.Container;
+    using SuperSportDataEngine.Application.Container.Enums;
     using Topshelf;
 
     internal class Program
@@ -9,7 +10,7 @@
         private static void Main()
         {
             var container = new UnityContainer();
-            UnityConfigurationManager.RegisterTypes(container);
+            UnityConfigurationManager.RegisterTypes(container, ApplicationScope.ServiceInboundIngestServer);
 
             HostFactory.Run(hostConfigurator =>
             {

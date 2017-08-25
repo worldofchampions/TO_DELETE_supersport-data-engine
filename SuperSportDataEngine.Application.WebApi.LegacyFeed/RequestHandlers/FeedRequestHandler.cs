@@ -1,20 +1,21 @@
-﻿using Microsoft.Practices.Unity;
-using SuperSportDataEngine.Application.Container;
-using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
-using SuperSportDataEngine.Application.WebApi.LegacyFeed.Helpers.AppSettings;
-using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Net.Http;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Web;
-
-namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
+﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
 {
+    using Microsoft.Practices.Unity;
+    using SuperSportDataEngine.Application.Container;
+    using SuperSportDataEngine.Application.Container.Enums;
+    using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Helpers.AppSettings;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+    using System;
+    using System.Collections.Generic;
+    using System.Net;
+    using System.Net.Http;
+    using System.Text.RegularExpressions;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using System.Web;
+
     public class FeedRequestHandler : DelegatingHandler
     {
         private ILegacyAuthService _legacyAuthService;
@@ -23,14 +24,13 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
 
         public FeedRequestHandler()
         {
-            
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(
                         HttpRequestMessage request, CancellationToken cancellationToken)
         {
             var container = new UnityContainer();
-            UnityConfigurationManager.RegisterTypes(container);
+            UnityConfigurationManager.RegisterTypes(container, ApplicationScope.WebApiLegacyFeed);
             _legacyAuthService = container.Resolve<ILegacyAuthService>();
             _cache = container.Resolve<ICache>();
 
@@ -60,15 +60,12 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
                 _cache.Add<AuthModel>($"auth/{siteId}/{auth}", authModel);
             }
 
-            
-
             if (!authModel.Authorised)
             {
                 var response = new HttpResponseMessage(HttpStatusCode.Forbidden);
                 return response;
             }
 
-           
             return await base.SendAsync(request, cancellationToken);
         }
 
