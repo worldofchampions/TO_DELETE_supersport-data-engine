@@ -2,6 +2,7 @@
 {
     using Hangfire;
     using Hangfire.SqlServer;
+    using Microsoft.Owin.Hosting;
     using Microsoft.Practices.Unity;
     using SuperSportDataEngine.Application.Service.Common.Hangfire.Filters;
     using SuperSportDataEngine.Application.Service.Common.Interfaces;
@@ -34,24 +35,20 @@
 
             GlobalJobFilters.Filters.Add(new ExpirationTimeAttribute());
 
-            while (true)
+            using (WebApp.Start<StartUp>("http://localhost:9622"))
             {
-                JobStorage.Current = JOB_STORAGE;
+                while (true)
+                {
+                    JobStorage.Current = JOB_STORAGE;
 
-                // Schedule CRON jobs here.
+                    // Schedule CRON jobs here.
 
-                // Get reference data
-                RecurringJob.AddOrUpdate("ingestReferenceData", () => Console.WriteLine(ingestService.IngestRugbyReferenceData()), Cron.Minutely());
-                //// Get list of active tournaments
-                //var list = GetListOfActiveTournaments()
+                    // Get reference data
+                    RecurringJob.AddOrUpdate("ingestReferenceData", () => Console.WriteLine(ingestService.IngestRugbyReferenceData()), Cron.Minutely());
 
-                //    for each item in list
-                //    {
-                //        Create new job for tournament id
-                //    }
-
-                // Pause execution.
-                Thread.Sleep(2000);
+                    // Pause execution.
+                    Thread.Sleep(2000);
+                }
             }
         }
 
