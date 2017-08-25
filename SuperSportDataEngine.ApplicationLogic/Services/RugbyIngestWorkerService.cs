@@ -7,6 +7,7 @@
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
     using System;
+    using System.Linq;
 
     public class RugbyIngestWorkerService : IRugbyIngestWorkerService
     {
@@ -38,27 +39,28 @@
         {
             foreach(var competition in entitiesResponse.Entities.competitions)
             {
-                var entry = _sportTournamentRepository.Where(c => c.TournamentIndex == competition.id);
+                var entry = _sportTournamentRepository
+                    .Where(c => c.TournamentIndex == competition.id)
+                    .FirstOrDefault();
 
-                if(entry == null)
+                var newEntry = new SportTournament
                 {
-                    _sportTournamentRepository.Add(new SportTournament
-                    {
-                        TournamentIndex = competition.id,
-                        TournamentName = competition.name,
-                        IsEnabled = false
-                    });
+                    TournamentIndex = competition.id,
+                    TournamentName = competition.name,
+                    IsEnabled = false
+                };
+
+                if (entry == null)
+                {
+                    _sportTournamentRepository.Add(newEntry);
                 }
                 else
                 {
-                    _sportTournamentRepository.Update(new SportTournament
-                    {
-                        TournamentIndex = competition.id,
-                        TournamentName = competition.name,
-                        IsEnabled = false
-                    });
+                    _sportTournamentRepository.Update(newEntry);
                 }
             }
+
+            _sportTournamentRepository.SaveAsync();
         }
     }
 }
