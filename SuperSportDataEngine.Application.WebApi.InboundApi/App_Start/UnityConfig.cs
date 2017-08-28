@@ -2,6 +2,7 @@ namespace SuperSportDataEngine.Application.WebApi.InboundApi.App_Start
 {
     using Microsoft.Practices.Unity;
     using SuperSportDataEngine.Application.Container;
+    using SuperSportDataEngine.Application.Container.Enums;
     using System;
 
     /// <summary>Specifies the Unity configuration for the main container.</summary>
@@ -21,7 +22,7 @@ namespace SuperSportDataEngine.Application.WebApi.InboundApi.App_Start
 
         private static void RegisterTypes(IUnityContainer container)
         {
-            UnityConfigurationManager.RegisterTypes(container);
+            UnityConfigurationManager.RegisterTypes(container, ApplicationScope.WebApiInboundApi);
         }
     }
 }

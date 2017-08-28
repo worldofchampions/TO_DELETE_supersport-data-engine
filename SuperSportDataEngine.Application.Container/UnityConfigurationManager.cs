@@ -3,6 +3,7 @@
     using Microsoft.Practices.Unity;
     using MongoDB.Driver;
     using StackExchange.Redis;
+    using SuperSportDataEngine.Application.Container.Enums;
     using SuperSportDataEngine.Application.WebApi.Common.Caching;
     using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
@@ -21,37 +22,55 @@
     using System.Data.Entity;
     using System.Web.Configuration;
 
-    // TODO: [Davide] Add a feature to apply registrations according to the running application scope.
     public static class UnityConfigurationManager
     {
         private const string PublicSportDataRepository = "PublicSportDataRepository";
         private const string SystemSportDataRepository = "SystemSportDataRepository";
 
-        public static void RegisterTypes(IUnityContainer container)
+        public static void RegisterTypes(IUnityContainer container, ApplicationScope applicationScope)
         {
-            ApplyRegistrationsForCache(container);
-            ApplyRegistrationsForApplicationLogic(container);
+            ApplyRegistrationsForApplicationLogic(container, applicationScope);
+            ApplyRegistrationsForGatewayHttpCommon(container, applicationScope);
+            ApplyRegistrationsForGatewayHttpStatsProzone(container, applicationScope);
             ApplyRegistrationsForRepositoryEntityFrameworkPublicSportData(container);
             ApplyRegistrationsForRepositoryEntityFrameworkSystemSportData(container);
-            ApplyRegistrationsForStatsProzone(container);
-            ApplyRegistrationsForRepositoryMongoDbPayloadData(container);
+            ApplyRegistrationsForRepositoryMongoDbPayloadData(container, applicationScope);
         }
 
-        private static void ApplyRegistrationsForStatsProzone(IUnityContainer container)
-        {
-            container.RegisterType<IStatsProzoneRugbyIngestService, StatsProzoneRugbyIngestService>();
-        }
-
-        private static void ApplyRegistrationsForCache(IUnityContainer container)
-        {
-            container.RegisterInstance<ICache>(new Cache(ConnectionMultiplexer.Connect(WebConfigurationManager.ConnectionStrings["Redis"].ConnectionString)));
-        }
-
-        private static void ApplyRegistrationsForApplicationLogic(IUnityContainer container)
+        private static void ApplyRegistrationsForApplicationLogic(IUnityContainer container, ApplicationScope applicationScope)
         {
             container.RegisterType<ITemporaryExampleService, TemporaryExampleService>();
             container.RegisterType<IRugbyService, RugbyService>();
-            container.RegisterType<ILegacyAuthService, LegacyAuthService>();
+
+            if (applicationScope == ApplicationScope.WebApiLegacyFeed ||
+                applicationScope == ApplicationScope.WebApiSystemApi)
+            {
+                container.RegisterType<ILegacyAuthService, LegacyAuthService>();
+            }
+        }
+
+        private static void ApplyRegistrationsForGatewayHttpCommon(IUnityContainer container, ApplicationScope applicationScope)
+        {
+            if (applicationScope == ApplicationScope.WebApiLegacyFeed ||
+                applicationScope == ApplicationScope.WebApiPublicApi)
+            {
+                container.RegisterInstance<ICache>(new Cache(ConnectionMultiplexer.Connect(WebConfigurationManager.ConnectionStrings["Redis"].ConnectionString)));
+            }
+        }
+
+        private static void ApplyRegistrationsForGatewayHttpStatsProzone(IUnityContainer container, ApplicationScope applicationScope)
+        {
+            // TODO: [Davide] Conceptually this scope should be restricted to execution on ServiceSchedulerIngestServer only. Finalize this condition after determining what the Hangfire dependencies are for job definition creation etc.
+            //if (applicationScope == ApplicationScope.ServiceSchedulerIngestServer)
+            //{
+            //    container.RegisterType<IStatsProzoneRugbyIngestService, StatsProzoneRugbyIngestService>();
+            //}
+
+            if (applicationScope == ApplicationScope.ServiceSchedulerClient ||
+                applicationScope == ApplicationScope.ServiceSchedulerIngestServer)
+            {
+                container.RegisterType<IStatsProzoneRugbyIngestService, StatsProzoneRugbyIngestService>();
+            }
         }
 
         private static void ApplyRegistrationsForRepositoryEntityFrameworkPublicSportData(IUnityContainer container)
@@ -59,13 +78,13 @@
             container.RegisterType<DbContext, PublicSportDataContext>(PublicSportDataRepository);
 
             container.RegisterType<IBaseEntityFrameworkRepository<Player>, BaseEntityFrameworkRepository<Player>>(
-                new InjectionFactory((x) => new BaseEntityFrameworkRepository<Player>(container.Resolve<DbContext>(PublicSportDataRepository))));
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<Player>(container.Resolve<DbContext>(PublicSportDataRepository))));
 
             container.RegisterType<IBaseEntityFrameworkRepository<Sport>, BaseEntityFrameworkRepository<Sport>>(
-                new InjectionFactory((x) => new BaseEntityFrameworkRepository<Sport>(container.Resolve<DbContext>(PublicSportDataRepository))));
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<Sport>(container.Resolve<DbContext>(PublicSportDataRepository))));
 
             container.RegisterType<IBaseEntityFrameworkRepository<Log>, BaseEntityFrameworkRepository<Log>>(
-                new InjectionFactory((x) => new BaseEntityFrameworkRepository<Log>(container.Resolve<DbContext>(PublicSportDataRepository))));
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<Log>(container.Resolve<DbContext>(PublicSportDataRepository))));
         }
 
         private static void ApplyRegistrationsForRepositoryEntityFrameworkSystemSportData(IUnityContainer container)
@@ -73,26 +92,34 @@
             container.RegisterType<DbContext, SystemSportDataContext>(SystemSportDataRepository);
 
             container.RegisterType<IBaseEntityFrameworkRepository<SportTournament>, BaseEntityFrameworkRepository<SportTournament>>(
-                new InjectionFactory((x) => new BaseEntityFrameworkRepository<SportTournament>(container.Resolve<DbContext>(SystemSportDataRepository))));
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<SportTournament>(container.Resolve<DbContext>(SystemSportDataRepository))));
 
             container.RegisterType<IBaseEntityFrameworkRepository<LegacyAuthFeedConsumer>, BaseEntityFrameworkRepository<LegacyAuthFeedConsumer>>(
-              new InjectionFactory((x) => new BaseEntityFrameworkRepository<LegacyAuthFeedConsumer>(container.Resolve<DbContext>(SystemSportDataRepository))));
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<LegacyAuthFeedConsumer>(container.Resolve<DbContext>(SystemSportDataRepository))));
 
             container.RegisterType<IBaseEntityFrameworkRepository<LegacyZoneSite>, BaseEntityFrameworkRepository<LegacyZoneSite>>(
-               new InjectionFactory((x) => new BaseEntityFrameworkRepository<LegacyZoneSite>(container.Resolve<DbContext>(SystemSportDataRepository))));
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<LegacyZoneSite>(container.Resolve<DbContext>(SystemSportDataRepository))));
         }
 
-        private static void ApplyRegistrationsForRepositoryMongoDbPayloadData(IUnityContainer container)
+        private static void ApplyRegistrationsForRepositoryMongoDbPayloadData(IUnityContainer container, ApplicationScope applicationScope)
         {
-            container.RegisterType<ITemporaryExampleMongoDbRepository, TemporaryExampleMongoDbRepository>();
+            // TODO: [Davide] Conceptually this scope should be restricted to execution on ServiceSchedulerIngestServer only. Finalize this condition after determining what the Hangfire dependencies are for job definition creation etc.
+            //if (applicationScope == ApplicationScope.ServiceSchedulerIngestServer)
+            //{
+            //    container.RegisterType<IRugbyIngestWorkerService, RugbyIngestWorkerService>();
+            //}
 
-            container.RegisterType<IMongoClient, MongoClient>(
-                new ContainerControlledLifetimeManager(), 
-                new InjectionFactory((x) => new MongoClient(ConfigurationManager.ConnectionStrings["MongoDB"].ConnectionString)));
+            if (applicationScope == ApplicationScope.ServiceSchedulerClient ||
+                applicationScope == ApplicationScope.ServiceSchedulerIngestServer)
+            {
+                container.RegisterType<IMongoClient, MongoClient>(
+                    new ContainerControlledLifetimeManager(),
+                    new InjectionFactory((x) => new MongoClient(ConfigurationManager.ConnectionStrings["MongoDB"].ConnectionString)));
 
-            container.RegisterType<IMongoDbRugbyRepository, MongoDbRugbyRepository>();
-            container.RegisterType<IRugbyIngestWorkerService, RugbyIngestWorkerService>();
-            
+                container.RegisterType<IMongoDbRugbyRepository, MongoDbRugbyRepository>();
+                container.RegisterType<IRugbyIngestWorkerService, RugbyIngestWorkerService>();
+                container.RegisterType<ITemporaryExampleMongoDbRepository, TemporaryExampleMongoDbRepository>();
+            }
         }
     }
 }
