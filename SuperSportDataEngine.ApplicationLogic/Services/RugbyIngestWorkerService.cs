@@ -2,12 +2,12 @@
 {
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.ResponseModels;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
     using System;
     using System.Linq;
+    using System.Threading.Tasks;
 
     public class RugbyIngestWorkerService : IRugbyIngestWorkerService
     {
@@ -25,17 +25,17 @@
             _sportTournamentRepository = sportTournamentRepository;
         }
 
-        public RugbyEntitiesResponse IngestRugbyReferenceData()
+        public async Task<RugbyEntitiesResponse> IngestRugbyReferenceData()
         {
             var entitiesResponse = _statsProzoneIngestService.IngestRugbyReferenceData();
 
-            PersistSportTournamentsInRepositoryAsync(entitiesResponse);
+            await PersistSportTournamentsInRepositoryAsync(entitiesResponse);
 
             _mongoDbRepository.Save(entitiesResponse);
             return entitiesResponse;
         }
 
-        private async System.Threading.Tasks.Task PersistSportTournamentsInRepositoryAsync(RugbyEntitiesResponse entitiesResponse)
+        private async Task PersistSportTournamentsInRepositoryAsync(RugbyEntitiesResponse entitiesResponse)
         {
             foreach (var competition in entitiesResponse.Entities.competitions)
             {
