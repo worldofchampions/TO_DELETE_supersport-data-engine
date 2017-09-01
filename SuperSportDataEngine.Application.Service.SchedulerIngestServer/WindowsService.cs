@@ -21,14 +21,14 @@
         {
             var ingestService = _container.Resolve<IRugbyIngestWorkerService>();
 
-            GlobalConfiguration.Configuration.UseStorage(HangfireConfiguration.JOB_STORAGE);
+            GlobalConfiguration.Configuration.UseStorage(HangfireConfiguration.JobStorage);
             GlobalConfiguration.Configuration.UseActivator(new ContainerJobActivator(_container));
 
             GlobalJobFilters.Filters.Add(new ExpirationTimeAttribute());
 
-            using (var server = new BackgroundJobServer())
+            using (var server = new BackgroundJobServer(HangfireConfiguration.JobServerOptions))
             {
-                JobStorage.Current = HangfireConfiguration.JOB_STORAGE;
+                JobStorage.Current = HangfireConfiguration.JobStorage;
                 // Processing of jobs happen here.
 
                 Console.ReadLine();

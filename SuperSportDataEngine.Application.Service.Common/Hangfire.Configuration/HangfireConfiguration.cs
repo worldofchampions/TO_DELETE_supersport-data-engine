@@ -6,59 +6,90 @@ namespace SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration
 {
     public static class HangfireConfiguration
     {
-        private static SqlServerStorageOptions Options;
+        // Hangfire SQL Server Options.
+        private static SqlServerStorageOptions _storageOptions;
 
-        private static SqlServerStorageOptions Get_options()
+        private static SqlServerStorageOptions StorageOptions
         {
-            if (Options != null)
+            get
             {
-                return Options;
-            }
-
-            Options = 
-                new SqlServerStorageOptions
+                if (_storageOptions != null)
                 {
-                    PrepareSchemaIfNecessary = true
-                };
+                    return _storageOptions;
+                }
 
-            return Options;
-        }
+                _storageOptions =
+                    new SqlServerStorageOptions
+                    {
+                        PrepareSchemaIfNecessary = true
+                    };
 
-        private static string ConnectionString;
-
-        private static string Get_connectionString()
-        {
-            if(!string.IsNullOrEmpty(ConnectionString))
-            {
-                return ConnectionString;
+                return _storageOptions;
             }
-
-            ConnectionString = 
-                ConfigurationManager
-                    .ConnectionStrings["SqlDatabase_Hangfire"]
-                    .ConnectionString;
-
-            return ConnectionString;
         }
 
-        private static JobStorage JobStorage;
+        // Hangfire SQL Server connection string.
+        private static string _connectionString;
 
-        private static JobStorage Get_jobStorage()
+        private static string ConnectionString
         {
-            if(JobStorage != null)
+            get
             {
-                return JobStorage;
+                if (!string.IsNullOrEmpty(_connectionString))
+                {
+                    return _connectionString;
+                }
+
+                _connectionString =
+                    ConfigurationManager
+                        .ConnectionStrings["SqlDatabase_Hangfire"]
+                        .ConnectionString;
+
+                return _connectionString;
             }
-
-            JobStorage = 
-                new SqlServerStorage(
-                    Get_connectionString(),
-                    Get_options());
-
-            return JobStorage;
         }
-            
-        
-        public static JobStorage JOB_STORAGE { get => Get_jobStorage(); }
+
+        // Hangfire SQL Server storage.
+        private static JobStorage _jobStorage;
+
+        public static JobStorage JobStorage
+        {
+            get
+            {
+                if (_jobStorage != null)
+                {
+                    return _jobStorage;
+                }
+
+                _jobStorage =
+                    new SqlServerStorage(
+                        ConnectionString,
+                        StorageOptions);
+
+                return _jobStorage;
+            }
+        }
+
+        // Hangfire Queues options.
+        private static BackgroundJobServerOptions _jobServerOptions;
+
+        public static BackgroundJobServerOptions JobServerOptions
+        {
+            get
+            {
+                if (_jobServerOptions != null)
+                {
+                    return _jobServerOptions;
+                }
+
+                _jobServerOptions =
+                    new BackgroundJobServerOptions
+                    {
+                        Queues = new[] { "high_priority", "normal_priority" }
+                    };
+
+                return _jobServerOptions;
+            }
+        }
     }
 }

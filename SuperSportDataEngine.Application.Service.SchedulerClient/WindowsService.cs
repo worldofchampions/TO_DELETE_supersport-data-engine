@@ -22,19 +22,19 @@
         {
             var ingestService = _container.Resolve<IRugbyIngestWorkerService>();
 
-            GlobalConfiguration.Configuration.UseStorage(HangfireConfiguration.JOB_STORAGE);
+            GlobalConfiguration.Configuration.UseStorage(HangfireConfiguration.JobStorage);
             GlobalJobFilters.Filters.Add(new ExpirationTimeAttribute());
 
             using (WebApp.Start<StartUp>("http://localhost:9622"))
             {
                 while (true)
                 {
-                    JobStorage.Current = HangfireConfiguration.JOB_STORAGE;
+                    JobStorage.Current = HangfireConfiguration.JobStorage;
 
                     // Schedule CRON jobs here.
 
                     // Get reference data
-                    RecurringJob.AddOrUpdate("ingestReferenceData", () => ingestService.IngestRugbyReferenceData(), Cron.Minutely());
+                    RecurringJob.AddOrUpdate("ingestReferenceData", () => ingestService.IngestRugbyReferenceData(), Cron.Minutely(), System.TimeZoneInfo.Utc, "normal_priority");
 
                     // Pause execution.
                     Thread.Sleep(2000);
