@@ -1,13 +1,12 @@
 ﻿namespace SuperSportDataEngine.Application.Service.SchedulerIngestServer
 {
     using Hangfire;
-    using Hangfire.SqlServer;
     using Microsoft.Practices.Unity;
+    using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
     using SuperSportDataEngine.Application.Service.Common.Hangfire.Filters;
     using SuperSportDataEngine.Application.Service.Common.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Services;
     using System;
-    using System.Configuration;
 
     internal class WindowsService : IWindowsServiceContract
     {
@@ -20,24 +19,16 @@
 
         public void StartService()
         {
-            SqlServerStorageOptions Options = new SqlServerStorageOptions { PrepareSchemaIfNecessary = true };
-
-            JobStorage JOB_STORAGE =
-            new SqlServerStorage(
-                    ConfigurationManager.ConnectionStrings["SqlDatabase_Hangfire"].ConnectionString,
-                    Options
-                );
-
             var ingestService = _container.Resolve<IRugbyIngestWorkerService>();
 
-            GlobalConfiguration.Configuration.UseStorage(JOB_STORAGE);
+            GlobalConfiguration.Configuration.UseStorage(HangfireConfiguration.JOB_STORAGE);
             GlobalConfiguration.Configuration.UseActivator(new ContainerJobActivator(_container));
 
             GlobalJobFilters.Filters.Add(new ExpirationTimeAttribute());
 
             using (var server = new BackgroundJobServer())
             {
-                JobStorage.Current = JOB_STORAGE;
+                JobStorage.Current = HangfireConfiguration.JOB_STORAGE;
                 // Processing of jobs happen here.
 
                 Console.ReadLine();
