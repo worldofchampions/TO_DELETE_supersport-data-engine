@@ -61,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Hangfire.Configuration\HangfireConfiguration.cs" />
+    <Compile Include="Hangfire.Configuration\HangfireQueueConfiguration.cs" />
     <Compile Include="Hangfire.Filters\ExpirationTimeAttribute.cs" />
     <Compile Include="Interfaces\IWindowsServiceContract.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

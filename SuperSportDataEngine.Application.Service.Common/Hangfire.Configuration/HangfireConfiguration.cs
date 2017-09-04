@@ -4,6 +4,7 @@ using System.Configuration;
 
 namespace SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration
 {
+
     public static class HangfireConfiguration
     {
         // Hangfire SQL Server Options.
@@ -85,7 +86,10 @@ namespace SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration
                 _jobServerOptions =
                     new BackgroundJobServerOptions
                     {
-                        Queues = new[] { "high_priority", "normal_priority" }
+                        Queues = 
+                            new[] {
+                                HangfireQueueConfiguration.HighPriority,
+                                HangfireQueueConfiguration.NormalPriority }
                     };
 
                 return _jobServerOptions;

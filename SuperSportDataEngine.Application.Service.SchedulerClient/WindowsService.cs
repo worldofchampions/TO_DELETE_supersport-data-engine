@@ -34,7 +34,7 @@
                     // Schedule CRON jobs here.
 
                     // Get reference data
-                    RecurringJob.AddOrUpdate("ingestReferenceData", () => ingestService.IngestRugbyReferenceData(), Cron.Minutely(), System.TimeZoneInfo.Utc, "normal_priority");
+                    RecurringJob.AddOrUpdate("ingestReferenceData", () => ingestService.IngestRugbyReferenceData(), Cron.Minutely(), System.TimeZoneInfo.Utc, HangfireQueueConfiguration.NormalPriority);
 
                     // Pause execution.
                     Thread.Sleep(2000);
