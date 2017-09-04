@@ -1,5 +1,6 @@
 ﻿using Hangfire;
 using Hangfire.SqlServer;
+using System;
 using System.Configuration;
 
 namespace SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration
@@ -86,6 +87,7 @@ namespace SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration
                 _jobServerOptions =
                     new BackgroundJobServerOptions
                     {
+                        WorkerCount = Environment.ProcessorCount * 5,
                         Queues = 
                             new[] {
                                 HangfireQueueConfiguration.HighPriority,
