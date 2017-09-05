@@ -7,6 +7,7 @@
     using SuperSportDataEngine.Application.Service.Common.Hangfire.Filters;
     using SuperSportDataEngine.Application.Service.Common.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Services;
+    using System.Configuration;
     using System.Threading;
 
     internal class WindowsService : IWindowsServiceContract
@@ -25,7 +26,7 @@
             GlobalConfiguration.Configuration.UseStorage(HangfireConfiguration.JobStorage);
             GlobalJobFilters.Filters.Add(new ExpirationTimeAttribute());
 
-            using (WebApp.Start<StartUp>("http://localhost:9622"))
+            using (WebApp.Start<StartUp>(ConfigurationManager.AppSettings["HangfireDashboardUrl"]))
             {
                 while (true)
                 {
