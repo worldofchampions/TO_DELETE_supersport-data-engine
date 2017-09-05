@@ -5,6 +5,6 @@
 
     public interface IRugbyIngestWorkerService
     {
-        Task<RugbyEntitiesResponse> IngestRugbyReferenceData();
+        Task IngestRugbyReferenceData();
     }
 }

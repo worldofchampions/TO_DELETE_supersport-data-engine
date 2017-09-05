@@ -25,14 +25,13 @@
             _sportTournamentRepository = sportTournamentRepository;
         }
 
-        public async Task<RugbyEntitiesResponse> IngestRugbyReferenceData()
+        public async Task IngestRugbyReferenceData()
         {
             var entitiesResponse = _statsProzoneIngestService.IngestRugbyReferenceData();
 
             await PersistSportTournamentsInRepositoryAsync(entitiesResponse);
 
             _mongoDbRepository.Save(entitiesResponse);
-            return entitiesResponse;
         }
 
         private async Task PersistSportTournamentsInRepositoryAsync(RugbyEntitiesResponse entitiesResponse)
