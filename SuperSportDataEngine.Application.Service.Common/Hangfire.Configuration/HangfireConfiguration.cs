@@ -15,16 +15,14 @@ namespace SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration
         {
             get
             {
-                if (_storageOptions != null)
+                if (_storageOptions == null)
                 {
-                    return _storageOptions;
+                    _storageOptions =
+                        new SqlServerStorageOptions
+                        {
+                            PrepareSchemaIfNecessary = true
+                        };
                 }
-
-                _storageOptions =
-                    new SqlServerStorageOptions
-                    {
-                        PrepareSchemaIfNecessary = true
-                    };
 
                 return _storageOptions;
             }
@@ -37,15 +35,13 @@ namespace SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration
         {
             get
             {
-                if (!string.IsNullOrEmpty(_connectionString))
+                if (string.IsNullOrEmpty(_connectionString))
                 {
-                    return _connectionString;
+                    _connectionString =
+                        ConfigurationManager
+                            .ConnectionStrings["SqlDatabase_Hangfire"]
+                            .ConnectionString;
                 }
-
-                _connectionString =
-                    ConfigurationManager
-                        .ConnectionStrings["SqlDatabase_Hangfire"]
-                        .ConnectionString;
 
                 return _connectionString;
             }
@@ -58,15 +54,13 @@ namespace SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration
         {
             get
             {
-                if (_jobStorage != null)
+                if (_jobStorage == null)
                 {
-                    return _jobStorage;
+                    _jobStorage =
+                        new SqlServerStorage(
+                            ConnectionString,
+                            StorageOptions);
                 }
-
-                _jobStorage =
-                    new SqlServerStorage(
-                        ConnectionString,
-                        StorageOptions);
 
                 return _jobStorage;
             }
@@ -79,22 +73,20 @@ namespace SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration
         {
             get
             {
-                if (_jobServerOptions != null)
+                if (_jobServerOptions == null)
                 {
-                    return _jobServerOptions;
+                    _jobServerOptions =
+                        new BackgroundJobServerOptions
+                        {
+                            WorkerCount =
+                                Environment.ProcessorCount *
+                                Convert.ToInt32(ConfigurationManager.AppSettings["WorkerCountMultiplier"]),
+                            Queues =
+                                new[] {
+                                    HangfireQueueConfiguration.HighPriority,
+                                    HangfireQueueConfiguration.NormalPriority }
+                        };
                 }
-
-                _jobServerOptions =
-                    new BackgroundJobServerOptions
-                    {
-                        WorkerCount =
-                            Environment.ProcessorCount *
-                            Convert.ToInt32(ConfigurationManager.AppSettings["WorkerCountMultiplier"]),
-                        Queues = 
-                            new[] {
-                                HangfireQueueConfiguration.HighPriority,
-                                HangfireQueueConfiguration.NormalPriority }
-                    };
 
                 return _jobServerOptions;
             }
