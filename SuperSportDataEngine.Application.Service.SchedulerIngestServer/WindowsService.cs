@@ -24,8 +24,6 @@
             GlobalConfiguration.Configuration.UseStorage(HangfireConfiguration.JobStorage);
             GlobalConfiguration.Configuration.UseActivator(new ContainerJobActivator(_container));
 
-            GlobalJobFilters.Filters.Add(new ExpirationTimeAttribute());
-
             using (var server = new BackgroundJobServer(HangfireConfiguration.JobServerOptions))
             {
                 JobStorage.Current = HangfireConfiguration.JobStorage;
