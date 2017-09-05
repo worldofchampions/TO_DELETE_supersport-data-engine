@@ -87,7 +87,9 @@ namespace SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration
                 _jobServerOptions =
                     new BackgroundJobServerOptions
                     {
-                        WorkerCount = Environment.ProcessorCount * 5,
+                        WorkerCount =
+                            Environment.ProcessorCount *
+                            Convert.ToInt32(ConfigurationManager.AppSettings["WorkerCountMultiplier"]),
                         Queues = 
                             new[] {
                                 HangfireQueueConfiguration.HighPriority,
