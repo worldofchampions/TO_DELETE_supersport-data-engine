@@ -1,7 +1,9 @@
 ﻿using Hangfire;
 using Hangfire.SqlServer;
+using Hangfire.Dashboard;
 using System;
 using System.Configuration;
+using System.Collections.Generic;
 
 namespace SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration
 {
@@ -10,6 +12,9 @@ namespace SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration
     {
         // Hangfire SQL Server Options.
         private static SqlServerStorageOptions _storageOptions;
+
+        //Hangire Dashboard Options.
+        private static DashboardOptions _dashboardOptions;
 
         private static SqlServerStorageOptions StorageOptions
         {
@@ -90,6 +95,47 @@ namespace SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration
 
                 return _jobServerOptions;
             }
+        }
+
+        public static DashboardOptions DashboardOptions
+        {
+            get
+            {
+                if (_dashboardOptions is null)
+                {
+                    //Dashboard authorization
+                    var filter = new BasicAuthAuthorizationFilter(new BasicAuthAuthorizationFilterOptions
+                    {
+                        // Require secure connection for dashboard
+                        RequireSsl = false,
+
+                        SslRedirect = false,
+                        // Case sensitive login checking
+                        LoginCaseSensitive = true,
+
+                        // Users
+                        Users = GetHangfireDashboardUsers()
+                    });
+
+                    _dashboardOptions = new DashboardOptions { AuthorizationFilters = new[] { filter } };
+                }
+
+                return _dashboardOptions;
+            }
+        }
+
+        private static IEnumerable<BasicAuthAuthorizationUser> GetHangfireDashboardUsers()
+        {
+            //TODO: Move this to DB and Access it via Application Logic??
+            return new[]
+            {
+                new BasicAuthAuthorizationUser
+                {
+                    Login = "Administrator-1",
+                    // Password as plain text
+                    PasswordClear = "test"
+                }
+            };
         }
     }
 }
