@@ -61,6 +61,10 @@
     <Compile Include="Migrations\201708231347326_AddingTournamentIndexToSportTournament.Designer.cs">
       <DependentUpon>201708231347326_AddingTournamentIndexToSportTournament.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201709061210596_Added_scheduler_tracking_tables.cs" />
+    <Compile Include="Migrations\201709061210596_Added_scheduler_tracking_tables.Designer.cs">
+      <DependentUpon>201709061210596_Added_scheduler_tracking_tables.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -90,6 +94,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201708231347326_AddingTournamentIndexToSportTournament.resx">
       <DependentUpon>201708231347326_AddingTournamentIndexToSportTournament.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201709061210596_Added_scheduler_tracking_tables.resx">
+      <DependentUpon>201709061210596_Added_scheduler_tracking_tables.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
