@@ -1,10 +1,10 @@
 ﻿namespace SuperSportDataEngine.ApplicationLogic.Services
 {
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.ResponseModels;
+    using System.Threading;
     using System.Threading.Tasks;
 
     public interface IRugbyIngestWorkerService
     {
-        Task IngestRugbyReferenceData();
+        Task IngestRugbyReferenceData(CancellationToken cancellationToken);
     }
 }

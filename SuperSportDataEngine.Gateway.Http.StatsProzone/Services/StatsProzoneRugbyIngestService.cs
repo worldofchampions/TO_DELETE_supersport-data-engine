@@ -8,11 +8,15 @@
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.ResponseModels;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
+    using System.Threading;
 
     public class StatsProzoneRugbyIngestService : IStatsProzoneRugbyIngestService
     {
-        public RugbyEntitiesResponse IngestRugbyReferenceData()
+        public RugbyEntitiesResponse IngestRugbyReferenceData(CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+                return null;
+
             WebRequest request = WebRequest.Create("http://rugbyunion-api.stats.com/api/ru/configuration/entities");
             request.Method = "GET";
 

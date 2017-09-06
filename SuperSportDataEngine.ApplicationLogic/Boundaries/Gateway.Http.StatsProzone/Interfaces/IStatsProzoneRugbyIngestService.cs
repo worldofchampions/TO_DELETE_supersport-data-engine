@@ -1,9 +1,10 @@
 ﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces
 {
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.ResponseModels;
+    using System.Threading;
 
     public interface IStatsProzoneRugbyIngestService
     {
-        RugbyEntitiesResponse IngestRugbyReferenceData();
+        RugbyEntitiesResponse IngestRugbyReferenceData(CancellationToken cancellationToken);
     }
 }

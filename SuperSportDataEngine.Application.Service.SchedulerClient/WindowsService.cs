@@ -28,21 +28,24 @@
 
             using (WebApp.Start<StartUp>(ConfigurationManager.AppSettings["HangfireDashboardUrl"]))
             {
+                JobStorage.Current = HangfireConfiguration.JobStorage;
+
                 while (true)
                 {
-                    JobStorage.Current = HangfireConfiguration.JobStorage;
-
                     // Schedule CRON jobs here.
 
                     // Get reference data
                     RecurringJob.AddOrUpdate(
                         "ingestReferenceData", 
-                        () => ingestService.IngestRugbyReferenceData(), 
+                        () => ingestService.IngestRugbyReferenceData(CancellationToken.None), 
                         Cron.Minutely(), 
                         System.TimeZoneInfo.Utc, 
                         HangfireQueueConfiguration.NormalPriority);
 
                     // Pause execution.
+                    // We will end up moving the Sleep to the manager classes.
+                    // The manager classes will have the cancellation token passed to them.
+                    // eg. FixedManagerJob.RunJobs(cancellationToken);
                     Thread.Sleep(2000);
                 }
             }

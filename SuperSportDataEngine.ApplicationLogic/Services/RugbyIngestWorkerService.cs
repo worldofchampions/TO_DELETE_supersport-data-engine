@@ -8,6 +8,7 @@
     using System;
     using System.Linq;
     using System.Threading.Tasks;
+    using System.Threading;
 
     public class RugbyIngestWorkerService : IRugbyIngestWorkerService
     {
@@ -25,19 +26,25 @@
             _sportTournamentRepository = sportTournamentRepository;
         }
 
-        public async Task IngestRugbyReferenceData()
+        public async Task IngestRugbyReferenceData(CancellationToken cancellationToken)
         {
-            var entitiesResponse = _statsProzoneIngestService.IngestRugbyReferenceData();
+            if (cancellationToken.IsCancellationRequested)
+                return;
 
-            await PersistSportTournamentsInRepositoryAsync(entitiesResponse);
+            var entitiesResponse = _statsProzoneIngestService.IngestRugbyReferenceData(cancellationToken);
+
+            await PersistSportTournamentsInRepositoryAsync(entitiesResponse, cancellationToken);
 
             _mongoDbRepository.Save(entitiesResponse);
         }
 
-        private async Task PersistSportTournamentsInRepositoryAsync(RugbyEntitiesResponse entitiesResponse)
+        private async Task PersistSportTournamentsInRepositoryAsync(RugbyEntitiesResponse entitiesResponse, CancellationToken cancellationToken)
         {
             foreach (var competition in entitiesResponse.Entities.competitions)
             {
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
                 var entry = _sportTournamentRepository
                     .Where(c => c.TournamentIndex == competition.id)
                     .FirstOrDefault();
@@ -61,6 +68,7 @@
 
             try
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 await _sportTournamentRepository.SaveAsync();
             }
             catch (Exception e)
