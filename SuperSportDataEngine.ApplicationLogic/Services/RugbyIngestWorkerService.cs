@@ -28,6 +28,10 @@
 
         public async Task IngestRugbyReferenceData(CancellationToken cancellationToken)
         {
+            // This is for delaying the job. 
+            // Testing whether the job runs for an extended period of time.
+            //cancellationToken.WaitHandle.WaitOne(TimeSpan.FromHours(4.5));
+
             if (cancellationToken.IsCancellationRequested)
                 return;
 
@@ -53,7 +57,7 @@
                 {
                     TournamentIndex = competition.id,
                     TournamentName = competition.name,
-                    IsEnabled = false
+                    IsEnabled = entry != null
                 };
 
                 if (entry == null)
