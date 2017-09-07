@@ -6,6 +6,7 @@
     using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
     using SuperSportDataEngine.Application.Service.Common.Hangfire.Filters;
     using SuperSportDataEngine.Application.Service.Common.Interfaces;
+    using SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule;
     using SuperSportDataEngine.ApplicationLogic.Services;
     using System.Configuration;
     using System.Threading;
@@ -13,10 +14,12 @@
     internal class WindowsService : IWindowsServiceContract
     {
         private readonly UnityContainer _container;
+        private readonly FixedScheduledJob _fixedManagerJob;
 
         public WindowsService(UnityContainer container)
         {
             _container = container;
+            _fixedManagerJob = new FixedScheduledJob(_container);
         }
 
         public void StartService()
@@ -32,20 +35,8 @@
 
                 while (true)
                 {
-                    // Schedule CRON jobs here.
+                    _fixedManagerJob.UpdateRecurringJobDefinitions();
 
-                    // Get reference data
-                    RecurringJob.AddOrUpdate(
-                        "ingestReferenceData", 
-                        () => ingestService.IngestRugbyReferenceData(CancellationToken.None), 
-                        Cron.Minutely(), 
-                        System.TimeZoneInfo.Utc, 
-                        HangfireQueueConfiguration.NormalPriority);
-
-                    // Pause execution.
-                    // We will end up moving the Sleep to the manager classes.
-                    // The manager classes will have the cancellation token passed to them.
-                    // eg. FixedManagerJob.RunJobs(cancellationToken);
                     Thread.Sleep(2000);
                 }
             }
