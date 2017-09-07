@@ -20,16 +20,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         {
             try
             {
-#if DEBUG
-                var users = new SchedulerDashboardUser[]
-                {
-                    new SchedulerDashboardUser{Username = "test", PasswordPlain = "test"}
-                };
-                return users;
-#else
                 return _schedulerClientRepository.All();
-#endif
-
             }
             catch (Exception exception)
             {

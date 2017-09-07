@@ -4,6 +4,7 @@ using Hangfire;
 using Hangfire.Dashboard;
 using Microsoft.Practices.Unity;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+using System.Configuration;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient
 {
@@ -42,6 +43,16 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
 
         private IEnumerable<BasicAuthAuthorizationUser> GetHangfireDashboardUsers()
         {
+#if DEBUG
+            return new[]
+            {
+                new BasicAuthAuthorizationUser
+                {
+                    Login = ConfigurationManager.AppSettings["SchedulerDashboardUsername"],
+                    PasswordClear = ConfigurationManager.AppSettings["SchedulerDashboardPassword"]
+                }
+            };
+#else
             var schedulerClientService = _unityContainer.Resolve<ISchedulerClientService>();
 
             var usersFromService = schedulerClientService.GetSchedulerDashboardUsers();
@@ -52,8 +63,8 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
             {
                 dashboardUser.Add(new BasicAuthAuthorizationUser { Login = user.Username, PasswordClear = user.PasswordPlain });
             }
-
             return dashboardUser;
+#endif
         }
     }
 }
