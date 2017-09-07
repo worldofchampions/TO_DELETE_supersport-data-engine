@@ -35,11 +35,28 @@
             if (cancellationToken.IsCancellationRequested)
                 return;
 
-            var entitiesResponse = _statsProzoneIngestService.IngestRugbyReferenceData(cancellationToken);
+            var entitiesResponse = 
+                _statsProzoneIngestService.IngestRugbyReferenceData(cancellationToken);
 
             await PersistSportTournamentsInRepositoryAsync(entitiesResponse, cancellationToken);
 
             _mongoDbRepository.Save(entitiesResponse);
+        }
+
+        public async Task IngestFixturesForActiveTournaments(CancellationToken cancellationToken)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return;
+
+            var activeTournaments = 
+                _sportTournamentRepository.Where(t => t.IsEnabled);
+
+            foreach (var tournament in activeTournaments)
+            {
+                var fixtures = 
+                    _statsProzoneIngestService.IngestFixturesForTournament(
+                        tournament, cancellationToken);
+            }
         }
 
         private async Task PersistSportTournamentsInRepositoryAsync(RugbyEntitiesResponse entitiesResponse, CancellationToken cancellationToken)

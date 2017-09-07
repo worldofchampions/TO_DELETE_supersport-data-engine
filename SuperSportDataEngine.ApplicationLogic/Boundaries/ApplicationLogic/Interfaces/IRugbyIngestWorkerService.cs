@@ -6,5 +6,6 @@
     public interface IRugbyIngestWorkerService
     {
         Task IngestRugbyReferenceData(CancellationToken cancellationToken);
+        Task IngestFixturesForActiveTournaments(CancellationToken cancellationToken);
     }
 }
