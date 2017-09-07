@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="Boundaries\ApplicationLogic\Interfaces\ILegacyAuthService.cs" />
     <Compile Include="Boundaries\ApplicationLogic\Interfaces\IRugbyIngestWorkerService.cs" />
+    <Compile Include="Boundaries\ApplicationLogic\Interfaces\ISchedulerClientService.cs" />
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\Models\RugbyEntities.cs" />
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\Interfaces\IStatsProzoneRugbyIngestService.cs" />
     <Compile Include="Boundaries\ApplicationLogic\Interfaces\IRugbyService.cs" />
@@ -57,6 +58,7 @@
     <Compile Include="Boundaries\Repository.EntityFramework.Common\Interfaces\IBaseEntityFrameworkRepository.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Player.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Sport.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\SchedulerDashboardUser.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\SportTournament.cs" />
     <Compile Include="Boundaries\Repository.MongoDb.PayloadData\Interfaces\IMongoDbRugbyRepository.cs" />
     <Compile Include="Boundaries\Repository.MongoDb.PayloadData\Interfaces\ITemporaryExampleMongoDbRepository.cs" />
@@ -69,6 +71,7 @@
     <Compile Include="Services\LegacyAuthService.cs" />
     <Compile Include="Services\RugbyIngestWorkerService.cs" />
     <Compile Include="Services\RugbyService.cs" />
+    <Compile Include="Services\SchedulerClientService.cs" />
     <Compile Include="Services\TemporaryExampleService.cs" />
   </ItemGroup>
   <ItemGroup>
