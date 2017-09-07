@@ -99,6 +99,8 @@
 
             container.RegisterType<IBaseEntityFrameworkRepository<LegacyZoneSite>, BaseEntityFrameworkRepository<LegacyZoneSite>>(
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<LegacyZoneSite>(container.Resolve<DbContext>(SystemSportDataRepository))));
+            container.RegisterType<IBaseEntityFrameworkRepository<SchedulerDashboardUser>, BaseEntityFrameworkRepository<SchedulerDashboardUser>>(
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<SchedulerDashboardUser>(container.Resolve<DbContext>(SystemSportDataRepository))));
         }
 
         private static void ApplyRegistrationsForRepositoryMongoDbPayloadData(IUnityContainer container, ApplicationScope applicationScope)
@@ -119,6 +121,7 @@
                 container.RegisterType<IMongoDbRugbyRepository, MongoDbRugbyRepository>();
                 container.RegisterType<IRugbyIngestWorkerService, RugbyIngestWorkerService>();
                 container.RegisterType<ITemporaryExampleMongoDbRepository, TemporaryExampleMongoDbRepository>();
+                container.RegisterType<ISchedulerClientService, SchedulerClientService>();
             }
         }
     }

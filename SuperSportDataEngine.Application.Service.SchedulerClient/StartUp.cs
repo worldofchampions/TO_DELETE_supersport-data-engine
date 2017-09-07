@@ -1,6 +1,10 @@
 ﻿using Microsoft.Owin;
 using Owin;
 using Hangfire;
+using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
+using Microsoft.Practices.Unity;
+using SuperSportDataEngine.Application.Container;
+using SuperSportDataEngine.Application.Container.Enums;
 
 [assembly: OwinStartup(typeof(SuperSportDataEngine.Application.Service.SchedulerClient.StartUp))]
 
@@ -10,7 +14,10 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
     {
         public void Configuration(IAppBuilder app)
         {
-            app.UseHangfireDashboard("/Hangfire");
+            var container = new UnityContainer();
+            UnityConfigurationManager.RegisterTypes(container, ApplicationScope.ServiceSchedulerClient);
+
+            app.UseHangfireDashboard("/Hangfire", options: new HangfireDashboardConfiguration(container).GetDashboardOptions());
         }
     }
 }
