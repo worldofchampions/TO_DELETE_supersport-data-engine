@@ -97,5 +97,11 @@
                 throw e;
             }
         }
+
+        public async Task IngestRugbyResultsForAllFixtures(CancellationToken cancellation)
+        {
+            Thread.Sleep(1000);
+            return;
+        }
     }
 }
