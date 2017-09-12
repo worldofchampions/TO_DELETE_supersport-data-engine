@@ -18,6 +18,13 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
 
         public void UpdateRecurringJobDefinitions()
         {
+            UpdateRecurringJobDefinition_ReferenceData();
+            UpdateRecurringJobDefinition_Fixtures();
+            UpdateRecurringJobDefinition_Logs();
+        }
+
+        private void UpdateRecurringJobDefinition_ReferenceData()
+        {
             // Create a schedule for getting the 
             // reference data from the provider.
             RecurringJob.AddOrUpdate(
@@ -26,9 +33,12 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
                 ConfigurationManager.AppSettings["FixedScheduledJob_ReferenceData_JobCronExpression"],
                 System.TimeZoneInfo.Utc,
                 HangfireQueueConfiguration.NormalPriority);
+        }
 
+        private void UpdateRecurringJobDefinition_Fixtures()
+        {
             // Create a schedule for getting the
-            // fixtures for the active tournaments from the provider.
+            // fixtures for the active tournaments for the current year from the provider.
             RecurringJob.AddOrUpdate(
                 ConfigurationManager.AppSettings["FixedScheduledJob_FixturesData_JobId"],
                 () => _ingestService.IngestFixturesForActiveTournaments(CancellationToken.None),
@@ -36,13 +46,25 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
                 System.TimeZoneInfo.Utc,
                 HangfireQueueConfiguration.NormalPriority);
 
-            ScheduleDailyJobToPollResultsForAllFixtures();
+            UpdateReccuringJobDefinition_AllFixtures();
+        }
+
+        private void UpdateRecurringJobDefinition_Logs()
+        {
+            // Create a schedule for getting the
+            // fixtures for active tournaments for the current year from the provider.
+            RecurringJob.AddOrUpdate(
+                ConfigurationManager.AppSettings["FixedScheduledJob_LogsData_JobId"],
+                () => _ingestService.IngestLogsForActiveTournaments(CancellationToken.None),
+                ConfigurationManager.AppSettings["FixedScheduledJob_LogsData_JobCronExpression"],
+                System.TimeZoneInfo.Utc,
+                HangfireQueueConfiguration.NormalPriority);
         }
 
         /// <summary>
         /// Creates or updates a fixed schedule job for fetcthing results data from the provider.
         /// </summary>
-        private void ScheduleDailyJobToPollResultsForAllFixtures()
+        private void UpdateRecurringJobDefinition_AllFixtures()
         {
             RecurringJob.AddOrUpdate(
                 recurringJobId: ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_JobId"],
@@ -50,6 +72,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
                 cronExpression: ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_JobCronExpression"],
                 timeZone: System.TimeZoneInfo.Utc,
                 queue: HangfireQueueConfiguration.NormalPriority);
+        }
     }
 }
-        }

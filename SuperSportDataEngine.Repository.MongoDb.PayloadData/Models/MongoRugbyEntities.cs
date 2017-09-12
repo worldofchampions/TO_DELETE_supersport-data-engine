@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Models
+namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Models.RugbyEntities
 {
     public class GroundCondition
     {

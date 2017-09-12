@@ -28,10 +28,6 @@
 
         public async Task IngestRugbyReferenceData(CancellationToken cancellationToken)
         {
-            // This is for delaying the job. 
-            // Testing whether the job runs for an extended period of time.
-            //cancellationToken.WaitHandle.WaitOne(TimeSpan.FromHours(4.5));
-
             if (cancellationToken.IsCancellationRequested)
                 return;
 
@@ -56,6 +52,30 @@
                 var fixtures = 
                     _statsProzoneIngestService.IngestFixturesForTournament(
                         tournament, cancellationToken);
+
+                // TODO: Also persist in SQL DB.
+
+                _mongoDbRepository.Save(fixtures);
+            }
+        }
+
+        public async Task IngestLogsForActiveTournaments(CancellationToken cancellationToken)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return;
+
+            var activeTournaments =
+                _sportTournamentRepository.Where(t => t.IsEnabled);
+
+            foreach (var tournament in activeTournaments)
+            {
+                var logs =
+                    _statsProzoneIngestService.IngestLogsForTournament(
+                        tournament, cancellationToken);
+
+                // TODO: Also persist in SQL DB.
+
+                _mongoDbRepository.Save(logs);
             }
         }
 

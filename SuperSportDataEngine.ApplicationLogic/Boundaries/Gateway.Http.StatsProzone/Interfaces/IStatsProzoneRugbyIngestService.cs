@@ -8,5 +8,6 @@
     {
         RugbyEntitiesResponse IngestRugbyReferenceData(CancellationToken cancellationToken);
         RugbyFixturesResponse IngestFixturesForTournament(SportTournament activeTournaments, CancellationToken cancellationToken);
+        RugbyLogsResponse IngestLogsForTournament(SportTournament activeTournaments, CancellationToken cancellationToken);
     }
 }
