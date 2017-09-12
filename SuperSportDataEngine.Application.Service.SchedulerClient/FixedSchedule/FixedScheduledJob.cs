@@ -45,6 +45,8 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
                 ConfigurationManager.AppSettings["FixedScheduledJob_FixturesData_JobCronExpression"],
                 System.TimeZoneInfo.Utc,
                 HangfireQueueConfiguration.NormalPriority);
+
+            UpdateReccuringJobDefinition_AllFixtures();
         }
 
         private void UpdateReccuringJobDefinition_Logs()
@@ -57,6 +59,19 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
                 ConfigurationManager.AppSettings["FixedScheduledJob_LogsData_JobCronExpression"],
                 System.TimeZoneInfo.Utc,
                 HangfireQueueConfiguration.NormalPriority);
+        }
+
+        /// <summary>
+        /// Creates or updates a fixed schedule job for fetcthing results data from the provider.
+        /// </summary>
+        private void UpdateReccuringJobDefinition_AllFixtures()
+        {
+            RecurringJob.AddOrUpdate(
+                recurringJobId: ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_JobId"],
+                methodCall: () => _ingestService.IngestRugbyResultsForAllFixtures(CancellationToken.None),
+                cronExpression: ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_JobCronExpression"],
+                timeZone: System.TimeZoneInfo.Utc,
+                queue: HangfireQueueConfiguration.NormalPriority);
         }
     }
 }

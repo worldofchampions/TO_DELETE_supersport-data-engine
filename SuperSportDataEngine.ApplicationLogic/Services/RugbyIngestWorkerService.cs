@@ -117,5 +117,23 @@
                 throw e;
             }
         }
+
+        public async Task IngestRugbyResultsForAllFixtures(CancellationToken cancellationToken)
+        {
+            var activeTournaments = _sportTournamentRepository.Where(t => t.IsEnabled);
+
+            foreach (var tournament in activeTournaments)
+            {
+                var results = _statsProzoneIngestService.IngestFixturesForTournament(tournament, cancellationToken);
+                await PersistFixturesResultsInRepository(results, cancellationToken);
+            }
+        }
+
+        private async Task PersistFixturesResultsInRepository(RugbyFixturesResponse allResults, CancellationToken cancellationToken)
+        {
+            // Only persist data for completed matches.
+            // The provider endpoint for results is just a variation of the fixtures endpoint,
+            // It will also return results for completed matches.
+        }
     }
 }
