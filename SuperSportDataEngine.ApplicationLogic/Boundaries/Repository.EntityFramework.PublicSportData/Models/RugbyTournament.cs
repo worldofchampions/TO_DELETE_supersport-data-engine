@@ -1,0 +1,33 @@
+﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models
+{
+    using System;
+
+    public class RugbyTournament
+    {
+        /// <summary> The primary internal record identifier. </summary>
+        public Guid Id { get; set; }
+
+        /// <summary> A unique int record identifier for legacy purposes. </summary>
+        public int LegacyTournamentId { get; set; }
+
+        /// <summary> The provider's record identifier. </summary>
+        public int ProviderTournamentId { get; set; }
+
+        /// <summary> A provider driven value. </summary>
+        public string Name { get; set; }
+
+        /// <summary> A CMS defined value to uniquely identify a tournament for URL purposes. </summary>
+        public string Slug { get; set; }
+
+        /// <summary> A provider driven value. </summary>
+        public string Abbreviation { get; set; }
+
+        /// <summary> A provider driven value. </summary>
+        public string LogoUrl { get; set; }
+
+        /// <summary> A CMS driven value to indicate if a tournament is enabled for ingest. </summary>
+        public bool IsEnabled { get; set; }
+
+        public virtual DataProvider DataProvider { get; set; }
+    }
+}

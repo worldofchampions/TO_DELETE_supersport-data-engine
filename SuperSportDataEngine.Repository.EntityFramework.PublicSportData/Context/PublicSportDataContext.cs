@@ -9,7 +9,10 @@
         {
         }
 
+        public DbSet<DataProvider> DataProviders { get; set; }
         public DbSet<Player> Players { get; set; }
+        public DbSet<RugbySeason> RugbySeasons { get; set; }
+        public DbSet<RugbyTournament> RugbyTournaments { get; set; }
         public DbSet<Sport> Sports { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)

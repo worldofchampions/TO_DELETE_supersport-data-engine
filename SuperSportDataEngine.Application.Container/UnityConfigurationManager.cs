@@ -91,16 +91,26 @@
         {
             container.RegisterType<DbContext, SystemSportDataContext>(SystemSportDataRepository);
 
-            container.RegisterType<IBaseEntityFrameworkRepository<SportTournament>, BaseEntityFrameworkRepository<SportTournament>>(
-                new InjectionFactory(x => new BaseEntityFrameworkRepository<SportTournament>(container.Resolve<DbContext>(SystemSportDataRepository))));
+            container.RegisterType<IBaseEntityFrameworkRepository<DataProvider>, BaseEntityFrameworkRepository<DataProvider>>(
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<DataProvider>(container.Resolve<DbContext>(SystemSportDataRepository))));
 
             container.RegisterType<IBaseEntityFrameworkRepository<LegacyAuthFeedConsumer>, BaseEntityFrameworkRepository<LegacyAuthFeedConsumer>>(
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<LegacyAuthFeedConsumer>(container.Resolve<DbContext>(SystemSportDataRepository))));
 
             container.RegisterType<IBaseEntityFrameworkRepository<LegacyZoneSite>, BaseEntityFrameworkRepository<LegacyZoneSite>>(
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<LegacyZoneSite>(container.Resolve<DbContext>(SystemSportDataRepository))));
+
+            container.RegisterType<IBaseEntityFrameworkRepository<RugbySeason>, BaseEntityFrameworkRepository<RugbySeason>>(
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbySeason>(container.Resolve<DbContext>(SystemSportDataRepository))));
+
+            container.RegisterType<IBaseEntityFrameworkRepository<RugbyTournament>, BaseEntityFrameworkRepository<RugbyTournament>>(
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyTournament>(container.Resolve<DbContext>(SystemSportDataRepository))));
+
             container.RegisterType<IBaseEntityFrameworkRepository<SchedulerDashboardUser>, BaseEntityFrameworkRepository<SchedulerDashboardUser>>(
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<SchedulerDashboardUser>(container.Resolve<DbContext>(SystemSportDataRepository))));
+
+            container.RegisterType<IBaseEntityFrameworkRepository<SportTournament>, BaseEntityFrameworkRepository<SportTournament>>(
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<SportTournament>(container.Resolve<DbContext>(SystemSportDataRepository))));
         }
 
         private static void ApplyRegistrationsForRepositoryMongoDbPayloadData(IUnityContainer container, ApplicationScope applicationScope)
