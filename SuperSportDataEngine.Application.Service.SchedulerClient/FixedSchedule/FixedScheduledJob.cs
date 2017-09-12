@@ -18,6 +18,13 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
 
         public void UpdateRecurringJobDefinitions()
         {
+            UpdateReccuringJobDefinition_ReferenceData();
+            UpdateReccuringJobDefinition_Fixtures();
+            UpdateReccuringJobDefinition_Logs();
+        }
+
+        private void UpdateReccuringJobDefinition_ReferenceData()
+        {
             // Create a schedule for getting the 
             // reference data from the provider.
             RecurringJob.AddOrUpdate(
@@ -26,13 +33,28 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
                 ConfigurationManager.AppSettings["FixedScheduledJob_ReferenceData_JobCronExpression"],
                 System.TimeZoneInfo.Utc,
                 HangfireQueueConfiguration.NormalPriority);
+        }
 
+        private void UpdateReccuringJobDefinition_Fixtures()
+        {
             // Create a schedule for getting the
-            // fixtures for the active tournaments from the provider.
+            // fixtures for the active tournaments for the current year from the provider.
             RecurringJob.AddOrUpdate(
                 ConfigurationManager.AppSettings["FixedScheduledJob_FixturesData_JobId"],
                 () => _ingestService.IngestFixturesForActiveTournaments(CancellationToken.None),
                 ConfigurationManager.AppSettings["FixedScheduledJob_FixturesData_JobCronExpression"],
+                System.TimeZoneInfo.Utc,
+                HangfireQueueConfiguration.NormalPriority);
+        }
+
+        private void UpdateReccuringJobDefinition_Logs()
+        {
+            // Create a schedule for getting the
+            // fixtures for active tournaments for the current year from the provider.
+            RecurringJob.AddOrUpdate(
+                ConfigurationManager.AppSettings["FixedScheduledJob_LogsData_JobId"],
+                () => _ingestService.IngestLogsForActiveTournaments(CancellationToken.None),
+                ConfigurationManager.AppSettings["FixedScheduledJob_LogsData_JobCronExpression"],
                 System.TimeZoneInfo.Utc,
                 HangfireQueueConfiguration.NormalPriority);
         }

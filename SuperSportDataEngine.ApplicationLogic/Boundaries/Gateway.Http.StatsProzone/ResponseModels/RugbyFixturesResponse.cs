@@ -1,7 +1,8 @@
 ﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.ResponseModels
 {
     using System;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyFixtures;
+
     public class RugbyFixturesResponse
     {
         public RugbyFixtures Fixtures { get; set; }

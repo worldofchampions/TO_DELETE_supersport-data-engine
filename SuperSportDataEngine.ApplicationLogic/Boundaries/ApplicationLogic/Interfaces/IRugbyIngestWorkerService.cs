@@ -7,5 +7,6 @@
     {
         Task IngestRugbyReferenceData(CancellationToken cancellationToken);
         Task IngestFixturesForActiveTournaments(CancellationToken cancellationToken);
+        Task IngestLogsForActiveTournaments(CancellationToken cancellationToken);
     }
 }

@@ -1,32 +1,14 @@
 ﻿using AutoMapper;
 using MongoDB.Driver;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.ResponseModels;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
-using SuperSportDataEngine.Repository.MongoDb.PayloadData.Models;
+using SuperSportDataEngine.Repository.MongoDb.PayloadData.Models.RugbyEntities;
+using SuperSportDataEngine.Repository.MongoDb.PayloadData.MappingProfiles;
+using SuperSportDataEngine.Repository.MongoDb.PayloadData.Models.RugbyFixtures;
+using SuperSportDataEngine.Repository.MongoDb.PayloadData.Models.RugbyLogs;
 
 namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 {
-    public class MappingProfile : Profile
-    {
-        public MappingProfile()
-        {
-            CreateMap<RugbyEntities, MongoRugbyEntities>().ReverseMap();
-            CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.GroundCondition, Models.GroundCondition>().ReverseMap();
-            CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Competition, Models.Competition>().ReverseMap();
-            CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Player, Models.Player>().ReverseMap();
-            CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Position, Models.Position>().ReverseMap();
-            CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Round, Models.Round>().ReverseMap();
-            CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.ScoringMethod, Models.ScoringMethod>().ReverseMap();
-            CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Season, Models.Season>().ReverseMap();
-            CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Statistic, Models.Statistic>().ReverseMap();
-            CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Team, Models.Team>().ReverseMap();
-            CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Venue, Models.Venue>().ReverseMap();
-            CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.WeatherCondition, Models.WeatherCondition>().ReverseMap();
-            CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.GameState, Models.GameState>().ReverseMap();
-            CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Official, Models.Official>().ReverseMap();
-        }
-    }
 
     public class MongoDbRugbyRepository : IMongoDbRugbyRepository
     {
@@ -39,10 +21,13 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 
         public void Save(RugbyEntitiesResponse entitiesResponse)
         {
-            Mapper.Initialize(c => c.AddProfile<MappingProfile>());
+            Mapper.Initialize(c => c.AddProfile<RugbyFixturesMappingProfile>());
 
             // Map the provider data to a type mongo understands.
-            var mongoEntities = Mapper.Map<RugbyEntities, MongoRugbyEntities>(entitiesResponse.Entities);
+            var mongoEntities = 
+                Mapper.Map<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyEntities.RugbyEntities, MongoRugbyEntities>(
+                    entitiesResponse.Entities);
+
             mongoEntities.RequestTime = entitiesResponse.RequestTime;
             mongoEntities.ResponseTime = entitiesResponse.ResponseTime;
 
@@ -52,6 +37,46 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
             // Add to the collection.
             var collection = db.GetCollection<MongoRugbyEntities>("entities");
             collection.InsertOneAsync(mongoEntities);
+        }
+
+        public void Save(RugbyFixturesResponse fixturesResponse)
+        {
+            Mapper.Initialize(c => c.AddProfile<RugbyFixturesMappingProfile>());
+
+            // Map the provider data to a type mongo understands.
+            var mongoFixtures = 
+                Mapper.Map<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyFixtures.RugbyFixtures, MongoRugbyFixtures>(
+                    fixturesResponse.Fixtures);
+
+            mongoFixtures.RequestTime = fixturesResponse.RequestTime;
+            mongoFixtures.ResponseTime = fixturesResponse.ResponseTime;
+
+            // Get the Mongo DB.
+            var db = _mongoClient.GetDatabase("supersport-dataengine");
+
+            // Add to the collection.
+            var collection = db.GetCollection<MongoRugbyFixtures>("fixtures");
+            collection.InsertOneAsync(mongoFixtures);
+        }
+
+        public void Save(RugbyLogsResponse logsResponse)
+        {
+            Mapper.Initialize(c => c.AddProfile<RugbyLogsMappingProfile>());
+
+            // Map the provider data to a type mongo understands.
+            var mongoLogs =
+                Mapper.Map<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyLogs.RugbyLogs, MongoRugbyLogs>(
+                    logsResponse.RugbyLogs);
+
+            mongoLogs.RequestTime = logsResponse.RequestTime;
+            mongoLogs.ResponseTime = logsResponse.ResponseTime;
+
+            // Get the Mongo DB.
+            var db = _mongoClient.GetDatabase("supersport-dataengine");
+
+            // Add to the collection.
+            var collection = db.GetCollection<MongoRugbyLogs>("logs");
+            collection.InsertOneAsync(mongoLogs);
         }
     }
 }

@@ -6,10 +6,12 @@
     using System;
     using Newtonsoft.Json;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.ResponseModels;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
     using System.Threading;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyFixtures;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyLogs;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyEntities;
 
     public class StatsProzoneRugbyIngestService : IStatsProzoneRugbyIngestService
     {
@@ -35,7 +37,7 @@
                 using (Stream responseStream = response.GetResponseStream())
                 {
                     StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
-                    entitiesResponse.Entities = 
+                    entitiesResponse.Entities =
                         JsonConvert.DeserializeObject<RugbyEntities>(reader.ReadToEnd());
 
                     // Not to be confused with the DateTime.Now call more above.
@@ -82,6 +84,45 @@
                     // and is intended.
                     fixturesResponse.ResponseTime = DateTime.Now;
                     return fixturesResponse;
+                }
+            }
+        }
+
+        public RugbyLogsResponse IngestLogsForTournament(SportTournament tournament, CancellationToken cancellationToken)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return null;
+
+            var tournamentId = tournament.TournamentIndex;
+            var tournamentYear = 2017;
+
+            WebRequest request =
+                WebRequest.Create("http://rugbyunion-api.stats.com/api/ru/competitions/ladder/" + tournamentId + "/" + tournamentYear);
+
+            request.Method = "GET";
+
+            request.Headers["Authorization"] = "Basic c3VwZXJzcG9ydDpvYTNuZzcrMjlmMw==";
+            request.ContentType = "application/json; charset=UTF-8";
+
+            var logsResponse =
+                new RugbyLogsResponse()
+                {
+                    RequestTime = DateTime.Now
+                };
+
+            using (WebResponse response = request.GetResponse())
+            {
+                using (Stream responseStream = response.GetResponseStream())
+                {
+                    StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
+                    logsResponse.RugbyLogs =
+                        JsonConvert.DeserializeObject<RugbyLogs>(reader.ReadToEnd());
+
+                    // Not to be confused with the DateTime.Now call more above.
+                    // This might be delayed due to provider being slow to process request,
+                    // and is intended.
+                    logsResponse.ResponseTime = DateTime.Now;
+                    return logsResponse;
                 }
             }
         }
