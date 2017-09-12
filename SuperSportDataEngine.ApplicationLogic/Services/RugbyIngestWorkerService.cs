@@ -98,10 +98,22 @@
             }
         }
 
-        public async Task IngestRugbyResultsForAllFixtures(CancellationToken cancellation)
+        public async Task IngestRugbyResultsForAllFixtures(CancellationToken cancellationToken)
         {
-            Thread.Sleep(1000);
-            return;
+            var activeTournaments = _sportTournamentRepository.All();
+
+            foreach (var tournament in activeTournaments)
+            {
+                var results = _statsProzoneIngestService.IngestFixturesForTournament(tournament, cancellationToken);
+                await PersistFixturesResultsInRepository(results, cancellationToken);
+            }
+        }
+
+        private async Task PersistFixturesResultsInRepository(RugbyFixturesResponse allResults, CancellationToken cancellationToken)
+        {
+            // Only persist data for completed matches.
+            // The provider endpoint for results is just a variation of the fixtures endpoint,
+            // It will also return results for completed matches.
         }
     }
 }
