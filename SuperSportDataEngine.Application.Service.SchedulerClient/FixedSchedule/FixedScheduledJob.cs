@@ -18,12 +18,12 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
 
         public void UpdateRecurringJobDefinitions()
         {
-            UpdateReccuringJobDefinition_ReferenceData();
-            UpdateReccuringJobDefinition_Fixtures();
-            UpdateReccuringJobDefinition_Logs();
+            UpdateRecurringJobDefinition_ReferenceData();
+            UpdateRecurringJobDefinition_Fixtures();
+            UpdateRecurringJobDefinition_Logs();
         }
 
-        private void UpdateReccuringJobDefinition_ReferenceData()
+        private void UpdateRecurringJobDefinition_ReferenceData()
         {
             // Create a schedule for getting the 
             // reference data from the provider.
@@ -35,7 +35,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
                 HangfireQueueConfiguration.NormalPriority);
         }
 
-        private void UpdateReccuringJobDefinition_Fixtures()
+        private void UpdateRecurringJobDefinition_Fixtures()
         {
             // Create a schedule for getting the
             // fixtures for the active tournaments for the current year from the provider.
@@ -49,7 +49,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
             UpdateReccuringJobDefinition_AllFixtures();
         }
 
-        private void UpdateReccuringJobDefinition_Logs()
+        private void UpdateRecurringJobDefinition_Logs()
         {
             // Create a schedule for getting the
             // fixtures for active tournaments for the current year from the provider.
@@ -64,7 +64,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
         /// <summary>
         /// Creates or updates a fixed schedule job for fetcthing results data from the provider.
         /// </summary>
-        private void UpdateReccuringJobDefinition_AllFixtures()
+        private void UpdateRecurringJobDefinition_AllFixtures()
         {
             RecurringJob.AddOrUpdate(
                 recurringJobId: ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_JobId"],
