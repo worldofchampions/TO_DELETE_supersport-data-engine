@@ -100,7 +100,7 @@
 
         public async Task IngestRugbyResultsForAllFixtures(CancellationToken cancellationToken)
         {
-            var activeTournaments = _sportTournamentRepository.All();
+            var activeTournaments = _sportTournamentRepository.Where(t => t.IsEnabled);
 
             foreach (var tournament in activeTournaments)
             {
