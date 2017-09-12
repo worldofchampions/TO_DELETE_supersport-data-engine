@@ -46,7 +46,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
                 System.TimeZoneInfo.Utc,
                 HangfireQueueConfiguration.NormalPriority);
 
-            UpdateReccuringJobDefinition_AllFixtures();
+            UpdateRecurringJobDefinition_AllFixtures();
         }
 
         private void UpdateRecurringJobDefinition_Logs()
