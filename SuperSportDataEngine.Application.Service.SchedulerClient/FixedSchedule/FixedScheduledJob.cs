@@ -1,9 +1,11 @@
 ﻿using Hangfire;
 using Microsoft.Practices.Unity;
 using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
 using SuperSportDataEngine.ApplicationLogic.Services;
 using System.Configuration;
 using System.Threading;
+using System;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
 {
@@ -21,6 +23,22 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
             UpdateRecurringJobDefinition_ReferenceData();
             UpdateRecurringJobDefinition_Fixtures();
             UpdateRecurringJobDefinition_Logs();
+            UpdateRecurringJobDefinition_AllFixtures();
+            UpdateRecurringJobDefinition_ResultsForCurrentDayFixtures();
+            UpdateRecurringJobDefinition_ResultsForFixturesInResultsState();
+        }
+
+        /// <summary>
+        /// Runs hourly for the next 3 days to fetch results for ended matches.
+        /// </summary>
+        private void UpdateRecurringJobDefinition_ResultsForFixturesInResultsState()
+        {
+            RecurringJob.AddOrUpdate(
+                recurringJobId: ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_Hourly_JobId"],
+                methodCall: () => _ingestService.IngestRugbyResultsForFixturesInResultsState(CancellationToken.None),
+                cronExpression: ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_Hourly_PollingExpression"],
+                timeZone: TimeZoneInfo.Utc,
+                queue: HangfireQueueConfiguration.HighPriority);
         }
 
         private void UpdateRecurringJobDefinition_ReferenceData()
@@ -67,11 +85,24 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
         private void UpdateRecurringJobDefinition_AllFixtures()
         {
             RecurringJob.AddOrUpdate(
-                recurringJobId: ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_JobId"],
+                recurringJobId: ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_Daily_JobId"],
                 methodCall: () => _ingestService.IngestRugbyResultsForAllFixtures(CancellationToken.None),
-                cronExpression: ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_JobCronExpression"],
-                timeZone: System.TimeZoneInfo.Utc,
+                cronExpression: ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_Daily_PollingExpression"],
+                timeZone: TimeZoneInfo.Utc,
                 queue: HangfireQueueConfiguration.NormalPriority);
+        }
+
+        /// <summary>
+        /// Runs every 15 minutes to fetch match results on fixture day.
+        /// </summary>
+        private void UpdateRecurringJobDefinition_ResultsForCurrentDayFixtures()
+        {
+            RecurringJob.AddOrUpdate(
+                recurringJobId: ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_OnFixtureDay_JobId"],
+                methodCall: () => _ingestService.IngestRugbyResultsForCurrentDayFixtures(CancellationToken.None),
+                cronExpression: ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_OnFixtureDay_PollingExpression"],
+                timeZone: TimeZoneInfo.Utc,
+                queue: HangfireQueueConfiguration.HighPriority);
         }
     }
 }

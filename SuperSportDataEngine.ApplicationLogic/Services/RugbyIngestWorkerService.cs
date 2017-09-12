@@ -9,6 +9,7 @@
     using System.Linq;
     using System.Threading.Tasks;
     using System.Threading;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
 
     public class RugbyIngestWorkerService : IRugbyIngestWorkerService
     {
@@ -129,11 +130,30 @@
             }
         }
 
-        private async Task PersistFixturesResultsInRepository(RugbyFixturesResponse allResults, CancellationToken cancellationToken)
+        private async Task PersistFixturesResultsInRepository(RugbyFixturesResponse fixturesResponse, CancellationToken cancellationToken)
         {
             // Only persist data for completed matches.
             // The provider endpoint for results is just a variation of the fixtures endpoint,
             // It will also return results for completed matches.
+        }
+
+        public async Task IngestRugbyResultsForCurrentDayFixtures(CancellationToken cancellationToken)
+        {
+            // 1. Get all fixtures playing on this day
+
+            // 2. Query data provider for results for each fixture
+
+            // 3. Save Response to the DB
+        }
+
+        public async Task IngestRugbyResultsForFixturesInResultsState(CancellationToken cancellationToken)
+        {
+            // 1. Get all fixtures in results state
+
+            // 2. Query data provider for results for each fixture
+
+            // 3. Save Response to the DB
+
         }
     }
 }
