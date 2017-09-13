@@ -9,7 +9,7 @@
     using System.Linq;
     using System.Threading.Tasks;
     using System.Threading;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
+    using System.Collections.Generic;
 
     public class RugbyIngestWorkerService : IRugbyIngestWorkerService
     {
@@ -18,7 +18,7 @@
         private readonly IBaseEntityFrameworkRepository<SportTournament> _sportTournamentRepository;
 
         public RugbyIngestWorkerService(
-            IStatsProzoneRugbyIngestService statsProzoneIngestService, 
+            IStatsProzoneRugbyIngestService statsProzoneIngestService,
             IMongoDbRugbyRepository mongoDbRepository,
             IBaseEntityFrameworkRepository<SportTournament> sportTournamentRepository)
         {
@@ -32,7 +32,7 @@
             if (cancellationToken.IsCancellationRequested)
                 return;
 
-            var entitiesResponse = 
+            var entitiesResponse =
                 _statsProzoneIngestService.IngestRugbyReferenceData(cancellationToken);
 
             await PersistSportTournamentsInRepositoryAsync(entitiesResponse, cancellationToken);
@@ -45,12 +45,12 @@
             if (cancellationToken.IsCancellationRequested)
                 return;
 
-            var activeTournaments = 
+            var activeTournaments =
                 _sportTournamentRepository.Where(t => t.IsEnabled);
 
             foreach (var tournament in activeTournaments)
             {
-                var fixtures = 
+                var fixtures =
                     _statsProzoneIngestService.IngestFixturesForTournament(
                         tournament, cancellationToken);
 
@@ -139,21 +139,56 @@
 
         public async Task IngestRugbyResultsForCurrentDayFixtures(CancellationToken cancellationToken)
         {
-            // 1. Get all fixtures playing on this day
+            var currentRoundFixtures = GetCurrentDayRoundFixturesForActiveTournaments();
+            
+            foreach (var round in currentRoundFixtures)
+            {
+                var results = await _statsProzoneIngestService.IngestFixtureResults(round.Item1, round.Item2, round.Item3);
 
-            // 2. Query data provider for results for each fixture
-
-            // 3. Save Response to the DB
+                // TODO: Also persist in SQL DB.
+            }
         }
 
         public async Task IngestRugbyResultsForFixturesInResultsState(CancellationToken cancellationToken)
         {
-            // 1. Get all fixtures in results state
+            var fixtures = GetRoundFixturesInResultsStateForActiveTournaments();
 
-            // 2. Query data provider for results for each fixture
+            foreach (var fixture in fixtures)
+            {
+                var results = await _statsProzoneIngestService.IngestFixtureResults(fixture.Item1, fixture.Item2, fixture.Item3);
 
-            // 3. Save Response to the DB
-
+                // TODO: Also persist in SQL DB.
+            }
         }
+
+        #region TempHelpers_Remove_Once_Properly_Implemented
+        /// <summary>
+        /// Returs round fixtures playing on current day.
+        /// </summary>
+        /// <param name="tournamemnts"></param>
+        /// <returns></returns>
+        public List<Tuple<int, int, int>> GetCurrentDayRoundFixturesForActiveTournaments()
+        {
+            var activeTournaments = _sportTournamentRepository.Where(t => t.IsEnabled);
+
+            //TODO: Must be able to deduce the following fields via repository
+            int tournamentId = 121;
+            int seasonId = 2017;
+            int roundId = 1;
+
+            return new List<Tuple<int, int, int>> { new Tuple<int, int, int>(tournamentId, seasonId, roundId) };
+        }
+
+        /// <summary>
+        /// Returs round fixtures that has been played.
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        private List<Tuple<int, int, int>> GetRoundFixturesInResultsStateForActiveTournaments()
+        {
+            //TODO:
+            return GetCurrentDayRoundFixturesForActiveTournaments();
+        } 
+        #endregion
     }
 }

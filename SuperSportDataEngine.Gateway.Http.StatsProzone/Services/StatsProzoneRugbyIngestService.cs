@@ -12,6 +12,7 @@
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyFixtures;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyLogs;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyEntities;
+    using System.Threading.Tasks;
 
     public class StatsProzoneRugbyIngestService : IStatsProzoneRugbyIngestService
     {
@@ -57,7 +58,7 @@
             var tournamentId = tournament.TournamentIndex;
             var tournamentYear = 2017;
 
-            WebRequest request = 
+            WebRequest request =
                 WebRequest.Create("http://rugbyunion-api.stats.com/api/ru/competitions/fixtures/" + tournamentId + "/" + tournamentYear);
 
             request.Method = "GET";
@@ -125,6 +126,46 @@
                     return logsResponse;
                 }
             }
+        }
+
+        public async Task<RugbyFixturesResponse> IngestFixtureResults(int competionId, int seasonId, int roundId)
+        {
+            WebRequest request = GetWebRequestForFixturesEndpoint(competionId, seasonId, roundId);
+
+            var responseData = new RugbyFixturesResponse() { RequestTime = DateTime.Now };
+
+            using (WebResponse response = await request.GetResponseAsync())
+            {
+                using (Stream responseStream = response.GetResponseStream())
+                {
+                    var reader = new StreamReader(responseStream, Encoding.UTF8);
+
+                    string responseDataFromServer = reader.ReadToEnd();
+
+                    //TODO: Return Response in a Correct DataModel
+
+                    var responseDataToReturn = JsonConvert.DeserializeObject<RoundFixtureResultsResponse>(responseDataFromServer);
+
+                    responseData.ResponseTime = DateTime.Now;
+
+                    return responseData;
+                }
+            }
+        }
+
+        private static WebRequest GetWebRequestForFixturesEndpoint(int competionId, int seasonId, int roundId)
+        {
+            var baseUrl = "http://rugbyunion-api.stats.com/api/ru/competitions/fixtures/";
+
+            var request = WebRequest.Create(baseUrl + competionId + "/" + seasonId + "/" + roundId);
+
+            request.Method = "GET";
+
+            request.Headers["Authorization"] = "Basic c3VwZXJzcG9ydDpvYTNuZzcrMjlmMw==";
+
+            request.ContentType = "application/json; charset=UTF-8";
+
+            return request;
         }
     }
 }
