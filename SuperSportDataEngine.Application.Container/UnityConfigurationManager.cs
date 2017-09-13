@@ -83,6 +83,12 @@
             container.RegisterType<IBaseEntityFrameworkRepository<Sport>, BaseEntityFrameworkRepository<Sport>>(
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<Sport>(container.Resolve<DbContext>(PublicSportDataRepository))));
 
+            container.RegisterType<IBaseEntityFrameworkRepository<RugbySeason>, BaseEntityFrameworkRepository<RugbySeason>>(
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbySeason>(container.Resolve<DbContext>(PublicSportDataRepository))));
+
+            container.RegisterType<IBaseEntityFrameworkRepository<RugbyTournament>, BaseEntityFrameworkRepository<RugbyTournament>>(
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyTournament>(container.Resolve<DbContext>(PublicSportDataRepository))));
+
             container.RegisterType<IBaseEntityFrameworkRepository<Log>, BaseEntityFrameworkRepository<Log>>(
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<Log>(container.Resolve<DbContext>(PublicSportDataRepository))));
         }
@@ -99,12 +105,6 @@
 
             container.RegisterType<IBaseEntityFrameworkRepository<LegacyZoneSite>, BaseEntityFrameworkRepository<LegacyZoneSite>>(
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<LegacyZoneSite>(container.Resolve<DbContext>(SystemSportDataRepository))));
-
-            container.RegisterType<IBaseEntityFrameworkRepository<RugbySeason>, BaseEntityFrameworkRepository<RugbySeason>>(
-                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbySeason>(container.Resolve<DbContext>(SystemSportDataRepository))));
-
-            container.RegisterType<IBaseEntityFrameworkRepository<RugbyTournament>, BaseEntityFrameworkRepository<RugbyTournament>>(
-                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyTournament>(container.Resolve<DbContext>(SystemSportDataRepository))));
 
             container.RegisterType<IBaseEntityFrameworkRepository<SchedulerDashboardUser>, BaseEntityFrameworkRepository<SchedulerDashboardUser>>(
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<SchedulerDashboardUser>(container.Resolve<DbContext>(SystemSportDataRepository))));

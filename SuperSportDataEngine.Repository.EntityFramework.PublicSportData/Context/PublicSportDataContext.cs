@@ -2,6 +2,7 @@
 {
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
     using System.Data.Entity;
+    using System.Data.Entity.Core.Objects;
 
     public class PublicSportDataContext : DbContext
     {
