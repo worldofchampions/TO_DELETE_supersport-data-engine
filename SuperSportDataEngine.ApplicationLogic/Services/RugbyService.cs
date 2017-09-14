@@ -100,5 +100,12 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 await _schedulerTrackingRugbySeasonRepository.SaveAsync();
             }
         }
+
+        public IEnumerable<RugbyTournament> GetInactiveTournaments()
+        {
+            return 
+                _rugbyTournamentRepository
+                    .Where(t => t.IsEnabled == false);
+        }
     }
 }

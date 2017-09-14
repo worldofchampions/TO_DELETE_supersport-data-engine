@@ -11,6 +11,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Inte
     {
         IEnumerable<LogEntity> GetLogs(string tournamentName);
         IEnumerable<RugbyTournament> GetActiveTournaments();
+        IEnumerable<RugbyTournament> GetInactiveTournaments();
         IEnumerable<RugbyTournament> GetCurrentTournaments();
         SchedulerStateForManagerJobPolling GetSchedulerStateForManagerJobPolling(Guid tournamentId);
         IEnumerable<RugbyTournament> GetEndedTournaments();

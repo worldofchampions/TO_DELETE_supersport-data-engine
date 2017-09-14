@@ -2,6 +2,7 @@
 using Microsoft.Practices.Unity;
 using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
 using SuperSportDataEngine.ApplicationLogic.Services;
 using System;
@@ -42,8 +43,17 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
         {
             await CreateChildJobsForTournamentsWithSeasonsInProgress();
             await DeleteChildJobsForTournamentsWithSeasonsEnded();
+            await DeleteChildJobsForInactiveTournaments();
 
             _timer.Start();
+        }
+
+        private async Task DeleteChildJobsForInactiveTournaments()
+        {
+            var inactiveTournaments =
+                _rugbyService.GetInactiveTournaments();
+
+            await DeleteJobsForTournaments(inactiveTournaments);
         }
 
         private async Task DeleteChildJobsForTournamentsWithSeasonsEnded()
@@ -51,7 +61,12 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
             var endedTournaments =
                 _rugbyService.GetEndedTournaments();
 
-            foreach (var tournament in endedTournaments)
+            await DeleteJobsForTournaments(endedTournaments);
+        }
+
+        private async Task DeleteJobsForTournaments(IEnumerable<RugbyTournament> tournaments)
+        {
+            foreach (var tournament in tournaments)
             {
                 var jobId = ConfigurationManager.AppSettings["ScheduleMangerJob_Fixtures_JobIdPrefix"] + tournament.Name;
                 RecurringJob.RemoveIfExists(jobId);
