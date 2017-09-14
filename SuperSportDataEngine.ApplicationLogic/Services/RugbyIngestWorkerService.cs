@@ -121,7 +121,7 @@
                         tournament, cancellationToken);
 
                 // TODO: Also persist in SQL DB.
-                PersistRugbySeasonDataInSchedulerTrackingRugbySeasonTable(fixtures);
+                await PersistRugbySeasonDataInSchedulerTrackingRugbySeasonTable(fixtures);
 
                 _mongoDbRepository.Save(fixtures);
             }
