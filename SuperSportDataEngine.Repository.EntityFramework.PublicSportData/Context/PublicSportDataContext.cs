@@ -2,6 +2,7 @@
 {
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
     using System.Data.Entity;
+    using System.Data.Entity.Core.Objects;
 
     public class PublicSportDataContext : DbContext
     {
@@ -9,7 +10,10 @@
         {
         }
 
+        public DbSet<DataProvider> DataProviders { get; set; }
         public DbSet<Player> Players { get; set; }
+        public DbSet<RugbySeason> RugbySeasons { get; set; }
+        public DbSet<RugbyTournament> RugbyTournaments { get; set; }
         public DbSet<Sport> Sports { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)

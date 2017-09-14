@@ -21,7 +21,7 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 
         public void Save(RugbyEntitiesResponse entitiesResponse)
         {
-            Mapper.Initialize(c => c.AddProfile<RugbyFixturesMappingProfile>());
+            Mapper.Initialize(c => c.AddProfile<RugbyEntitiesMappingProfile>());
 
             // Map the provider data to a type mongo understands.
             var mongoEntities = 

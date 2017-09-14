@@ -11,7 +11,7 @@
 
         public DateTimeOffset StartDateTime { get; set; }
 
-        // This value is set once we receive the corresponding status from the supplier data.
+        /// <summary> This value is set once we receive the corresponding status from the supplier data. </summary>
         public DateTimeOffset EndedDateTime { get; set; }
 
         public RugbyFixtureStatus RugbyFixtureStatus { get; set; }

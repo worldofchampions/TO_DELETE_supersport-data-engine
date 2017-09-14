@@ -57,6 +57,14 @@
     <Compile Include="Migrations\201708181542273_AddLogsModel.Designer.cs">
       <DependentUpon>201708181542273_AddLogsModel.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201709130824239_Added_DataProvider_RugbySeason_RugbyTournament_tables.cs" />
+    <Compile Include="Migrations\201709130824239_Added_DataProvider_RugbySeason_RugbyTournament_tables.Designer.cs">
+      <DependentUpon>201709130824239_Added_DataProvider_RugbySeason_RugbyTournament_tables.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201709141040032_AddingDatabaseGeneratedIdFor_RugbySeason_RugbyTournament.cs" />
+    <Compile Include="Migrations\201709141040032_AddingDatabaseGeneratedIdFor_RugbySeason_RugbyTournament.Designer.cs">
+      <DependentUpon>201709141040032_AddingDatabaseGeneratedIdFor_RugbySeason_RugbyTournament.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -83,6 +91,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201708181542273_AddLogsModel.resx">
       <DependentUpon>201708181542273_AddLogsModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201709130824239_Added_DataProvider_RugbySeason_RugbyTournament_tables.resx">
+      <DependentUpon>201709130824239_Added_DataProvider_RugbySeason_RugbyTournament_tables.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201709141040032_AddingDatabaseGeneratedIdFor_RugbySeason_RugbyTournament.resx">
+      <DependentUpon>201709141040032_AddingDatabaseGeneratedIdFor_RugbySeason_RugbyTournament.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

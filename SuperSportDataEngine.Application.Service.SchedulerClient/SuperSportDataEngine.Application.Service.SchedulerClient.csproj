@@ -99,6 +99,7 @@
     <Compile Include="HangfireDashboardConfiguration.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ScheduledManager\FixturesScheduledManagerJob.cs" />
     <Compile Include="StartUp.cs" />
     <Compile Include="WindowsService.cs" />
   </ItemGroup>
