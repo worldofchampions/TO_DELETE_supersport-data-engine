@@ -4,5 +4,8 @@
     public enum RugbySeasonStatus
     {
         // TODO: Define the corresponding states (e.g. started, ended.)
+        NotActive = 0,
+        InProgress = 1,
+        Ended = 2
     }
 }

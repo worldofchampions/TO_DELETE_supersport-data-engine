@@ -10,6 +10,8 @@
     using System.Threading;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
     using System.Collections.Generic;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
 
     public class RugbyIngestWorkerService : IRugbyIngestWorkerService
     {
@@ -17,17 +19,20 @@
         private readonly IMongoDbRugbyRepository _mongoDbRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyTournament> _rugbyTournamentRepository;
         private readonly IBaseEntityFrameworkRepository<RugbySeason> _rugbySeasonRepository;
+        private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> _schedulerTrackingRugbySeasonRepository;
 
         public RugbyIngestWorkerService(
             IStatsProzoneRugbyIngestService statsProzoneIngestService,
             IMongoDbRugbyRepository mongoDbRepository,
             IBaseEntityFrameworkRepository<RugbyTournament> rugbyTournamentRepository,
-            IBaseEntityFrameworkRepository<RugbySeason> rugbySeasonRepository)
+            IBaseEntityFrameworkRepository<RugbySeason> rugbySeasonRepository,
+            IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> schedulerTrackingRugbySeasonRepository)
         {
             _statsProzoneIngestService = statsProzoneIngestService;
             _mongoDbRepository = mongoDbRepository;
             _rugbyTournamentRepository = rugbyTournamentRepository;
             _rugbySeasonRepository = rugbySeasonRepository;
+            _schedulerTrackingRugbySeasonRepository = schedulerTrackingRugbySeasonRepository;
         }
 
         public async Task IngestRugbyReferenceData(CancellationToken cancellationToken)
@@ -112,9 +117,65 @@
                         tournament, cancellationToken);
 
                 // TODO: Also persist in SQL DB.
+                PersistRugbySeasonDataInSchedulerTrackingRugbySeasonTable(fixtures);
 
                 _mongoDbRepository.Save(fixtures);
             }
+        }
+
+        private async Task PersistRugbySeasonDataInSchedulerTrackingRugbySeasonTable(RugbyFixturesResponse fixtures)
+        {
+            var season =
+                _rugbySeasonRepository
+                .Where(
+                    s => s.ProviderSeasonId == fixtures.Fixtures.seasonId && s.RugbyTournament.ProviderTournamentId == fixtures.Fixtures.competitionId)
+                    .FirstOrDefault();
+
+            var seasonId = season.Id;
+            var tournamentId = season.RugbyTournament.Id;
+            DateTimeOffset.TryParse(fixtures.Fixtures.seasonStartDate, out DateTimeOffset seasonStartDate);
+            DateTimeOffset.TryParse(fixtures.Fixtures.seasonFinishDate, out DateTimeOffset seasonEndDate);
+            var dateOffsetNow = DateTimeOffset.Now;
+
+            var seasonStatus = GetRugbySeasonStatus(seasonStartDate, dateOffsetNow, seasonEndDate);
+            
+            var seasonInDb = _schedulerTrackingRugbySeasonRepository.Where(s => s.SeasonId == seasonId && s.TournamentId == tournamentId).FirstOrDefault();
+
+            if (seasonInDb == null)
+            {
+                _schedulerTrackingRugbySeasonRepository.Add(
+                    new SchedulerTrackingRugbySeason()
+                    {
+                        SeasonId = seasonId,
+                        TournamentId = tournamentId,
+                        SchedulerStateForManagerJobPolling = SchedulerStateForManagerJobPolling.NotRunning,
+                        RugbySeasonStatus = seasonStatus
+                    });
+            }
+            else
+            {
+                seasonInDb.RugbySeasonStatus = seasonStatus;
+            }
+
+            try
+            {
+                await _schedulerTrackingRugbySeasonRepository.SaveAsync();
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        private RugbySeasonStatus GetRugbySeasonStatus(DateTimeOffset seasonStartDate, DateTimeOffset dateOffsetNow, DateTimeOffset seasonEndDate)
+        {
+            if (dateOffsetNow < seasonStartDate)
+                return RugbySeasonStatus.NotActive;
+
+            if (dateOffsetNow > seasonEndDate)
+                return RugbySeasonStatus.Ended;
+
+            return RugbySeasonStatus.InProgress;
         }
 
         public async Task IngestLogsForActiveTournaments(CancellationToken cancellationToken)
