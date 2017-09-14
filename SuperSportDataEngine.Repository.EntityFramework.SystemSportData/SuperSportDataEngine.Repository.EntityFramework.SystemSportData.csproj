@@ -65,6 +65,10 @@
     <Compile Include="Migrations\201709061210596_Added_scheduler_tracking_tables.Designer.cs">
       <DependentUpon>201709061210596_Added_scheduler_tracking_tables.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201709141711036_Add_Scheduler_Tracking_Rugby_Season_Table.cs" />
+    <Compile Include="Migrations\201709141711036_Add_Scheduler_Tracking_Rugby_Season_Table.Designer.cs">
+      <DependentUpon>201709141711036_Add_Scheduler_Tracking_Rugby_Season_Table.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -97,6 +101,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201709061210596_Added_scheduler_tracking_tables.resx">
       <DependentUpon>201709061210596_Added_scheduler_tracking_tables.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201709141711036_Add_Scheduler_Tracking_Rugby_Season_Table.resx">
+      <DependentUpon>201709141711036_Add_Scheduler_Tracking_Rugby_Season_Table.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

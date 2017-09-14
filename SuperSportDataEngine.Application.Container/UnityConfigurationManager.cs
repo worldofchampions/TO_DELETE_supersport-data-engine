@@ -121,6 +121,18 @@
             container.RegisterType<IBaseEntityFrameworkRepository<SportTournament>, BaseEntityFrameworkRepository<SportTournament>>(
                 new ContainerControlledLifetimeManager(),
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<SportTournament>(container.Resolve<DbContext>(SystemSportDataRepository))));
+
+            container.RegisterType<IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture>, BaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture>>(
+                new ContainerControlledLifetimeManager(),
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture>(container.Resolve<DbContext>(SystemSportDataRepository))));
+
+            container.RegisterType<IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason>, BaseEntityFrameworkRepository<SchedulerTrackingRugbySeason>>(
+                new ContainerControlledLifetimeManager(),
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<SchedulerTrackingRugbySeason>(container.Resolve<DbContext>(SystemSportDataRepository))));
+
+            container.RegisterType<IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament>, BaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament>>(
+                new ContainerControlledLifetimeManager(),
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament>(container.Resolve<DbContext>(SystemSportDataRepository))));
         }
 
         private static void ApplyRegistrationsForRepositoryMongoDbPayloadData(IUnityContainer container, ApplicationScope applicationScope)

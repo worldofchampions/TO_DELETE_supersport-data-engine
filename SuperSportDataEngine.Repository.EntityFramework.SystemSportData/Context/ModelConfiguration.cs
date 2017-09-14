@@ -12,6 +12,8 @@
 
             modelBuilder.Entity<SchedulerTrackingRugbyTournament>().HasKey(x => new { x.TournamentId, x.SeasonId });
 
+            modelBuilder.Entity<SchedulerTrackingRugbySeason>().HasKey(x => new { x.SeasonId, x.TournamentId });
+
             modelBuilder.Entity<SportTournament>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
 
             modelBuilder.Entity<LegacyAccessItem>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);

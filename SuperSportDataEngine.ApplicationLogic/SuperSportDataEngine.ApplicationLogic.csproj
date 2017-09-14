@@ -62,8 +62,10 @@
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Log.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbySeason.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyTournament.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\Enums\RugbySeasonStatus.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\Enums\RugbyFixtureStatus.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\Enums\SchedulerStateForRugbyFixturePolling.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\Enums\SchedulerStateForManagerJobPolling.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\Enums\SchedulerStateForRugbyLogPolling.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\LegacyAuthFeedConsumer.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\LegacyZoneSite.cs" />
@@ -72,6 +74,7 @@
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Player.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Sport.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\SchedulerTrackingRugbyFixture.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\SchedulerTrackingRugbySeason.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\SchedulerTrackingRugbyTournament.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\SchedulerDashboardUser.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\SportTournament.cs" />
