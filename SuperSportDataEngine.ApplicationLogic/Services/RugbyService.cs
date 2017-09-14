@@ -46,7 +46,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         public IEnumerable<RugbyTournament> GetCurrentTournaments()
         {
             var tournamentsGuidsThatAreCurrent = _schedulerTrackingRugbySeasonRepository.Where(s => s.RugbySeasonStatus == RugbySeasonStatus.InProgress).Select(s => s.TournamentId);
-            return _rugbyTournamentRepository.Where(t => tournamentsGuidsThatAreCurrent.Contains(t.Id)).Select(t => t);
+            return _rugbyTournamentRepository.Where(t => t.IsEnabled && tournamentsGuidsThatAreCurrent.Contains(t.Id)).Select(t => t);
         }
 
         public SchedulerStateForManagerJobPolling GetSchedulerStateForManagerJobPolling(Guid tournamentId)
