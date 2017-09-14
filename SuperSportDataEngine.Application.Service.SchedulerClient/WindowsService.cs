@@ -10,16 +10,19 @@
     using SuperSportDataEngine.ApplicationLogic.Services;
     using System.Configuration;
     using System.Threading;
+    using SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledManager;
 
     internal class WindowsService : IWindowsServiceContract
     {
         private readonly UnityContainer _container;
         private readonly FixedScheduledJob _fixedManagerJob;
+        private readonly FixturesScheduledManagerJob _fixtureScheduleManagerJob;
 
         public WindowsService(UnityContainer container)
         {
             _container = container;
             _fixedManagerJob = new FixedScheduledJob(_container);
+            _fixtureScheduleManagerJob = new FixturesScheduledManagerJob(_container);
         }
 
         public void StartService()

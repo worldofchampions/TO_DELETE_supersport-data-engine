@@ -13,14 +13,17 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
     public class RugbyService : IRugbyService
     {
         private readonly IBaseEntityFrameworkRepository<Log> _logRepository;
-        private readonly IBaseEntityFrameworkRepository<SportTournament> _sportTournamentRepository;
+        private readonly IBaseEntityFrameworkRepository<RugbyTournament> _rugbyTournamentRepository;
+        private readonly IBaseEntityFrameworkRepository<RugbySeason> _rugbySeasonRepository;
 
         public RugbyService(
             IBaseEntityFrameworkRepository<Log> logRepository,
-            IBaseEntityFrameworkRepository<SportTournament> sportTournamentRepository)
+            IBaseEntityFrameworkRepository<RugbyTournament> rugbyTournamentRepository,
+            IBaseEntityFrameworkRepository<RugbySeason> rugbySeasonRepository)
         {
             _logRepository = logRepository;
-            _sportTournamentRepository = sportTournamentRepository;
+            _rugbyTournamentRepository = rugbyTournamentRepository;
+            _rugbySeasonRepository = rugbySeasonRepository;
         }
 
         public IEnumerable<LogEntity> GetLogs(string tournamentName)
@@ -30,9 +33,15 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             return logs;
         }
 
-        public Task<IEnumerable<SportTournament>> GetActiveTournaments()
+        public IEnumerable<RugbyTournament> GetActiveTournaments()
         {
-            return _sportTournamentRepository.WhereAsync(c => c.IsEnabled);
+            return _rugbyTournamentRepository.Where(c => c.IsEnabled);
+        }
+
+        public IEnumerable<RugbyTournament> GetCurrentTournaments()
+        {
+            // TODO
+            return _rugbyTournamentRepository.Where(c => c.IsEnabled);
         }
     }
 }

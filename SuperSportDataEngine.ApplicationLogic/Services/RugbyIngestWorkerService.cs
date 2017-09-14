@@ -3,27 +3,30 @@
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.ResponseModels;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
     using System;
     using System.Linq;
     using System.Threading.Tasks;
     using System.Threading;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
 
     public class RugbyIngestWorkerService : IRugbyIngestWorkerService
     {
         private readonly IStatsProzoneRugbyIngestService _statsProzoneIngestService;
         private readonly IMongoDbRugbyRepository _mongoDbRepository;
-        private readonly IBaseEntityFrameworkRepository<SportTournament> _sportTournamentRepository;
+        private readonly IBaseEntityFrameworkRepository<RugbyTournament> _rugbyTournamentRepository;
+        private readonly IBaseEntityFrameworkRepository<RugbySeason> _rugbySeasonRepository;
 
         public RugbyIngestWorkerService(
-            IStatsProzoneRugbyIngestService statsProzoneIngestService, 
+            IStatsProzoneRugbyIngestService statsProzoneIngestService,
             IMongoDbRugbyRepository mongoDbRepository,
-            IBaseEntityFrameworkRepository<SportTournament> sportTournamentRepository)
+            IBaseEntityFrameworkRepository<RugbyTournament> rugbyTournamentRepository,
+            IBaseEntityFrameworkRepository<RugbySeason> rugbySeasonRepository)
         {
             _statsProzoneIngestService = statsProzoneIngestService;
             _mongoDbRepository = mongoDbRepository;
-            _sportTournamentRepository = sportTournamentRepository;
+            _rugbyTournamentRepository = rugbyTournamentRepository;
+            _rugbySeasonRepository = rugbySeasonRepository;
         }
 
         public async Task IngestRugbyReferenceData(CancellationToken cancellationToken)
@@ -31,12 +34,66 @@
             if (cancellationToken.IsCancellationRequested)
                 return;
 
-            var entitiesResponse = 
+            var entitiesResponse =
                 _statsProzoneIngestService.IngestRugbyReferenceData(cancellationToken);
 
-            await PersistSportTournamentsInRepositoryAsync(entitiesResponse, cancellationToken);
+            await PersistRugbyTournamentsInRepositoryAsync(entitiesResponse, cancellationToken);
+            await IngestRugbyTournamentSeasons(cancellationToken);
 
             _mongoDbRepository.Save(entitiesResponse);
+        }
+
+        private async Task IngestRugbyTournamentSeasons(CancellationToken cancellationToken)
+        {
+            var activeTournaments = _rugbyTournamentRepository.Where(t => t.IsEnabled);
+            foreach (var tournament in activeTournaments)
+            {
+                var season = _statsProzoneIngestService.IngestSeasonData(cancellationToken, tournament.ProviderTournamentId, DateTime.Now.Year);
+
+                await PersistRugbySeasonDataToSystemSportsDataRepository(cancellationToken, season);
+            }
+        }
+
+        private async Task PersistRugbySeasonDataToSystemSportsDataRepository(CancellationToken cancellationToken, RugbySeasonResponse season)
+        {
+            var providerTournamentId = season.RugbySeasons.competitionId;
+            var providerSeasonId = season.RugbySeasons.season.First().id;
+            var isSeasonCurrentlyActive = season.RugbySeasons.season.First().currentSeason;
+
+            var seasonEntry =
+                    _rugbySeasonRepository
+                    .Where(s => s.RugbyTournament.ProviderTournamentId == providerTournamentId && s.ProviderSeasonId == providerSeasonId)
+                    .FirstOrDefault();
+
+            var tour = _rugbyTournamentRepository.Where(t => t.ProviderTournamentId == providerTournamentId).ToList().FirstOrDefault();
+            var newEntry = new RugbySeason()
+            {
+                Id = seasonEntry != null ? seasonEntry.Id : Guid.NewGuid(),
+                ProviderSeasonId = providerSeasonId,
+                RugbyTournament = tour,
+                IsCurrent = isSeasonCurrentlyActive,
+                Name = season.RugbySeasons.season.First().name
+            };
+
+            // Not in repo?
+            if (seasonEntry == null)
+            {
+                _rugbySeasonRepository.Add(newEntry);
+            }
+            else
+            {
+                _rugbySeasonRepository.Update(newEntry);
+            }
+
+            try
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                await _rugbySeasonRepository.SaveAsync();
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
         }
 
         public async Task IngestFixturesForActiveTournaments(CancellationToken cancellationToken)
@@ -44,12 +101,12 @@
             if (cancellationToken.IsCancellationRequested)
                 return;
 
-            var activeTournaments = 
-                _sportTournamentRepository.Where(t => t.IsEnabled);
+            var activeTournaments =
+                _rugbyTournamentRepository.Where(t => t.IsEnabled);
 
             foreach (var tournament in activeTournaments)
             {
-                var fixtures = 
+                var fixtures =
                     _statsProzoneIngestService.IngestFixturesForTournament(
                         tournament, cancellationToken);
 
@@ -65,7 +122,7 @@
                 return;
 
             var activeTournaments =
-                _sportTournamentRepository.Where(t => t.IsEnabled);
+                _rugbyTournamentRepository.Where(t => t.IsEnabled);
 
             foreach (var tournament in activeTournaments)
             {
@@ -79,48 +136,53 @@
             }
         }
 
-        private async Task PersistSportTournamentsInRepositoryAsync(RugbyEntitiesResponse entitiesResponse, CancellationToken cancellationToken)
+        private async Task PersistRugbyTournamentsInRepositoryAsync(RugbyEntitiesResponse entitiesResponse, CancellationToken cancellationToken)
         {
             foreach (var competition in entitiesResponse.Entities.competitions)
             {
                 if (cancellationToken.IsCancellationRequested)
                     return;
 
-                var entry = _sportTournamentRepository
-                    .Where(c => c.TournamentIndex == competition.id)
+                var entry = _rugbyTournamentRepository
+                    .Where(c => c.ProviderTournamentId == competition.id)
                     .FirstOrDefault();
 
-                var newEntry = new SportTournament
+                var newEntry = new RugbyTournament
                 {
-                    TournamentIndex = competition.id,
-                    TournamentName = competition.name,
-                    IsEnabled = entry != null
+                    Id = entry != null ? entry.Id : Guid.NewGuid(),
+                    ProviderTournamentId = competition.id,
+                    Name = competition.name,
+                    IsEnabled = entry != null,
+                    LogoUrl = competition.CompetitionLogoURL,
+                    Abbreviation = competition.CompetitionAbbrev,
+                    Slug = "/competition/" + competition.id,
+                    LegacyTournamentId = competition.id
                 };
 
                 if (entry == null)
                 {
-                    _sportTournamentRepository.Add(newEntry);
+                    _rugbyTournamentRepository.Add(newEntry);
                 }
                 else
                 {
-                    _sportTournamentRepository.Update(newEntry);
+                    _rugbyTournamentRepository.Update(newEntry);
                 }
-            }
 
-            try
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                await _sportTournamentRepository.SaveAsync();
-            }
-            catch (Exception e)
-            {
-                throw e;
+                try
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    await _rugbyTournamentRepository.SaveAsync();
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
             }
         }
 
         public async Task IngestRugbyResultsForAllFixtures(CancellationToken cancellationToken)
         {
-            var activeTournaments = _sportTournamentRepository.Where(t => t.IsEnabled);
+            var activeTournaments = _rugbyTournamentRepository.Where(t => t.IsEnabled);
 
             foreach (var tournament in activeTournaments)
             {
@@ -134,6 +196,18 @@
             // Only persist data for completed matches.
             // The provider endpoint for results is just a variation of the fixtures endpoint,
             // It will also return results for completed matches.
+        }
+
+        public async Task IngestFixturesForTournamentSeason(CancellationToken cancellationToken, int tournamentId, int seasonId)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return;
+
+            var fixtures =
+                _statsProzoneIngestService.IngestFixturesForTournamentSeason(
+                    tournamentId, seasonId, cancellationToken);
+
+            // TODO: Also persist in SQL DB.
         }
     }
 }
