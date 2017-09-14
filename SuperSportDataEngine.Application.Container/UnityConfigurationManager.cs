@@ -75,30 +75,36 @@
 
         private static void ApplyRegistrationsForRepositoryEntityFrameworkPublicSportData(IUnityContainer container)
         {
-            container.RegisterType<DbContext, PublicSportDataContext>(PublicSportDataRepository);
+            container.RegisterType<DbContext, PublicSportDataContext>(PublicSportDataRepository, new ContainerControlledLifetimeManager());
+
+            container.RegisterType<IBaseEntityFrameworkRepository<DataProvider>, BaseEntityFrameworkRepository<DataProvider>>(
+                new ContainerControlledLifetimeManager(),
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<DataProvider>(container.Resolve<DbContext>(PublicSportDataRepository))));
 
             container.RegisterType<IBaseEntityFrameworkRepository<Player>, BaseEntityFrameworkRepository<Player>>(
+                new ContainerControlledLifetimeManager(),
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<Player>(container.Resolve<DbContext>(PublicSportDataRepository))));
 
             container.RegisterType<IBaseEntityFrameworkRepository<Sport>, BaseEntityFrameworkRepository<Sport>>(
+                new ContainerControlledLifetimeManager(),
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<Sport>(container.Resolve<DbContext>(PublicSportDataRepository))));
 
             container.RegisterType<IBaseEntityFrameworkRepository<RugbySeason>, BaseEntityFrameworkRepository<RugbySeason>>(
+                new ContainerControlledLifetimeManager(),
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbySeason>(container.Resolve<DbContext>(PublicSportDataRepository))));
 
             container.RegisterType<IBaseEntityFrameworkRepository<RugbyTournament>, BaseEntityFrameworkRepository<RugbyTournament>>(
+                new ContainerControlledLifetimeManager(),
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyTournament>(container.Resolve<DbContext>(PublicSportDataRepository))));
 
             container.RegisterType<IBaseEntityFrameworkRepository<Log>, BaseEntityFrameworkRepository<Log>>(
+                new ContainerControlledLifetimeManager(),
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<Log>(container.Resolve<DbContext>(PublicSportDataRepository))));
         }
 
         private static void ApplyRegistrationsForRepositoryEntityFrameworkSystemSportData(IUnityContainer container)
         {
             container.RegisterType<DbContext, SystemSportDataContext>(SystemSportDataRepository);
-
-            container.RegisterType<IBaseEntityFrameworkRepository<DataProvider>, BaseEntityFrameworkRepository<DataProvider>>(
-                new InjectionFactory(x => new BaseEntityFrameworkRepository<DataProvider>(container.Resolve<DbContext>(SystemSportDataRepository))));
 
             container.RegisterType<IBaseEntityFrameworkRepository<LegacyAuthFeedConsumer>, BaseEntityFrameworkRepository<LegacyAuthFeedConsumer>>(
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<LegacyAuthFeedConsumer>(container.Resolve<DbContext>(SystemSportDataRepository))));
