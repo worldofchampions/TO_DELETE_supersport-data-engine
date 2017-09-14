@@ -9,6 +9,6 @@
         void IngestFixturesForActiveTournaments(CancellationToken cancellationToken);
         void IngestLogsForActiveTournaments(CancellationToken cancellationToken);
         void IngestRugbyResultsForAllFixtures(CancellationToken cancellationToken);
-        void IngestFixturesForTournamentSeason(CancellationToken cancellationToken, int tournamentId, int v);
+        void IngestFixturesForTournamentSeason(CancellationToken cancellationToken, int tournamentId, int seasonId);
     }
 }
