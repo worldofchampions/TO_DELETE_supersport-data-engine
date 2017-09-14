@@ -9,6 +9,7 @@
     using System.Threading.Tasks;
     using System.Threading;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+    using System.Collections.Generic;
 
     public class RugbyIngestWorkerService : IRugbyIngestWorkerService
     {
@@ -191,7 +192,7 @@
             }
         }
 
-        private async Task PersistFixturesResultsInRepository(RugbyFixturesResponse allResults, CancellationToken cancellationToken)
+        private async Task PersistFixturesResultsInRepository(RugbyFixturesResponse fixturesResponse, CancellationToken cancellationToken)
         {
             // Only persist data for completed matches.
             // The provider endpoint for results is just a variation of the fixtures endpoint,
@@ -209,5 +210,59 @@
 
             // TODO: Also persist in SQL DB.
         }
+
+        public async Task IngestRugbyResultsForCurrentDayFixtures(CancellationToken cancellationToken)
+        {
+            var currentRoundFixtures = GetCurrentDayRoundFixturesForActiveTournaments();
+            
+            foreach (var round in currentRoundFixtures)
+            {
+                var results = await _statsProzoneIngestService.IngestFixtureResults(round.Item1, round.Item2, round.Item3);
+
+                // TODO: Also persist in SQL DB.
+            }
+        }
+
+        public async Task IngestRugbyResultsForFixturesInResultsState(CancellationToken cancellationToken)
+        {
+            var fixtures = GetRoundFixturesInResultsStateForActiveTournaments();
+
+            foreach (var fixture in fixtures)
+            {
+                var results = await _statsProzoneIngestService.IngestFixtureResults(fixture.Item1, fixture.Item2, fixture.Item3);
+
+                // TODO: Also persist in SQL DB.
+            }
+        }
+
+        #region TempHelpers_Remove_Once_Properly_Implemented
+        /// <summary>
+        /// Returs round fixtures playing on current day.
+        /// </summary>
+        /// <param name="tournamemnts"></param>
+        /// <returns></returns>
+        public List<Tuple<int, int, int>> GetCurrentDayRoundFixturesForActiveTournaments()
+        {
+            var activeTournaments = _rugbyTournamentRepository.Where(t => t.IsEnabled);
+
+            //TODO: Must be able to deduce the following fields via repository
+            int tournamentId = 121;
+            int seasonId = 2017;
+            int roundId = 1;
+
+            return new List<Tuple<int, int, int>> { new Tuple<int, int, int>(tournamentId, seasonId, roundId) };
+        }
+
+        /// <summary>
+        /// Returs round fixtures that has been played.
+        /// </summary>
+        /// <param name="list"></param>
+        /// <returns></returns>
+        private List<Tuple<int, int, int>> GetRoundFixturesInResultsStateForActiveTournaments()
+        {
+            //TODO:
+            return GetCurrentDayRoundFixturesForActiveTournaments();
+        } 
+        #endregion
     }
 }

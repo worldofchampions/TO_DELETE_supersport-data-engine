@@ -52,6 +52,7 @@
     <Compile Include="Boundaries\ApplicationLogic\Interfaces\ITemporaryExampleService.cs" />
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\Models\RugbyFixtures.cs" />
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\Models\RugbyLogs.cs" />
+    <Compile Include="Boundaries\Gateway.Http.StatsProzone\ResponseModels\RoundFixtureResultsResponse.cs" />
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\Models\RugbySeasons.cs" />
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\ResponseModels\RugbyFixturesResponse.cs" />
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\ResponseModels\RugbyLogsResponse.cs" />

@@ -3,6 +3,7 @@
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.ResponseModels;
     using System.Threading;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+    using System.Threading.Tasks;
 
     public interface IStatsProzoneRugbyIngestService
     {
@@ -12,5 +13,6 @@
         RugbySeasonResponse IngestSeasonData(CancellationToken cancellationToken, int tournamentId, int tournamentYear);
         // TODO: Ingest
         object IngestFixturesForTournamentSeason(int tournamentId, int seasonId, CancellationToken cancellationToken);
+        Task<RugbyFixturesResponse> IngestFixtureResults(int competionId, int seasonId, int roundId);
     }
 }
