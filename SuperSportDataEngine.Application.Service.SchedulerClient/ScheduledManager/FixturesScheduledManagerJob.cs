@@ -53,21 +53,21 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
             {
                 if(!_childJobIdsForCurrentTournaments.ContainsKey(tournament.ProviderTournamentId))
                 {
-                    CreateChildJobFor(tournament.ProviderTournamentId, tournament.Name);
-                    _childJobIdsForCurrentTournaments[tournament.ProviderTournamentId] = ConfigurationManager.AppSettings["ScheduleMangerJob_Fixtures_JobIdPrefix"] + tournament.Name;
+                    var jobId = ConfigurationManager.AppSettings["ScheduleMangerJob_Fixtures_JobIdPrefix"] + tournament.Name;
+                    var jobCronExpression = ConfigurationManager.AppSettings["ScheduleMangerJob_Fixtures_JobCronExpression"];
+
+                    CreateChildJobFor(jobId, jobCronExpression, tournament.ProviderTournamentId, tournament.Name);
+                    _childJobIdsForCurrentTournaments[tournament.ProviderTournamentId] = jobId;
                 }
             }
             _timer.Start();
         }
 
-        private void CreateChildJobFor(int tournamentId, string tournamentName)
+        private void CreateChildJobFor(string jobId, string jobCronExpression, int tournamentId, string tournamentName)
         {
-            var idPrefix = ConfigurationManager.AppSettings["ScheduleMangerJob_Fixtures_JobIdPrefix"];
-            var jobCronExpression = ConfigurationManager.AppSettings["ScheduleMangerJob_Fixtures_JobCronExpression"];
-
             RecurringJob.AddOrUpdate(
-                idPrefix + tournamentName, 
-                () => _rugbyIngestService.IngestFixturesForActiveTournaments(CancellationToken.None), 
+                jobId, 
+                () => _rugbyIngestService.IngestFixturesForTournamentSeason(CancellationToken.None, tournamentId, /* seasonId */ 2017 ), 
                 jobCronExpression, 
                 TimeZoneInfo.Utc, 
                 HangfireQueueConfiguration.HighPriority);

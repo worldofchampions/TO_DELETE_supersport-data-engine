@@ -10,5 +10,7 @@
         RugbyFixturesResponse IngestFixturesForTournament(RugbyTournament activeTournaments, CancellationToken cancellationToken);
         RugbyLogsResponse IngestLogsForTournament(RugbyTournament activeTournaments, CancellationToken cancellationToken);
         RugbySeasonResponse IngestSeasonData(CancellationToken cancellationToken, int tournamentId, int tournamentYear);
+        // TODO: Ingest
+        object IngestFixturesForTournamentSeason(int tournamentId, int seasonId, CancellationToken cancellationToken);
     }
 }

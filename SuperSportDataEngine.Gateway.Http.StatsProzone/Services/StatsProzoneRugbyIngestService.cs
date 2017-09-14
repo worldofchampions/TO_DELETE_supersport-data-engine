@@ -165,5 +165,13 @@
                 }
             }
         }
+
+        public object IngestFixturesForTournamentSeason(int tournamentId, int seasonId, CancellationToken cancellationToken)
+        {
+            // Make provider call to http://rugbyunion-api.stats.com/api/ru/competitions/fixtures/tournamentId/seasonId
+            // Maybe even specify the round number?
+
+            return new object();
+        }
     }
 }

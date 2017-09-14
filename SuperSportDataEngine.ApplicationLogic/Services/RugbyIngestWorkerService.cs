@@ -68,6 +68,7 @@
             var tour = _rugbyTournamentRepository.Where(t => t.ProviderTournamentId == providerTournamentId).ToList().FirstOrDefault();
             var newEntry = new RugbySeason()
             {
+                Id = seasonEntry != null ? seasonEntry.Id : Guid.NewGuid(),
                 ProviderSeasonId = providerSeasonId,
                 RugbyTournament = tour,
                 IsCurrent = isSeasonCurrentlyActive,
@@ -148,7 +149,7 @@
 
                 var newEntry = new RugbyTournament
                 {
-                    Id = entry != null && entry.Id != null ? entry.Id : Guid.NewGuid(),
+                    Id = entry != null ? entry.Id : Guid.NewGuid(),
                     ProviderTournamentId = competition.id,
                     Name = competition.name,
                     IsEnabled = entry != null,
@@ -166,16 +167,16 @@
                 {
                     _rugbyTournamentRepository.Update(newEntry);
                 }
-            }
 
-            try
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                await _rugbyTournamentRepository.SaveAsync();
-            }
-            catch (Exception e)
-            {
-                throw e;
+                try
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    await _rugbyTournamentRepository.SaveAsync();
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
             }
         }
 
@@ -195,6 +196,18 @@
             // Only persist data for completed matches.
             // The provider endpoint for results is just a variation of the fixtures endpoint,
             // It will also return results for completed matches.
+        }
+
+        public void IngestFixturesForTournamentSeason(CancellationToken cancellationToken, int tournamentId, int seasonId)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return;
+
+            var fixtures =
+                _statsProzoneIngestService.IngestFixturesForTournamentSeason(
+                    tournamentId, seasonId, cancellationToken);
+
+            // TODO: Also persist in SQL DB.
         }
     }
 }
