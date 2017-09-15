@@ -60,7 +60,7 @@
             {
                 var season = _statsProzoneIngestService.IngestSeasonData(cancellationToken, tournament.ProviderTournamentId, DateTime.Now.Year);
 
-                await PersistRugbySeasonDataToSystemSportsDataRepository(cancellationToken, season);
+                PersistRugbySeasonDataToSystemSportsDataRepository(cancellationToken, season);
             }
         }
 
@@ -75,7 +75,7 @@
                     .Where(s => s.RugbyTournament.ProviderTournamentId == providerTournamentId && s.ProviderSeasonId == providerSeasonId)
                     .FirstOrDefault();
 
-            var tour = _rugbyTournamentRepository.Where(t => t.ProviderTournamentId == providerTournamentId).ToList().FirstOrDefault();
+            var tour = _rugbyTournamentRepository.Where(t => t.ProviderTournamentId == providerTournamentId).FirstOrDefault();
             var newEntry = new RugbySeason()
             {
                 Id = seasonEntry != null ? seasonEntry.Id : Guid.NewGuid(),
@@ -347,7 +347,20 @@
         {
             //TODO:
             return GetCurrentDayRoundFixturesForActiveTournaments();
-        } 
+        }
         #endregion
+
+        public async Task IngestOneMonthsFixturesForTournament(CancellationToken cancellationToken, int providerTournamentId)
+        {
+            var activeTournaments = _rugbyTournamentRepository.Where(t => t.IsEnabled);
+            foreach (var tournament in activeTournaments)
+            {
+                var season = _statsProzoneIngestService.IngestSeasonData(cancellationToken, tournament.ProviderTournamentId, DateTime.Now.Year);
+
+                // Process and persist one months data asynchronously.
+            }
+
+            return;
+        }
     }
 }

@@ -75,7 +75,7 @@
 
         private static void ApplyRegistrationsForRepositoryEntityFrameworkPublicSportData(IUnityContainer container)
         {
-            container.RegisterType<DbContext, PublicSportDataContext>(PublicSportDataRepository, new ContainerControlledLifetimeManager());
+            container.RegisterType<DbContext, PublicSportDataContext>(PublicSportDataRepository, new PerThreadLifetimeManager());
 
             container.RegisterType<IBaseEntityFrameworkRepository<DataProvider>, BaseEntityFrameworkRepository<DataProvider>>(
                 new ContainerControlledLifetimeManager(),
@@ -104,7 +104,7 @@
 
         private static void ApplyRegistrationsForRepositoryEntityFrameworkSystemSportData(IUnityContainer container)
         {
-            container.RegisterType<DbContext, SystemSportDataContext>(SystemSportDataRepository, new ContainerControlledLifetimeManager());
+            container.RegisterType<DbContext, SystemSportDataContext>(SystemSportDataRepository, new PerThreadLifetimeManager());
 
             container.RegisterType<IBaseEntityFrameworkRepository<LegacyAuthFeedConsumer>, BaseEntityFrameworkRepository<LegacyAuthFeedConsumer>>(
                 new ContainerControlledLifetimeManager(),

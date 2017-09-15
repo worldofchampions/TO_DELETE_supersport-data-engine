@@ -13,5 +13,6 @@
         Task IngestRugbyResultsForFixturesInResultsState(CancellationToken cancellationToken);
         Task IngestFixturesForTournamentSeason(CancellationToken cancellationToken, int tournamentId, int seasonId);
         Task IngestLogsForCurrentTournaments(CancellationToken cancellationToken);
+        Task IngestOneMonthsFixturesForTournament(CancellationToken cancellationToken, int providerTournamentId);
     }
 }

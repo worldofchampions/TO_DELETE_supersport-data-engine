@@ -51,7 +51,14 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public SchedulerStateForManagerJobPolling GetSchedulerStateForManagerJobPolling(Guid tournamentId)
         {
-            var season = _schedulerTrackingRugbySeasonRepository.Where(s => s.TournamentId == tournamentId && s.RugbySeasonStatus == RugbySeasonStatus.InProgress).FirstOrDefault();
+            var season = 
+                _schedulerTrackingRugbySeasonRepository
+                    .Where(
+                        s => s.TournamentId == tournamentId && 
+                        ( s.RugbySeasonStatus == RugbySeasonStatus.InProgress ||
+                          s.RugbySeasonStatus == RugbySeasonStatus.NotActive ))
+                   .FirstOrDefault();
+
             return season != null ? season.SchedulerStateForManagerJobPolling : SchedulerStateForManagerJobPolling.Undefined;
         }
 

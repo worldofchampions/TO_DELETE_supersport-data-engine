@@ -42,10 +42,36 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
         private async void UpdateManagerJobs(object sender, ElapsedEventArgs e)
         {
             await CreateChildJobsForTournamentsWithSeasonsInProgress();
+            await CreateChildJobForActiveTournaments();
             await DeleteChildJobsForTournamentsWithSeasonsEnded();
             await DeleteChildJobsForInactiveTournaments();
 
             _timer.Start();
+        }
+
+        private async Task CreateChildJobForActiveTournaments()
+        {
+            var activeTournaments =
+                    _rugbyService
+                    .GetActiveTournaments();
+
+            foreach (var tournament in activeTournaments)
+            {
+                //if (_rugbyService.GetSchedulerStateForManagerJobPolling(tournament.Id) == SchedulerStateForManagerJobPolling.NotRunning)
+                {
+                    var jobId = ConfigurationManager.AppSettings["ScheduleMangerJob_Fixtures_ActiveTournaments_JobIdPrefix"] + tournament.Name;
+                    var jobCronExpression = ConfigurationManager.AppSettings["ScheduleMangerJob_Fixtures_ActiveTournaments_JobCronExpression"];
+
+                    RecurringJob.AddOrUpdate(
+                        jobId,
+                        () => _rugbyIngestService.IngestOneMonthsFixturesForTournament(CancellationToken.None, tournament.ProviderTournamentId),
+                        jobCronExpression,
+                        TimeZoneInfo.Utc,
+                        HangfireQueueConfiguration.HighPriority);
+
+                    await _rugbyService.SetSchedulerStatusPollingForTournamentToRunning(tournament.Id);
+                }
+            }
         }
 
         private async Task DeleteChildJobsForInactiveTournaments()
@@ -84,8 +110,8 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
             {
                 if (_rugbyService.GetSchedulerStateForManagerJobPolling(tournament.Id) == SchedulerStateForManagerJobPolling.NotRunning)
                 {
-                    var jobId = ConfigurationManager.AppSettings["ScheduleMangerJob_Fixtures_JobIdPrefix"] + tournament.Name;
-                    var jobCronExpression = ConfigurationManager.AppSettings["ScheduleMangerJob_Fixtures_JobCronExpression"];
+                    var jobId = ConfigurationManager.AppSettings["ScheduleMangerJob_Fixtures_CurrentTournaments_JobIdPrefix"] + tournament.Name;
+                    var jobCronExpression = ConfigurationManager.AppSettings["ScheduleMangerJob_Fixtures_CurrentTournaments_JobCronExpression"];
                     
                     RecurringJob.AddOrUpdate(
                         jobId,
