@@ -21,6 +21,7 @@
         private readonly IBaseEntityFrameworkRepository<RugbyTournament> _rugbyTournamentRepository;
         private readonly IBaseEntityFrameworkRepository<RugbySeason> _rugbySeasonRepository;
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> _schedulerTrackingRugbySeasonRepository;
+        private readonly IBaseEntityFrameworkRepository<RugbyVenue> _rugbyVenueRepository;
         private readonly IRugbyService _rugbyService;
 
         public RugbyIngestWorkerService(
@@ -29,6 +30,7 @@
             IBaseEntityFrameworkRepository<RugbyTournament> rugbyTournamentRepository,
             IBaseEntityFrameworkRepository<RugbySeason> rugbySeasonRepository,
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> schedulerTrackingRugbySeasonRepository,
+            IBaseEntityFrameworkRepository<RugbyVenue> rugbyVenueRepository,
             IRugbyService rugbyService)
         {
             _statsProzoneIngestService = statsProzoneIngestService;
@@ -36,6 +38,7 @@
             _rugbyTournamentRepository = rugbyTournamentRepository;
             _rugbySeasonRepository = rugbySeasonRepository;
             _schedulerTrackingRugbySeasonRepository = schedulerTrackingRugbySeasonRepository;
+            _rugbyVenueRepository = rugbyVenueRepository;
             _rugbyService = rugbyService;
         }
 
@@ -47,10 +50,40 @@
             var entitiesResponse =
                 _statsProzoneIngestService.IngestRugbyReferenceData(cancellationToken);
 
+            await PersistVenuesInPublicSportsDataRepository(cancellationToken, entitiesResponse);
             await PersistRugbyTournamentsInRepositoryAsync(entitiesResponse, cancellationToken);
             await IngestRugbyTournamentSeasons(cancellationToken);
 
             _mongoDbRepository.Save(entitiesResponse);
+        }
+
+        private async Task PersistVenuesInPublicSportsDataRepository(CancellationToken cancellationToken, RugbyEntitiesResponse entitiesResponse)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return;
+
+            foreach(var venue in entitiesResponse.Entities.venues)
+            {
+                // Lookup in db
+                var venueInDb = _rugbyVenueRepository.Where(v => v.ProviderVenueId == venue.id).FirstOrDefault();
+
+                if (venueInDb == null)
+                {
+                    var newVenue = new RugbyVenue()
+                    {
+                        ProviderVenueId = venue.id,
+                        Name = venue.name
+                    };
+                    _rugbyVenueRepository.Add(newVenue);
+                }
+                else
+                {
+                    venueInDb.Name = venue.name;
+                    venueInDb.ProviderVenueId = venue.id;
+                }
+
+                await _rugbyVenueRepository.SaveAsync();
+            }
         }
 
         private async Task IngestRugbyTournamentSeasons(CancellationToken cancellationToken)

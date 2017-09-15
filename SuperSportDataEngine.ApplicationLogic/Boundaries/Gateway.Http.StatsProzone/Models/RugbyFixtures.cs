@@ -21,7 +21,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsPro
     {
         public List<Team> teams { get; set; }
         public string game { get; set; }
-        public object gameId { get; set; }
+        public long gameId { get; set; }
         public int gameStateId { get; set; }
         public string gameStateName { get; set; }
         public int gameNumber { get; set; }
