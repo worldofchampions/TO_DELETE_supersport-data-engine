@@ -22,7 +22,8 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
         {
             UpdateRecurringJobDefinition_ReferenceData();
             UpdateRecurringJobDefinition_Fixtures();
-            UpdateRecurringJobDefinition_Logs();
+            UpdateRecurringJobDefinition_LogsForActiveTournaments();
+            UpdateRecurringJobDefinition_LogsForCurrentTournaments();
             UpdateRecurringJobDefinition_AllFixtures();
             UpdateRecurringJobDefinition_ResultsForCurrentDayFixtures();
             UpdateRecurringJobDefinition_ResultsForFixturesInResultsState();
@@ -67,14 +68,26 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
             UpdateRecurringJobDefinition_AllFixtures();
         }
 
-        private void UpdateRecurringJobDefinition_Logs()
+        private void UpdateRecurringJobDefinition_LogsForActiveTournaments()
         {
             // Create a schedule for getting the
-            // fixtures for active tournaments for the current year from the provider.
+            // logs for active tournaments for the current year from the provider.
             RecurringJob.AddOrUpdate(
-                ConfigurationManager.AppSettings["FixedScheduledJob_LogsData_JobId"],
+                ConfigurationManager.AppSettings["FixedScheduledJob_LogsData_ActiveTournaments_JobId"],
                 () => _ingestService.IngestLogsForActiveTournaments(CancellationToken.None),
-                ConfigurationManager.AppSettings["FixedScheduledJob_LogsData_JobCronExpression"],
+                ConfigurationManager.AppSettings["FixedScheduledJob_LogsData_ActiveTournaments_JobCronExpression"],
+                System.TimeZoneInfo.Utc,
+                HangfireQueueConfiguration.NormalPriority);
+        }
+
+        private void UpdateRecurringJobDefinition_LogsForCurrentTournaments()
+        {
+            // Create a schedule for getting the
+            // logs for current tournaments for the current season from the provider.
+            RecurringJob.AddOrUpdate(
+                ConfigurationManager.AppSettings["FixedScheduledJob_LogsData_CurrentTournaments_JobId"],
+                () => _ingestService.IngestLogsForCurrentTournaments(CancellationToken.None),
+                ConfigurationManager.AppSettings["FixedScheduledJob_LogsData_CurrentTournaments_JobCronExpression"],
                 System.TimeZoneInfo.Utc,
                 HangfireQueueConfiguration.NormalPriority);
         }

@@ -3,7 +3,8 @@
     // Note: If/when extending this, do not change any existing enum int values, as these are being persisted at database level.
     public enum SchedulerStateForManagerJobPolling
     {
-        NotRunning = 0,
-        Running = 1,
+        Undefined = 0,
+        NotRunning = 1,
+        Running = 2,
     }
 }

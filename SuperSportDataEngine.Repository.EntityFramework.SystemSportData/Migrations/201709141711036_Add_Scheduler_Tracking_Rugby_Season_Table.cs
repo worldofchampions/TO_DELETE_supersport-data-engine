@@ -14,7 +14,6 @@ namespace SuperSportDataEngine.Repository.EntityFramework.SystemSportData.Migrat
                         SeasonId = c.Guid(nullable: false),
                         TournamentId = c.Guid(nullable: false),
                         RugbySeasonStatus = c.Int(nullable: false),
-                        SchedulerStateForManagerJobPolling = c.Int(nullable: false),
                 })
                 .PrimaryKey(t => new { t.SeasonId, t.TournamentId });
             
