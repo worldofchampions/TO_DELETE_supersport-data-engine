@@ -2,27 +2,25 @@
 {
     using System;
 
-    public class RugbySeason
+    public class RugbyTeam
     {
         /// <summary> The primary internal record identifier. </summary>
         public Guid Id { get; set; }
 
+        /// <summary> A unique int record identifier for legacy purposes. </summary>
+        public int LegacyTeamId { get; set; }
+
         /// <summary> The provider's record identifier. </summary>
-        public int ProviderSeasonId { get; set; }
+        public int ProviderTeamId { get; set; }
 
         /// <summary> A provider driven value. </summary>
         public string Name { get; set; }
 
         /// <summary> A provider driven value. </summary>
-        public bool IsCurrent { get; set; }
+        public string Abbreviation { get; set; }
 
         /// <summary> A provider driven value. </summary>
-        public DateTimeOffset StartDateTime { get; set; }
-
-        /// <summary> A provider driven value. </summary>
-        public DateTimeOffset EndDateTime { get; set; }
-
-        public virtual RugbyTournament RugbyTournament { get; set; }
+        public string LogoUrl { get; set; }
 
         public virtual DataProvider DataProvider { get; set; }
     }

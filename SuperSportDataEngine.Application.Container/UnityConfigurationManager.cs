@@ -89,13 +89,25 @@
                 new ContainerControlledLifetimeManager(),
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<Sport>(container.Resolve<DbContext>(PublicSportDataRepository))));
 
+            container.RegisterType<IBaseEntityFrameworkRepository<RugbyFixture>, BaseEntityFrameworkRepository<RugbyFixture>>(
+                new ContainerControlledLifetimeManager(),
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyFixture>(container.Resolve<DbContext>(PublicSportDataRepository))));
+
             container.RegisterType<IBaseEntityFrameworkRepository<RugbySeason>, BaseEntityFrameworkRepository<RugbySeason>>(
                 new ContainerControlledLifetimeManager(),
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbySeason>(container.Resolve<DbContext>(PublicSportDataRepository))));
 
+            container.RegisterType<IBaseEntityFrameworkRepository<RugbyTeam>, BaseEntityFrameworkRepository<RugbyTeam>>(
+                new ContainerControlledLifetimeManager(),
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyTeam>(container.Resolve<DbContext>(PublicSportDataRepository))));
+
             container.RegisterType<IBaseEntityFrameworkRepository<RugbyTournament>, BaseEntityFrameworkRepository<RugbyTournament>>(
                 new ContainerControlledLifetimeManager(),
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyTournament>(container.Resolve<DbContext>(PublicSportDataRepository))));
+
+            container.RegisterType<IBaseEntityFrameworkRepository<RugbyVenue>, BaseEntityFrameworkRepository<RugbyVenue>>(
+                new ContainerControlledLifetimeManager(),
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyVenue>(container.Resolve<DbContext>(PublicSportDataRepository))));
 
             container.RegisterType<IBaseEntityFrameworkRepository<Log>, BaseEntityFrameworkRepository<Log>>(
                 new ContainerControlledLifetimeManager(),
