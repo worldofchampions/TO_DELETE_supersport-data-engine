@@ -22,6 +22,7 @@
         private readonly IBaseEntityFrameworkRepository<RugbySeason> _rugbySeasonRepository;
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> _schedulerTrackingRugbySeasonRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyVenue> _rugbyVenueRepository;
+        private readonly IBaseEntityFrameworkRepository<RugbyTeam> _rugbyTeamRepository;
         private readonly IRugbyService _rugbyService;
 
         public RugbyIngestWorkerService(
@@ -31,6 +32,7 @@
             IBaseEntityFrameworkRepository<RugbySeason> rugbySeasonRepository,
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> schedulerTrackingRugbySeasonRepository,
             IBaseEntityFrameworkRepository<RugbyVenue> rugbyVenueRepository,
+            IBaseEntityFrameworkRepository<RugbyTeam> rugbyTeamRepository,
             IRugbyService rugbyService)
         {
             _statsProzoneIngestService = statsProzoneIngestService;
@@ -39,6 +41,7 @@
             _rugbySeasonRepository = rugbySeasonRepository;
             _schedulerTrackingRugbySeasonRepository = schedulerTrackingRugbySeasonRepository;
             _rugbyVenueRepository = rugbyVenueRepository;
+            _rugbyTeamRepository = rugbyTeamRepository;
             _rugbyService = rugbyService;
         }
 
@@ -51,10 +54,43 @@
                 _statsProzoneIngestService.IngestRugbyReferenceData(cancellationToken);
 
             await PersistVenuesInPublicSportsDataRepository(cancellationToken, entitiesResponse);
+            await PersistTeamsInPublicSportsDataRepository(cancellationToken, entitiesResponse);
             await PersistRugbyTournamentsInRepositoryAsync(entitiesResponse, cancellationToken);
             await IngestRugbyTournamentSeasons(cancellationToken);
 
             _mongoDbRepository.Save(entitiesResponse);
+        }
+
+        private async Task PersistTeamsInPublicSportsDataRepository(CancellationToken cancellationToken, RugbyEntitiesResponse entitiesResponse)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return;
+
+            foreach (var team in entitiesResponse.Entities.teams)
+            {
+                var teamInDb = _rugbyTeamRepository.Where(t => t.ProviderTeamId == team.id).FirstOrDefault();
+
+                if (teamInDb == null)
+                {
+                    var newTeam = new RugbyTeam()
+                    {
+                        ProviderTeamId = team.id,
+                        Name = team.name,
+                        LogoUrl = team.TeamLogoURL,
+                        LegacyTeamId = team.id,
+                        Abbreviation = team.TeamAbbrev
+
+                    };
+                    _rugbyTeamRepository.Add(newTeam);
+                }
+                else
+                {
+                    teamInDb.Name = team.name;
+                    teamInDb.ProviderTeamId = team.id;
+                }
+
+                await _rugbyTeamRepository.SaveAsync();
+            }
         }
 
         private async Task PersistVenuesInPublicSportsDataRepository(CancellationToken cancellationToken, RugbyEntitiesResponse entitiesResponse)
