@@ -217,25 +217,31 @@
                     var fixtureInDb = _rugbyFixturerRepository.Where(f => f.ProviderFixtureId == fixtureId).FirstOrDefault();
                     DateTimeOffset.TryParse(fixture.startTimeUTC, out DateTimeOffset startTime);
                     var teams = fixture.teams.ToArray();
-                    var team1 = teams[0];
-                    var team2 = teams[1];
-                    var teamA = _rugbyTeamRepository.Where(t => t.ProviderTeamId == team1.teamId).FirstOrDefault();
-                    var teamB = _rugbyTeamRepository.Where(t => t.ProviderTeamId == team2.teamId).FirstOrDefault();
+                    // We need temporary variables here.
+                    // Cannot use indexing in Linq Where clause.
+                    var team0 = teams[0];
+                    var team1 = teams[1];
+
+                    var teamA = _rugbyTeamRepository.Where(t => t.ProviderTeamId == team0.teamId).FirstOrDefault();
+                    var teamB = _rugbyTeamRepository.Where(t => t.ProviderTeamId == team1.teamId).FirstOrDefault();
+                    var newFixture = new RugbyFixture()
+                    {
+                        LegacyFixtureId = fixtureId,
+                        ProviderFixtureId = fixtureId,
+                        StartDateTime = startTime,
+                        RugbyVenue = _rugbyVenueRepository.Where(v => v.ProviderVenueId == fixture.venueId).FirstOrDefault(),
+                        RugbyTournament = tournament,
+                        HomeTeam = teamA,
+                        AwayTeam = teamB
+                    };
+
                     if (fixtureInDb == null)
                     {
-                        var newFixture = new RugbyFixture()
-                        {
-                            LegacyFixtureId = fixtureId,
-                            ProviderFixtureId = fixtureId,
-                            StartDateTime = startTime,
-                            RugbyVenue = _rugbyVenueRepository.Where(v => v.ProviderVenueId == fixture.venueId).FirstOrDefault(),
-                            RugbyTournament = tournament,
-                            HomeTeam = teamA,
-                            AwayTeam = teamB
-                        };
-
                         _rugbyFixturerRepository.Add(newFixture);
-                        
+                    }
+                    else
+                    {
+                        _rugbyFixturerRepository.Update(newFixture);
                     }
                 }
             }
