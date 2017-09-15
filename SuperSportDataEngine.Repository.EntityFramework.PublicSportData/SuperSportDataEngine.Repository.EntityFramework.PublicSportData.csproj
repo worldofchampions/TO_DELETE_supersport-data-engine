@@ -69,6 +69,10 @@
     <Compile Include="Migrations\201709150814279_Added_RugbyFixture_RugbyTeam_RugbyVenue_tables.Designer.cs">
       <DependentUpon>201709150814279_Added_RugbyFixture_RugbyTeam_RugbyVenue_tables.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201709151959178_ChangedIdsToLong_FixedAwayTeamPropertyName.cs" />
+    <Compile Include="Migrations\201709151959178_ChangedIdsToLong_FixedAwayTeamPropertyName.Designer.cs">
+      <DependentUpon>201709151959178_ChangedIdsToLong_FixedAwayTeamPropertyName.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -104,6 +108,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201709150814279_Added_RugbyFixture_RugbyTeam_RugbyVenue_tables.resx">
       <DependentUpon>201709150814279_Added_RugbyFixture_RugbyTeam_RugbyVenue_tables.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201709151959178_ChangedIdsToLong_FixedAwayTeamPropertyName.resx">
+      <DependentUpon>201709151959178_ChangedIdsToLong_FixedAwayTeamPropertyName.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
