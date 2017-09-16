@@ -127,7 +127,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 return currentSeason.ProviderSeasonId;
             }
 
-            throw new Exception("There is no season found in the DB for the tournamentId specified.");
+            return DateTime.Now.Year;
         }
     }
 }
