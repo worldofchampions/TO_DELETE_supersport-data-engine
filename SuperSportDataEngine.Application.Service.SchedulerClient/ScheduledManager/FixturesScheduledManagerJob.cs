@@ -112,10 +112,12 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
                 {
                     var jobId = ConfigurationManager.AppSettings["ScheduleMangerJob_Fixtures_CurrentTournaments_JobIdPrefix"] + tournament.Name;
                     var jobCronExpression = ConfigurationManager.AppSettings["ScheduleMangerJob_Fixtures_CurrentTournaments_JobCronExpression"];
-                    
+
+                    var seasonId = _rugbyService.GetCurrentProviderSeasonIdForTournament(tournament.Id);
+
                     RecurringJob.AddOrUpdate(
                         jobId,
-                        () => _rugbyIngestService.IngestFixturesForTournamentSeason(CancellationToken.None, tournament.ProviderTournamentId, /* seasonId */ 2017),
+                        () => _rugbyIngestService.IngestFixturesForTournamentSeason(CancellationToken.None, tournament.ProviderTournamentId, seasonId),
                         jobCronExpression,
                         TimeZoneInfo.Utc,
                         HangfireQueueConfiguration.HighPriority);

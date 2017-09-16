@@ -114,5 +114,20 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 _rugbyTournamentRepository
                     .Where(t => t.IsEnabled == false);
         }
+
+        public int GetCurrentProviderSeasonIdForTournament(Guid tournamentId)
+        {
+            var currentSeason =
+                _rugbySeasonRepository
+                    .Where(season => season.RugbyTournament.Id == tournamentId && season.IsCurrent)
+                    .FirstOrDefault();
+
+            if(currentSeason != null)
+            {
+                return currentSeason.ProviderSeasonId;
+            }
+
+            throw new Exception("There is no season found in the DB for the tournamentId specified.");
+        }
     }
 }
