@@ -2,7 +2,13 @@
 using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Services;
 using System;
+using System.Threading.Tasks;
 using System.Timers;
+using System.Linq;
+using System.Configuration;
+using Hangfire;
+using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
+using System.Threading;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient.LiveManager
 {
@@ -19,7 +25,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.LiveManager
             _timer = new System.Timers.Timer
             {
                 AutoReset = false,
-                Interval = TimeSpan.FromMinutes(1).TotalMilliseconds
+                Interval = TimeSpan.FromSeconds(10).TotalMilliseconds
             };
 
             _timer.Elapsed += new ElapsedEventHandler(UpdateManagerJobs);
@@ -31,7 +37,39 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.LiveManager
 
         private async void UpdateManagerJobs(object sender, ElapsedEventArgs e)
         {
+            await CreateChildJobsForLiveGamesFetchingMatchStats();
+
             _timer.Start();
+        }
+
+        private async Task CreateChildJobsForLiveGamesFetchingMatchStats()
+        {
+            var currentTournaments =
+                    _rugbyService.GetCurrentTournaments();
+
+            foreach (var tournament in currentTournaments)
+            {
+                var liveFixtures =
+                    _rugbyService.GetLiveFixturesForCurrentTournament(tournament.Id);
+
+                foreach (var fixture in liveFixtures)
+                {
+                    var jobId = ConfigurationManager.AppSettings["LiveMangerJob_LiveMatch_JobIdPrefix"] + fixture.Id;
+                    var jobCronExpression = ConfigurationManager.AppSettings["LiveMangerJob_LiveMatch_JobCronExpression"];
+
+                    RecurringJob.AddOrUpdate(
+                        jobId,
+                        () => DoTempLiveJobLogic(),
+                        jobCronExpression,
+                        TimeZoneInfo.Utc,
+                        HangfireQueueConfiguration.HighPriority);
+                }
+            }
+        }
+
+        public void DoTempLiveJobLogic()
+        {
+
         }
     }
 }
