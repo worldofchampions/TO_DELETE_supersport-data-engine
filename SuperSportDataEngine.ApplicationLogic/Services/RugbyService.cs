@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
 
 namespace SuperSportDataEngine.ApplicationLogic.Services
 {
@@ -17,18 +18,21 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         private readonly IBaseEntityFrameworkRepository<Log> _logRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyTournament> _rugbyTournamentRepository;
         private readonly IBaseEntityFrameworkRepository<RugbySeason> _rugbySeasonRepository;
-        private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> _schedulerTrackingRugbySeasonRepository; 
+        private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> _schedulerTrackingRugbySeasonRepository;
+        private readonly IBaseEntityFrameworkRepository<RugbyFixture> _rugbyFixturesRepository;
 
         public RugbyService(
             IBaseEntityFrameworkRepository<Log> logRepository,
             IBaseEntityFrameworkRepository<RugbyTournament> rugbyTournamentRepository,
             IBaseEntityFrameworkRepository<RugbySeason> rugbySeasonRepository,
-            IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> schedulerTrackingRugbySeasonRepository)
+            IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> schedulerTrackingRugbySeasonRepository,
+            IBaseEntityFrameworkRepository<RugbyFixture> rugbyFixturesRepository)
         {
             _logRepository = logRepository;
             _rugbyTournamentRepository = rugbyTournamentRepository;
             _rugbySeasonRepository = rugbySeasonRepository;
             _schedulerTrackingRugbySeasonRepository = schedulerTrackingRugbySeasonRepository;
+            _rugbyFixturesRepository = rugbyFixturesRepository;
         }
 
         public IEnumerable<LogEntity> GetLogs(string tournamentName)
@@ -113,6 +117,33 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             return 
                 _rugbyTournamentRepository
                     .Where(t => t.IsEnabled == false);
+        }
+
+        public int GetCurrentProviderSeasonIdForTournament(Guid tournamentId)
+        {
+            var currentSeason =
+                _rugbySeasonRepository
+                    .Where(season => season.RugbyTournament.Id == tournamentId && season.IsCurrent)
+                    .FirstOrDefault();
+
+            if(currentSeason != null)
+            {
+                return currentSeason.ProviderSeasonId;
+            }
+
+            return DateTime.Now.Year;
+        }
+
+        public IEnumerable<RugbyFixture> GetLiveFixturesForCurrentTournament(Guid tournamentId)
+        {
+            DateTimeOffset now = DateTimeOffset.Now;
+            DateTimeOffset nowPlus15Minutes = DateTimeOffset.Now.AddMinutes(15);
+            return 
+                _rugbyFixturesRepository
+                    .Where(
+                        fixture => fixture.RugbyTournament.Id == tournamentId &&
+                        fixture.RugbyFixtureStatus != RugbyFixtureStatus.GameEnd &&
+                        fixture.StartDateTime <= nowPlus15Minutes);
         }
     }
 }

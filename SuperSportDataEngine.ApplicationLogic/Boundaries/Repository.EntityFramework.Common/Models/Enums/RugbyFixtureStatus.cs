@@ -4,5 +4,9 @@
     public enum RugbyFixtureStatus
     {
         // TODO: Define the corresponding states (e.g. pre-match, in progress, final, cancellation, postmatch etc.)
+        PreMatch = 0,
+        InProgress = 1,
+        Final = 2,
+        GameEnd = 3
     }
 }

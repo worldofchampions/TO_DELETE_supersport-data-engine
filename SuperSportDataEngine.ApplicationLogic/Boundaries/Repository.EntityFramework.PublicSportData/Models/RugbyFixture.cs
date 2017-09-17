@@ -9,10 +9,10 @@
         public Guid Id { get; set; }
 
         /// <summary> A unique int record identifier for legacy purposes. </summary>
-        public int LegacyFixtureId { get; set; }
+        public long LegacyFixtureId { get; set; }
 
         /// <summary> The provider's record identifier. </summary>
-        public int ProviderFixtureId { get; set; }
+        public long ProviderFixtureId { get; set; }
 
         /// <summary> A provider driven value. </summary>
         public DateTimeOffset StartDateTime { get; set; }
@@ -25,7 +25,7 @@
 
         public virtual RugbyTeam HomeTeam { get; set; }
 
-        public virtual RugbyTeam AwayTeamTeam { get; set; }
+        public virtual RugbyTeam AwayTeam { get; set; }
 
         public virtual DataProvider DataProvider { get; set; }
     }
