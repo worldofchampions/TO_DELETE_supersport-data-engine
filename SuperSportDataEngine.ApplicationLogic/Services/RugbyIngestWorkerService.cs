@@ -13,6 +13,7 @@
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
 
     public class RugbyIngestWorkerService : IRugbyIngestWorkerService
     {
@@ -232,7 +233,8 @@
                         RugbyVenue = _rugbyVenueRepository.Where(v => v.ProviderVenueId == fixture.venueId).FirstOrDefault(),
                         RugbyTournament = tournament,
                         HomeTeam = teamA,
-                        AwayTeam = teamB
+                        AwayTeam = teamB,
+                        RugbyFixtureStatus = GetFixtureStatusFromProviderFixtureState(fixture.gameStateName)
                     };
 
                     if (fixtureInDb == null)
@@ -242,10 +244,25 @@
                     else
                     {
                         fixtureInDb.StartDateTime = startTime;
+                        fixtureInDb.RugbyFixtureStatus = GetFixtureStatusFromProviderFixtureState(fixture.gameStateName);
                         _rugbyFixturesRepository.Update(fixtureInDb);
                     }
                 }
             }
+        }
+
+        private RugbyFixtureStatus GetFixtureStatusFromProviderFixtureState(string gameStateName)
+        {
+            if (gameStateName == "Pre Game")
+                return RugbyFixtureStatus.PreMatch;
+
+            if (gameStateName == "Final")
+                return RugbyFixtureStatus.Final;
+
+            if (gameStateName == "Game End")
+                return RugbyFixtureStatus.GameEnd;
+
+            return RugbyFixtureStatus.InProgress;
         }
 
         private void PersistRugbySeasonDataInSchedulerTrackingRugbySeasonTable(RugbyFixturesResponse fixtures)
