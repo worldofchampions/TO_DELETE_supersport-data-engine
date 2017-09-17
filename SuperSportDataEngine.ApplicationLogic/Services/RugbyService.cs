@@ -20,19 +20,22 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         private readonly IBaseEntityFrameworkRepository<RugbySeason> _rugbySeasonRepository;
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> _schedulerTrackingRugbySeasonRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyFixture> _rugbyFixturesRepository;
+        private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> _schedulerTrackingRugbyFixtureRepository;
 
         public RugbyService(
             IBaseEntityFrameworkRepository<Log> logRepository,
             IBaseEntityFrameworkRepository<RugbyTournament> rugbyTournamentRepository,
             IBaseEntityFrameworkRepository<RugbySeason> rugbySeasonRepository,
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> schedulerTrackingRugbySeasonRepository,
-            IBaseEntityFrameworkRepository<RugbyFixture> rugbyFixturesRepository)
+            IBaseEntityFrameworkRepository<RugbyFixture> rugbyFixturesRepository,
+            IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> schedulerTrackingRugbyFixtureRepository)
         {
             _logRepository = logRepository;
             _rugbyTournamentRepository = rugbyTournamentRepository;
             _rugbySeasonRepository = rugbySeasonRepository;
             _schedulerTrackingRugbySeasonRepository = schedulerTrackingRugbySeasonRepository;
             _rugbyFixturesRepository = rugbyFixturesRepository;
+            _schedulerTrackingRugbyFixtureRepository = schedulerTrackingRugbyFixtureRepository;
         }
 
         public IEnumerable<LogEntity> GetLogs(string tournamentName)
@@ -144,6 +147,19 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                         fixture => fixture.RugbyTournament.Id == tournamentId &&
                         fixture.RugbyFixtureStatus != RugbyFixtureStatus.Final &&
                         fixture.StartDateTime <= nowPlus15Minutes);
+        }
+
+        public async Task SetSchedulerStatusPollingForFixtureToLivePolling(Guid fixtureId)
+        {
+            var fixture =
+                    _schedulerTrackingRugbyFixtureRepository.Where(
+                        f => f.FixtureId == fixtureId).FirstOrDefault();
+
+            if(fixture != null)
+            {
+                fixture.SchedulerStateFixtures = SchedulerStateForRugbyFixturePolling.LivePolling;
+                await _schedulerTrackingRugbyFixtureRepository.SaveAsync();
+            }
         }
     }
 }

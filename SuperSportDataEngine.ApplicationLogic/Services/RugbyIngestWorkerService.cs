@@ -22,6 +22,7 @@
         private readonly IBaseEntityFrameworkRepository<RugbyTournament> _rugbyTournamentRepository;
         private readonly IBaseEntityFrameworkRepository<RugbySeason> _rugbySeasonRepository;
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> _schedulerTrackingRugbySeasonRepository;
+        private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> _schedulerTrackingRugbyFixtureRepoitory;
         private readonly IBaseEntityFrameworkRepository<RugbyVenue> _rugbyVenueRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyTeam> _rugbyTeamRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyFixture> _rugbyFixturesRepository;
@@ -33,6 +34,7 @@
             IBaseEntityFrameworkRepository<RugbyTournament> rugbyTournamentRepository,
             IBaseEntityFrameworkRepository<RugbySeason> rugbySeasonRepository,
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> schedulerTrackingRugbySeasonRepository,
+            IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> schedulerTrackingRugbyFixtureRepoitory,
             IBaseEntityFrameworkRepository<RugbyVenue> rugbyVenueRepository,
             IBaseEntityFrameworkRepository<RugbyTeam> rugbyTeamRepository,
             IBaseEntityFrameworkRepository<RugbyFixture> rugbyFixturerRepository,
@@ -43,6 +45,7 @@
             _rugbyTournamentRepository = rugbyTournamentRepository;
             _rugbySeasonRepository = rugbySeasonRepository;
             _schedulerTrackingRugbySeasonRepository = schedulerTrackingRugbySeasonRepository;
+            _schedulerTrackingRugbyFixtureRepoitory = schedulerTrackingRugbyFixtureRepoitory;
             _rugbyVenueRepository = rugbyVenueRepository;
             _rugbyTeamRepository = rugbyTeamRepository;
             _rugbyFixturesRepository = rugbyFixturerRepository;
@@ -192,6 +195,7 @@
 
                 // TODO: Also persist in SQL DB.
                 PersistRugbyFixturesToPublicSportsRepository(cancellationToken, fixtures);
+                PersistRugbyFixturesToSchedulerTrackingRugbyFixturesTable(fixtures);
                 PersistRugbySeasonDataInSchedulerTrackingRugbySeasonTable(fixtures);
                 _mongoDbRepository.Save(fixtures);
             }
@@ -199,6 +203,41 @@
             // Saving to the DB's should not be done inside a for-loop (like above)
             await _rugbyFixturesRepository.SaveAsync();
             await _schedulerTrackingRugbySeasonRepository.SaveAsync();
+            await _schedulerTrackingRugbyFixtureRepoitory.SaveAsync();
+        }
+
+        private void PersistRugbyFixturesToSchedulerTrackingRugbyFixturesTable(RugbyFixturesResponse fixtures)
+        {
+            foreach(var roundFixtures in fixtures.Fixtures.roundFixtures)
+            {
+                foreach(var fixture in roundFixtures.gameFixtures)
+                {
+                    var fixtureInDb = _rugbyFixturesRepository.Where(f => f.ProviderFixtureId == fixture.gameId).FirstOrDefault();
+                    var fixtureGuid = fixtureInDb.Id;
+                    var tournamentGuid = fixtureInDb.RugbyTournament.Id;
+
+                    var fixtureSchedule = 
+                            _schedulerTrackingRugbyFixtureRepoitory
+                                .Where(
+                                    f => f.FixtureId == fixtureGuid && f.TournamentId == tournamentGuid)
+                                .FirstOrDefault();
+
+                    if(fixtureSchedule == null)
+                    {
+                        var newFixtureSchedule = new SchedulerTrackingRugbyFixture()
+                        {
+                            FixtureId = fixtureGuid,
+                            TournamentId = tournamentGuid,
+                            StartDateTime = fixtureInDb.StartDateTime,
+                            EndedDateTime = DateTimeOffset.MinValue,
+                            RugbyFixtureStatus = GetFixtureStatusFromProviderFixtureState(fixture.gameStateName),
+                            SchedulerStateFixtures = SchedulerStateForRugbyFixturePolling.SchedulingNotYetStarted
+                        };
+
+                        _schedulerTrackingRugbyFixtureRepoitory.Add(newFixtureSchedule);
+                    }
+                }
+            }
         }
 
         private void PersistRugbyFixturesToPublicSportsRepository(CancellationToken cancellationToken, RugbyFixturesResponse fixtures)

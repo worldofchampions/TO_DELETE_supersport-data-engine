@@ -63,6 +63,8 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.LiveManager
                         jobCronExpression,
                         TimeZoneInfo.Utc,
                         HangfireQueueConfiguration.HighPriority);
+
+                    await _rugbyService.SetSchedulerStatusPollingForFixtureToLivePolling(fixture.Id);
                 }
             }
         }
