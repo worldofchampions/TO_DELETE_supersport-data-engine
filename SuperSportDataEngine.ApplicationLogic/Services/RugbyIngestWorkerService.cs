@@ -465,5 +465,15 @@
 
             return;
         }
+
+        public async Task IngestLogsForTournamentSeason(CancellationToken cancellationToken, int providerTournamentId, int seasonId)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return;
+
+            var results = await _statsProzoneIngestService.IngestLogsForTournament(providerTournamentId, seasonId);
+
+            // TODO: Also persist in SQL DB.
+        }
     }
 }
