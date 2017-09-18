@@ -236,8 +236,30 @@
 
                         _schedulerTrackingRugbyFixtureRepoitory.Add(newFixtureSchedule);
                     }
+                    else
+                    {
+                        // If the schedule already is in the system repo
+                        // we need to update the status of the game.
+                        fixtureSchedule.RugbyFixtureStatus = GetFixtureStatusFromProviderFixtureState(fixture.gameStateName);
+
+                        if(HasFixtureEnded(fixture.gameStateName) &&
+                           fixtureSchedule.EndedDateTime == DateTimeOffset.MinValue)
+                        {
+                            fixtureSchedule.EndedDateTime = 
+                                fixtureSchedule.StartDateTime
+                                    .AddSeconds(
+                                        fixture.gameSeconds);
+                        }
+
+                        _schedulerTrackingRugbyFixtureRepoitory.Update(fixtureSchedule);
+                    }
                 }
             }
+        }
+
+        private bool HasFixtureEnded(string gameStateName)
+        {
+            return gameStateName == "Final";
         }
 
         private void PersistRugbyFixturesToPublicSportsRepository(CancellationToken cancellationToken, RugbyFixturesResponse fixtures)

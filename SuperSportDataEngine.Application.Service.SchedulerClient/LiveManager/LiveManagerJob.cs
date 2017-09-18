@@ -71,7 +71,9 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.LiveManager
 
         public void DoTempLiveJobLogic()
         {
+            // Call provider for match data -- ingest
 
+            // Pause execution for 10 seconds.
         }
     }
 }
