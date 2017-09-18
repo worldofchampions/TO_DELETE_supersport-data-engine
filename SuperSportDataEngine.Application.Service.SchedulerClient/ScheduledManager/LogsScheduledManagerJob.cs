@@ -8,7 +8,6 @@ using System.Configuration;
 using Hangfire;
 using System.Threading;
 using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledManager
 {
@@ -47,7 +46,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
 
                     var jobCronExpression = ConfigurationManager.AppSettings["ScheduleMangerJob_Logs_CurrentTournaments_JobCronExpression_OneMinute"];
 
-                    AddOrUpdateHangfireJob(tournament, seasonId, jobId, jobCronExpression);
+                    AddOrUpdateHangfireJob(tournament.ProviderTournamentId, seasonId, jobId, jobCronExpression);
 
                     await _rugbyService.SetSchedulerStatusPollingForTournamentToRunning(tournament.Id);
                 }
@@ -68,18 +67,18 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
 
                     var jobCronExpression = ConfigurationManager.AppSettings["ScheduleMangerJob_Logs_CurrentTournaments_JobCronExpression_15Minutes"];
 
-                    AddOrUpdateHangfireJob(tournament, seasonId, jobId, jobCronExpression);
+                    AddOrUpdateHangfireJob(tournament.ProviderTournamentId, seasonId, jobId, jobCronExpression);
 
                     await _rugbyService.SetSchedulerStatusPollingForTournamentToRunning(tournament.Id);
                 }
             }
         }
 
-        private void AddOrUpdateHangfireJob(RugbyTournament tournament, int seasonId, string jobId, string jobCronExpression)
+        private void AddOrUpdateHangfireJob(int providerTournamentId, int seasonId, string jobId, string jobCronExpression)
         {
             RecurringJob.AddOrUpdate(
                 jobId,
-                () => _rugbyIngestService.IngestLogsForTournamentSeason(CancellationToken.None, tournament.ProviderTournamentId, seasonId),
+                () => _rugbyIngestService.IngestLogsForTournamentSeason(CancellationToken.None, providerTournamentId, seasonId),
                 jobCronExpression,
                 TimeZoneInfo.Utc,
                 HangfireQueueConfiguration.HighPriority);
