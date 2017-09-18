@@ -136,13 +136,13 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public IEnumerable<RugbyFixture> GetLiveFixturesForCurrentTournament(Guid tournamentId)
         {
-            DateTimeOffset now = DateTimeOffset.Now;
-            DateTimeOffset nowPlus15Minutes = DateTimeOffset.Now.AddMinutes(15);
+            DateTimeOffset now = DateTimeOffset.UtcNow;
+            DateTimeOffset nowPlus15Minutes = DateTimeOffset.UtcNow.AddMinutes(15);
             return 
                 _rugbyFixturesRepository
                     .Where(
                         fixture => fixture.RugbyTournament.Id == tournamentId &&
-                        fixture.RugbyFixtureStatus != RugbyFixtureStatus.GameEnd &&
+                        fixture.RugbyFixtureStatus != RugbyFixtureStatus.Final &&
                         fixture.StartDateTime <= nowPlus15Minutes);
         }
 
