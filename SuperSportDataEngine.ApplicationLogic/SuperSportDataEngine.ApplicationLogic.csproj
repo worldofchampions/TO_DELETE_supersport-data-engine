@@ -57,7 +57,7 @@
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\ResponseModels\RugbyFixturesResponse.cs" />
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\ResponseModels\RugbyLogsResponse.cs" />
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\ResponseModels\RugbySeasonResponse.cs" />
-    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\DataProvider.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.Common\Models\Enums\DataProvider.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Legacy\LogEntityMapperProfile.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Log.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyFixture.cs" />

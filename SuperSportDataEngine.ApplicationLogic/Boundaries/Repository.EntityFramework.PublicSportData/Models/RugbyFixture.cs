@@ -19,6 +19,8 @@
 
         public RugbyFixtureStatus RugbyFixtureStatus { get; set; }
 
+        public DataProvider DataProvider { get; set; }
+
         public virtual RugbyTournament RugbyTournament { get; set; }
 
         public virtual RugbyVenue RugbyVenue { get; set; }
@@ -26,7 +28,5 @@
         public virtual RugbyTeam HomeTeam { get; set; }
 
         public virtual RugbyTeam AwayTeam { get; set; }
-
-        public virtual DataProvider DataProvider { get; set; }
     }
 }

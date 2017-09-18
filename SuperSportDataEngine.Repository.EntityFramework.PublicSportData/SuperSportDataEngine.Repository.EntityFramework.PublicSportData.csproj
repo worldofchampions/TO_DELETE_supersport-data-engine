@@ -73,6 +73,10 @@
     <Compile Include="Migrations\201709151959178_ChangedIdsToLong_FixedAwayTeamPropertyName.Designer.cs">
       <DependentUpon>201709151959178_ChangedIdsToLong_FixedAwayTeamPropertyName.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201709181224242_Changed_DataProvider_table_into_an_enum.cs" />
+    <Compile Include="Migrations\201709181224242_Changed_DataProvider_table_into_an_enum.Designer.cs">
+      <DependentUpon>201709181224242_Changed_DataProvider_table_into_an_enum.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -111,6 +115,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201709151959178_ChangedIdsToLong_FixedAwayTeamPropertyName.resx">
       <DependentUpon>201709151959178_ChangedIdsToLong_FixedAwayTeamPropertyName.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201709181224242_Changed_DataProvider_table_into_an_enum.resx">
+      <DependentUpon>201709181224242_Changed_DataProvider_table_into_an_enum.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

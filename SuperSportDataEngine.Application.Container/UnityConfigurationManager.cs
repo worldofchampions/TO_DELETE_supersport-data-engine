@@ -77,10 +77,6 @@
         {
             container.RegisterType<DbContext, PublicSportDataContext>(PublicSportDataRepository, new PerThreadLifetimeManager());
 
-            container.RegisterType<IBaseEntityFrameworkRepository<DataProvider>, BaseEntityFrameworkRepository<DataProvider>>(
-                new ContainerControlledLifetimeManager(),
-                new InjectionFactory(x => new BaseEntityFrameworkRepository<DataProvider>(container.Resolve<DbContext>(PublicSportDataRepository))));
-
             container.RegisterType<IBaseEntityFrameworkRepository<Player>, BaseEntityFrameworkRepository<Player>>(
                 new ContainerControlledLifetimeManager(),
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<Player>(container.Resolve<DbContext>(PublicSportDataRepository))));

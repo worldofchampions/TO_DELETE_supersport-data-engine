@@ -9,11 +9,6 @@
     {
         internal static void ApplyFluentApiConfigurations(DbModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<DataProvider>().Property(x => x.Code).IsRequired();
-            modelBuilder.Entity<DataProvider>().Property(x => x.Code).HasMaxLength(450);
-            modelBuilder.Entity<DataProvider>().Property(x => x.Code).HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Unique_Code") { IsUnique = true }));
-            modelBuilder.Entity<DataProvider>().Property(x => x.Name).IsRequired();
-
             modelBuilder.Entity<Log>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
 
             modelBuilder.Entity<Player>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
