@@ -145,8 +145,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 _rugbyFixturesRepository
                     .Where(
                         fixture => fixture.RugbyTournament.Id == tournamentId &&
-                        fixture.RugbyFixtureStatus != RugbyFixtureStatus.Final &&
-                        fixture.StartDateTime <= nowPlus15Minutes);
+                        ( (fixture.RugbyFixtureStatus != RugbyFixtureStatus.Final &&
+                           fixture.StartDateTime <= nowPlus15Minutes) ||
+                          (fixture.RugbyFixtureStatus == RugbyFixtureStatus.InProgress)));
         }
 
         public async Task SetSchedulerStatusPollingForFixtureToLivePolling(Guid fixtureId)
@@ -169,7 +170,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                     f => f.RugbyFixtureStatus == RugbyFixtureStatus.Final);
         }
 
-        public async Task SetSchedulerStatusPollingForFixtureToSchedulingComplete(Guid fixtureId)
+        public async Task SetSchedulerStatusPollingForFixtureToPostMatchScheduling(Guid fixtureId)
         {
             var fixtureSchedule =
                     _schedulerTrackingRugbyFixtureRepository.Where(
@@ -177,10 +178,26 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             if (fixtureSchedule != null)
             {
-                fixtureSchedule.SchedulerStateFixtures = SchedulerStateForRugbyFixturePolling.SchedulingCompleted;
+                fixtureSchedule.SchedulerStateFixtures = SchedulerStateForRugbyFixturePolling.PostLivePolling;
                 _schedulerTrackingRugbyFixtureRepository.Update(fixtureSchedule);
                 await _schedulerTrackingRugbyFixtureRepository.SaveAsync();
             }
+        }
+
+        public bool HasFixtureEnded(long providerFixtureId)
+        {
+            var fixture = 
+                    _rugbyFixturesRepository
+                        .Where(
+                            f => f.ProviderFixtureId == providerFixtureId)
+                        .FirstOrDefault();
+
+            if (fixture != null)
+                return fixture.RugbyFixtureStatus == RugbyFixtureStatus.Final;
+
+            // We can't find the fixture in the DB? But still running ingest code?
+            // This is a bizzare condition but checking it nonetherless.
+            return true;
         }
     }
 }

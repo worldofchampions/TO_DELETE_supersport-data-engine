@@ -25,7 +25,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.LiveManager
             _timer = new System.Timers.Timer
             {
                 AutoReset = false,
-                Interval = TimeSpan.FromSeconds(10).TotalMilliseconds
+                Interval = TimeSpan.FromMinutes(1).TotalMilliseconds
             };
 
             _timer.Elapsed += new ElapsedEventHandler(UpdateManagerJobs);
@@ -52,7 +52,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.LiveManager
             {
                 var jobId = ConfigurationManager.AppSettings["LiveMangerJob_LiveMatch_JobIdPrefix"] + fixture.Id;
                 RecurringJob.RemoveIfExists(jobId);
-                await _rugbyService.SetSchedulerStatusPollingForFixtureToSchedulingComplete(fixture.Id);
+                await _rugbyService.SetSchedulerStatusPollingForFixtureToPostMatchScheduling(fixture.Id);
             }
         }
 
@@ -68,26 +68,21 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.LiveManager
 
                 foreach (var fixture in liveFixtures)
                 {
-                    var jobId = ConfigurationManager.AppSettings["LiveMangerJob_LiveMatch_JobIdPrefix"] + fixture.Id;
+                    var matchName = fixture.HomeTeam.Name + " vs " + fixture.AwayTeam.Name;
+                    var jobId = ConfigurationManager.AppSettings["LiveMangerJob_LiveMatch_JobIdPrefix"] + matchName;
                     var jobCronExpression = ConfigurationManager.AppSettings["LiveMangerJob_LiveMatch_JobCronExpression"];
 
                     RecurringJob.AddOrUpdate(
                         jobId,
-                        () => DoTempLiveJobLogic(),
+                        () => _rugbyIngestService.IngestMatchStatsForFixture(CancellationToken.None, fixture.ProviderFixtureId),
                         jobCronExpression,
                         TimeZoneInfo.Utc,
                         HangfireQueueConfiguration.HighPriority);
 
+                    RecurringJob.Trigger(jobId);
                     await _rugbyService.SetSchedulerStatusPollingForFixtureToLivePolling(fixture.Id);
                 }
             }
-        }
-
-        public void DoTempLiveJobLogic()
-        {
-            // Call provider for match data -- ingest
-
-            // Pause execution for 10 seconds.
         }
     }
 }

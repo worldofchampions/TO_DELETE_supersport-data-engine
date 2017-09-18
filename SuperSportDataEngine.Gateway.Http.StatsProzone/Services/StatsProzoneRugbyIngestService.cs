@@ -214,5 +214,41 @@
 
             return request;
         }
+
+        public async Task<RugbyMatchStatsResponse> IngestMatchStatsForFixtureAsync(CancellationToken cancellationToken, long providerFixtureId)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return null;
+
+            WebRequest request = WebRequest.Create("http://rugbyunion-api.stats.com/api/ru/matchStats/" + providerFixtureId + "/");
+
+            request.Method = "GET";
+
+            request.Headers["Authorization"] = "Basic U3VwZXJTcG9ydF9NZWRpYTpTdTkzUjdyMFA1";
+            request.ContentType = "application/json; charset=UTF-8";
+
+            var matchStatsResponse =
+                new RugbyMatchStatsResponse()
+                {
+                    RequestTime = DateTime.Now
+                };
+
+            using (WebResponse response = await request.GetResponseAsync())
+            {
+                using (Stream responseStream = response.GetResponseStream())
+                {
+                    StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
+                    string stats = reader.ReadToEnd();
+                    matchStatsResponse.RugbyMatchStats =
+                        JsonConvert.DeserializeObject<RugbyMatchStats>(stats);
+
+                    // Not to be confused with the DateTime.Now call more above.
+                    // This might be delayed due to provider being slow to process request,
+                    // and is intended.
+                    matchStatsResponse.ResponseTime = DateTime.Now;
+                    return matchStatsResponse;
+                }
+            }
+        }
     }
 }

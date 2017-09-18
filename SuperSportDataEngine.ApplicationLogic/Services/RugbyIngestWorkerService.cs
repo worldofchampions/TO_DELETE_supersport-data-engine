@@ -548,5 +548,20 @@
 
             return;
         }
+
+        public async Task IngestMatchStatsForFixture(CancellationToken cancellationToken, long providerFixtureId)
+        {
+            while (true)
+            {
+                var fixtureResponse =
+                    await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, providerFixtureId);
+
+                // Check if should stop looping?
+                if (fixtureResponse.RugbyMatchStats.gameState == "Game End")
+                    break;
+
+                Thread.Sleep(TimeSpan.FromSeconds(10));
+            }
+        }
     }
 }
