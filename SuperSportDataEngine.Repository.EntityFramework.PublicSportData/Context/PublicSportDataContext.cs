@@ -9,7 +9,6 @@
         {
         }
 
-        public DbSet<DataProvider> DataProviders { get; set; }
         public DbSet<Player> Players { get; set; }
         public DbSet<RugbyFixture> RugbyFixtures { get; set; }
         public DbSet<RugbySeason> RugbySeasons { get; set; }
