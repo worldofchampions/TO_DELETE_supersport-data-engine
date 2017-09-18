@@ -20,5 +20,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Inte
         int GetCurrentProviderSeasonIdForTournament(Guid tournamentId);
         IEnumerable<RugbyFixture> GetLiveFixturesForCurrentTournament(Guid tournamentId);
         Task SetSchedulerStatusPollingForFixtureToLivePolling(Guid fixtureId);
+        IEnumerable<RugbyFixture> GetEndedFixtures();
+        Task SetSchedulerStatusPollingForFixtureToSchedulingComplete(Guid fixtureId);
     }
 }

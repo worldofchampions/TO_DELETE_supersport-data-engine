@@ -475,6 +475,11 @@
                     tournamentId, seasonId, cancellationToken);
 
             // TODO: Also persist in SQL DB.
+            PersistRugbyFixturesToPublicSportsRepository(cancellationToken, fixtures);
+            PersistRugbyFixturesToSchedulerTrackingRugbyFixturesTable(fixtures);
+
+            await _rugbyFixturesRepository.SaveAsync();
+            await _schedulerTrackingRugbyFixtureRepoitory.SaveAsync();
         }
 
         public async Task IngestRugbyResultsForCurrentDayFixtures(CancellationToken cancellationToken)

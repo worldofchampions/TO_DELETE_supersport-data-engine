@@ -167,12 +167,12 @@
             }
         }
 
-        public object IngestFixturesForTournamentSeason(int tournamentId, int seasonId, CancellationToken cancellationToken)
+        public RugbyFixturesResponse IngestFixturesForTournamentSeason(int tournamentId, int seasonId, CancellationToken cancellationToken)
         {
             // Make provider call to http://rugbyunion-api.stats.com/api/ru/competitions/fixtures/tournamentId/seasonId
             // Maybe even specify the round number?
 
-            return new object();
+            return new RugbyFixturesResponse();
         }
 
         public async Task<RugbyFixturesResponse> IngestFixtureResults(int competionId, int seasonId, int roundId)

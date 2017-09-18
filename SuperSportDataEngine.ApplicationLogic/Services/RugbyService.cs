@@ -161,5 +161,26 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 await _schedulerTrackingRugbyFixtureRepository.SaveAsync();
             }
         }
+
+        public IEnumerable<RugbyFixture> GetEndedFixtures()
+        {
+            return
+                _rugbyFixturesRepository.Where(
+                    f => f.RugbyFixtureStatus == RugbyFixtureStatus.Final);
+        }
+
+        public async Task SetSchedulerStatusPollingForFixtureToSchedulingComplete(Guid fixtureId)
+        {
+            var fixtureSchedule =
+                    _schedulerTrackingRugbyFixtureRepository.Where(
+                        f => f.FixtureId == fixtureId).FirstOrDefault();
+
+            if (fixtureSchedule != null)
+            {
+                fixtureSchedule.SchedulerStateFixtures = SchedulerStateForRugbyFixturePolling.SchedulingCompleted;
+                _schedulerTrackingRugbyFixtureRepository.Update(fixtureSchedule);
+                await _schedulerTrackingRugbyFixtureRepository.SaveAsync();
+            }
+        }
     }
 }

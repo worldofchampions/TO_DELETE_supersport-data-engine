@@ -38,8 +38,22 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.LiveManager
         private async void UpdateManagerJobs(object sender, ElapsedEventArgs e)
         {
             await CreateChildJobsForLiveGamesFetchingMatchStats();
+            await DeleteChildJobsForGamesThatHaveEnded();
 
             _timer.Start();
+        }
+
+        private async Task DeleteChildJobsForGamesThatHaveEnded()
+        {
+            var endedGames =
+                    _rugbyService.GetEndedFixtures();
+
+            foreach(var fixture in endedGames)
+            {
+                var jobId = ConfigurationManager.AppSettings["LiveMangerJob_LiveMatch_JobIdPrefix"] + fixture.Id;
+                RecurringJob.RemoveIfExists(jobId);
+                await _rugbyService.SetSchedulerStatusPollingForFixtureToSchedulingComplete(fixture.Id);
+            }
         }
 
         private async Task CreateChildJobsForLiveGamesFetchingMatchStats()
