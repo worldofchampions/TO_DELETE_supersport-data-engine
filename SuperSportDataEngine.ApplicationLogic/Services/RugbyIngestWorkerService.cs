@@ -48,7 +48,7 @@
             _rugbyService = rugbyService;
         }
 
-        public async Task IngestRugbyReferenceData(CancellationToken cancellationToken)
+        public async Task IngestReferenceData(CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
                 return;
@@ -369,7 +369,7 @@
             }
         }
 
-        public async Task IngestRugbyResultsForAllFixtures(CancellationToken cancellationToken)
+        public async Task IngestResultsForAllFixtures(CancellationToken cancellationToken)
         {
             var activeTournaments = _rugbyTournamentRepository.Where(t => t.IsEnabled);
 
@@ -399,7 +399,7 @@
             // TODO: Also persist in SQL DB.
         }
 
-        public async Task IngestRugbyResultsForCurrentDayFixtures(CancellationToken cancellationToken)
+        public async Task IngestResultsForCurrentDayFixtures(CancellationToken cancellationToken)
         {
             var currentRoundFixtures = GetCurrentDayRoundFixturesForActiveTournaments();
             
@@ -411,7 +411,7 @@
             }
         }
 
-        public async Task IngestRugbyResultsForFixturesInResultsState(CancellationToken cancellationToken)
+        public async Task IngestResultsForFixturesInResultsState(CancellationToken cancellationToken)
         {
             var fixtures = GetRoundFixturesInResultsStateForActiveTournaments();
 
