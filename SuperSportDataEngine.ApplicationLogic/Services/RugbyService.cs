@@ -148,14 +148,12 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public IEnumerable<RugbyTournament> GetActiveTournamentsForMatchesInResultsState()
         {
-            // TODO: Mofdify to return tournaments with matches in results state only. 
-            return _rugbyTournamentRepository.Where(c => c.IsEnabled);
-        }
+            var tournamentsThatHaveFixturesInResultState =
+                    _rugbyFixturesRepository
+                        .Where(f => f.RugbyFixtureStatus == RugbyFixtureStatus.Result)
+                        .Select(f => f.RugbyTournament);
 
-        public int GetSeasonIdForTournament(Guid id)
-        {
-            //TODO: resturn seasonId for tournament
-            return 2017;
+            return tournamentsThatHaveFixturesInResultState;
         }
     }
 }

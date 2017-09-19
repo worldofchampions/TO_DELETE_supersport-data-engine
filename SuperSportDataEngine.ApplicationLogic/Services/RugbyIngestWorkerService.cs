@@ -367,6 +367,9 @@
             if (gameStateName == "Game End")
                 return RugbyFixtureStatus.GameEnd;
 
+            if (gameStateName == "Full Time")
+                return RugbyFixtureStatus.Result;
+
             return RugbyFixtureStatus.InProgress;
         }
 
