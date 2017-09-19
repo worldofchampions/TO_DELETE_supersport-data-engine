@@ -90,7 +90,8 @@
                         Name = team.name,
                         LogoUrl = team.TeamLogoURL,
                         LegacyTeamId = team.id,
-                        Abbreviation = team.TeamAbbrev
+                        Abbreviation = team.TeamAbbrev,
+                        DataProvider = DataProvider.StatsProzone
 
                     };
                     _rugbyTeamRepository.Add(newTeam);
@@ -120,7 +121,8 @@
                     var newVenue = new RugbyVenue()
                     {
                         ProviderVenueId = venue.id,
-                        Name = venue.name
+                        Name = venue.name,
+                        DataProvider = DataProvider.StatsProzone
                     };
                     _rugbyVenueRepository.Add(newVenue);
                 }
@@ -165,7 +167,8 @@
                 ProviderSeasonId = providerSeasonId,
                 RugbyTournament = tour,
                 IsCurrent = isSeasonCurrentlyActive,
-                Name = season.RugbySeasons.season.First().name
+                Name = season.RugbySeasons.season.First().name,
+                DataProvider = DataProvider.StatsProzone
             };
 
             // Not in repo?
@@ -295,7 +298,8 @@
                         RugbyTournament = tournament,
                         HomeTeam = teamA,
                         AwayTeam = teamB,
-                        RugbyFixtureStatus = GetFixtureStatusFromProviderFixtureState(fixture.gameStateName)
+                        RugbyFixtureStatus = GetFixtureStatusFromProviderFixtureState(fixture.gameStateName),
+                        DataProvider = DataProvider.StatsProzone
                     };
 
                     if (fixtureInDb == null)
@@ -433,7 +437,8 @@
                     LogoUrl = competition.CompetitionLogoURL,
                     Abbreviation = competition.CompetitionAbbrev,
                     Slug = "/competition/" + competition.id,
-                    LegacyTournamentId = competition.id
+                    LegacyTournamentId = competition.id,
+                    DataProvider = DataProvider.StatsProzone
                 };
 
                 if (entry == null)
@@ -467,19 +472,19 @@
 
         public async Task IngestFixturesForTournamentSeason(CancellationToken cancellationToken, int tournamentId, int seasonId)
         {
-            if (cancellationToken.IsCancellationRequested)
-                return;
+            //if (cancellationToken.IsCancellationRequested)
+            //    return;
 
-            var fixtures =
-                _statsProzoneIngestService.IngestFixturesForTournamentSeason(
-                    tournamentId, seasonId, cancellationToken);
+            //var fixtures =
+            //    _statsProzoneIngestService.IngestFixturesForTournamentSeason(
+            //        tournamentId, seasonId, cancellationToken);
 
-            // TODO: Also persist in SQL DB.
-            PersistRugbyFixturesToPublicSportsRepository(cancellationToken, fixtures);
-            PersistRugbyFixturesToSchedulerTrackingRugbyFixturesTable(fixtures);
+            //// TODO: Also persist in SQL DB.
+            //PersistRugbyFixturesToPublicSportsRepository(cancellationToken, fixtures);
+            //PersistRugbyFixturesToSchedulerTrackingRugbyFixturesTable(fixtures);
 
-            await _rugbyFixturesRepository.SaveAsync();
-            await _schedulerTrackingRugbyFixtureRepoitory.SaveAsync();
+            //await _rugbyFixturesRepository.SaveAsync();
+            //await _schedulerTrackingRugbyFixtureRepoitory.SaveAsync();
         }
 
         public async Task IngestRugbyResultsForCurrentDayFixtures(CancellationToken cancellationToken)
@@ -538,13 +543,13 @@
 
         public async Task IngestOneMonthsFixturesForTournament(CancellationToken cancellationToken, int providerTournamentId)
         {
-            var activeTournaments = _rugbyTournamentRepository.Where(t => t.IsEnabled);
-            foreach (var tournament in activeTournaments)
-            {
-                var season = _statsProzoneIngestService.IngestSeasonData(cancellationToken, tournament.ProviderTournamentId, DateTime.Now.Year);
+            //var activeTournaments = _rugbyTournamentRepository.Where(t => t.IsEnabled);
+            //foreach (var tournament in activeTournaments)
+            //{
+            //    var season = _statsProzoneIngestService.IngestSeasonData(cancellationToken, tournament.ProviderTournamentId, DateTime.Now.Year);
 
-                // Process and persist one months data asynchronously.
-            }
+            //    // Process and persist one months data asynchronously.
+            //}
 
             return;
         }
@@ -553,12 +558,19 @@
         {
             while (true)
             {
-                var fixtureResponse =
+                try
+                {
+                    var fixtureResponse =
                     await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, providerFixtureId);
 
+                    if (fixtureResponse.RugbyMatchStats.gameState == "Game End")
+                        break;
+                }
+                catch(Exception e)
+                {
+                    bool test = true;
+                }
                 // Check if should stop looping?
-                if (fixtureResponse.RugbyMatchStats.gameState == "Game End")
-                    break;
 
                 Thread.Sleep(TimeSpan.FromSeconds(10));
             }

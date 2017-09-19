@@ -97,10 +97,9 @@
   <ItemGroup>
     <Compile Include="FixedSchedule\FixedScheduledJob.cs" />
     <Compile Include="HangfireDashboardConfiguration.cs" />
-    <Compile Include="LiveManager\LiveManagerJob.cs" />
+    <Compile Include="JobManager\JobManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ScheduledManager\FixturesScheduledManagerJob.cs" />
     <Compile Include="StartUp.cs" />
     <Compile Include="WindowsService.cs" />
   </ItemGroup>

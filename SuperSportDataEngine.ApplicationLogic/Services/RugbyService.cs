@@ -84,37 +84,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                     .Select(t => t);
         }
 
-        public async Task SetSchedulerStatusPollingForTournamentToNotRunning(Guid tournamentId)
-        {
-            var season = _schedulerTrackingRugbySeasonRepository
-                .Where(
-                    s => s.TournamentId == tournamentId && s.SchedulerStateForManagerJobPolling == SchedulerStateForManagerJobPolling.Running)
-                .FirstOrDefault();
-
-            if (season != null)
-            {
-                season.SchedulerStateForManagerJobPolling = SchedulerStateForManagerJobPolling.NotRunning;
-                await _schedulerTrackingRugbySeasonRepository.SaveAsync();
-            }
-        }
-
-        public async Task SetSchedulerStatusPollingForTournamentToRunning(Guid tournamentId)
-        {
-            var season = _schedulerTrackingRugbySeasonRepository
-                .Where(
-                    s => 
-                     s.RugbySeasonStatus == RugbySeasonStatus.InProgress &&
-                     s.TournamentId == tournamentId && 
-                     s.SchedulerStateForManagerJobPolling == SchedulerStateForManagerJobPolling.NotRunning)
-                .FirstOrDefault();
-
-            if (season != null)
-            {
-                season.SchedulerStateForManagerJobPolling = SchedulerStateForManagerJobPolling.Running;
-                await _schedulerTrackingRugbySeasonRepository.SaveAsync();
-            }
-        }
-
         public IEnumerable<RugbyTournament> GetInactiveTournaments()
         {
             return 
@@ -150,38 +119,11 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                           (fixture.RugbyFixtureStatus == RugbyFixtureStatus.InProgress)));
         }
 
-        public async Task SetSchedulerStatusPollingForFixtureToLivePolling(Guid fixtureId)
-        {
-            var fixture =
-                    _schedulerTrackingRugbyFixtureRepository.Where(
-                        f => f.FixtureId == fixtureId).FirstOrDefault();
-
-            if(fixture != null)
-            {
-                fixture.SchedulerStateFixtures = SchedulerStateForRugbyFixturePolling.LivePolling;
-                await _schedulerTrackingRugbyFixtureRepository.SaveAsync();
-            }
-        }
-
         public IEnumerable<RugbyFixture> GetEndedFixtures()
         {
             return
                 _rugbyFixturesRepository.Where(
                     f => f.RugbyFixtureStatus == RugbyFixtureStatus.Final);
-        }
-
-        public async Task SetSchedulerStatusPollingForFixtureToPostMatchScheduling(Guid fixtureId)
-        {
-            var fixtureSchedule =
-                    _schedulerTrackingRugbyFixtureRepository.Where(
-                        f => f.FixtureId == fixtureId).FirstOrDefault();
-
-            if (fixtureSchedule != null)
-            {
-                fixtureSchedule.SchedulerStateFixtures = SchedulerStateForRugbyFixturePolling.PostLivePolling;
-                _schedulerTrackingRugbyFixtureRepository.Update(fixtureSchedule);
-                await _schedulerTrackingRugbyFixtureRepository.SaveAsync();
-            }
         }
 
         public bool HasFixtureEnded(long providerFixtureId)
