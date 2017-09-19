@@ -61,8 +61,9 @@
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\ResponseModels\RugbySeasonResponse.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.Common\Models\Enums\DataProvider.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Legacy\LogEntityMapperProfile.cs" />
-    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Log.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyFixture.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyLog.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyPlayer.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbySeason.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyTeam.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyTournament.cs" />
@@ -76,13 +77,10 @@
     <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\LegacyZoneSite.cs" />
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\ResponseModels\RugbyEntitiesResponse.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.Common\Interfaces\IBaseEntityFrameworkRepository.cs" />
-    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Player.cs" />
-    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Sport.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\SchedulerTrackingRugbyFixture.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\SchedulerTrackingRugbySeason.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\SchedulerTrackingRugbyTournament.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\SchedulerDashboardUser.cs" />
-    <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\SportTournament.cs" />
     <Compile Include="Boundaries\Repository.MongoDb.PayloadData\Interfaces\IMongoDbRugbyRepository.cs" />
     <Compile Include="Boundaries\Repository.MongoDb.PayloadData\Interfaces\ITemporaryExampleMongoDbRepository.cs" />
     <Compile Include="Entities\Legacy\LegacyZoneSiteEntity.cs" />
