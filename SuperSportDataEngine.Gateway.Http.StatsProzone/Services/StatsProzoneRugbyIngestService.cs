@@ -169,15 +169,30 @@
 
         public RugbyFixturesResponse IngestFixturesForTournamentSeason(int tournamentId, int seasonId, CancellationToken cancellationToken)
         {
-            // Make provider call to http://rugbyunion-api.stats.com/api/ru/competitions/fixtures/tournamentId/seasonId
-            // Maybe even specify the round number?
+            WebRequest request = GetWebRequestForFixturesEndpoint(tournamentId, seasonId, null);
 
-            return new RugbyFixturesResponse();
+            var responseData = new RugbyFixturesResponse() { RequestTime = DateTime.Now };
+
+            using (WebResponse response = request.GetResponse())
+            {
+                using (Stream responseStream = response.GetResponseStream())
+                {
+                    var reader = new StreamReader(responseStream, Encoding.UTF8);
+
+                    string responseDataFromServer = reader.ReadToEnd();
+
+                    var responseDataToReturn = JsonConvert.DeserializeObject<RugbyFixturesResponse>(responseDataFromServer);
+
+                    responseData.ResponseTime = DateTime.Now;
+
+                    return responseData;
+                }
+            }
         }
 
-        public async Task<RugbyFixturesResponse> IngestFixtureResults(int competionId, int seasonId, int roundId)
+        public async Task<RugbyFixturesResponse> IngestFixtureResults(int competitionId, int seasonId, int roundId)
         {
-            WebRequest request = GetWebRequestForFixturesEndpoint(competionId, seasonId, roundId);
+            WebRequest request = GetWebRequestForFixturesEndpoint(competitionId, seasonId, roundId);
 
             var responseData = new RugbyFixturesResponse() { RequestTime = DateTime.Now };
 
@@ -200,11 +215,46 @@
             }
         }
 
-        private static WebRequest GetWebRequestForFixturesEndpoint(int competionId, int seasonId, int roundId)
+        public async Task<RugbyLogsResponse> IngestLogsForTournament(int competitionId, int seasonId)
+        {
+            WebRequest request = GetWebRequestForLogsEndpoint(competitionId, seasonId);
+
+            var logsResponse = new RugbyLogsResponse() { RequestTime = DateTime.Now };
+
+            using (WebResponse response = await request.GetResponseAsync())
+            {
+                using (Stream responseStream = response.GetResponseStream())
+                {
+                    StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
+
+                    logsResponse.RugbyLogs = JsonConvert.DeserializeObject<RugbyLogs>(reader.ReadToEnd());
+
+                    logsResponse.ResponseTime = DateTime.Now;
+
+                    return logsResponse;
+                }
+            }
+        }
+        private static WebRequest GetWebRequestForFixturesEndpoint(int competionId, int seasonId, int? roundId)
         {
             var baseUrl = "http://rugbyunion-api.stats.com/api/ru/competitions/fixtures/";
 
             var request = WebRequest.Create(baseUrl + competionId + "/" + seasonId + "/" + roundId);
+
+            request.Method = "GET";
+
+            request.Headers["Authorization"] = "Basic c3VwZXJzcG9ydDpvYTNuZzcrMjlmMw==";
+
+            request.ContentType = "application/json; charset=UTF-8";
+
+            return request;
+        }
+
+        private static WebRequest GetWebRequestForLogsEndpoint(int competitionId, int seasonId)
+        {
+            var baseUrl = "http://rugbyunion-api.stats.com/api/RU/competitions/ladder";
+
+            var request = WebRequest.Create(baseUrl + competitionId + "/" + seasonId);
 
             request.Method = "GET";
 

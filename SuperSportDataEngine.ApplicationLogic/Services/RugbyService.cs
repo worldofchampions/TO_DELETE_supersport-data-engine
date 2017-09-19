@@ -186,5 +186,17 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 await _schedulerTrackingRugbyFixtureRepository.SaveAsync();
             }
         }
+
+        public IEnumerable<RugbyTournament> GetActiveTournamentsForMatchesInResultsState()
+        {
+            // TODO: Mofdify to return tournaments with matches in results state only. 
+            return _rugbyTournamentRepository.Where(c => c.IsEnabled);
+        }
+
+        public int GetSeasonIdForTournament(Guid id)
+        {
+            //TODO: resturn seasonId for tournament
+            return 2017;
+        }
     }
 }

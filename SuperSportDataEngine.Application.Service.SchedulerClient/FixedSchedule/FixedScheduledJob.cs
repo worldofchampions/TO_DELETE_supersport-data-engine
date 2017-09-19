@@ -36,7 +36,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
         {
             RecurringJob.AddOrUpdate(
                 recurringJobId: ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_Hourly_JobId"],
-                methodCall: () => _ingestService.IngestRugbyResultsForFixturesInResultsState(CancellationToken.None),
+                methodCall: () => _ingestService.IngestResultsForFixturesInResultsState(CancellationToken.None),
                 cronExpression: ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_Hourly_PollingExpression"],
                 timeZone: TimeZoneInfo.Utc,
                 queue: HangfireQueueConfiguration.HighPriority);
@@ -48,7 +48,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
             // reference data from the provider.
             RecurringJob.AddOrUpdate(
                 ConfigurationManager.AppSettings["FixedScheduledJob_ReferenceData_JobId"],
-                () => _ingestService.IngestRugbyReferenceData(CancellationToken.None),
+                () => _ingestService.IngestReferenceData(CancellationToken.None),
                 ConfigurationManager.AppSettings["FixedScheduledJob_ReferenceData_JobCronExpression"],
                 System.TimeZoneInfo.Utc,
                 HangfireQueueConfiguration.NormalPriority);
@@ -99,7 +99,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
         {
             RecurringJob.AddOrUpdate(
                 recurringJobId: ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_Daily_JobId"],
-                methodCall: () => _ingestService.IngestRugbyResultsForAllFixtures(CancellationToken.None),
+                methodCall: () => _ingestService.IngestResultsForAllFixtures(CancellationToken.None),
                 cronExpression: ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_Daily_PollingExpression"],
                 timeZone: TimeZoneInfo.Utc,
                 queue: HangfireQueueConfiguration.NormalPriority);
@@ -112,7 +112,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
         {
             RecurringJob.AddOrUpdate(
                 recurringJobId: ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_OnFixtureDay_JobId"],
-                methodCall: () => _ingestService.IngestRugbyResultsForCurrentDayFixtures(CancellationToken.None),
+                methodCall: () => _ingestService.IngestResultsForCurrentDayFixtures(CancellationToken.None),
                 cronExpression: ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_OnFixtureDay_PollingExpression"],
                 timeZone: TimeZoneInfo.Utc,
                 queue: HangfireQueueConfiguration.HighPriority);

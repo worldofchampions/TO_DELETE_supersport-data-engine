@@ -12,6 +12,8 @@
     using System.Threading;
     using SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledManager;
     using SuperSportDataEngine.Application.Service.SchedulerClient.LiveManager;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+    using System;
 
     internal class WindowsService : IWindowsServiceContract
     {
@@ -19,6 +21,7 @@
         private readonly FixedScheduledJob _fixedManagerJob;
         private readonly FixturesScheduledManagerJob _fixtureScheduleManagerJob;
         private readonly LiveManagerJob _liveManagerJob;
+        private readonly LogsScheduledManagerJob _logsScheduledManagerJob;
 
         public WindowsService(UnityContainer container)
         {
@@ -26,12 +29,15 @@
             _fixedManagerJob = new FixedScheduledJob(_container);
             _fixtureScheduleManagerJob = new FixturesScheduledManagerJob(_container);
             _liveManagerJob = new LiveManagerJob(_container);
+
+            _logsScheduledManagerJob = new LogsScheduledManagerJob(
+                rugbyService: _container.Resolve<IRugbyService>(),
+                rugbyIngestWorkerService: _container.Resolve<IRugbyIngestWorkerService>(),
+                sleepTimeInMinutes: 1);
         }
 
         public void StartService()
         {
-            var ingestService = _container.Resolve<IRugbyIngestWorkerService>();
-
             GlobalConfiguration.Configuration.UseStorage(HangfireConfiguration.JobStorage);
             GlobalJobFilters.Filters.Add(new ExpirationTimeAttribute());
 
@@ -42,6 +48,7 @@
                 while (true)
                 {
                     _fixedManagerJob.UpdateRecurringJobDefinitions();
+                    _logsScheduledManagerJob.Start();
 
                     Thread.Sleep(2000);
                 }
