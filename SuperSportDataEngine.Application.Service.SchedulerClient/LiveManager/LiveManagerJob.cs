@@ -38,8 +38,22 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.LiveManager
         private async void UpdateManagerJobs(object sender, ElapsedEventArgs e)
         {
             await CreateChildJobsForLiveGamesFetchingMatchStats();
+            await DeleteChildJobsForGamesThatHaveEnded();
 
             _timer.Start();
+        }
+
+        private async Task DeleteChildJobsForGamesThatHaveEnded()
+        {
+            var endedGames =
+                    _rugbyService.GetEndedFixtures();
+
+            foreach(var fixture in endedGames)
+            {
+                var jobId = ConfigurationManager.AppSettings["LiveMangerJob_LiveMatch_JobIdPrefix"] + fixture.Id;
+                RecurringJob.RemoveIfExists(jobId);
+                await _rugbyService.SetSchedulerStatusPollingForFixtureToSchedulingComplete(fixture.Id);
+            }
         }
 
         private async Task CreateChildJobsForLiveGamesFetchingMatchStats()
@@ -63,13 +77,17 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.LiveManager
                         jobCronExpression,
                         TimeZoneInfo.Utc,
                         HangfireQueueConfiguration.HighPriority);
+
+                    await _rugbyService.SetSchedulerStatusPollingForFixtureToLivePolling(fixture.Id);
                 }
             }
         }
 
         public void DoTempLiveJobLogic()
         {
+            // Call provider for match data -- ingest
 
+            // Pause execution for 10 seconds.
         }
     }
 }

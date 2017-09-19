@@ -1,5 +1,6 @@
 ﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models
 {
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
     using System;
 
     public class RugbyTeam
@@ -22,6 +23,6 @@
         /// <summary> A provider driven value. </summary>
         public string LogoUrl { get; set; }
 
-        public virtual DataProvider DataProvider { get; set; }
+        public DataProvider DataProvider { get; set; }
     }
 }

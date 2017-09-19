@@ -1,5 +1,6 @@
 ﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models
 {
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
     using System;
 
     public class RugbySeason
@@ -22,8 +23,8 @@
         /// <summary> A provider driven value. </summary>
         public DateTimeOffset EndDateTime { get; set; }
 
-        public virtual RugbyTournament RugbyTournament { get; set; }
+        public DataProvider DataProvider { get; set; }
 
-        public virtual DataProvider DataProvider { get; set; }
+        public virtual RugbyTournament RugbyTournament { get; set; }
     }
 }

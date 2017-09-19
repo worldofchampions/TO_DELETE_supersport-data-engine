@@ -7,7 +7,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFram
     {
         public LogEntityMapperProfile()
         {
-            CreateMap<Log, LogEntity>();
+            // TODO: This was commented out when deleting old Log DB table.
+            //CreateMap<Log, LogEntity>();
         }
     }
 }

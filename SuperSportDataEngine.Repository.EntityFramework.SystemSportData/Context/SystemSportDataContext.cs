@@ -12,9 +12,8 @@
         public DbSet<LegacyAuthFeedConsumer> LegacyAuthFeedConsumers { get; set; }
         public DbSet<LegacyZoneSite> LegacyZoneSites { get; set; }
         public DbSet<SchedulerTrackingRugbyFixture> SchedulerTrackingRugbyFixtures { get; set; }
-        public DbSet<SchedulerTrackingRugbyTournament> SchedulerTrackingRugbyTournament { get; set; }
         public DbSet<SchedulerTrackingRugbySeason> SchedulerTrackingRugbySeason { get; set; }
-        public DbSet<SportTournament> SportTournaments { get; set; }
+        public DbSet<SchedulerTrackingRugbyTournament> SchedulerTrackingRugbyTournament { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

@@ -15,31 +15,38 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 {
     public class RugbyService : IRugbyService
     {
-        private readonly IBaseEntityFrameworkRepository<Log> _logRepository;
+        // TODO: This was commented out when deleting old Log DB table.
+        //private readonly IBaseEntityFrameworkRepository<Log> _logRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyTournament> _rugbyTournamentRepository;
         private readonly IBaseEntityFrameworkRepository<RugbySeason> _rugbySeasonRepository;
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> _schedulerTrackingRugbySeasonRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyFixture> _rugbyFixturesRepository;
+        private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> _schedulerTrackingRugbyFixtureRepository;
 
         public RugbyService(
-            IBaseEntityFrameworkRepository<Log> logRepository,
+            // TODO: This was commented out when deleting old Log DB table.
+            //IBaseEntityFrameworkRepository<Log> logRepository,
             IBaseEntityFrameworkRepository<RugbyTournament> rugbyTournamentRepository,
             IBaseEntityFrameworkRepository<RugbySeason> rugbySeasonRepository,
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> schedulerTrackingRugbySeasonRepository,
-            IBaseEntityFrameworkRepository<RugbyFixture> rugbyFixturesRepository)
+            IBaseEntityFrameworkRepository<RugbyFixture> rugbyFixturesRepository,
+            IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> schedulerTrackingRugbyFixtureRepository)
         {
-            _logRepository = logRepository;
+            // TODO: This was commented out when deleting old Log DB table.
+            //_logRepository = logRepository;
             _rugbyTournamentRepository = rugbyTournamentRepository;
             _rugbySeasonRepository = rugbySeasonRepository;
             _schedulerTrackingRugbySeasonRepository = schedulerTrackingRugbySeasonRepository;
             _rugbyFixturesRepository = rugbyFixturesRepository;
+            _schedulerTrackingRugbyFixtureRepository = schedulerTrackingRugbyFixtureRepository;
         }
 
         public IEnumerable<LogEntity> GetLogs(string tournamentName)
         {
-            var logs = _logRepository.All().Select(log => Mapper.Map<LogEntity>(log));
-
-            return logs;
+            // TODO: This was commented out when deleting old Log DB table.
+            //var logs = _logRepository.All().Select(log => Mapper.Map<LogEntity>(log));
+            //return logs;
+            return null;
         }
 
         public IEnumerable<RugbyTournament> GetActiveTournaments()
@@ -144,6 +151,40 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                         fixture => fixture.RugbyTournament.Id == tournamentId &&
                         fixture.RugbyFixtureStatus != RugbyFixtureStatus.Final &&
                         fixture.StartDateTime <= nowPlus15Minutes);
+        }
+
+        public async Task SetSchedulerStatusPollingForFixtureToLivePolling(Guid fixtureId)
+        {
+            var fixture =
+                    _schedulerTrackingRugbyFixtureRepository.Where(
+                        f => f.FixtureId == fixtureId).FirstOrDefault();
+
+            if(fixture != null)
+            {
+                fixture.SchedulerStateFixtures = SchedulerStateForRugbyFixturePolling.LivePolling;
+                await _schedulerTrackingRugbyFixtureRepository.SaveAsync();
+            }
+        }
+
+        public IEnumerable<RugbyFixture> GetEndedFixtures()
+        {
+            return
+                _rugbyFixturesRepository.Where(
+                    f => f.RugbyFixtureStatus == RugbyFixtureStatus.Final);
+        }
+
+        public async Task SetSchedulerStatusPollingForFixtureToSchedulingComplete(Guid fixtureId)
+        {
+            var fixtureSchedule =
+                    _schedulerTrackingRugbyFixtureRepository.Where(
+                        f => f.FixtureId == fixtureId).FirstOrDefault();
+
+            if (fixtureSchedule != null)
+            {
+                fixtureSchedule.SchedulerStateFixtures = SchedulerStateForRugbyFixturePolling.SchedulingCompleted;
+                _schedulerTrackingRugbyFixtureRepository.Update(fixtureSchedule);
+                await _schedulerTrackingRugbyFixtureRepository.SaveAsync();
+            }
         }
 
         public IEnumerable<RugbyTournament> GetActiveTournamentsForMatchesInResultsState()

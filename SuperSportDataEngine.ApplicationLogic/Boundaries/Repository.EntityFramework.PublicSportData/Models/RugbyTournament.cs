@@ -1,5 +1,6 @@
 ﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models
 {
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
     using System;
 
     public class RugbyTournament
@@ -28,6 +29,6 @@
         /// <summary> A CMS driven value to indicate if a tournament is enabled for ingest. </summary>
         public bool IsEnabled { get; set; }
 
-        public virtual DataProvider DataProvider { get; set; }
+        public DataProvider DataProvider { get; set; }
     }
 }
