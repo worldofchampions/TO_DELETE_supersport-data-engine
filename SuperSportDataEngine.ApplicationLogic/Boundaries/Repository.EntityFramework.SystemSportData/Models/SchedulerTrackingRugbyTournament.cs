@@ -8,5 +8,6 @@
         public Guid TournamentId { get; set; }
         public Guid SeasonId { get; set; }
         public SchedulerStateForRugbyLogPolling SchedulerStateLogs { get; set; }
+        public SchedulerStateForManagerJobPolling SchedulerStateForManagerJobPolling { get; set; }
     }
 }

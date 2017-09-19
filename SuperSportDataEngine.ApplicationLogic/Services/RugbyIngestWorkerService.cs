@@ -26,6 +26,7 @@
         private readonly IBaseEntityFrameworkRepository<RugbyVenue> _rugbyVenueRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyTeam> _rugbyTeamRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyFixture> _rugbyFixturesRepository;
+        private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> _schedulerTrackingRugbyTournamentRepository;
         private readonly IRugbyService _rugbyService;
 
         public RugbyIngestWorkerService(
@@ -38,6 +39,7 @@
             IBaseEntityFrameworkRepository<RugbyVenue> rugbyVenueRepository,
             IBaseEntityFrameworkRepository<RugbyTeam> rugbyTeamRepository,
             IBaseEntityFrameworkRepository<RugbyFixture> rugbyFixturerRepository,
+            IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> schedulerTrackingRugbyTournamentRepository,
             IRugbyService rugbyService)
         {
             _statsProzoneIngestService = statsProzoneIngestService;
@@ -49,6 +51,7 @@
             _rugbyVenueRepository = rugbyVenueRepository;
             _rugbyTeamRepository = rugbyTeamRepository;
             _rugbyFixturesRepository = rugbyFixturerRepository;
+            _schedulerTrackingRugbyTournamentRepository = schedulerTrackingRugbyTournamentRepository;
             _rugbyService = rugbyService;
         }
 
@@ -63,6 +66,7 @@
             PersistVenuesInPublicSportsDataRepository(cancellationToken, entitiesResponse);
             PersistTeamsInPublicSportsDataRepository(cancellationToken, entitiesResponse);
             PersistRugbyTournamentsInRepositoryAsync(entitiesResponse, cancellationToken);
+
             await IngestRugbyTournamentSeasons(cancellationToken);
 
             _mongoDbRepository.Save(entitiesResponse);
@@ -71,6 +75,40 @@
             await _rugbyVenueRepository.SaveAsync();
             await _rugbyTeamRepository.SaveAsync();
             await _rugbyTournamentRepository.SaveAsync();
+        }
+
+        private void PersistRugbyTournamentsInSystemTrackingTable()
+        {
+            var activeTournaments = _rugbyService.GetActiveTournaments();
+
+            foreach(var tournament in activeTournaments)
+            {
+                var currentSeasonId = _rugbyService.GetCurrentProviderSeasonIdForTournament(tournament.Id);
+
+                var seasonInDb = 
+                    _schedulerTrackingRugbySeasonRepository
+                        .Where(s => s.TournamentId == tournament.Id && s.RugbySeasonStatus == RugbySeasonStatus.InProgress).FirstOrDefault();
+
+                if(seasonInDb != null)
+                {
+                    var tournamentInDb =
+                        _schedulerTrackingRugbyTournamentRepository
+                            .Where(t => t.TournamentId == tournament.Id && t.SeasonId == seasonInDb.SeasonId).FirstOrDefault();
+
+                    var newTournament = new SchedulerTrackingRugbyTournament()
+                    {
+                        SeasonId = seasonInDb.SeasonId,
+                        TournamentId = tournament.Id,
+                        SchedulerStateLogs = SchedulerStateForRugbyLogPolling.NotRunning,
+                        SchedulerStateForManagerJobPolling = SchedulerStateForManagerJobPolling.NotRunning
+                    };
+
+                    if(tournamentInDb == null)
+                    {
+                        _schedulerTrackingRugbyTournamentRepository.Add(newTournament);
+                    }
+                }
+            }
         }
 
         private void PersistTeamsInPublicSportsDataRepository(CancellationToken cancellationToken, RugbyEntitiesResponse entitiesResponse)
@@ -200,6 +238,7 @@
                 PersistRugbyFixturesToPublicSportsRepository(cancellationToken, fixtures);
                 PersistRugbyFixturesToSchedulerTrackingRugbyFixturesTable(fixtures);
                 PersistRugbySeasonDataInSchedulerTrackingRugbySeasonTable(fixtures);
+                PersistRugbyTournamentsInSystemTrackingTable();
                 _mongoDbRepository.Save(fixtures);
             }
 
@@ -207,6 +246,7 @@
             await _rugbyFixturesRepository.SaveAsync();
             await _schedulerTrackingRugbySeasonRepository.SaveAsync();
             await _schedulerTrackingRugbyFixtureRepoitory.SaveAsync();
+            await _schedulerTrackingRugbyTournamentRepository.SaveAsync();
         }
 
         private void PersistRugbyFixturesToSchedulerTrackingRugbyFixturesTable(RugbyFixturesResponse fixtures)
@@ -558,18 +598,11 @@
         {
             while (true)
             {
-                try
-                {
-                    var fixtureResponse =
-                    await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, providerFixtureId);
+                var fixtureResponse =
+                await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, providerFixtureId);
 
-                    if (fixtureResponse.RugbyMatchStats.gameState == "Game End")
-                        break;
-                }
-                catch (Exception e)
-                {
-                    bool test = true;
-                }
+                if (fixtureResponse.RugbyMatchStats.gameState == "Game End")
+                    break;
                 // Check if should stop looping?
 
                 Thread.Sleep(TimeSpan.FromSeconds(10));
