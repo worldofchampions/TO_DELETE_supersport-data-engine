@@ -77,14 +77,6 @@
         {
             container.RegisterType<DbContext, PublicSportDataContext>(PublicSportDataRepository, new PerThreadLifetimeManager());
 
-            container.RegisterType<IBaseEntityFrameworkRepository<Player>, BaseEntityFrameworkRepository<Player>>(
-                new ContainerControlledLifetimeManager(),
-                new InjectionFactory(x => new BaseEntityFrameworkRepository<Player>(container.Resolve<DbContext>(PublicSportDataRepository))));
-
-            container.RegisterType<IBaseEntityFrameworkRepository<Sport>, BaseEntityFrameworkRepository<Sport>>(
-                new ContainerControlledLifetimeManager(),
-                new InjectionFactory(x => new BaseEntityFrameworkRepository<Sport>(container.Resolve<DbContext>(PublicSportDataRepository))));
-
             container.RegisterType<IBaseEntityFrameworkRepository<RugbyFixture>, BaseEntityFrameworkRepository<RugbyFixture>>(
                 new ContainerControlledLifetimeManager(),
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyFixture>(container.Resolve<DbContext>(PublicSportDataRepository))));
@@ -108,10 +100,6 @@
             container.RegisterType<IBaseEntityFrameworkRepository<RugbyVenue>, BaseEntityFrameworkRepository<RugbyVenue>>(
                 new ContainerControlledLifetimeManager(),
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyVenue>(container.Resolve<DbContext>(PublicSportDataRepository))));
-
-            container.RegisterType<IBaseEntityFrameworkRepository<Log>, BaseEntityFrameworkRepository<Log>>(
-                new ContainerControlledLifetimeManager(),
-                new InjectionFactory(x => new BaseEntityFrameworkRepository<Log>(container.Resolve<DbContext>(PublicSportDataRepository))));
         }
 
         private static void ApplyRegistrationsForRepositoryEntityFrameworkSystemSportData(IUnityContainer container)
@@ -129,10 +117,6 @@
             container.RegisterType<IBaseEntityFrameworkRepository<SchedulerDashboardUser>, BaseEntityFrameworkRepository<SchedulerDashboardUser>>(
                 new ContainerControlledLifetimeManager(),
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<SchedulerDashboardUser>(container.Resolve<DbContext>(SystemSportDataRepository))));
-
-            container.RegisterType<IBaseEntityFrameworkRepository<SportTournament>, BaseEntityFrameworkRepository<SportTournament>>(
-                new ContainerControlledLifetimeManager(),
-                new InjectionFactory(x => new BaseEntityFrameworkRepository<SportTournament>(container.Resolve<DbContext>(SystemSportDataRepository))));
 
             container.RegisterType<IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture>, BaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture>>(
                 new ContainerControlledLifetimeManager(),
