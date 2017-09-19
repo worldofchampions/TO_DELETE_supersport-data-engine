@@ -10,24 +10,25 @@
     using SuperSportDataEngine.ApplicationLogic.Services;
     using System.Configuration;
     using System.Threading;
+    using SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledManager;
+    using SuperSportDataEngine.Application.Service.SchedulerClient.Manager;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
 
     internal class WindowsService : IWindowsServiceContract
     {
         private readonly UnityContainer _container;
         private readonly FixedScheduledJob _fixedManagerJob;
-        private readonly JobManager.JobManager _jobManager;
+        private readonly ManagerJob _jobManager;
 
         public WindowsService(UnityContainer container)
         {
             _container = container;
             _fixedManagerJob = new FixedScheduledJob(_container);
-            _jobManager = new JobManager.JobManager(_container);
+            _jobManager = new ManagerJob(_container);
         }
 
         public void StartService()
         {
-            var ingestService = _container.Resolve<IRugbyIngestWorkerService>();
-
             GlobalConfiguration.Configuration.UseStorage(HangfireConfiguration.JobStorage);
             GlobalJobFilters.Filters.Add(new ExpirationTimeAttribute());
 

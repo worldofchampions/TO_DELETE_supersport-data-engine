@@ -52,7 +52,7 @@
             _rugbyService = rugbyService;
         }
 
-        public async Task IngestRugbyReferenceData(CancellationToken cancellationToken)
+        public async Task IngestReferenceData(CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
                 return;
@@ -452,7 +452,7 @@
             }
         }
 
-        public async Task IngestRugbyResultsForAllFixtures(CancellationToken cancellationToken)
+        public async Task IngestResultsForAllFixtures(CancellationToken cancellationToken)
         {
             var activeTournaments = _rugbyTournamentRepository.Where(t => t.IsEnabled);
 
@@ -487,7 +487,7 @@
             //await _schedulerTrackingRugbyFixtureRepoitory.SaveAsync();
         }
 
-        public async Task IngestRugbyResultsForCurrentDayFixtures(CancellationToken cancellationToken)
+        public async Task IngestResultsForCurrentDayFixtures(CancellationToken cancellationToken)
         {
             var currentRoundFixtures = GetCurrentDayRoundFixturesForActiveTournaments();
             
@@ -499,7 +499,7 @@
             }
         }
 
-        public async Task IngestRugbyResultsForFixturesInResultsState(CancellationToken cancellationToken)
+        public async Task IngestResultsForFixturesInResultsState(CancellationToken cancellationToken)
         {
             var fixtures = GetRoundFixturesInResultsStateForActiveTournaments();
 
@@ -566,7 +566,7 @@
                     if (fixtureResponse.RugbyMatchStats.gameState == "Game End")
                         break;
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     bool test = true;
                 }
@@ -574,6 +574,16 @@
 
                 Thread.Sleep(TimeSpan.FromSeconds(10));
             }
+        }
+
+        public async Task IngestLogsForTournamentSeason(CancellationToken cancellationToken, int providerTournamentId, int seasonId)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return;
+
+            var results = await _statsProzoneIngestService.IngestLogsForTournament(providerTournamentId, seasonId);
+
+            // TODO: Also persist in SQL DB.
         }
     }
 }
