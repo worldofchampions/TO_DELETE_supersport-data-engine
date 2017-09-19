@@ -85,6 +85,10 @@
     <Compile Include="Migrations\201709190527161_Deleted_temporary_example_tables.Designer.cs">
       <DependentUpon>201709190527161_Deleted_temporary_example_tables.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201709190909053_Added_RugbyPlayer_table.cs" />
+    <Compile Include="Migrations\201709190909053_Added_RugbyPlayer_table.Designer.cs">
+      <DependentUpon>201709190909053_Added_RugbyPlayer_table.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -132,6 +136,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201709190527161_Deleted_temporary_example_tables.resx">
       <DependentUpon>201709190527161_Deleted_temporary_example_tables.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201709190909053_Added_RugbyPlayer_table.resx">
+      <DependentUpon>201709190909053_Added_RugbyPlayer_table.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
