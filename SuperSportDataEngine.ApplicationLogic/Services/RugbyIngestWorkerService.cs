@@ -81,15 +81,15 @@
         {
             var activeTournaments = _rugbyService.GetActiveTournaments();
 
-            foreach(var tournament in activeTournaments)
+            foreach (var tournament in activeTournaments)
             {
                 var currentSeasonId = _rugbyService.GetCurrentProviderSeasonIdForTournament(tournament.Id);
 
-                var seasonInDb = 
+                var seasonInDb =
                     _schedulerTrackingRugbySeasonRepository
                         .Where(s => s.TournamentId == tournament.Id && s.RugbySeasonStatus == RugbySeasonStatus.InProgress).FirstOrDefault();
 
-                if(seasonInDb != null)
+                if (seasonInDb != null)
                 {
                     var tournamentInDb =
                         _schedulerTrackingRugbyTournamentRepository
@@ -103,7 +103,7 @@
                         SchedulerStateForManagerJobPolling = SchedulerStateForManagerJobPolling.NotRunning
                     };
 
-                    if(tournamentInDb == null)
+                    if (tournamentInDb == null)
                     {
                         _schedulerTrackingRugbyTournamentRepository.Add(newTournament);
                     }
@@ -149,7 +149,7 @@
             if (cancellationToken.IsCancellationRequested)
                 return;
 
-            foreach(var venue in entitiesResponse.Entities.venues)
+            foreach (var venue in entitiesResponse.Entities.venues)
             {
                 // Lookup in db
                 var venueInDb = _rugbyVenueRepository.Where(v => v.ProviderVenueId == venue.id).FirstOrDefault();
@@ -251,21 +251,21 @@
 
         private void PersistRugbyFixturesToSchedulerTrackingRugbyFixturesTable(RugbyFixturesResponse fixtures)
         {
-            foreach(var roundFixtures in fixtures.Fixtures.roundFixtures)
+            foreach (var roundFixtures in fixtures.Fixtures.roundFixtures)
             {
-                foreach(var fixture in roundFixtures.gameFixtures)
+                foreach (var fixture in roundFixtures.gameFixtures)
                 {
                     var fixtureInDb = _rugbyFixturesRepository.Where(f => f.ProviderFixtureId == fixture.gameId).FirstOrDefault();
                     var fixtureGuid = fixtureInDb.Id;
                     var tournamentGuid = fixtureInDb.RugbyTournament.Id;
 
-                    var fixtureSchedule = 
+                    var fixtureSchedule =
                             _schedulerTrackingRugbyFixtureRepoitory
                                 .Where(
                                     f => f.FixtureId == fixtureGuid && f.TournamentId == tournamentGuid)
                                 .FirstOrDefault();
 
-                    if(fixtureSchedule == null)
+                    if (fixtureSchedule == null)
                     {
                         var newFixtureSchedule = new SchedulerTrackingRugbyFixture()
                         {
@@ -285,10 +285,10 @@
                         // we need to update the status of the game.
                         fixtureSchedule.RugbyFixtureStatus = GetFixtureStatusFromProviderFixtureState(fixture.gameStateName);
 
-                        if(HasFixtureEnded(fixture.gameStateName) &&
+                        if (HasFixtureEnded(fixture.gameStateName) &&
                            fixtureSchedule.EndedDateTime == DateTimeOffset.MinValue)
                         {
-                            fixtureSchedule.EndedDateTime = 
+                            fixtureSchedule.EndedDateTime =
                                 fixtureSchedule.StartDateTime
                                     .AddSeconds(
                                         fixture.gameSeconds);
@@ -385,7 +385,7 @@
             var dateOffsetNow = DateTimeOffset.Now;
 
             var seasonStatus = GetRugbySeasonStatus(seasonStartDate, dateOffsetNow, seasonEndDate);
-            
+
             var seasonInDb = _schedulerTrackingRugbySeasonRepository.Where(s => s.SeasonId == seasonId && s.TournamentId == tournamentId).FirstOrDefault();
 
             if (seasonInDb == null)
@@ -530,7 +530,7 @@
         public async Task IngestResultsForCurrentDayFixtures(CancellationToken cancellationToken)
         {
             var currentRoundFixtures = GetCurrentDayRoundFixturesForActiveTournaments();
-            
+
             foreach (var round in currentRoundFixtures)
             {
                 var results = await _statsProzoneIngestService.IngestFixtureResults(round.Item1, round.Item2, round.Item3);

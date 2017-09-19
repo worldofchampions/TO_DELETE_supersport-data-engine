@@ -96,10 +96,10 @@
 
         private async Task<int> StopSchedulingInactiveTournaments(IEnumerable<RugbyTournament> inactiveTournaments)
         {
-            foreach(var tournament in inactiveTournaments)
+            foreach (var tournament in inactiveTournaments)
             {
                 var seasons = _schedulerTrackingRugbyTournaments.Where(t => t.TournamentId == tournament.Id);
-                foreach(var tournamentSeason in seasons)
+                foreach (var tournamentSeason in seasons)
                 {
                     tournamentSeason.SchedulerStateForManagerJobPolling = SchedulerStateForManagerJobPolling.NotRunning;
                 }

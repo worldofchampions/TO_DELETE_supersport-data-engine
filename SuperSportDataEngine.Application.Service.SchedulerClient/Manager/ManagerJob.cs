@@ -74,7 +74,7 @@
             await _liveManagerJob.DoWorkAsync();
             await _fixturesManagerJob.DoWorkAsync();
             await _logsManagerJob.DoWorkAsync();
-            
+
             _timer.Start();
         }
     }

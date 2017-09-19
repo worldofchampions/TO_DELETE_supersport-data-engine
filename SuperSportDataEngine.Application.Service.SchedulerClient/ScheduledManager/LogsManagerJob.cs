@@ -44,7 +44,6 @@
                 if (_rugbyService.GetSchedulerStateForManagerJobPolling(tournament.Id) == SchedulerStateForManagerJobPolling.NotRunning)
                 {
                     var jobId = ConfigurationManager.AppSettings["ScheduleMangerJob_Logs_CurrentTournaments_JobIdPrefix"] + tournament.Name;
-
                     var jobCronExpression = ConfigurationManager.AppSettings["ScheduleMangerJob_Logs_CurrentTournaments_JobCronExpression_OneMinute"];
 
                     AddOrUpdateHangfireJob(tournament.ProviderTournamentId, seasonId, jobId, jobCronExpression);
@@ -93,11 +92,10 @@
 
             timer.Elapsed += delegate
             {
-                string jobExpiryFromConfig = ConfigurationManager.AppSettings["ScheduleMangerJob_Logs_CurrentTournaments_LowFrequencyPolling_ExpiryInMinutes"];
+                var jobExpiryFromConfig = ConfigurationManager.AppSettings["ScheduleMangerJob_Logs_CurrentTournaments_LowFrequencyPolling_ExpiryInMinutes"];
+                var jobCronExpression = ConfigurationManager.AppSettings["ScheduleMangerJob_Logs_CurrentTournaments_LowFrequencyPolling_CronExpression"];
 
                 var deleteJobOnThisMinute = int.Parse(jobExpiryFromConfig);
-
-                var jobCronExpression = ConfigurationManager.AppSettings["ScheduleMangerJob_Logs_CurrentTournaments_LowFrequencyPolling_CronExpression"];
 
                 AddOrUpdateHangfireJob(providerTournamentId, seasonId, jobId, jobCronExpression);
 
