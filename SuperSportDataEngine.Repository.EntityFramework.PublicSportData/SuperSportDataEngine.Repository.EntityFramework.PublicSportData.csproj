@@ -77,6 +77,10 @@
     <Compile Include="Migrations\201709181224242_Changed_DataProvider_table_into_an_enum.Designer.cs">
       <DependentUpon>201709181224242_Changed_DataProvider_table_into_an_enum.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201709190443251_Added_RugbyLog_table.cs" />
+    <Compile Include="Migrations\201709190443251_Added_RugbyLog_table.Designer.cs">
+      <DependentUpon>201709190443251_Added_RugbyLog_table.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -118,6 +122,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201709181224242_Changed_DataProvider_table_into_an_enum.resx">
       <DependentUpon>201709181224242_Changed_DataProvider_table_into_an_enum.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201709190443251_Added_RugbyLog_table.resx">
+      <DependentUpon>201709190443251_Added_RugbyLog_table.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

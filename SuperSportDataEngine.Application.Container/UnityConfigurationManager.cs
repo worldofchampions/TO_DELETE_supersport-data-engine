@@ -89,6 +89,10 @@
                 new ContainerControlledLifetimeManager(),
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyFixture>(container.Resolve<DbContext>(PublicSportDataRepository))));
 
+            container.RegisterType<IBaseEntityFrameworkRepository<RugbyLog>, BaseEntityFrameworkRepository<RugbyLog>>(
+                new ContainerControlledLifetimeManager(),
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyLog>(container.Resolve<DbContext>(PublicSportDataRepository))));
+
             container.RegisterType<IBaseEntityFrameworkRepository<RugbySeason>, BaseEntityFrameworkRepository<RugbySeason>>(
                 new ContainerControlledLifetimeManager(),
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbySeason>(container.Resolve<DbContext>(PublicSportDataRepository))));

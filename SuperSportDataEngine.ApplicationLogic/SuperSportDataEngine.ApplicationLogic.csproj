@@ -61,6 +61,7 @@
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Legacy\LogEntityMapperProfile.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Log.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyFixture.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyLog.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbySeason.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyTeam.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyTournament.cs" />
