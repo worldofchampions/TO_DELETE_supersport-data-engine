@@ -177,6 +177,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Start\AutoMapperConfig.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="Models\Mappers\LegacyFixtureMapperProfile.cs" />
@@ -302,7 +303,6 @@
     <Compile Include="Models\VenueModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequestHandlers\FeedRequestHandler.cs" />
-    <Compile Include="ResponseModels\FixtureResponseModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Areas\HelpPage\HelpPage.css" />
@@ -372,6 +372,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="ResponseModels\" />
     <Folder Include="Views\Rugby\" />
   </ItemGroup>
   <ItemGroup>
