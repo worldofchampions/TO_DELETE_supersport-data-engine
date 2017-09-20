@@ -155,5 +155,22 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             return tournamentsThatHaveFixturesInResultState;
         }
+
+        public IEnumerable<RugbyFixture> GetTournamentFixtures(Guid tournamentId)
+        {
+            var allFixtures = _rugbyFixturesRepository.All()
+                .Where(t => t.RugbyTournament.Id == tournamentId);
+
+            return allFixtures;
+        }
+
+        public IEnumerable<RugbyFixture> GetTournamentFixtures(string tournamentName)
+        {
+            Guid tournamentId = _rugbyFixturesRepository
+                .Where(f => f.RugbyTournament.Name == tournamentName)
+                .FirstOrDefault().Id;
+
+            return GetTournamentFixtures(tournamentId);
+        }
     }
 }

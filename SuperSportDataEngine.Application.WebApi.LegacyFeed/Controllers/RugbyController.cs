@@ -4,6 +4,7 @@ using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.News;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -61,9 +62,19 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         [HttpGet]
         [Route("{category}/fixtures")]
         [ResponseType(typeof(List<FixtureModel>))]
-        public IHttpActionResult GetFixtures()
+        public async Task<IHttpActionResult> GetFixtures(string category)
         {
-            return Ok();
+
+            var cacheKey = $"rugby/{category}/fixtures";
+            var fixtures = await _cache.GetAsync<IEnumerable<FixtureModel>>(cacheKey);
+
+            if (fixtures == null)
+            {
+                fixtures = _rugbyService.GetTournamentFixtures(category).Select(log => Mapper.Map<FixtureModel>(log));
+                _cache.Add(cacheKey, fixtures);
+            }
+
+            return Ok(fixtures);
         }
 
         /// <summary>

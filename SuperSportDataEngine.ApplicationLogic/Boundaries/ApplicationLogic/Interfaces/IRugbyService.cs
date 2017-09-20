@@ -20,5 +20,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Inte
         IEnumerable<RugbyFixture> GetEndedFixtures();
         bool HasFixtureEnded(long providerFixtureId);
         IEnumerable<RugbyTournament> GetActiveTournamentsForMatchesInResultsState();
+        IEnumerable<RugbyFixture> GetTournamentFixtures(Guid tournamentId);
+        IEnumerable<RugbyFixture> GetTournamentFixtures(string tournamentName);
     }
 }
