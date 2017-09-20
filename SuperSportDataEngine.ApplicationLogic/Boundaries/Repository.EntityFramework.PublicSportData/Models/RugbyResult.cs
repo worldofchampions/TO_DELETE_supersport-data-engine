@@ -1,12 +1,8 @@
-﻿using System;
-
-namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models
+﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models
 {
     public class RugbyResult
     {
         public virtual RugbyFixture Fixture { get; set; }
-
-        public DateTime Date { set; get; }
 
         public string Status { get; set; }
 
