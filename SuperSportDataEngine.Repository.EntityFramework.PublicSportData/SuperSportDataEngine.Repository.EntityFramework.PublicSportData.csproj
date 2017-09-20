@@ -89,11 +89,12 @@
     <Compile Include="Migrations\201709190909053_Added_RugbyPlayer_table.Designer.cs">
       <DependentUpon>201709190909053_Added_RugbyPlayer_table.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201709201111343_Added_RugbyPlayerLineup_table.cs" />
+    <Compile Include="Migrations\201709201111343_Added_RugbyPlayerLineup_table.Designer.cs">
+      <DependentUpon>201709201111343_Added_RugbyPlayerLineup_table.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SuperSportDataEngine.ApplicationLogic\SuperSportDataEngine.ApplicationLogic.csproj">
@@ -140,6 +141,12 @@
     <EmbeddedResource Include="Migrations\201709190909053_Added_RugbyPlayer_table.resx">
       <DependentUpon>201709190909053_Added_RugbyPlayer_table.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201709201111343_Added_RugbyPlayerLineup_table.resx">
+      <DependentUpon>201709201111343_Added_RugbyPlayerLineup_table.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
