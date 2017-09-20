@@ -11,7 +11,7 @@
 
     internal class ManagerJob
     {
-        private System.Timers.Timer _timer;
+        private Timer _timer;
         private IRugbyService _rugbyService;
         private IRugbyIngestWorkerService _rugbyIngestService;
         private IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> _schedulerTrackingRugbyFixtureRepository;
@@ -59,7 +59,7 @@
 
         private void ConfigureTimer()
         {
-            _timer = new System.Timers.Timer
+            _timer = new Timer
             {
                 AutoReset = false,
                 Interval = TimeSpan.FromMinutes(1).TotalMilliseconds

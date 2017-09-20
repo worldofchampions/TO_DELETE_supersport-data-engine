@@ -11,7 +11,13 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests
     public partial class FixedScheduledJob_Test
     {
         [Test]
-        public void WhenUpdateFixedJobsCalled_AddsJobToHangfire_IngestingReferenceData()
+        [TestCase("FixedScheduledJob→ReferenceData", "0 2 * * *")]
+        [TestCase("FixedScheduleJob→Fixtures", "5 2 * * *")]
+        [TestCase("FixedScheduleJob→Logs→ActiveTournaments", "5 2 * * *")]
+        [TestCase("FixedScheduleJob→Logs→CurrentTournaments", "0 */1 * * *")]
+        public void WhenUpdateFixedJobsCalled_AddsJobToHangfire(
+            string hangfireJobId,
+            string hangfireCronExpression)
         {
             // Mock the Hangfire client, ingest service and job manager.
             var client = new Mock<IBackgroundJobClient>();
@@ -42,9 +48,9 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests
             mockRecurringJobManager
                 .Verify(
                     m => m.AddOrUpdate(
-                            "FixedScheduledJob→ReferenceData",
+                            hangfireJobId,
                             It.IsAny<Job>(),
-                            "0 2 * * *",
+                            hangfireCronExpression,
                             It.IsAny<RecurringJobOptions>()),
                           Times.AtLeastOnce());
         }
