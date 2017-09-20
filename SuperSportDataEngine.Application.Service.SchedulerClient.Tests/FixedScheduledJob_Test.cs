@@ -5,16 +5,20 @@ using Microsoft.Practices.Unity;
 using SuperSportDataEngine.ApplicationLogic.Services;
 using NUnit.Framework;
 using Hangfire.Common;
+using System.Linq.Expressions;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests
 {
     public partial class FixedScheduledJob_Test
     {
-        [Test]
-        [TestCase("FixedScheduledJob→ReferenceData", "0 2 * * *")]
+        //[Test]
+        [TestCase("FixedScheduleJob→ReferenceData", "0 2 * * *")]
         [TestCase("FixedScheduleJob→Fixtures", "5 2 * * *")]
         [TestCase("FixedScheduleJob→Logs→ActiveTournaments", "5 2 * * *")]
         [TestCase("FixedScheduleJob→Logs→CurrentTournaments", "0 */1 * * *")]
+        [TestCase("FixedScheduleJob→Results→AllFixtures", "5 2 * * *")]
+        [TestCase("FixedScheduleJob→Results→EndedFixtures", "0 */1 * * *")]
+        [TestCase("FixedScheduleJob→Results→CurrentDayFixtures", "*/15 * * * *")]
         public void WhenUpdateFixedJobsCalled_AddsJobToHangfire(
             string hangfireJobId,
             string hangfireCronExpression)
