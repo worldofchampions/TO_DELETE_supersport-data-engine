@@ -4,8 +4,6 @@
     {
         public virtual RugbyFixture Fixture { get; set; }
 
-        public string Status { get; set; }
-
         public int HomeTeamScore { get; set; }
 
         public int AwayTeamScore { get; set; }
