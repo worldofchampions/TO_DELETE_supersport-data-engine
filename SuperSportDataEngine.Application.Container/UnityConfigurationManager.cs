@@ -1,9 +1,12 @@
 ﻿namespace SuperSportDataEngine.Application.Container
 {
+    using Hangfire;
+    using Hangfire.SqlServer;
     using Microsoft.Practices.Unity;
     using MongoDB.Driver;
     using StackExchange.Redis;
     using SuperSportDataEngine.Application.Container.Enums;
+    using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
     using SuperSportDataEngine.Application.WebApi.Common.Caching;
     using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
@@ -146,9 +149,14 @@
             if (applicationScope == ApplicationScope.ServiceSchedulerClient ||
                 applicationScope == ApplicationScope.ServiceSchedulerIngestServer)
             {
+                container.RegisterType<IRecurringJobManager, RecurringJobManager>(
+                    new InjectionFactory((x) => new RecurringJobManager(
+                        new SqlServerStorage(ConfigurationManager.ConnectionStrings["SqlDatabase_Hangfire"].ConnectionString))));
+
                 container.RegisterType<IMongoClient, MongoClient>(
                     new ContainerControlledLifetimeManager(),
-                    new InjectionFactory((x) => new MongoClient(ConfigurationManager.ConnectionStrings["MongoDB"].ConnectionString)));
+                    new InjectionFactory((x) => new MongoClient(
+                        ConfigurationManager.ConnectionStrings["MongoDB"].ConnectionString)));
 
                 container.RegisterType<IMongoDbRugbyRepository, MongoDbRugbyRepository>();
                 container.RegisterType<IRugbyIngestWorkerService, RugbyIngestWorkerService>();

@@ -7,12 +7,9 @@
     using SuperSportDataEngine.Application.Service.Common.Hangfire.Filters;
     using SuperSportDataEngine.Application.Service.Common.Interfaces;
     using SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule;
-    using SuperSportDataEngine.ApplicationLogic.Services;
     using System.Configuration;
     using System.Threading;
-    using SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledManager;
     using SuperSportDataEngine.Application.Service.SchedulerClient.Manager;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
 
     internal class WindowsService : IWindowsServiceContract
     {
