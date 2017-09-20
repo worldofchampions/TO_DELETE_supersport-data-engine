@@ -1,7 +1,6 @@
 ﻿using Hangfire;
 using Microsoft.Practices.Unity;
 using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
 using SuperSportDataEngine.ApplicationLogic.Services;
 using System.Configuration;
 using System.Threading;
@@ -9,11 +8,11 @@ using System;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
 {
-    class FixedScheduledJob
+    public class FixedScheduledJob
     {
         private readonly IRugbyIngestWorkerService _ingestService;
 
-        public FixedScheduledJob(UnityContainer container)
+        public FixedScheduledJob(IUnityContainer container)
         {
             _ingestService = container.Resolve<IRugbyIngestWorkerService>();
         }
@@ -50,7 +49,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
                 ConfigurationManager.AppSettings["FixedScheduledJob_ReferenceData_JobId"],
                 () => _ingestService.IngestReferenceData(CancellationToken.None),
                 ConfigurationManager.AppSettings["FixedScheduledJob_ReferenceData_JobCronExpression"],
-                System.TimeZoneInfo.Utc,
+                TimeZoneInfo.Utc,
                 HangfireQueueConfiguration.NormalPriority);
         }
 
@@ -62,7 +61,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
                 ConfigurationManager.AppSettings["FixedScheduledJob_FixturesData_JobId"],
                 () => _ingestService.IngestFixturesForActiveTournaments(CancellationToken.None),
                 ConfigurationManager.AppSettings["FixedScheduledJob_FixturesData_JobCronExpression"],
-                System.TimeZoneInfo.Utc,
+                TimeZoneInfo.Utc,
                 HangfireQueueConfiguration.NormalPriority);
 
             UpdateRecurringJobDefinition_AllFixtures();
@@ -76,7 +75,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
                 ConfigurationManager.AppSettings["FixedScheduledJob_LogsData_ActiveTournaments_JobId"],
                 () => _ingestService.IngestLogsForActiveTournaments(CancellationToken.None),
                 ConfigurationManager.AppSettings["FixedScheduledJob_LogsData_ActiveTournaments_JobCronExpression"],
-                System.TimeZoneInfo.Utc,
+                TimeZoneInfo.Utc,
                 HangfireQueueConfiguration.NormalPriority);
         }
 
@@ -88,7 +87,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
                 ConfigurationManager.AppSettings["FixedScheduledJob_LogsData_CurrentTournaments_JobId"],
                 () => _ingestService.IngestLogsForCurrentTournaments(CancellationToken.None),
                 ConfigurationManager.AppSettings["FixedScheduledJob_LogsData_CurrentTournaments_JobCronExpression"],
-                System.TimeZoneInfo.Utc,
+                TimeZoneInfo.Utc,
                 HangfireQueueConfiguration.NormalPriority);
         }
 

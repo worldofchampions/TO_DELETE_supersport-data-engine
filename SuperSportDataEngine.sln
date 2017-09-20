@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.16
+VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperSportDataEngine.Application.Service.SchedulerClient", "SuperSportDataEngine.Application.Service.SchedulerClient\SuperSportDataEngine.Application.Service.SchedulerClient.csproj", "{73B00FC5-F746-4B2D-8B8B-075B22B41F8B}"
 EndProject
@@ -40,6 +40,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperSportDataEngine.Repository.EntityFramework.Common", "SuperSportDataEngine.Repository.EntityFramework.Common\SuperSportDataEngine.Repository.EntityFramework.Common.csproj", "{4339EE97-496E-485D-A790-CA34258A27ED}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperSportDataEngine.Application.WebApi.Common", "SuperSportDataEngine.Application.WebApi.Common\SuperSportDataEngine.Application.WebApi.Common.csproj", "{06F1D111-A5D6-430F-A0A9-09921CC82A54}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperSportDataEngine.Application.Service.SchedulerClient.Tests", "SuperSportDataEngine.Application.Service.SchedulerClient.Tests\SuperSportDataEngine.Application.Service.SchedulerClient.Tests.csproj", "{0B0EF383-DC8F-47CE-8C3C-8C61A013ADD3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -123,8 +125,15 @@ Global
 		{06F1D111-A5D6-430F-A0A9-09921CC82A54}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{06F1D111-A5D6-430F-A0A9-09921CC82A54}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{06F1D111-A5D6-430F-A0A9-09921CC82A54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B0EF383-DC8F-47CE-8C3C-8C61A013ADD3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B0EF383-DC8F-47CE-8C3C-8C61A013ADD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B0EF383-DC8F-47CE-8C3C-8C61A013ADD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B0EF383-DC8F-47CE-8C3C-8C61A013ADD3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C5886B26-8567-4EC5-AC74-21D7466CDD3D}
 	EndGlobalSection
 EndGlobal
