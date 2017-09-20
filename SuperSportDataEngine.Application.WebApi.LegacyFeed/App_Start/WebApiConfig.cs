@@ -1,37 +1,47 @@
-﻿using AutoMapper;
-using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers;
+﻿using SuperSportDataEngine.Application.WebApi.LegacyFeed.App_Start;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models.Legacy;
-using SuperSportDataEngine.ApplicationLogic.Entities.Legacy.Mappers;
 using System.Web.Http;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed
 {
     public static class WebApiConfig
     {
+        private static HttpConfiguration httpConfig;
         public static void Register(HttpConfiguration config)
         {
-            // Web API configuration and services
+            httpConfig = config;
 
-            // Web API routes
-            config.MapHttpAttributeRoutes();
+            ConfigureApiRoutes();
 
-            config.Routes.MapHttpRoute(
+            ConfigureFeedRequestHandler();
+
+            ConfigureFeedMappings();
+        }
+
+        private static void ConfigureFeedRequestHandler()
+        {
+            httpConfig.MessageHandlers.Add(new FeedRequestHandler());
+        }
+
+        private static void ConfigureApiRoutes()
+        {
+            httpConfig.MapHttpAttributeRoutes();
+
+            httpConfig.Routes.MapHttpRoute(
                 name: "DefaultApi",
                 routeTemplate: "api/{sport}/{category}",
-                defaults: new { category = RouteParameter.Optional, type = RouteParameter.Optional, id = RouteParameter.Optional }
+                defaults: new
+                {
+                    category = RouteParameter.Optional,
+                    type = RouteParameter.Optional,
+                    id = RouteParameter.Optional
+                }
             );
+        }
 
-            config.MessageHandlers.Add(new FeedRequestHandler());
-            Mapper.Initialize(cfg =>
-            {
-                cfg.AddProfile<LogModelMapperProfile>();
-                cfg.AddProfile<LogEntityMapperProfile>();
-                cfg.AddProfile<LegacyAuthMappingProfile>();
-            });
-#if DEBUG
-            Mapper.AssertConfigurationIsValid();
-#endif
+        private static void ConfigureFeedMappings()
+        {
+            AutoMapperConfig.InitializeMappings();
         }
     }
 }
