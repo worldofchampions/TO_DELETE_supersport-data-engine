@@ -40,6 +40,7 @@
         public int? TeamBScore { get; set; }
 
         /// <summary> A CMS driven value to indicate if a fixture is live scored. </summary>
+        /// TODO: Confirm the handling of live scoring
         public bool IsFixtureLiveScored { get; set; }
     }
 }
