@@ -76,8 +76,8 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests
                     new List<RugbyFixture>() {
                         new RugbyFixture
                         {
-                            HomeTeam = new RugbyTeam() { Name = "HomeTeam1" },
-                            AwayTeam = new RugbyTeam() { Name = "AwayTeam1" },
+                            TeamA = new RugbyTeam() { Name = "TeamA" },
+                            TeamB = new RugbyTeam() { Name = "TeamB" },
                             RugbyFixtureStatus = RugbyFixtureStatus.Final
                         }
                     });
@@ -155,8 +155,8 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests
                         {
                             Id = fixtureId,
                             RugbyTournament = tournament,
-                            HomeTeam = new RugbyTeam { Name = "HomeTeam1" },
-                            AwayTeam = new RugbyTeam { Name = "AwayTeam1" },
+                            TeamA = new RugbyTeam { Name = "TeamA" },
+                            TeamB = new RugbyTeam { Name = "TeamB" },
                             RugbyFixtureStatus = RugbyFixtureStatus.InProgress
                         }
                     };
@@ -166,7 +166,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests
             await LiveManagerJob.DoWorkAsync();
 
             MockRecurringJobManager.Verify(m => m.AddOrUpdate(
-                        "LiveManagerJob→LiveMatch→HomeTeam1 vs AwayTeam1",
+                        "LiveManagerJob→LiveMatch→TeamA vs TeamB",
                         It.IsAny<Job>(),
                         "0 */2 * * *",
                         It.IsAny<RecurringJobOptions>()),

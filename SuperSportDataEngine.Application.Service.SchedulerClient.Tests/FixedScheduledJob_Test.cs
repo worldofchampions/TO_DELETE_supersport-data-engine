@@ -5,7 +5,6 @@ using Microsoft.Practices.Unity;
 using SuperSportDataEngine.ApplicationLogic.Services;
 using NUnit.Framework;
 using Hangfire.Common;
-using System.Linq.Expressions;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests
 {
