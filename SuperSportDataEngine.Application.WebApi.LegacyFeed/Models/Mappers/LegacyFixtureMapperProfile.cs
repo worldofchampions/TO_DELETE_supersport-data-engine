@@ -8,41 +8,65 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
     {
         public LegacyFixtureMapperProfile()
         {
-            CreateMap<RugbyResult, FixtureModel>()
+            CreateMap<RugbyFixture, FixtureModel>()
 
-                //AWAY TEAM
-                .ForMember(rf => rf.AwayTeam, fm => fm.MapFrom(r => r.Fixture.AwayTeam.Name))
-                .ForMember(rf => rf.AwayTeamScore, fm => fm.MapFrom(f => f.AwayTeamScore))
-                .ForMember(rf => rf.AwayTeamId, fm => fm.MapFrom(f => f.Fixture.AwayTeam.ProviderTeamId))
-                .ForMember(rf => rf.AwayTeamPenalties, fm => fm.UseValue(0))
-                .ForMember(rf => rf.AwayTeamShortName, fm => fm.MapFrom(f => f.Fixture.AwayTeam.Abbreviation))
+                // For Away team 
+                .ForMember(dest => dest.AwayTeam, expression => expression.MapFrom(
+                    src => src.TeamAIsHomeTeam ? src.TeamB.Name : src.TeamA.Name))
 
-                //HOME TEAM
-                .ForMember(rf => rf.HomeTeam, fm => fm.MapFrom(r => r.Fixture.HomeTeam.Name))
-                .ForMember(rf => rf.HomeTeamScore, fm => fm.MapFrom(f => f.HomeTeamScore))
-                .ForMember(rf => rf.HomeTeamId, fm => fm.MapFrom(f => f.Fixture.HomeTeam.ProviderTeamId))
-                .ForMember(rf => rf.HomeTeamPenalties, fm => fm.UseValue(0))
-                .ForMember(rf => rf.HomeTeamShortName, fm => fm.MapFrom(f => f.Fixture.HomeTeam.Abbreviation))
+                .ForMember(dest => dest.AwayTeamScore, expression => expression.MapFrom(
+                    src => src.TeamAIsHomeTeam ? src.TeamBScore.ToString() : src.TeamAScore.ToString()))
 
-                //FIXTURE
-                .ForMember(rf => rf.channelRegions, fm => fm.Ignore())
-                .ForMember(rf => rf.Channels, fm => fm.Ignore())
-                .ForMember(rf => rf.International, fm => fm.UseValue(false))
-                .ForMember(rf => rf.IsFeatured, fm => fm.UseValue(false))
-                .ForMember(rf => rf.LeagueId, fm => fm.MapFrom(f => f.Fixture.RugbyTournament.LegacyTournamentId))
-                .ForMember(rf => rf.LeagueName, fm => fm.MapFrom(f => f.Fixture.RugbyTournament.Name))
-                .ForMember(rf => rf.LeagueShortName, fm => fm.MapFrom(f => f.Fixture.RugbyTournament.Abbreviation))
-                .ForMember(rf => rf.LeagueUrlName, fm => fm.MapFrom(f => f.Fixture.RugbyTournament.LogoUrl))
-                .ForMember(rf => rf.Location, fm => fm.MapFrom(f => f.Fixture.RugbyVenue))
-                .ForMember(rf => rf.MatchDateTime, fm => fm.MapFrom(f => f.Fixture.StartDateTime.UtcDateTime))
-                .ForMember(rf => rf.MatchDateTimeString, fm => fm.MapFrom(f => f.Fixture.StartDateTime.UtcDateTime.ToLongDateString()))
-                .ForMember(rf => rf.MatchID, fm => fm.MapFrom(f => f.Fixture.LegacyFixtureId))
-                .ForMember(rf => rf.Result, fm => fm.MapFrom(f => f.Fixture.RugbyFixtureStatus == RugbyFixtureStatus.GameEnd))
-                .ForMember(rf => rf.Sport, fm => fm.UseValue(SportType.Rugby))
-                .ForMember(rf => rf.WalkOver, fm => fm.UseValue(false))
+                .ForMember(dest => dest.AwayTeamId, expression => expression.MapFrom(
+                    src => src.TeamAIsHomeTeam ? src.TeamB.LegacyTeamId : src.TeamA.LegacyTeamId))
 
-                //NOISY DATA
-                .ForAllOtherMembers(rf => rf.Ignore());
+                .ForMember(dest => dest.AwayTeamShortName, expression => expression.MapFrom(
+                    src => src.TeamAIsHomeTeam ? src.TeamB.Abbreviation : src.TeamA.Abbreviation))
+
+                // For Home team 
+                .ForMember(dest => dest.HomeTeam, expression => expression.MapFrom(
+                    src => src.TeamAIsHomeTeam ? src.TeamA.Name : src.TeamB.Name))
+
+                .ForMember(dest => dest.HomeTeamScore, expression => expression.MapFrom(
+                   src => src.TeamAIsHomeTeam ? src.TeamAScore.ToString() : src.TeamBScore.ToString()))
+
+                .ForMember(dest => dest.HomeTeamId, expression => expression.MapFrom(
+                    src => src.TeamAIsHomeTeam ? src.TeamA.LegacyTeamId : src.TeamB.LegacyTeamId))
+
+                .ForMember(dest => dest.HomeTeamShortName, expression => expression.MapFrom(
+                    src => src.TeamAIsHomeTeam ? src.TeamA.Abbreviation : src.TeamB.Abbreviation))
+
+
+                // For Fixture specific
+                .ForMember(dest => dest.LeagueId, expression => expression.MapFrom(src => src.RugbyTournament.LegacyTournamentId))
+
+                .ForMember(dest => dest.LeagueName, expression => expression.MapFrom(src => src.RugbyTournament.Name))
+
+                .ForMember(dest => dest.LeagueShortName, expression => expression.MapFrom(src => src.RugbyTournament.Abbreviation))
+
+                .ForMember(dest => dest.LeagueUrlName, expression => expression.MapFrom(src => src.RugbyTournament.LogoUrl))
+
+                .ForMember(dest => dest.Location, expression => expression.MapFrom(src => src.RugbyVenue))
+
+                .ForMember(dest => dest.MatchDateTime, expression => expression.MapFrom(src => src.StartDateTime.UtcDateTime))
+
+                .ForMember(dest => dest.MatchDateTimeString, expression => expression.MapFrom(src => src.StartDateTime.UtcDateTime.ToLongDateString()))
+                
+                .ForMember(dest => dest.MatchID, expression => expression.MapFrom(src => src.LegacyFixtureId))
+
+                .ForMember(dest => dest.Result, expression => expression.MapFrom(src => src.RugbyFixtureStatus == RugbyFixtureStatus.GameEnd))
+
+                .ForMember(dest => dest.Sport, expression => expression.UseValue(SportType.Rugby))
+
+                // TODO: Confirm where these come from?
+                .ForMember(dest => dest.International, expression => expression.UseValue(false))
+
+                .ForMember(dest => dest.IsFeatured, expression => expression.UseValue(false))
+
+                .ForMember(dest => dest.WalkOver, expression => expression.UseValue(false))
+
+                // For data exclusive to old feed
+                .ForAllOtherMembers(dest => dest.Ignore());
         }
     }
 }
