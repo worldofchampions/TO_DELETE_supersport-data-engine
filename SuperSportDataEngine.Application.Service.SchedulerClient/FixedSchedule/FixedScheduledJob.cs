@@ -1,21 +1,24 @@
 ﻿using Hangfire;
 using Microsoft.Practices.Unity;
 using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
 using SuperSportDataEngine.ApplicationLogic.Services;
 using System.Configuration;
 using System.Threading;
 using System;
+using Hangfire.Common;
+using SuperSportDataEngine.Application.Service.Common.Interfaces;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
 {
-    class FixedScheduledJob
+    public class FixedScheduledJob
     {
         private readonly IRugbyIngestWorkerService _ingestService;
+        private readonly IRecurringJobManager _recurringJobManager;
 
-        public FixedScheduledJob(UnityContainer container)
+        public FixedScheduledJob(IUnityContainer container)
         {
             _ingestService = container.Resolve<IRugbyIngestWorkerService>();
+            _recurringJobManager = container.Resolve<IRecurringJobManager>();
         }
 
         public void UpdateRecurringJobDefinitions()
@@ -34,36 +37,44 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
         /// </summary>
         private void UpdateRecurringJobDefinition_ResultsForFixturesInResultsState()
         {
-            RecurringJob.AddOrUpdate(
-                recurringJobId: ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_Hourly_JobId"],
-                methodCall: () => _ingestService.IngestResultsForFixturesInResultsState(CancellationToken.None),
-                cronExpression: ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_Hourly_PollingExpression"],
-                timeZone: TimeZoneInfo.Utc,
-                queue: HangfireQueueConfiguration.HighPriority);
+            _recurringJobManager.AddOrUpdate(
+                ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_Hourly_JobId"],
+                Job.FromExpression(() => _ingestService.IngestResultsForFixturesInResultsState(CancellationToken.None)),
+                ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_Hourly_PollingExpression"],
+                new RecurringJobOptions() {
+                    TimeZone = TimeZoneInfo.Utc,
+                    QueueName = HangfireQueueConfiguration.HighPriority
+                });
         }
 
         private void UpdateRecurringJobDefinition_ReferenceData()
         {
             // Create a schedule for getting the 
             // reference data from the provider.
-            RecurringJob.AddOrUpdate(
+            _recurringJobManager.AddOrUpdate(
                 ConfigurationManager.AppSettings["FixedScheduledJob_ReferenceData_JobId"],
-                () => _ingestService.IngestReferenceData(CancellationToken.None),
+                Job.FromExpression(() => _ingestService.IngestReferenceData(CancellationToken.None)),
                 ConfigurationManager.AppSettings["FixedScheduledJob_ReferenceData_JobCronExpression"],
-                System.TimeZoneInfo.Utc,
-                HangfireQueueConfiguration.NormalPriority);
+                new RecurringJobOptions()
+                {
+                    TimeZone = TimeZoneInfo.Utc,
+                    QueueName = HangfireQueueConfiguration.HighPriority
+                });
         }
 
         private void UpdateRecurringJobDefinition_Fixtures()
         {
             // Create a schedule for getting the
             // fixtures for the active tournaments for the current year from the provider.
-            RecurringJob.AddOrUpdate(
+            _recurringJobManager.AddOrUpdate(
                 ConfigurationManager.AppSettings["FixedScheduledJob_FixturesData_JobId"],
-                () => _ingestService.IngestFixturesForActiveTournaments(CancellationToken.None),
+                Job.FromExpression(() => _ingestService.IngestFixturesForActiveTournaments(CancellationToken.None)),
                 ConfigurationManager.AppSettings["FixedScheduledJob_FixturesData_JobCronExpression"],
-                System.TimeZoneInfo.Utc,
-                HangfireQueueConfiguration.NormalPriority);
+                new RecurringJobOptions()
+                {
+                    TimeZone = TimeZoneInfo.Utc,
+                    QueueName = HangfireQueueConfiguration.NormalPriority
+                });
 
             UpdateRecurringJobDefinition_AllFixtures();
         }
@@ -72,23 +83,26 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
         {
             // Create a schedule for getting the
             // logs for active tournaments for the current year from the provider.
-            RecurringJob.AddOrUpdate(
+            _recurringJobManager.AddOrUpdate(
                 ConfigurationManager.AppSettings["FixedScheduledJob_LogsData_ActiveTournaments_JobId"],
-                () => _ingestService.IngestLogsForActiveTournaments(CancellationToken.None),
+                Job.FromExpression(() => _ingestService.IngestLogsForActiveTournaments(CancellationToken.None)),
                 ConfigurationManager.AppSettings["FixedScheduledJob_LogsData_ActiveTournaments_JobCronExpression"],
-                System.TimeZoneInfo.Utc,
-                HangfireQueueConfiguration.NormalPriority);
+                new RecurringJobOptions()
+                {
+                    TimeZone = TimeZoneInfo.Utc,
+                    QueueName = HangfireQueueConfiguration.NormalPriority
+                });
         }
 
         private void UpdateRecurringJobDefinition_LogsForCurrentTournaments()
         {
             // Create a schedule for getting the
             // logs for current tournaments for the current season from the provider.
-            RecurringJob.AddOrUpdate(
+            _recurringJobManager.AddOrUpdate(
                 ConfigurationManager.AppSettings["FixedScheduledJob_LogsData_CurrentTournaments_JobId"],
-                () => _ingestService.IngestLogsForCurrentTournaments(CancellationToken.None),
+                Job.FromExpression(() => _ingestService.IngestLogsForCurrentTournaments(CancellationToken.None)),
                 ConfigurationManager.AppSettings["FixedScheduledJob_LogsData_CurrentTournaments_JobCronExpression"],
-                System.TimeZoneInfo.Utc,
+                TimeZoneInfo.Utc,
                 HangfireQueueConfiguration.NormalPriority);
         }
 
@@ -97,12 +111,15 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
         /// </summary>
         private void UpdateRecurringJobDefinition_AllFixtures()
         {
-            RecurringJob.AddOrUpdate(
-                recurringJobId: ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_Daily_JobId"],
-                methodCall: () => _ingestService.IngestResultsForAllFixtures(CancellationToken.None),
-                cronExpression: ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_Daily_PollingExpression"],
-                timeZone: TimeZoneInfo.Utc,
-                queue: HangfireQueueConfiguration.NormalPriority);
+            _recurringJobManager.AddOrUpdate(
+                ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_Daily_JobId"],
+                Job.FromExpression(() => _ingestService.IngestResultsForAllFixtures(CancellationToken.None)),
+                ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_Daily_PollingExpression"],
+                new RecurringJobOptions()
+                {
+                    TimeZone = TimeZoneInfo.Utc,
+                    QueueName = HangfireQueueConfiguration.NormalPriority
+                });
         }
 
         /// <summary>
@@ -110,12 +127,15 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
         /// </summary>
         private void UpdateRecurringJobDefinition_ResultsForCurrentDayFixtures()
         {
-            RecurringJob.AddOrUpdate(
-                recurringJobId: ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_OnFixtureDay_JobId"],
-                methodCall: () => _ingestService.IngestResultsForCurrentDayFixtures(CancellationToken.None),
-                cronExpression: ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_OnFixtureDay_PollingExpression"],
-                timeZone: TimeZoneInfo.Utc,
-                queue: HangfireQueueConfiguration.HighPriority);
+            _recurringJobManager.AddOrUpdate(
+                ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_OnFixtureDay_JobId"],
+                Job.FromExpression(() => _ingestService.IngestResultsForCurrentDayFixtures(CancellationToken.None)),
+                ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_OnFixtureDay_PollingExpression"],
+                new RecurringJobOptions()
+                {
+                    TimeZone = TimeZoneInfo.Utc,
+                    QueueName = HangfireQueueConfiguration.HighPriority
+                });
         }
     }
 }

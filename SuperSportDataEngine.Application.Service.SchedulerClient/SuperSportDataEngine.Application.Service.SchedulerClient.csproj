@@ -97,13 +97,13 @@
   <ItemGroup>
     <Compile Include="FixedSchedule\FixedScheduledJob.cs" />
     <Compile Include="HangfireDashboardConfiguration.cs" />
-    <Compile Include="LiveManager\LiveManagerJob.cs" />
+    <Compile Include="Manager\ManagerJob.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ScheduledManager\AbstractManagerJob.cs" />
-    <Compile Include="ScheduledManager\FixturesScheduledManagerJob.cs" />
+    <Compile Include="ScheduledManager\FixturesManagerJob.cs" />
+    <Compile Include="ScheduledManager\LiveManagerJob.cs" />
     <Compile Include="ScheduledManager\LogsCleanupManager.cs" />
-    <Compile Include="ScheduledManager\LogsScheduledManagerJob.cs" />
+    <Compile Include="ScheduledManager\LogsManagerJob.cs" />
     <Compile Include="StartUp.cs" />
     <Compile Include="WindowsService.cs" />
   </ItemGroup>

@@ -88,37 +88,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                     .Select(t => t);
         }
 
-        public async Task SetSchedulerStatusPollingForTournamentToNotRunning(Guid tournamentId)
-        {
-            var season = _schedulerTrackingRugbySeasonRepository
-                .Where(
-                    s => s.TournamentId == tournamentId && s.SchedulerStateForManagerJobPolling == SchedulerStateForManagerJobPolling.Running)
-                .FirstOrDefault();
-
-            if (season != null)
-            {
-                season.SchedulerStateForManagerJobPolling = SchedulerStateForManagerJobPolling.NotRunning;
-                await _schedulerTrackingRugbySeasonRepository.SaveAsync();
-            }
-        }
-
-        public async Task SetSchedulerStatusPollingForTournamentToRunning(Guid tournamentId)
-        {
-            var season = _schedulerTrackingRugbySeasonRepository
-                .Where(
-                    s => 
-                     s.RugbySeasonStatus == RugbySeasonStatus.InProgress &&
-                     s.TournamentId == tournamentId && 
-                     s.SchedulerStateForManagerJobPolling == SchedulerStateForManagerJobPolling.NotRunning)
-                .FirstOrDefault();
-
-            if (season != null)
-            {
-                season.SchedulerStateForManagerJobPolling = SchedulerStateForManagerJobPolling.Running;
-                await _schedulerTrackingRugbySeasonRepository.SaveAsync();
-            }
-        }
-
         public IEnumerable<RugbyTournament> GetInactiveTournaments()
         {
             return 
@@ -149,21 +118,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 _rugbyFixturesRepository
                     .Where(
                         fixture => fixture.RugbyTournament.Id == tournamentId &&
-                        fixture.RugbyFixtureStatus != RugbyFixtureStatus.Final &&
-                        fixture.StartDateTime <= nowPlus15Minutes);
-        }
-
-        public async Task SetSchedulerStatusPollingForFixtureToLivePolling(Guid fixtureId)
-        {
-            var fixture =
-                    _schedulerTrackingRugbyFixtureRepository.Where(
-                        f => f.FixtureId == fixtureId).FirstOrDefault();
-
-            if(fixture != null)
-            {
-                fixture.SchedulerStateFixtures = SchedulerStateForRugbyFixturePolling.LivePolling;
-                await _schedulerTrackingRugbyFixtureRepository.SaveAsync();
-            }
+                        ( (fixture.RugbyFixtureStatus != RugbyFixtureStatus.Final &&
+                           fixture.StartDateTime <= nowPlus15Minutes) ||
+                          (fixture.RugbyFixtureStatus == RugbyFixtureStatus.InProgress)));
         }
 
         public IEnumerable<RugbyFixture> GetEndedFixtures()
@@ -173,30 +130,30 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                     f => f.RugbyFixtureStatus == RugbyFixtureStatus.Final);
         }
 
-        public async Task SetSchedulerStatusPollingForFixtureToSchedulingComplete(Guid fixtureId)
+        public bool HasFixtureEnded(long providerFixtureId)
         {
-            var fixtureSchedule =
-                    _schedulerTrackingRugbyFixtureRepository.Where(
-                        f => f.FixtureId == fixtureId).FirstOrDefault();
+            var fixture = 
+                    _rugbyFixturesRepository
+                        .Where(
+                            f => f.ProviderFixtureId == providerFixtureId)
+                        .FirstOrDefault();
 
-            if (fixtureSchedule != null)
-            {
-                fixtureSchedule.SchedulerStateFixtures = SchedulerStateForRugbyFixturePolling.SchedulingCompleted;
-                _schedulerTrackingRugbyFixtureRepository.Update(fixtureSchedule);
-                await _schedulerTrackingRugbyFixtureRepository.SaveAsync();
-            }
+            if (fixture != null)
+                return fixture.RugbyFixtureStatus == RugbyFixtureStatus.Final;
+
+            // We can't find the fixture in the DB? But still running ingest code?
+            // This is a bizzare condition but checking it nonetherless.
+            return true;
         }
 
         public IEnumerable<RugbyTournament> GetActiveTournamentsForMatchesInResultsState()
         {
-            // TODO: Mofdify to return tournaments with matches in results state only. 
-            return _rugbyTournamentRepository.Where(c => c.IsEnabled);
-        }
+            var tournamentsThatHaveFixturesInResultState =
+                    _rugbyFixturesRepository
+                        .Where(f => f.RugbyFixtureStatus == RugbyFixtureStatus.Result)
+                        .Select(f => f.RugbyTournament);
 
-        public int GetSeasonIdForTournament(Guid id)
-        {
-            //TODO: resturn seasonId for tournament
-            return 2017;
+            return tournamentsThatHaveFixturesInResultState;
         }
     }
 }

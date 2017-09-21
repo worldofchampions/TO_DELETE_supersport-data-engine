@@ -7,33 +7,21 @@
     using SuperSportDataEngine.Application.Service.Common.Hangfire.Filters;
     using SuperSportDataEngine.Application.Service.Common.Interfaces;
     using SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule;
-    using SuperSportDataEngine.ApplicationLogic.Services;
     using System.Configuration;
     using System.Threading;
-    using SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledManager;
-    using SuperSportDataEngine.Application.Service.SchedulerClient.LiveManager;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-    using System;
+    using SuperSportDataEngine.Application.Service.SchedulerClient.Manager;
 
     internal class WindowsService : IWindowsServiceContract
     {
         private readonly UnityContainer _container;
         private readonly FixedScheduledJob _fixedManagerJob;
-        private readonly FixturesScheduledManagerJob _fixtureScheduleManagerJob;
-        private readonly LiveManagerJob _liveManagerJob;
-        private readonly LogsScheduledManagerJob _logsScheduledManagerJob;
+        private readonly ManagerJob _jobManager;
 
         public WindowsService(UnityContainer container)
         {
             _container = container;
             _fixedManagerJob = new FixedScheduledJob(_container);
-            _fixtureScheduleManagerJob = new FixturesScheduledManagerJob(_container);
-            _liveManagerJob = new LiveManagerJob(_container);
-
-            _logsScheduledManagerJob = new LogsScheduledManagerJob(
-                rugbyService: _container.Resolve<IRugbyService>(),
-                rugbyIngestWorkerService: _container.Resolve<IRugbyIngestWorkerService>(),
-                sleepTimeInMinutes: 1);
+            _jobManager = new ManagerJob(_container);
         }
 
         public void StartService()
@@ -48,7 +36,6 @@
                 while (true)
                 {
                     _fixedManagerJob.UpdateRecurringJobDefinitions();
-                    _logsScheduledManagerJob.Start();
 
                     Thread.Sleep(2000);
                 }

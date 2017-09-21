@@ -7,6 +7,7 @@
         PreMatch = 0,
         InProgress = 1,
         Final = 2,
-        GameEnd = 3
+        GameEnd = 3,
+        Result = 4
     }
 }

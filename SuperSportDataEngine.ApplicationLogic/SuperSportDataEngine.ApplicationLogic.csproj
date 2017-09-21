@@ -52,16 +52,19 @@
     <Compile Include="Boundaries\ApplicationLogic\Interfaces\ITemporaryExampleService.cs" />
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\Models\RugbyFixtures.cs" />
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\Models\RugbyLogs.cs" />
+    <Compile Include="Boundaries\Gateway.Http.StatsProzone\Models\RugbyMatchStats.cs" />
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\ResponseModels\RoundFixtureResultsResponse.cs" />
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\Models\RugbySeasons.cs" />
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\ResponseModels\RugbyFixturesResponse.cs" />
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\ResponseModels\RugbyLogsResponse.cs" />
+    <Compile Include="Boundaries\Gateway.Http.StatsProzone\ResponseModels\RugbyMatchStatsResponse.cs" />
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\ResponseModels\RugbySeasonResponse.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.Common\Models\Enums\DataProvider.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Legacy\LogEntityMapperProfile.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyFixture.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyLog.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyPlayer.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyPlayerLineup.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyResult.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbySeason.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyTeam.cs" />
@@ -97,6 +100,5 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

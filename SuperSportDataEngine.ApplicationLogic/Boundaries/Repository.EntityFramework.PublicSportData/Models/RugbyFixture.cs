@@ -17,6 +17,12 @@
         /// <summary> A provider driven value. </summary>
         public DateTimeOffset StartDateTime { get; set; }
 
+        /// <summary> A provider driven value. </summary>
+        public bool TeamAIsHomeTeam { get; set; }
+
+        /// <summary> A provider driven value. </summary>
+        public bool TeamBIsHomeTeam { get; set; }
+
         public RugbyFixtureStatus RugbyFixtureStatus { get; set; }
 
         public DataProvider DataProvider { get; set; }
@@ -25,8 +31,8 @@
 
         public virtual RugbyVenue RugbyVenue { get; set; }
 
-        public virtual RugbyTeam HomeTeam { get; set; }
+        public virtual RugbyTeam TeamA { get; set; }
 
-        public virtual RugbyTeam AwayTeam { get; set; }
+        public virtual RugbyTeam TeamB { get; set; }
     }
 }
