@@ -43,8 +43,8 @@
 
                 if (_rugbyService.GetSchedulerStateForManagerJobPolling(tournament.Id) == SchedulerStateForManagerJobPolling.NotRunning)
                 {
-                    var jobId = ConfigurationManager.AppSettings["ScheduleMangerJob_Logs_CurrentTournaments_JobIdPrefix"] + tournament.Name;
-                    var jobCronExpression = ConfigurationManager.AppSettings["ScheduleMangerJob_Logs_CurrentTournaments_JobCronExpression_OneMinute"];
+                    var jobId = ConfigurationManager.AppSettings["ScheduleManagerJob_Logs_CurrentTournaments_JobIdPrefix"] + tournament.Name;
+                    var jobCronExpression = ConfigurationManager.AppSettings["ScheduleManagerJob_Logs_CurrentTournaments_JobCronExpression_OneMinute"];
 
                     AddOrUpdateHangfireJob(tournament.ProviderTournamentId, seasonId, jobId, jobCronExpression);
 
@@ -80,7 +80,7 @@
 
         private void QueueJobForLowFrequencyPolling(Guid tournamentId, int providerTournamentId, int seasonId, string jobId)
         {
-            string highFreqExpiryFromConfig = ConfigurationManager.AppSettings["ScheduleMangerJob_Logs_CurrentTournaments_HighFrequencyPolling_ExpiryInMinutes"];
+            string highFreqExpiryFromConfig = ConfigurationManager.AppSettings["ScheduleManagerJob_Logs_CurrentTournaments_HighFrequencyPolling_ExpiryInMinutes"];
 
             int udpateJobFrequencyOnThisMinute = int.Parse(highFreqExpiryFromConfig);
 
@@ -92,8 +92,8 @@
 
             timer.Elapsed += delegate
             {
-                var jobExpiryFromConfig = ConfigurationManager.AppSettings["ScheduleMangerJob_Logs_CurrentTournaments_LowFrequencyPolling_ExpiryInMinutes"];
-                var jobCronExpression = ConfigurationManager.AppSettings["ScheduleMangerJob_Logs_CurrentTournaments_LowFrequencyPolling_CronExpression"];
+                var jobExpiryFromConfig = ConfigurationManager.AppSettings["ScheduleManagerJob_Logs_CurrentTournaments_LowFrequencyPolling_ExpiryInMinutes"];
+                var jobCronExpression = ConfigurationManager.AppSettings["ScheduleManagerJob_Logs_CurrentTournaments_LowFrequencyPolling_CronExpression"];
 
                 var deleteJobOnThisMinute = int.Parse(jobExpiryFromConfig);
 

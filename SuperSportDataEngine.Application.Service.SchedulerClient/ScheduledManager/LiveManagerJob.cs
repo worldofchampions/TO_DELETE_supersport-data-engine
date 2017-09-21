@@ -42,8 +42,8 @@
 
             foreach (var fixture in endedGames)
             {
-                var matchName = fixture.HomeTeam.Name + " vs " + fixture.AwayTeam.Name;
-                var jobId = ConfigurationManager.AppSettings["LiveMangerJob_LiveMatch_JobIdPrefix"] + matchName;
+                var matchName = fixture.TeamA.Name + " vs " + fixture.TeamB.Name;
+                var jobId = ConfigurationManager.AppSettings["LiveManagerJob_LiveMatch_JobIdPrefix"] + matchName;
 
                 RecurringJob.RemoveIfExists(jobId);
 
@@ -74,9 +74,9 @@
 
                 foreach (var fixture in liveFixtures)
                 {
-                    var matchName = fixture.HomeTeam.Name + " vs " + fixture.AwayTeam.Name;
-                    var jobId = ConfigurationManager.AppSettings["LiveMangerJob_LiveMatch_JobIdPrefix"] + matchName;
-                    var jobCronExpression = ConfigurationManager.AppSettings["LiveMangerJob_LiveMatch_JobCronExpression"];
+                    var matchName = fixture.TeamA.Name + " vs " + fixture.TeamB.Name;
+                    var jobId = ConfigurationManager.AppSettings["LiveManagerJob_LiveMatch_JobIdPrefix"] + matchName;
+                    var jobCronExpression = ConfigurationManager.AppSettings["LiveManagerJob_LiveMatch_JobCronExpression"];
 
                     RecurringJob.AddOrUpdate(
                         jobId,

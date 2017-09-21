@@ -53,8 +53,8 @@
             foreach (var tournament in activeTournaments)
             {
                 {
-                    var jobId = ConfigurationManager.AppSettings["ScheduleMangerJob_Fixtures_ActiveTournaments_JobIdPrefix"] + tournament.Name;
-                    var jobCronExpression = ConfigurationManager.AppSettings["ScheduleMangerJob_Fixtures_ActiveTournaments_JobCronExpression"];
+                    var jobId = ConfigurationManager.AppSettings["ScheduleManagerJob_Fixtures_ActiveTournaments_JobIdPrefix"] + tournament.Name;
+                    var jobCronExpression = ConfigurationManager.AppSettings["ScheduleManagerJob_Fixtures_ActiveTournaments_JobCronExpression"];
 
                     RecurringJob.AddOrUpdate(
                         jobId,
@@ -112,7 +112,7 @@
         {
             foreach (var tournament in tournaments)
             {
-                var jobId = ConfigurationManager.AppSettings["ScheduleMangerJob_Fixtures_JobIdPrefix"] + tournament.Name;
+                var jobId = ConfigurationManager.AppSettings["ScheduleManagerJob_Fixtures_JobIdPrefix"] + tournament.Name;
                 RecurringJob.RemoveIfExists(jobId);
 
                 var tournamentInDb =
@@ -140,8 +140,8 @@
             {
                 if (_rugbyService.GetSchedulerStateForManagerJobPolling(tournament.Id) == SchedulerStateForManagerJobPolling.NotRunning)
                 {
-                    var jobId = ConfigurationManager.AppSettings["ScheduleMangerJob_Fixtures_CurrentTournaments_JobIdPrefix"] + tournament.Name;
-                    var jobCronExpression = ConfigurationManager.AppSettings["ScheduleMangerJob_Fixtures_CurrentTournaments_JobCronExpression"];
+                    var jobId = ConfigurationManager.AppSettings["ScheduleManagerJob_Fixtures_CurrentTournaments_JobIdPrefix"] + tournament.Name;
+                    var jobCronExpression = ConfigurationManager.AppSettings["ScheduleManagerJob_Fixtures_CurrentTournaments_JobCronExpression"];
 
                     var seasonId = _rugbyService.GetCurrentProviderSeasonIdForTournament(tournament.Id);
 
