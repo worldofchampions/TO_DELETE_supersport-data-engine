@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+using System;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
 {
@@ -38,23 +39,34 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
 
 
                 // For Fixture specific
-                .ForMember(dest => dest.LeagueId, expression => expression.MapFrom(src => src.RugbyTournament.LegacyTournamentId))
+                .ForMember(dest => dest.LeagueId, expression => expression.MapFrom(
+                    src => src.RugbyTournament.LegacyTournamentId))
 
-                .ForMember(dest => dest.LeagueName, expression => expression.MapFrom(src => src.RugbyTournament.Name))
+                .ForMember(dest => dest.LeagueName, expression => expression.MapFrom(
+                    src => src.RugbyTournament.Name))
 
-                .ForMember(dest => dest.LeagueShortName, expression => expression.MapFrom(src => src.RugbyTournament.Abbreviation))
+                .ForMember(dest => dest.LeagueShortName, expression => expression.MapFrom(
+                    src => src.RugbyTournament.Abbreviation))
 
-                .ForMember(dest => dest.LeagueUrlName, expression => expression.MapFrom(src => src.RugbyTournament.LogoUrl))
+                .ForMember(dest => dest.LeagueUrlName, expression => expression.MapFrom(
+                    src => src.RugbyTournament.LogoUrl))
 
-                .ForMember(dest => dest.Location, expression => expression.MapFrom(src => src.RugbyVenue))
+                .ForMember(dest => dest.Location, expression => expression.MapFrom(
+                    src => src.RugbyVenue))
 
-                .ForMember(dest => dest.MatchDateTime, expression => expression.MapFrom(src => src.StartDateTime.UtcDateTime))
+                // Hack: Use sortable datetime format for legacy feed
+                .ForMember(dest => dest.MatchDateTime, expression => expression.MapFrom(
+                    src => Convert.ToDateTime(src.StartDateTime.UtcDateTime.ToLocalTime().ToString("s"))))
 
-                .ForMember(dest => dest.MatchDateTimeString, expression => expression.MapFrom(src => src.StartDateTime.UtcDateTime.ToLongDateString()))
+                // Hack: Use sortable datetime format for legacy feed
+                .ForMember(dest => dest.MatchDateTimeString, expression => expression.MapFrom(
+                    src => src.StartDateTime.UtcDateTime.ToLocalTime().ToString("s")))
                 
-                .ForMember(dest => dest.MatchID, expression => expression.MapFrom(src => src.LegacyFixtureId))
+                .ForMember(dest => dest.MatchID, expression => expression.MapFrom(
+                    src => src.LegacyFixtureId))
 
-                .ForMember(dest => dest.Result, expression => expression.MapFrom(src => src.RugbyFixtureStatus == RugbyFixtureStatus.GameEnd))
+                .ForMember(dest => dest.Result, expression => expression.MapFrom(
+                    src => src.RugbyFixtureStatus == RugbyFixtureStatus.GameEnd))
 
                 .ForMember(dest => dest.Sport, expression => expression.UseValue(SportType.Rugby))
 
@@ -65,7 +77,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
 
                 .ForMember(dest => dest.WalkOver, expression => expression.UseValue(false))
 
-                // For data exclusive to old feed
+                // Ignore elements not used even by legacy feed
                 .ForAllOtherMembers(dest => dest.Ignore());
         }
     }
