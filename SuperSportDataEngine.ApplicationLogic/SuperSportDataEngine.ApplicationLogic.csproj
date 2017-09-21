@@ -65,7 +65,6 @@
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyLog.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyPlayer.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyPlayerLineup.cs" />
-    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyResult.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbySeason.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyTeam.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyTournament.cs" />

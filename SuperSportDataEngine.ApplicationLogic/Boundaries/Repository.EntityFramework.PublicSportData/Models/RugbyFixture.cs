@@ -34,5 +34,12 @@
         public virtual RugbyTeam TeamA { get; set; }
 
         public virtual RugbyTeam TeamB { get; set; }
+
+        public int TeamAScore { get; set; }
+
+        public int TeamBScore { get; set; }
+
+        /// <summary> A CMS driven value to indicate if a fixture is live scored. </summary>
+        public bool IsFixtureLiveScored { get; set; }
     }
 }
