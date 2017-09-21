@@ -115,14 +115,6 @@
       <Project>{F420939C-B6A6-4C3A-975E-E30E654C4A90}</Project>
       <Name>SuperSportDataEngine.ApplicationLogic</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SuperSportDataEngine.Repository.EntityFramework.Common\SuperSportDataEngine.Repository.EntityFramework.Common.csproj">
-      <Project>{4339EE97-496E-485D-A790-CA34258A27ED}</Project>
-      <Name>SuperSportDataEngine.Repository.EntityFramework.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SuperSportDataEngine.Repository.EntityFramework.SystemSportData\SuperSportDataEngine.Repository.EntityFramework.SystemSportData.csproj">
-      <Project>{D7820AE4-EFB5-4BDA-B672-FE89A40F468A}</Project>
-      <Name>SuperSportDataEngine.Repository.EntityFramework.SystemSportData</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
