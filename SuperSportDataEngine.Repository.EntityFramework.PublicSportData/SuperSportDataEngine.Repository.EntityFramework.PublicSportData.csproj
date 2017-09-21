@@ -101,6 +101,10 @@
     <Compile Include="Migrations\201709210710542_Add_Team_Scores_to_RugbyFixture.Designer.cs">
       <DependentUpon>201709210710542_Add_Team_Scores_to_RugbyFixture.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201709210723349_Allow_Nulls_For_Team_Scores_In_RugbyFixture.cs" />
+    <Compile Include="Migrations\201709210723349_Allow_Nulls_For_Team_Scores_In_RugbyFixture.Designer.cs">
+      <DependentUpon>201709210723349_Allow_Nulls_For_Team_Scores_In_RugbyFixture.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -157,6 +161,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201709210710542_Add_Team_Scores_to_RugbyFixture.resx">
       <DependentUpon>201709210710542_Add_Team_Scores_to_RugbyFixture.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201709210723349_Allow_Nulls_For_Team_Scores_In_RugbyFixture.resx">
+      <DependentUpon>201709210723349_Allow_Nulls_For_Team_Scores_In_RugbyFixture.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
