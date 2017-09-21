@@ -8,10 +8,8 @@ using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramewor
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
 using SuperSportDataEngine.ApplicationLogic.Services;
-using SuperSportDataEngine.Repository.EntityFramework.Common.Repositories.Base;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -20,8 +18,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests
     [Category("LogsManagerJob")]
     public class LogsManagerJob_Test
     {
-        IQueryable<SchedulerTrackingRugbySeason> SchedulerTrackingRugbySeasonsData;
-
         Mock<IRugbyService> MockRugbyService;
         Mock<IRugbyIngestWorkerService> MockRugbyIngestWorkerService;
         Mock<TestEntityFrameworkRepository<SchedulerTrackingRugbySeason>> MockSchedulerTrackingSeasonRepository = null;
@@ -31,14 +27,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests
         [SetUp]
         public void SetUp()
         {
-            SchedulerTrackingRugbySeasonsData = new List<SchedulerTrackingRugbySeason> { }.AsQueryable();
-
-            var mockSet = new Mock<TestEntityFrameworkRepository<SchedulerTrackingRugbySeason>>();
-            mockSet.As<IQueryable<SchedulerTrackingRugbySeason>>().Setup(m => m.Provider).Returns(SchedulerTrackingRugbySeasonsData.Provider);
-            mockSet.As<IQueryable<SchedulerTrackingRugbySeason>>().Setup(m => m.Expression).Returns(SchedulerTrackingRugbySeasonsData.Expression);
-            mockSet.As<IQueryable<SchedulerTrackingRugbySeason>>().Setup(m => m.ElementType).Returns(SchedulerTrackingRugbySeasonsData.ElementType);
-            mockSet.As<IQueryable<SchedulerTrackingRugbySeason>>().Setup(m => m.GetEnumerator()).Returns(() => SchedulerTrackingRugbySeasonsData.GetEnumerator());
-            
             MockSchedulerTrackingSeasonRepository =
                     new Mock<TestEntityFrameworkRepository<SchedulerTrackingRugbySeason>>(new List<SchedulerTrackingRugbySeason>());
 

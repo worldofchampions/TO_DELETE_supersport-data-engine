@@ -19,8 +19,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests
     [Category("LiveManagerJob")]
     public class LiveManagerJob_Test
     {
-        IQueryable<SchedulerTrackingRugbyFixture> SchedulerTrackingRugbyFixtureData;
-
         LiveManagerJob LiveManagerJob;
         Mock<IRugbyService> MockRugbyService;
         Mock<IRugbyIngestWorkerService> MockRugbyIngestWorkerService;
@@ -30,14 +28,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests
         [SetUp]
         public void SetUp()
         {
-            SchedulerTrackingRugbyFixtureData = new List<SchedulerTrackingRugbyFixture> { }.AsQueryable();
-
-            var mockSet = new Mock<TestEntityFrameworkRepository<SchedulerTrackingRugbyFixture>>();
-            mockSet.As<IQueryable<SchedulerTrackingRugbyFixture>>().Setup(m => m.Provider).Returns(SchedulerTrackingRugbyFixtureData.Provider);
-            mockSet.As<IQueryable<SchedulerTrackingRugbyFixture>>().Setup(m => m.Expression).Returns(SchedulerTrackingRugbyFixtureData.Expression);
-            mockSet.As<IQueryable<SchedulerTrackingRugbyFixture>>().Setup(m => m.ElementType).Returns(SchedulerTrackingRugbyFixtureData.ElementType);
-            mockSet.As<IQueryable<SchedulerTrackingRugbyFixture>>().Setup(m => m.GetEnumerator()).Returns(() => SchedulerTrackingRugbyFixtureData.GetEnumerator());          
-
             MockSchedulerTrackingFixtureRepository =
                     new Mock<TestEntityFrameworkRepository<SchedulerTrackingRugbyFixture>>(new List<SchedulerTrackingRugbyFixture>());
 
