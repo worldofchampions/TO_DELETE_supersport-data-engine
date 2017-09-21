@@ -1,6 +1,7 @@
 ﻿namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledManager
 {
     using Hangfire;
+    using Hangfire.Common;
     using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
@@ -13,18 +14,21 @@
     using System.Threading;
     using System.Threading.Tasks;
 
-    internal class LogsManagerJob
+    public class LogsManagerJob
     {
         IRugbyService _rugbyService;
         IRugbyIngestWorkerService _rugbyIngestService;
+        IRecurringJobManager _recurringJobManager;
         IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> _schedulerTrackingRugbySeasonRepository;
         public LogsManagerJob(
             IRugbyService rugbyService,
             IRugbyIngestWorkerService rugbyIngestService,
+            IRecurringJobManager recurringJobManager,
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> schedulerTrackingRugbySeasonRepository)
         {
             _rugbyService = rugbyService;
             _rugbyIngestService = rugbyIngestService;
+            _recurringJobManager = recurringJobManager;
             _schedulerTrackingRugbySeasonRepository = schedulerTrackingRugbySeasonRepository;
         }
 
@@ -51,7 +55,7 @@
                     QueueJobForLowFrequencyPolling(tournament.Id, tournament.ProviderTournamentId, seasonId, jobId);
 
                     var season =
-                            _schedulerTrackingRugbySeasonRepository
+                            _schedulerTrackingRugbySeasonRepository.All()
                                 .Where(
                                     s =>
                                         s.RugbySeasonStatus == RugbySeasonStatus.InProgress &&
@@ -70,9 +74,9 @@
 
         private void AddOrUpdateHangfireJob(int providerTournamentId, int seasonId, string jobId, string jobCronExpression)
         {
-            RecurringJob.AddOrUpdate(
+            _recurringJobManager.AddOrUpdate(
                 jobId,
-                () => _rugbyIngestService.IngestLogsForTournamentSeason(CancellationToken.None, providerTournamentId, seasonId),
+                Job.FromExpression(() => _rugbyIngestService.IngestLogsForTournamentSeason(CancellationToken.None, providerTournamentId, seasonId)),
                 jobCronExpression,
                 TimeZoneInfo.Utc,
                 HangfireQueueConfiguration.HighPriority);
