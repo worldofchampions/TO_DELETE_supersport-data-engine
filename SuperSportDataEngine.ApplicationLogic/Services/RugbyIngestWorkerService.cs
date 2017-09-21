@@ -336,8 +336,8 @@
                         StartDateTime = startTime,
                         RugbyVenue = _rugbyVenueRepository.Where(v => v.ProviderVenueId == fixture.venueId).FirstOrDefault(),
                         RugbyTournament = tournament,
-                        HomeTeam = teamA,
-                        AwayTeam = teamB,
+                        TeamA = teamA,
+                        TeamB = teamB,
                         RugbyFixtureStatus = GetFixtureStatusFromProviderFixtureState(fixture.gameStateName),
                         DataProvider = DataProvider.StatsProzone
                     };
