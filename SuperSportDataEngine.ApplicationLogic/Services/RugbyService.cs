@@ -158,7 +158,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public IEnumerable<RugbyFixture> GetTournamentFixtures(Guid tournamentId)
         {
-            var allFixtures = _rugbyFixturesRepository.All()
+            var allFixtures = _rugbyFixturesRepository
+                .All()
+                .ToList()
                 .Where(t => t.RugbyTournament.Id == tournamentId);
 
             return allFixtures;
@@ -166,8 +168,10 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public IEnumerable<RugbyFixture> GetTournamentFixtures(string tournamentName)
         {
-            Guid tournamentId = _rugbyFixturesRepository
-                .Where(f => f.RugbyTournament.Name == tournamentName)
+            Guid tournamentId = _rugbyTournamentRepository
+                .All()
+                .ToList()
+                .Where(f => f.Name == tournamentName)
                 .FirstOrDefault().Id;
 
             return GetTournamentFixtures(tournamentId);

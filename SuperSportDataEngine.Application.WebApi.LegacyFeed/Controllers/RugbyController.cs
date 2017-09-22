@@ -74,7 +74,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
                 _cache.Add(cacheKey, fixtures);
             }
 
-            return Ok(fixtures);
+            return Ok(fixtures.ToList());
         }
 
         /// <summary>
