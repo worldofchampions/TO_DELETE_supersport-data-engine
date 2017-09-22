@@ -52,7 +52,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
                     src => src.RugbyTournament.LogoUrl))
 
                 .ForMember(dest => dest.Location, expression => expression.MapFrom(
-                    src => src.RugbyVenue))
+                    src => src.RugbyVenue.Name))
 
                 // Hack: Use sortable datetime format for legacy feed
                 .ForMember(dest => dest.MatchDateTime, expression => expression.MapFrom(

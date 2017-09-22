@@ -11,6 +11,8 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed
         {
             httpConfig = config;
 
+            httpConfig.Formatters.XmlFormatter.UseXmlSerializer = true;
+
             ConfigureApiRoutes();
 
             ConfigureFeedRequestHandler();
