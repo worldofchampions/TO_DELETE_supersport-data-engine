@@ -2,11 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
 
-namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Repositories.Test
+namespace SuperSportDataEngine.Tests.Common.Repositories.Test
 {
     public class TestEntityFrameworkRepository<T> : IBaseEntityFrameworkRepository<T> where T : class
     {
