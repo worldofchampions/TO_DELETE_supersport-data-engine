@@ -20,6 +20,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         //private readonly IBaseEntityFrameworkRepository<Log> _logRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyTournament> _rugbyTournamentRepository;
         private readonly IBaseEntityFrameworkRepository<RugbySeason> _rugbySeasonRepository;
+        private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> _schedulerTrackingRugbyTournamentRepository;
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> _schedulerTrackingRugbySeasonRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyFixture> _rugbyFixturesRepository;
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> _schedulerTrackingRugbyFixtureRepository;
@@ -31,6 +32,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             IBaseEntityFrameworkRepository<RugbySeason> rugbySeasonRepository,
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> schedulerTrackingRugbySeasonRepository,
             IBaseEntityFrameworkRepository<RugbyFixture> rugbyFixturesRepository,
+            IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> schedulerTrackingRugbyTournamentRepository,
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> schedulerTrackingRugbyFixtureRepository)
         {
             // TODO: This was commented out when deleting old Log DB table.
@@ -40,6 +42,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             _schedulerTrackingRugbySeasonRepository = schedulerTrackingRugbySeasonRepository;
             _rugbyFixturesRepository = rugbyFixturesRepository;
             _schedulerTrackingRugbyFixtureRepository = schedulerTrackingRugbyFixtureRepository;
+            _schedulerTrackingRugbyTournamentRepository = schedulerTrackingRugbyTournamentRepository;
         }
 
         public IEnumerable<LogEntity> GetLogs(string tournamentName)
@@ -161,6 +164,18 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         {
             await CleanupSchedulerTrackingRugbyFixturesTable();
             await CleanupSchedulerTrackingRugbySeasonsTable();
+            await CleanupSchedulerTrackingRugbyTournamentsTable();
+        }
+
+        public async Task CleanupSchedulerTrackingRugbyTournamentsTable()
+        {
+            var disabledTournamentsIds = _rugbyTournamentRepository.Where(t => t.IsEnabled == false).Select(t => t.Id);
+            var itemsToDelete = _schedulerTrackingRugbyTournamentRepository.Where(t => disabledTournamentsIds.Contains(t.TournamentId)).ToList();
+
+            foreach (var item in itemsToDelete)
+                _schedulerTrackingRugbyTournamentRepository.Delete(item);
+
+            await _schedulerTrackingRugbyTournamentRepository.SaveAsync();
         }
 
         public async Task CleanupSchedulerTrackingRugbySeasonsTable()

@@ -17,6 +17,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
         RugbyService RugbyService;
         Mock<TestEntityFrameworkRepository<SchedulerTrackingRugbyFixture>> MockSchedulerTrackingFixtureRepository;
         Mock<TestEntityFrameworkRepository<SchedulerTrackingRugbySeason>> MockSchedulerTrackingSeasonRepository;
+        Mock<TestEntityFrameworkRepository<SchedulerTrackingRugbyTournament>> MockSchedulerTrackingTournamentsRepository;
         Mock<TestEntityFrameworkRepository<RugbyFixture>> MockFixtureRepository;
         Mock<TestEntityFrameworkRepository<RugbySeason>> MockSeasonRepository;
         Mock<TestEntityFrameworkRepository<RugbyTournament>> MockTournamentRepository;
@@ -29,6 +30,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
 
             MockSchedulerTrackingSeasonRepository =
                     new Mock<TestEntityFrameworkRepository<SchedulerTrackingRugbySeason>>(new List<SchedulerTrackingRugbySeason>());
+
+            MockSchedulerTrackingTournamentsRepository =
+                    new Mock<TestEntityFrameworkRepository<SchedulerTrackingRugbyTournament>>(new List<SchedulerTrackingRugbyTournament>());
 
             MockFixtureRepository =
                     new Mock<TestEntityFrameworkRepository<RugbyFixture>>(new List<RugbyFixture>());
@@ -44,6 +48,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
                 MockSeasonRepository.Object,
                 MockSchedulerTrackingSeasonRepository.Object,
                 MockFixtureRepository.Object,
+                MockSchedulerTrackingTournamentsRepository.Object,
                 MockSchedulerTrackingFixtureRepository.Object);
         }
 
@@ -106,6 +111,56 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
             await RugbyService.CleanupSchedulerTrackingRugbySeasonsTable();
 
             Assert.AreEqual(0, await MockSchedulerTrackingSeasonRepository.Object.CountAsync());
+        }
+
+        [Test]
+        public async Task CleanupTournamentsTable_TournamentIsEnabled_NotDeleted()
+        {
+            var tournamentId = Guid.NewGuid();
+
+            MockTournamentRepository.Object.Add(new RugbyTournament()
+            {
+                Id = tournamentId,
+                IsEnabled = true
+            });
+
+            await MockTournamentRepository.Object.SaveAsync();
+
+            MockSchedulerTrackingTournamentsRepository.Object.Add(new SchedulerTrackingRugbyTournament()
+            {
+                TournamentId = tournamentId
+            });
+
+            await MockSchedulerTrackingSeasonRepository.Object.SaveAsync();
+
+            await RugbyService.CleanupSchedulerTrackingRugbySeasonsTable();
+
+            Assert.AreEqual(1, await MockSchedulerTrackingTournamentsRepository.Object.CountAsync());
+        }
+
+        [Test]
+        public async Task CleanupTournamentsTable_TournamentIsDisabled_IsDeleted()
+        {
+            var tournamentId = Guid.NewGuid();
+
+            MockTournamentRepository.Object.Add(new RugbyTournament()
+            {
+                Id = tournamentId,
+                IsEnabled = false
+            });
+
+            await MockTournamentRepository.Object.SaveAsync();
+
+            MockSchedulerTrackingTournamentsRepository.Object.Add(new SchedulerTrackingRugbyTournament()
+            {
+                TournamentId = tournamentId
+            });
+
+            await MockSchedulerTrackingSeasonRepository.Object.SaveAsync();
+
+            await RugbyService.CleanupSchedulerTrackingRugbyTournamentsTable();
+
+            Assert.AreEqual(0, await MockSchedulerTrackingTournamentsRepository.Object.CountAsync());
         }
     }
 }
