@@ -5,8 +5,9 @@ using Microsoft.Practices.Unity;
 using SuperSportDataEngine.ApplicationLogic.Services;
 using NUnit.Framework;
 using Hangfire.Common;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
 
-namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests
+namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.ScheduledManagerTests
 {
     [Category("FixedScheduleJob")]
     public class FixedScheduledJob_Test
@@ -24,6 +25,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests
         {
             // Mock the Hangfire client, ingest service and job manager.
             var client = new Mock<IBackgroundJobClient>();
+            var mockRugbyService = new Mock<IRugbyService>();
             var mockIngestWorkerService = new Mock<IRugbyIngestWorkerService>();
             var mockRecurringJobManager = new Mock<IRecurringJobManager>();
 
@@ -39,6 +41,9 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests
 
             container.RegisterType<IRecurringJobManager, RecurringJobManager>(
                 new InjectionFactory((x) => mockRecurringJobManager.Object));
+
+            container.RegisterType<IRugbyService, RugbyService>(
+                new InjectionFactory((x) => mockRugbyService.Object));
 
             // Create the object to invoke method on.
             var fixedScheduledJob = new FixedScheduledJob(container);

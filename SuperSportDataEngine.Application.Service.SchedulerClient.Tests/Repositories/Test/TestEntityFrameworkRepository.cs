@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Linq.Expressions;
 
-namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests
+namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Repositories.Test
 {
     public class TestEntityFrameworkRepository<T> : IBaseEntityFrameworkRepository<T> where T : class
     {
@@ -62,11 +62,13 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests
 
         public Task<T> FindAsync(dynamic id)
         {
+            // TODO
             return null;
         }
 
         public void RollBackPendingChanges()
         {
+            // TODO
         }
 
         public Task<int> SaveAsync()
@@ -76,7 +78,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests
 
         public void Update(T item)
         {
-            
+            // TODO
         }
 
         public IEnumerable<T> Where(Expression<Func<T, bool>> predicate)
@@ -86,7 +88,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests
 
         public Task<IEnumerable<T>> WhereAsync(Expression<Func<T, bool>> predicate)
         {
-            return null;
+            return Task.FromResult<IEnumerable<T>>(_items.AsQueryable().Where(predicate));
         }
     }
 }

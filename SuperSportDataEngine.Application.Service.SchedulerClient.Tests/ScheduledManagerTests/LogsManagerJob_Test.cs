@@ -3,6 +3,7 @@ using Hangfire.Common;
 using Moq;
 using NUnit.Framework;
 using SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledManager;
+using SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Repositories.Test;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
@@ -13,7 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests
+namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.ScheduledManagerTests
 {
     [Category("LogsManagerJob")]
     public class LogsManagerJob_Test

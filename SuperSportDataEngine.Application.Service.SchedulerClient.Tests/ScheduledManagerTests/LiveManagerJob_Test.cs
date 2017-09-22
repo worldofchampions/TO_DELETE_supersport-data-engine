@@ -3,6 +3,7 @@ using Hangfire.Common;
 using Moq;
 using NUnit.Framework;
 using SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledManager;
+using SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Repositories.Test;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
@@ -14,7 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests
+namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.ScheduledManagerTests
 {
     [Category("LiveManagerJob")]
     public class LiveManagerJob_Test
@@ -124,7 +125,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests
         }
 
         [Test]
-        public async Task LiveManagerJob_LiveFixtureGetsScheduled()
+        public async Task LiveManagerJob_InProgressFixtureGetsScheduled()
         {
             Guid tournamentId = Guid.NewGuid();
             Guid fixtureId = Guid.NewGuid();

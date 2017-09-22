@@ -209,6 +209,10 @@
                 DataProvider = DataProvider.StatsProzone
             };
 
+            if(newEntry.Id == null)
+            {
+                bool test = true;
+            }
             // Not in repo?
             if (seasonEntry == null)
             {
@@ -602,7 +606,7 @@
             while (true)
             {
                 var fixtureResponse =
-                await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, providerFixtureId);
+                        await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, providerFixtureId);
 
                 if (fixtureResponse.RugbyMatchStats.gameState == "Game End")
                     break;

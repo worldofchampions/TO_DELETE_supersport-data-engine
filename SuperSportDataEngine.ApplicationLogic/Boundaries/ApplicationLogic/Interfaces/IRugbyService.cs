@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
 using System;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces
 {
@@ -20,5 +21,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Inte
         IEnumerable<RugbyFixture> GetEndedFixtures();
         bool HasFixtureEnded(long providerFixtureId);
         IEnumerable<RugbyTournament> GetActiveTournamentsForMatchesInResultsState();
+        Task CleanupSchedulerTrackingTables(CancellationToken none);
     }
 }
