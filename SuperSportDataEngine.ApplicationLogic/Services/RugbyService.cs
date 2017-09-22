@@ -160,6 +160,20 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         public async Task CleanupSchedulerTrackingTables(CancellationToken none)
         {
             await CleanupSchedulerTrackingRugbyFixturesTable();
+            await CleanupSchedulerTrackingRugbySeasonsTable();
+        }
+
+        public async Task CleanupSchedulerTrackingRugbySeasonsTable()
+        {
+            var endedSeasons = _schedulerTrackingRugbySeasonRepository
+                .Where(
+                    s => s.RugbySeasonStatus == RugbySeasonStatus.Ended)
+                .ToList();
+
+            foreach (var item in endedSeasons)
+                _schedulerTrackingRugbySeasonRepository.Delete(item);
+
+            await _schedulerTrackingRugbySeasonRepository.SaveAsync();
         }
 
         public async Task CleanupSchedulerTrackingRugbyFixturesTable()

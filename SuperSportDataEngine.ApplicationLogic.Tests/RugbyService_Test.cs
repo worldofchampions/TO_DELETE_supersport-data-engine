@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
 
 namespace SuperSportDataEngine.ApplicationLogic.Tests
 {
@@ -70,9 +71,41 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
                 RugbyFixtureStatus = RugbyFixtureStatus.Final
             });
 
+            await MockSchedulerTrackingFixtureRepository.Object.SaveAsync();
+
             await RugbyService.CleanupSchedulerTrackingRugbyFixturesTable();
 
             Assert.AreEqual(0, await MockSchedulerTrackingFixtureRepository.Object.CountAsync());
+        }
+
+        [Test]
+        public async Task CleanupSeasonsTable_SeasonIsCurrent_NotDeleted()
+        {
+            MockSchedulerTrackingSeasonRepository.Object.Add(new SchedulerTrackingRugbySeason()
+            {
+                SeasonId = Guid.NewGuid(),
+                RugbySeasonStatus = RugbySeasonStatus.InProgress
+            });
+
+            await RugbyService.CleanupSchedulerTrackingRugbySeasonsTable();
+
+            Assert.AreEqual(1, await MockSchedulerTrackingSeasonRepository.Object.CountAsync());
+        }
+
+        [Test]
+        public async Task CleanupSeasonsTable_SeasonIsEnded_IsDeleted()
+        {
+            MockSchedulerTrackingSeasonRepository.Object.Add(new SchedulerTrackingRugbySeason()
+            {
+                SeasonId = Guid.NewGuid(),
+                RugbySeasonStatus = RugbySeasonStatus.Ended
+            });
+
+            await MockSchedulerTrackingSeasonRepository.Object.SaveAsync();
+
+            await RugbyService.CleanupSchedulerTrackingRugbySeasonsTable();
+
+            Assert.AreEqual(0, await MockSchedulerTrackingSeasonRepository.Object.CountAsync());
         }
     }
 }
