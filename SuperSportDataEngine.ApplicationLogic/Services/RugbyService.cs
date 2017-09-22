@@ -162,7 +162,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             await CleanupSchedulerTrackingRugbyFixturesTable();
         }
 
-        private async Task CleanupSchedulerTrackingRugbyFixturesTable()
+        public async Task CleanupSchedulerTrackingRugbyFixturesTable()
         {
             var nowMinus6Months = DateTimeOffset.UtcNow - TimeSpan.FromDays(180);
             var itemsToDelete = _schedulerTrackingRugbyFixtureRepository

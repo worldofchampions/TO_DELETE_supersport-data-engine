@@ -43,7 +43,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperSportDataEngine.Applic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperSportDataEngine.Application.Service.SchedulerClient.Tests", "SuperSportDataEngine.Application.Service.SchedulerClient.Tests\SuperSportDataEngine.Application.Service.SchedulerClient.Tests.csproj", "{0B0EF383-DC8F-47CE-8C3C-8C61A013ADD3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperSport.ApplicationLogic.Tests", "SuperSport.ApplicationLogic.Tests\SuperSport.ApplicationLogic.Tests.csproj", "{D78D2C9C-D463-4609-9B61-CC9F1A05B3C4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperSportDataEngine.ApplicationLogic.Tests", "SuperSportDataEngine.ApplicationLogic.Tests\SuperSportDataEngine.ApplicationLogic.Tests.csproj", "{07CB3D5B-DE19-46E0-AFFB-19DF93F110A8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperSportDataEngine.Tests.Common", "SuperSportDataEngine.Tests.Common\SuperSportDataEngine.Tests.Common.csproj", "{65E69B64-F50A-477A-A355-F2B681ED6314}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -131,10 +133,14 @@ Global
 		{0B0EF383-DC8F-47CE-8C3C-8C61A013ADD3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0B0EF383-DC8F-47CE-8C3C-8C61A013ADD3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0B0EF383-DC8F-47CE-8C3C-8C61A013ADD3}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D78D2C9C-D463-4609-9B61-CC9F1A05B3C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D78D2C9C-D463-4609-9B61-CC9F1A05B3C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D78D2C9C-D463-4609-9B61-CC9F1A05B3C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D78D2C9C-D463-4609-9B61-CC9F1A05B3C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07CB3D5B-DE19-46E0-AFFB-19DF93F110A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07CB3D5B-DE19-46E0-AFFB-19DF93F110A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07CB3D5B-DE19-46E0-AFFB-19DF93F110A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07CB3D5B-DE19-46E0-AFFB-19DF93F110A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65E69B64-F50A-477A-A355-F2B681ED6314}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65E69B64-F50A-477A-A355-F2B681ED6314}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65E69B64-F50A-477A-A355-F2B681ED6314}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65E69B64-F50A-477A-A355-F2B681ED6314}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
