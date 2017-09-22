@@ -10,6 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
+using System.Threading;
 
 namespace SuperSportDataEngine.ApplicationLogic.Services
 {
@@ -154,6 +155,25 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                         .Select(f => f.RugbyTournament);
 
             return tournamentsThatHaveFixturesInResultState;
+        }
+
+        public async Task CleanupSchedulerTrackingTables(CancellationToken none)
+        {
+            await CleanupSchedulerTrackingRugbyFixturesTable();
+        }
+
+        private async Task CleanupSchedulerTrackingRugbyFixturesTable()
+        {
+            var nowMinus6Months = DateTimeOffset.UtcNow - TimeSpan.FromDays(180);
+            var itemsToDelete = _schedulerTrackingRugbyFixtureRepository
+                .Where(
+                    f => f.RugbyFixtureStatus == RugbyFixtureStatus.Final && f.StartDateTime < nowMinus6Months)
+                .ToList();
+
+            foreach (var item in itemsToDelete)
+                _schedulerTrackingRugbyFixtureRepository.Delete(item);
+
+            await _schedulerTrackingRugbyFixtureRepository.SaveAsync();
         }
 
         public IEnumerable<RugbyFixture> GetTournamentFixtures(Guid tournamentId)

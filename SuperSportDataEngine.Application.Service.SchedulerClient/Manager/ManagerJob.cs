@@ -8,12 +8,14 @@
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
     using SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledManager;
+    using Hangfire;
 
     internal class ManagerJob
     {
         private Timer _timer;
         private IRugbyService _rugbyService;
         private IRugbyIngestWorkerService _rugbyIngestService;
+        private IRecurringJobManager _recurringJobManager;
         private IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> _schedulerTrackingRugbyFixtureRepository;
         private IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> _schedulerTrackingRugbySeasonRepository;
         private IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> _schedulerTrackingRugbyTournamentRepository;
@@ -35,6 +37,7 @@
             _schedulerTrackingRugbyFixtureRepository = container.Resolve<IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture>>();
             _schedulerTrackingRugbySeasonRepository = container.Resolve<IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason>>();
             _schedulerTrackingRugbyTournamentRepository = container.Resolve<IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament>>();
+            _recurringJobManager = container.Resolve<IRecurringJobManager>();
 
             _fixturesManagerJob =
                 new FixturesManagerJob(
@@ -48,12 +51,14 @@
                 new LiveManagerJob(
                     _rugbyService,
                     _rugbyIngestService,
+                    _recurringJobManager,
                     _schedulerTrackingRugbyFixtureRepository);
 
             _logsManagerJob =
                 new LogsManagerJob(
                     _rugbyService,
                     _rugbyIngestService,
+                    _recurringJobManager,
                     _schedulerTrackingRugbySeasonRepository);
         }
 

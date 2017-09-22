@@ -1,6 +1,7 @@
 ﻿namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledManager
 {
     using Hangfire;
+    using Hangfire.Common;
     using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
@@ -13,19 +14,22 @@
     using System.Threading;
     using System.Threading.Tasks;
 
-    internal class LiveManagerJob
+    public class LiveManagerJob
     {
         private readonly IRugbyService _rugbyService;
         private readonly IRugbyIngestWorkerService _rugbyIngestService;
+        private readonly IRecurringJobManager _recurringJobManager;
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> _schedulerTrackingRugbyFixtureRepository;
 
         public LiveManagerJob(
             IRugbyService rugbyService,
             IRugbyIngestWorkerService rugbyIngestWorkerService,
+            IRecurringJobManager recurringJobManager,
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> schedulerTrackingRugbyFixtureRepository)
         {
             _rugbyService = rugbyService;
             _rugbyIngestService = rugbyIngestWorkerService;
+            _recurringJobManager = recurringJobManager;
             _schedulerTrackingRugbyFixtureRepository = schedulerTrackingRugbyFixtureRepository;
         }
 
@@ -45,13 +49,11 @@
                 var matchName = fixture.TeamA.Name + " vs " + fixture.TeamB.Name;
                 var jobId = ConfigurationManager.AppSettings["LiveManagerJob_LiveMatch_JobIdPrefix"] + matchName;
 
-                RecurringJob.RemoveIfExists(jobId);
+                _recurringJobManager.RemoveIfExists(jobId);
 
-                var fixtures =
-                        await _schedulerTrackingRugbyFixtureRepository.WhereAsync(
-                            f => f.FixtureId == fixture.Id);
-
-                var fixtureInDb = fixtures.FirstOrDefault();
+                var fixtureInDb =
+                        _schedulerTrackingRugbyFixtureRepository.Where(
+                            f => f.FixtureId == fixture.Id).FirstOrDefault();
 
                 if (fixtureInDb != null)
                 {
@@ -78,16 +80,19 @@
                     var jobId = ConfigurationManager.AppSettings["LiveManagerJob_LiveMatch_JobIdPrefix"] + matchName;
                     var jobCronExpression = ConfigurationManager.AppSettings["LiveManagerJob_LiveMatch_JobCronExpression"];
 
-                    RecurringJob.AddOrUpdate(
+                    _recurringJobManager.AddOrUpdate(
                         jobId,
-                        () => _rugbyIngestService.IngestMatchStatsForFixture(CancellationToken.None, fixture.ProviderFixtureId),
+                        Job.FromExpression(() => _rugbyIngestService.IngestMatchStatsForFixture(CancellationToken.None, fixture.ProviderFixtureId)),
                         jobCronExpression,
-                        TimeZoneInfo.Utc,
-                        HangfireQueueConfiguration.HighPriority);
+                        new RecurringJobOptions()
+                        {
+                            TimeZone = TimeZoneInfo.Utc,
+                            QueueName = HangfireQueueConfiguration.HighPriority
+                        });
 
-                    RecurringJob.Trigger(jobId);
+                    _recurringJobManager.Trigger(jobId);
                     var fixtureInDb =
-                            _schedulerTrackingRugbyFixtureRepository.Where(f => f.FixtureId == fixture.Id).FirstOrDefault();
+                            _schedulerTrackingRugbyFixtureRepository.All().Where(f => f.FixtureId == fixture.Id).FirstOrDefault();
 
                     if (fixtureInDb != null)
                     {

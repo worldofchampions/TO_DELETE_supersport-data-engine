@@ -7,17 +7,20 @@ using System.Threading;
 using System;
 using Hangfire.Common;
 using SuperSportDataEngine.Application.Service.Common.Interfaces;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
 {
     public class FixedScheduledJob
     {
         private readonly IRugbyIngestWorkerService _ingestService;
+        private readonly IRugbyService _rugbyService;
         private readonly IRecurringJobManager _recurringJobManager;
 
         public FixedScheduledJob(IUnityContainer container)
         {
             _ingestService = container.Resolve<IRugbyIngestWorkerService>();
+            _rugbyService = container.Resolve<IRugbyService>();
             _recurringJobManager = container.Resolve<IRecurringJobManager>();
         }
 
@@ -30,6 +33,20 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
             UpdateRecurringJobDefinition_AllFixtures();
             UpdateRecurringJobDefinition_ResultsForCurrentDayFixtures();
             UpdateRecurringJobDefinition_ResultsForFixturesInResultsState();
+            UpdateRecurringJobDefinition_CleanupSchedulerTrackingTables();
+        }
+
+        private void UpdateRecurringJobDefinition_CleanupSchedulerTrackingTables()
+        {
+            _recurringJobManager.AddOrUpdate(
+                ConfigurationManager.AppSettings["FixedScheduledJob_Cleanup_Monthly_JobId"],
+                Job.FromExpression(() => _rugbyService.CleanupSchedulerTrackingTables(CancellationToken.None)),
+                ConfigurationManager.AppSettings["FixedScheduledJob_Cleanup_Monthly_JobCronExpression"],
+                new RecurringJobOptions()
+                {
+                    TimeZone = TimeZoneInfo.Utc,
+                    QueueName = HangfireQueueConfiguration.HighPriority
+                });
         }
 
         /// <summary>

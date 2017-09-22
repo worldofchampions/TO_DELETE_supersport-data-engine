@@ -5,13 +5,13 @@ using Microsoft.Practices.Unity;
 using SuperSportDataEngine.ApplicationLogic.Services;
 using NUnit.Framework;
 using Hangfire.Common;
-using System.Linq.Expressions;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
 
-namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests
+namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.ScheduledManagerTests
 {
-    public partial class FixedScheduledJob_Test
+    [Category("FixedScheduleJob")]
+    public class FixedScheduledJob_Test
     {
-        //[Test]
         [TestCase("FixedScheduleJob→ReferenceData", "0 2 * * *")]
         [TestCase("FixedScheduleJob→Fixtures", "5 2 * * *")]
         [TestCase("FixedScheduleJob→Logs→ActiveTournaments", "5 2 * * *")]
@@ -19,12 +19,13 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests
         [TestCase("FixedScheduleJob→Results→AllFixtures", "5 2 * * *")]
         [TestCase("FixedScheduleJob→Results→EndedFixtures", "0 */1 * * *")]
         [TestCase("FixedScheduleJob→Results→CurrentDayFixtures", "*/15 * * * *")]
-        public void WhenUpdateFixedJobsCalled_AddsJobToHangfire(
+        public void FixedScheduleJob_WhenUpdateFixedJobsCalled_AddsJobToHangfire(
             string hangfireJobId,
             string hangfireCronExpression)
         {
             // Mock the Hangfire client, ingest service and job manager.
             var client = new Mock<IBackgroundJobClient>();
+            var mockRugbyService = new Mock<IRugbyService>();
             var mockIngestWorkerService = new Mock<IRugbyIngestWorkerService>();
             var mockRecurringJobManager = new Mock<IRecurringJobManager>();
 
@@ -40,6 +41,9 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests
 
             container.RegisterType<IRecurringJobManager, RecurringJobManager>(
                 new InjectionFactory((x) => mockRecurringJobManager.Object));
+
+            container.RegisterType<IRugbyService, RugbyService>(
+                new InjectionFactory((x) => mockRugbyService.Object));
 
             // Create the object to invoke method on.
             var fixedScheduledJob = new FixedScheduledJob(container);
