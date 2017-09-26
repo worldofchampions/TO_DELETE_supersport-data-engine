@@ -61,16 +61,16 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("{category}/fixtures")]
-        [ResponseType(typeof(List<FixtureModel>))]
+        [ResponseType(typeof(List<Fixture>))]
         public async Task<IHttpActionResult> GetFixtures(string category)
         {
 
             var cacheKey = $"rugby/{category}/fixtures";
-            var fixtures = await _cache.GetAsync<IEnumerable<FixtureModel>>(cacheKey);
+            var fixtures = await _cache.GetAsync<IEnumerable<Fixture>>(cacheKey);
 
             if (fixtures == null)
             {
-                fixtures = _rugbyService.GetTournamentFixtures(category).Select(log => Mapper.Map<FixtureModel>(log));
+                fixtures = _rugbyService.GetTournamentFixtures(category).Select(log => Mapper.Map<Fixture>(log));
                 _cache.Add(cacheKey, fixtures);
             }
 

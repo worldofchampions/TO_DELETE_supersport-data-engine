@@ -1,5 +1,6 @@
 ﻿using SuperSportDataEngine.Application.WebApi.LegacyFeed.App_Start;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers;
+using System.Net.Http.Formatting;
 using System.Web.Http;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed
@@ -11,13 +12,37 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed
         {
             httpConfig = config;
 
-            httpConfig.Formatters.XmlFormatter.UseXmlSerializer = true;
+            ConfigureResponseFormatters();
 
             ConfigureApiRoutes();
 
             ConfigureFeedRequestHandler();
 
             ConfigureFeedMappings();
+        }
+
+        private static void ConfigureResponseFormatters()
+        {
+            // For All Media Types
+            httpConfig.Formatters.Clear();
+
+            //httpConfig.Formatters.Add(new FormUrlEncodedMediaTypeFormatter());
+
+            // For XML
+            httpConfig.Formatters.Add(new XmlMediaTypeFormatter());
+
+            httpConfig.Formatters.XmlFormatter.UseXmlSerializer = true;
+
+            GlobalConfiguration.Configuration.Formatters.XmlFormatter.Indent = true;
+
+            // For JSON
+            httpConfig.Formatters.Add(new JsonMediaTypeFormatter());
+
+            ((Newtonsoft.Json.Serialization.DefaultContractResolver)httpConfig
+                .Formatters.JsonFormatter.SerializerSettings.ContractResolver).IgnoreSerializableAttribute = true;
+
+            GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.Formatting = Newtonsoft.Json.Formatting.Indented;
+
         }
 
         private static void ConfigureFeedRequestHandler()

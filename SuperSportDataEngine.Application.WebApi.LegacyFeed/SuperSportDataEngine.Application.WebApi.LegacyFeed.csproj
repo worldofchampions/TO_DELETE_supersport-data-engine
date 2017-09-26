@@ -238,7 +238,7 @@
     <Compile Include="Models\Cycling\CyclingStageModel.cs" />
     <Compile Include="Models\Cycling\CyclingStandingModel.cs" />
     <Compile Include="Models\Cycling\CyclingTeamStandingModel.cs" />
-    <Compile Include="Models\Shared\FixtureModel.cs" />
+    <Compile Include="Models\Shared\Fixture.cs" />
     <Compile Include="Models\Football\FootballMatchDetailsModel.cs" />
     <Compile Include="Models\Football\FootballMatchStatisticsModel.cs" />
     <Compile Include="Models\Football\FootballPointsScorerModel.cs" />

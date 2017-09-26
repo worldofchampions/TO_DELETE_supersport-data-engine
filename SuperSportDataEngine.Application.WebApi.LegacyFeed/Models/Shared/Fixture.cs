@@ -1,9 +1,10 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models
 {
-    //[Serializable]
-    public class FixtureModel : MatchModel
+    [Serializable]
+    public class Fixture : MatchModel
     {
         public SportType Sport { get; set; }
         public int Preview { get; set; }

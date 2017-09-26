@@ -17,6 +17,11 @@
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
+            ConfigureFomatters();
+        }
+
+        private static void ConfigureFomatters()
+        {
             GlobalConfiguration.Configuration.Formatters.JsonFormatter.MediaTypeMappings.Add(
                 new QueryStringMapping("format", "json", new MediaTypeHeaderValue("application/json")));
 
