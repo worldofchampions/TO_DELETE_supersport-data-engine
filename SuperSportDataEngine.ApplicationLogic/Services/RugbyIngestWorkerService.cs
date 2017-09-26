@@ -500,7 +500,10 @@
                 }
                 else
                 {
-                    _rugbyTournamentRepository.Update(newEntry);
+                    entry.Name = newEntry.Name;
+                    entry.Slug = newEntry.Slug;
+                    entry.LogoUrl = newEntry.LogoUrl;
+                    _rugbyTournamentRepository.Update(entry);
                 }
             }
         }
