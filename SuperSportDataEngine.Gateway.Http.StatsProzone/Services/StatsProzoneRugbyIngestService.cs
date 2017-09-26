@@ -181,7 +181,8 @@
 
                     string responseDataFromServer = reader.ReadToEnd();
 
-                    var responseDataToReturn = JsonConvert.DeserializeObject<RugbyFixturesResponse>(responseDataFromServer);
+                    responseData.Fixtures = 
+                        JsonConvert.DeserializeObject<RugbyFixtures>(responseDataFromServer);
 
                     responseData.ResponseTime = DateTime.Now;
 
@@ -243,7 +244,7 @@
 
             request.Method = "GET";
 
-            request.Headers["Authorization"] = "Basic c3VwZXJzcG9ydDpvYTNuZzcrMjlmMw==";
+            request.Headers["Authorization"] = "Basic U3VwZXJTcG9ydF9NZWRpYTpTdTkzUjdyMFA1";
 
             request.ContentType = "application/json; charset=UTF-8";
 
@@ -294,7 +295,7 @@
 
             request.Method = "GET";
 
-            request.Headers["Authorization"] = "Basic c3VwZXJzcG9ydDpvYTNuZzcrMjlmMw==";
+            request.Headers["Authorization"] = "Basic U3VwZXJTcG9ydF9NZWRpYTpTdTkzUjdyMFA1";
 
             request.ContentType = "application/json; charset=UTF-8";
 

@@ -647,15 +647,56 @@
 
         public async Task IngestOneMonthsFixturesForTournament(CancellationToken cancellationToken, int providerTournamentId)
         {
-            //var activeTournaments = _rugbyTournamentRepository.Where(t => t.IsEnabled);
-            //foreach (var tournament in activeTournaments)
-            //{
-            //    var season = _statsProzoneIngestService.IngestSeasonData(cancellationToken, tournament.ProviderTournamentId, DateTime.Now.Year);
+            var activeTournaments = 
+                    _rugbyTournamentRepository.Where(t => t.IsEnabled);
 
-            //    // Process and persist one months data asynchronously.
-            //}
+            foreach (var tournament in activeTournaments)
+            {
+                var fixtures = 
+                        _statsProzoneIngestService.IngestFixturesForTournamentSeason(
+                            tournament.ProviderTournamentId, 
+                            _rugbyService.GetCurrentProviderSeasonIdForTournament(tournament.Id), 
+                            cancellationToken);
 
-            return;
+                var upcomingFixtures = RemoveFixturesThatHaveBeenCompleted(fixtures);
+                RugbyFixturesResponse oneMonthsfixtures = RemoveFixturesMoreThanAMonthFromNow(upcomingFixtures);
+
+                PersistRugbyFixturesToPublicSportsRepository(cancellationToken, oneMonthsfixtures);
+                PersistRugbyFixturesToSchedulerTrackingRugbyFixturesTable(fixtures);
+
+                _mongoDbRepository.Save(fixtures);
+            }
+
+            await _rugbyFixturesRepository.SaveAsync();
+            await _schedulerTrackingRugbyFixtureRepoitory.SaveAsync();
+        }
+
+        private RugbyFixturesResponse RemoveFixturesThatHaveBeenCompleted(RugbyFixturesResponse fixtures)
+        {
+            foreach(var round in fixtures.Fixtures.roundFixtures)
+            {
+                round.gameFixtures.RemoveAll(f => f.gameStateName == "Final");
+            }
+
+            return fixtures;
+        }
+
+        private RugbyFixturesResponse RemoveFixturesMoreThanAMonthFromNow(RugbyFixturesResponse fixtures)
+        {
+            DateTimeOffset nowPlusOneMonth = DateTimeOffset.UtcNow + TimeSpan.FromDays(31);
+            foreach (var round in fixtures.Fixtures.roundFixtures)
+            {
+                round.gameFixtures.RemoveAll(f =>
+                {
+                    DateTimeOffset.TryParse(f.startTimeUTC, out DateTimeOffset startTime);
+                    if (startTime > nowPlusOneMonth)
+                        return true;
+
+                    return false;
+                });
+            }
+
+            return fixtures;
         }
 
         public async Task IngestMatchStatsForFixture(CancellationToken cancellationToken, long providerFixtureId)
