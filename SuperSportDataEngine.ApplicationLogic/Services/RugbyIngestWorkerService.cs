@@ -14,6 +14,7 @@
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
+    using System.Text.RegularExpressions;
 
     public class RugbyIngestWorkerService : IRugbyIngestWorkerService
     {
@@ -475,15 +476,20 @@
                     .Where(c => c.ProviderTournamentId == competition.id)
                     .FirstOrDefault();
 
+                // We are disregarding competition 401.
+                // The provider has another listing for "World Rugby Seven Series"
+                // under the ID 831. We are using that instead.
+                if (competition.id == 401)
+                    continue;
+
                 var newEntry = new RugbyTournament
                 {
-                    Id = entry != null ? entry.Id : Guid.NewGuid(),
                     ProviderTournamentId = competition.id,
                     Name = competition.name,
                     IsEnabled = entry != null,
                     LogoUrl = competition.CompetitionLogoURL,
                     Abbreviation = competition.CompetitionAbbrev,
-                    Slug = "/competition/" + competition.id,
+                    Slug = GetSlug(competition.name),
                     LegacyTournamentId = competition.id,
                     DataProvider = DataProvider.StatsProzone
                 };
@@ -494,9 +500,27 @@
                 }
                 else
                 {
-                    _rugbyTournamentRepository.Update(newEntry);
+                    entry.Name = newEntry.Name;
+                    entry.Slug = newEntry.Slug;
+                    entry.LogoUrl = newEntry.LogoUrl;
+                    _rugbyTournamentRepository.Update(entry);
                 }
             }
+        }
+
+        private string GetSlug(string name)
+        {
+            var lower_case = name.ToLower();
+            var lower_case_with_special_characters_removed = 
+                    RemoveSpecialCharacters(lower_case);
+
+            var slug = lower_case_with_special_characters_removed.Replace(' ', '-');
+            return slug;
+        }
+
+        private static string RemoveSpecialCharacters(string str)
+        {
+            return Regex.Replace(str, "[^a-zA-Z0-9_ ]+", "", RegexOptions.Compiled);
         }
 
         public async Task IngestResultsForAllFixtures(CancellationToken cancellationToken)
