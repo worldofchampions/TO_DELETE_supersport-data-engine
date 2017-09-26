@@ -109,6 +109,10 @@
     <Compile Include="Migrations\201709220900046_ChangingPrimaryKeyOptionForRugbyTournaments.Designer.cs">
       <DependentUpon>201709220900046_ChangingPrimaryKeyOptionForRugbyTournaments.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201709261331301_Added_grouped_logs_tables_and_other_related_changes.cs" />
+    <Compile Include="Migrations\201709261331301_Added_grouped_logs_tables_and_other_related_changes.Designer.cs">
+      <DependentUpon>201709261331301_Added_grouped_logs_tables_and_other_related_changes.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -171,6 +175,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201709220900046_ChangingPrimaryKeyOptionForRugbyTournaments.resx">
       <DependentUpon>201709220900046_ChangingPrimaryKeyOptionForRugbyTournaments.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201709261331301_Added_grouped_logs_tables_and_other_related_changes.resx">
+      <DependentUpon>201709261331301_Added_grouped_logs_tables_and_other_related_changes.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
