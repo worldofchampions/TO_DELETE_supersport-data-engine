@@ -500,9 +500,13 @@
                 }
                 else
                 {
+                    entry.ProviderTournamentId = newEntry.ProviderTournamentId;
+                    entry.LegacyTournamentId = newEntry.LegacyTournamentId;
                     entry.Name = newEntry.Name;
                     entry.Slug = newEntry.Slug;
                     entry.LogoUrl = newEntry.LogoUrl;
+                    entry.Abbreviation = newEntry.Abbreviation;
+
                     _rugbyTournamentRepository.Update(entry);
                 }
             }
