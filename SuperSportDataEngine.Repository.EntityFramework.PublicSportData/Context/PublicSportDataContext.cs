@@ -10,7 +10,9 @@
         }
 
         public DbSet<RugbyFixture> RugbyFixtures { get; set; }
-        public DbSet<RugbyLog> RugbyLogs { get; set; }
+        public DbSet<RugbyFlatLog> RugbyFlatLogs { get; set; }
+        public DbSet<RugbyGroupedLog> RugbyGroupedLogs { get; set; }
+        public DbSet<RugbyLogGroup> RugbyLogGroups { get; set; }
         public DbSet<RugbyPlayer> RugbyPlayers { get; set; }
         public DbSet<RugbyPlayerLineup> RugbyPlayerLineups { get; set; }
         public DbSet<RugbySeason> RugbySeasons { get; set; }

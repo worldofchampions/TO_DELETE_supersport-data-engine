@@ -2,7 +2,7 @@
 {
     using System;
 
-    public class RugbyLog
+    public class RugbyGroupedLog
     {
         /// <summary> A clustered-key record identifier. </summary>
         public Guid RugbyTournamentId { get; set; }
@@ -16,7 +16,10 @@
         /// <summary> A clustered-key record identifier. </summary>
         public Guid RugbyTeamId { get; set; }
 
-        public int Position { get; set; }
+        /// <summary> A clustered-key record identifier. </summary>
+        public Guid RugbyLogGroupId { get; set; }
+
+        public int LogPosition { get; set; }
         public int GamesPlayed { get; set; }
         public int GamesWon { get; set; }
         public int GamesDrawn { get; set; }
@@ -32,5 +35,6 @@
         public virtual RugbyTournament RugbyTournament { get; set; }
         public virtual RugbySeason RugbySeason { get; set; }
         public virtual RugbyTeam RugbyTeam { get; set; }
+        public virtual RugbyLogGroup RugbyLogGroup { get; set; }
     }
 }
