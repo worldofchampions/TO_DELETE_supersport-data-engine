@@ -6,7 +6,6 @@
     using MongoDB.Driver;
     using StackExchange.Redis;
     using SuperSportDataEngine.Application.Container.Enums;
-    using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
     using SuperSportDataEngine.Application.WebApi.Common.Caching;
     using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
@@ -84,9 +83,17 @@
                 new ContainerControlledLifetimeManager(),
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyFixture>(container.Resolve<DbContext>(PublicSportDataRepository))));
 
-            container.RegisterType<IBaseEntityFrameworkRepository<RugbyLog>, BaseEntityFrameworkRepository<RugbyLog>>(
+            container.RegisterType<IBaseEntityFrameworkRepository<RugbyFlatLog>, BaseEntityFrameworkRepository<RugbyFlatLog>>(
                 new ContainerControlledLifetimeManager(),
-                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyLog>(container.Resolve<DbContext>(PublicSportDataRepository))));
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyFlatLog>(container.Resolve<DbContext>(PublicSportDataRepository))));
+
+            container.RegisterType<IBaseEntityFrameworkRepository<RugbyGroupedLog>, BaseEntityFrameworkRepository<RugbyGroupedLog>>(
+                new ContainerControlledLifetimeManager(),
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyGroupedLog>(container.Resolve<DbContext>(PublicSportDataRepository))));
+
+            container.RegisterType<IBaseEntityFrameworkRepository<RugbyLogGroup>, BaseEntityFrameworkRepository<RugbyLogGroup>>(
+                new ContainerControlledLifetimeManager(),
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyLogGroup>(container.Resolve<DbContext>(PublicSportDataRepository))));
 
             container.RegisterType<IBaseEntityFrameworkRepository<RugbyPlayer>, BaseEntityFrameworkRepository<RugbyPlayer>>(
                 new ContainerControlledLifetimeManager(),

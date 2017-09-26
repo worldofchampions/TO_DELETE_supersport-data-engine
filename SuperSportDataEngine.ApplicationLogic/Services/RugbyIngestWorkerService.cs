@@ -200,9 +200,9 @@
                     .FirstOrDefault();
 
             var tour = _rugbyTournamentRepository.Where(t => t.ProviderTournamentId == providerTournamentId).FirstOrDefault();
+
             var newEntry = new RugbySeason()
             {
-                Id = seasonEntry != null ? seasonEntry.Id : Guid.NewGuid(),
                 ProviderSeasonId = providerSeasonId,
                 RugbyTournament = tour,
                 IsCurrent = isSeasonCurrentlyActive,
@@ -210,10 +210,6 @@
                 DataProvider = DataProvider.StatsProzone
             };
 
-            if(newEntry.Id == null)
-            {
-                bool test = true;
-            }
             // Not in repo?
             if (seasonEntry == null)
             {
@@ -221,7 +217,11 @@
             }
             else
             {
-                _rugbySeasonRepository.Update(newEntry);
+                seasonEntry.StartDateTime = newEntry.StartDateTime;
+                seasonEntry.Name = newEntry.Name;
+                seasonEntry.IsCurrent = newEntry.IsCurrent;
+
+                _rugbySeasonRepository.Update(seasonEntry);
             }
         }
 
@@ -343,6 +343,8 @@
                         RugbyTournament = tournament,
                         TeamA = teamA,
                         TeamB = teamB,
+                        TeamAIsHomeTeam = team0.isHomeTeam,
+                        TeamBIsHomeTeam = team1.isHomeTeam,
                         RugbyFixtureStatus = GetFixtureStatusFromProviderFixtureState(fixture.gameStateName),
                         DataProvider = DataProvider.StatsProzone
                     };
@@ -353,8 +355,27 @@
                     }
                     else
                     {
+                        // Only update the scores for games that are completed.
+                        // Real-time scores will be updated separately 
+                        // in a method that runs more frequently.
+                        if (fixtureInDb.RugbyFixtureStatus == RugbyFixtureStatus.Final)
+                        {
+                            newFixture.TeamAScore = team0.teamFinalScore;
+                            newFixture.TeamBScore = team1.teamFinalScore;
+
+                            fixtureInDb.TeamAScore = newFixture.TeamAScore;
+                            fixtureInDb.TeamBScore = newFixture.TeamBScore;
+                        }
+
                         fixtureInDb.StartDateTime = startTime;
                         fixtureInDb.RugbyFixtureStatus = GetFixtureStatusFromProviderFixtureState(fixture.gameStateName);
+                        fixtureInDb.RugbyVenue = newFixture.RugbyVenue;
+                        fixtureInDb.TeamA = newFixture.TeamA;
+                        fixtureInDb.TeamB = newFixture.TeamB;
+                        fixtureInDb.TeamAIsHomeTeam = newFixture.TeamAIsHomeTeam;
+                        fixtureInDb.TeamBIsHomeTeam = newFixture.TeamBIsHomeTeam;
+                        fixtureInDb.RugbyTournament = newFixture.RugbyTournament;
+
                         _rugbyFixturesRepository.Update(fixtureInDb);
                     }
                 }
@@ -390,6 +411,14 @@
             var tournamentId = season.RugbyTournament.Id;
             DateTimeOffset.TryParse(fixtures.Fixtures.seasonStartDate, out DateTimeOffset seasonStartDate);
             DateTimeOffset.TryParse(fixtures.Fixtures.seasonFinishDate, out DateTimeOffset seasonEndDate);
+
+            if (season != null)
+            {
+                season.StartDateTime = seasonStartDate;
+                season.EndDateTime = seasonEndDate;
+                _rugbySeasonRepository.Update(season);
+            }
+
             var dateOffsetNow = DateTimeOffset.Now;
 
             var seasonStatus = GetRugbySeasonStatus(seasonStartDate, dateOffsetNow, seasonEndDate);
@@ -500,9 +529,13 @@
                 }
                 else
                 {
+                    entry.ProviderTournamentId = newEntry.ProviderTournamentId;
+                    entry.LegacyTournamentId = newEntry.LegacyTournamentId;
                     entry.Name = newEntry.Name;
                     entry.Slug = newEntry.Slug;
                     entry.LogoUrl = newEntry.LogoUrl;
+                    entry.Abbreviation = newEntry.Abbreviation;
+
                     _rugbyTournamentRepository.Update(entry);
                 }
             }
