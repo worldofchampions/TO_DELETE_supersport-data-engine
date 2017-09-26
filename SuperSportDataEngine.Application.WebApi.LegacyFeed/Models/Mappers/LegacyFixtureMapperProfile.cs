@@ -2,6 +2,7 @@
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
 using System;
+using System.Collections.Generic;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
 {
@@ -9,14 +10,11 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
     {
         public LegacyFixtureMapperProfile()
         {
-            CreateMap<RugbyFixture, FixtureModel>()
+            CreateMap<RugbyFixture, Fixture>()
 
                 // For Away team 
                 .ForMember(dest => dest.AwayTeam, expression => expression.MapFrom(
                     src => src.TeamAIsHomeTeam ? src.TeamB.Name : src.TeamA.Name))
-
-                .ForMember(dest => dest.AwayTeamScore, expression => expression.MapFrom(
-                    src => src.TeamAIsHomeTeam ? src.TeamBScore.ToString() : src.TeamAScore.ToString()))
 
                 .ForMember(dest => dest.AwayTeamId, expression => expression.MapFrom(
                     src => src.TeamAIsHomeTeam ? src.TeamB.LegacyTeamId : src.TeamA.LegacyTeamId))
@@ -27,9 +25,6 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
                 // For Home team 
                 .ForMember(dest => dest.HomeTeam, expression => expression.MapFrom(
                     src => src.TeamAIsHomeTeam ? src.TeamA.Name : src.TeamB.Name))
-
-                .ForMember(dest => dest.HomeTeamScore, expression => expression.MapFrom(
-                   src => src.TeamAIsHomeTeam ? src.TeamAScore.ToString() : src.TeamBScore.ToString()))
 
                 .ForMember(dest => dest.HomeTeamId, expression => expression.MapFrom(
                     src => src.TeamAIsHomeTeam ? src.TeamA.LegacyTeamId : src.TeamB.LegacyTeamId))
@@ -45,23 +40,24 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
                 .ForMember(dest => dest.LeagueName, expression => expression.MapFrom(
                     src => src.RugbyTournament.Name))
 
-                .ForMember(dest => dest.LeagueShortName, expression => expression.MapFrom(
-                    src => src.RugbyTournament.Abbreviation))
-
                 .ForMember(dest => dest.LeagueUrlName, expression => expression.MapFrom(
-                    src => src.RugbyTournament.LogoUrl))
+                    src => src.RugbyTournament.Slug))
 
                 .ForMember(dest => dest.Location, expression => expression.MapFrom(
                     src => src.RugbyVenue.Name))
 
-                // Hack: Use sortable datetime format for legacy feed
+                // Use sortable datetime format for legacy feed
                 .ForMember(dest => dest.MatchDateTime, expression => expression.MapFrom(
                     src => Convert.ToDateTime(src.StartDateTime.UtcDateTime.ToLocalTime().ToString("s"))))
 
-                // Hack: Use sortable datetime format for legacy feed
+                // Use sortable datetime format for legacy feed
                 .ForMember(dest => dest.MatchDateTimeString, expression => expression.MapFrom(
                     src => src.StartDateTime.UtcDateTime.ToLocalTime().ToString("s")))
-                
+
+                // Use sortable datetime format for legacy feed
+                .ForMember(dest => dest.MatchEndDateTimeString, expression => expression.UseValue(
+                   DateTime.MinValue.ToString("s")))
+
                 .ForMember(dest => dest.MatchID, expression => expression.MapFrom(
                     src => src.LegacyFixtureId))
 
@@ -76,6 +72,8 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
                 .ForMember(dest => dest.IsFeatured, expression => expression.UseValue(false))
 
                 .ForMember(dest => dest.WalkOver, expression => expression.UseValue(false))
+
+                .ForMember(dest => dest.Channels, expression => expression.UseValue(new List<string>()))
 
                 // Ignore elements not used even by legacy feed
                 .ForAllOtherMembers(dest => dest.Ignore());
