@@ -205,26 +205,42 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             await _schedulerTrackingRugbyFixtureRepository.SaveAsync();
         }
 
-        public IEnumerable<RugbyFixture> GetTournamentFixtures(Guid tournamentId)
+        public IEnumerable<RugbyFixture> GetTournamentFixtures(Guid tournamentId, RugbyFixtureStatus fixtureStatus)
         {
-            var allFixtures = _rugbyFixturesRepository
+            var fixtures = _rugbyFixturesRepository
                 .All()
                 .ToList()
                 .Where(t => t.RugbyTournament.Id == tournamentId &&
-                t.RugbyFixtureStatus == RugbyFixtureStatus.PreMatch);
+                t.RugbyFixtureStatus == fixtureStatus);
 
-            return allFixtures;
+            return fixtures;
         }
 
-        public IEnumerable<RugbyFixture> GetTournamentFixtures(string LeagueUrlName)
+        public IEnumerable<RugbyFixture> GetTournamentFixtures(string tournamentSlug)
         {
-            Guid tournamentId = _rugbyTournamentRepository
+            Guid tournamentId = GetTournamentId(tournamentSlug);
+
+            var fixtures = GetTournamentFixtures(tournamentId, RugbyFixtureStatus.PreMatch);
+
+            return fixtures;
+        }
+
+        public Guid GetTournamentId(string tournamentSlug)
+        {
+            return _rugbyTournamentRepository
                 .All()
                 .ToList()
-                .Where(f => f.Slug == LeagueUrlName)
+                .Where(f => f.Slug == tournamentSlug)
                 .FirstOrDefault().Id;
+        }
 
-            return GetTournamentFixtures(tournamentId);
+        public IEnumerable<RugbyFixture> GetTournamentResults(string tournamentSlug)
+        {
+            Guid tournamentId = GetTournamentId(tournamentSlug);
+
+            var fixturesInResultsState = GetTournamentFixtures(tournamentId, RugbyFixtureStatus.Final);
+
+            return fixturesInResultsState;
         }
     }
 }

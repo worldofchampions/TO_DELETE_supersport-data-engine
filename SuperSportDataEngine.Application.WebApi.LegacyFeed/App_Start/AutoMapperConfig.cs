@@ -9,12 +9,14 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.App_Start
     {
         public static void InitializeMappings()
         {
+
             Mapper.Initialize(cfg =>
             {
                 cfg.AddProfile<LogModelMapperProfile>();
                 cfg.AddProfile<LogEntityMapperProfile>();
                 cfg.AddProfile<LegacyAuthMappingProfile>();
                 cfg.AddProfile<LegacyFixtureMapperProfile>();
+                cfg.AddProfile<LegacyResultMapperProfile>();
             });
 #if DEBUG
             Mapper.AssertConfigurationIsValid();

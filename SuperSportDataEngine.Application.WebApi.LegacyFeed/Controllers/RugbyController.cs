@@ -66,13 +66,12 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         [ResponseType(typeof(List<Fixture>))]
         public async Task<IHttpActionResult> GetFixtures(string category)
         {
-
             var cacheKey = $"rugby/{category}/fixtures";
             var fixtures = await _cache.GetAsync<IEnumerable<Fixture>>(cacheKey);
 
             if (fixtures == null)
             {
-                fixtures = _rugbyService.GetTournamentFixtures(category).Select(log => Mapper.Map<Fixture>(log));
+                fixtures = _rugbyService.GetTournamentFixtures(category).Select(res => Mapper.Map<Fixture>(res));
                 _cache.Add(cacheKey, fixtures);
             }
 
@@ -86,10 +85,21 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("{category}/results")]
-        [ResponseType(typeof(List<ResultModel>))]
-        public IHttpActionResult GetResults()
+        [ResponseType(typeof(List<Result>))]
+        public async Task<IHttpActionResult> GetResults(string category)
         {
-            return Ok();
+            var cacheKey = $"rugby/{category}/results";
+
+            var results = await _cache.GetAsync<IEnumerable<Result>>(cacheKey);
+
+            if (results == null)
+            {
+                results = _rugbyService.GetTournamentResults(category).Select(res => Mapper.Map<Result>(res));
+                _cache.Add(cacheKey, results);
+            }
+
+            return Ok(results);
+
         }
 
         /// <summary>
