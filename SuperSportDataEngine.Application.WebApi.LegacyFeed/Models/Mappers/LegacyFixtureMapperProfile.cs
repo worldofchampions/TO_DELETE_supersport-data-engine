@@ -20,7 +20,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
                     src => src.TeamAIsHomeTeam ? src.TeamB.LegacyTeamId : src.TeamA.LegacyTeamId))
 
                 .ForMember(dest => dest.AwayTeamShortName, expression => expression.MapFrom(
-                    src => src.TeamAIsHomeTeam ? src.TeamB.Abbreviation : src.TeamA.Abbreviation))
+                    src => src.TeamAIsHomeTeam ? src.TeamB.Name : src.TeamA.Name))
 
                 // For Home team 
                 .ForMember(dest => dest.HomeTeam, expression => expression.MapFrom(
@@ -30,7 +30,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
                     src => src.TeamAIsHomeTeam ? src.TeamA.LegacyTeamId : src.TeamB.LegacyTeamId))
 
                 .ForMember(dest => dest.HomeTeamShortName, expression => expression.MapFrom(
-                    src => src.TeamAIsHomeTeam ? src.TeamA.Abbreviation : src.TeamB.Abbreviation))
+                    src => src.TeamAIsHomeTeam ? src.TeamA.Name : src.TeamB.Name))
 
 
                 // For Fixture specific
