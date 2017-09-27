@@ -109,10 +109,7 @@
 
         public virtual IEnumerable<T> Where(Expression<Func<T, bool>> predicate)
         {
-            //return AsSet().Where(predicate);
-            var dbResult = AsSet().Where(predicate).ToList();
-            var offlineResult = AsSet().Local.AsQueryable().Where(predicate).ToList();
-            return offlineResult.Union(dbResult);
+            return AsSet().Where(predicate);
         }
 
         public virtual IEnumerable<T> WhereIncludeLocal(Expression<Func<T, bool>> predicate)
