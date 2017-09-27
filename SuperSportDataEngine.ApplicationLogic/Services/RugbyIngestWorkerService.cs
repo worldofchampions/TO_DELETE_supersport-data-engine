@@ -30,6 +30,8 @@
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> _schedulerTrackingRugbyTournamentRepository;
         private readonly IRugbyService _rugbyService;
 
+        static SemaphoreSlim FixuresSemaphore = new SemaphoreSlim(1, 1);
+
         public RugbyIngestWorkerService(
             IStatsProzoneRugbyIngestService statsProzoneIngestService,
             IMongoDbRugbyRepository mongoDbRepository,
@@ -239,19 +241,37 @@
                     _statsProzoneIngestService.IngestFixturesForTournament(
                         tournament, cancellationToken);
 
+                PersistFixturesData(cancellationToken, fixtures);
+
                 // TODO: Also persist in SQL DB.
-                PersistRugbyFixturesToPublicSportsRepository(cancellationToken, fixtures);
-                PersistRugbyFixturesToSchedulerTrackingRugbyFixturesTable(fixtures);
+                
                 PersistRugbySeasonDataInSchedulerTrackingRugbySeasonTable(fixtures);
                 PersistRugbyTournamentsInSystemTrackingTable();
                 _mongoDbRepository.Save(fixtures);
             }
 
             // Saving to the DB's should not be done inside a for-loop (like above)
-            await _rugbyFixturesRepository.SaveAsync();
+            
             await _schedulerTrackingRugbySeasonRepository.SaveAsync();
-            await _schedulerTrackingRugbyFixtureRepoitory.SaveAsync();
             await _schedulerTrackingRugbyTournamentRepository.SaveAsync();
+        }
+
+        private async Task PersistFixturesData(CancellationToken cancellationToken, RugbyFixturesResponse fixtures)
+        {
+            await FixuresSemaphore.WaitAsync();
+
+            try
+            {
+                PersistRugbyFixturesToPublicSportsRepository(cancellationToken, fixtures);
+                PersistRugbyFixturesToSchedulerTrackingRugbyFixturesTable(fixtures);
+
+                await _rugbyFixturesRepository.SaveAsync();
+                await _schedulerTrackingRugbyFixtureRepoitory.SaveAsync();
+            }
+            finally
+            {
+                FixuresSemaphore.Release();
+            }
         }
 
         private void PersistRugbyFixturesToSchedulerTrackingRugbyFixturesTable(RugbyFixturesResponse fixtures)
@@ -530,9 +550,7 @@
                 else
                 {
                     entry.ProviderTournamentId = newEntry.ProviderTournamentId;
-                    entry.LegacyTournamentId = newEntry.LegacyTournamentId;
                     entry.Name = newEntry.Name;
-                    entry.Slug = newEntry.Slug;
                     entry.LogoUrl = newEntry.LogoUrl;
                     entry.Abbreviation = newEntry.Abbreviation;
 
@@ -647,15 +665,52 @@
 
         public async Task IngestOneMonthsFixturesForTournament(CancellationToken cancellationToken, int providerTournamentId)
         {
-            //var activeTournaments = _rugbyTournamentRepository.Where(t => t.IsEnabled);
-            //foreach (var tournament in activeTournaments)
-            //{
-            //    var season = _statsProzoneIngestService.IngestSeasonData(cancellationToken, tournament.ProviderTournamentId, DateTime.Now.Year);
+            var activeTournaments = 
+                    _rugbyTournamentRepository.Where(t => t.IsEnabled);
 
-            //    // Process and persist one months data asynchronously.
-            //}
+            foreach (var tournament in activeTournaments)
+            {
+                var fixtures =
+                        _statsProzoneIngestService.IngestFixturesForTournamentSeason(
+                            tournament.ProviderTournamentId,
+                            _rugbyService.GetCurrentProviderSeasonIdForTournament(tournament.Id),
+                            cancellationToken);
 
-            return;
+                var upcomingFixtures = RemoveFixturesThatHaveBeenCompleted(fixtures);
+                RugbyFixturesResponse oneMonthsfixtures = RemoveFixturesMoreThanAMonthFromNow(upcomingFixtures);
+
+                PersistFixturesData(cancellationToken, oneMonthsfixtures);
+
+                _mongoDbRepository.Save(fixtures);
+            }
+        }
+
+        private RugbyFixturesResponse RemoveFixturesThatHaveBeenCompleted(RugbyFixturesResponse fixtures)
+        {
+            foreach(var round in fixtures.Fixtures.roundFixtures)
+            {
+                round.gameFixtures.RemoveAll(f => f.gameStateName == "Final");
+            }
+
+            return fixtures;
+        }
+
+        private RugbyFixturesResponse RemoveFixturesMoreThanAMonthFromNow(RugbyFixturesResponse fixtures)
+        {
+            DateTimeOffset nowPlusOneMonth = DateTimeOffset.UtcNow + TimeSpan.FromDays(31);
+            foreach (var round in fixtures.Fixtures.roundFixtures)
+            {
+                round.gameFixtures.RemoveAll(f =>
+                {
+                    DateTimeOffset.TryParse(f.startTimeUTC, out DateTimeOffset startTime);
+                    if (startTime > nowPlusOneMonth)
+                        return true;
+
+                    return false;
+                });
+            }
+
+            return fixtures;
         }
 
         public async Task IngestMatchStatsForFixture(CancellationToken cancellationToken, long providerFixtureId)
