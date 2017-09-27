@@ -27,10 +27,15 @@
         private readonly IBaseEntityFrameworkRepository<RugbyVenue> _rugbyVenueRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyTeam> _rugbyTeamRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyFixture> _rugbyFixturesRepository;
+        private readonly IBaseEntityFrameworkRepository<RugbyPlayer> _rugbyPlayerRepository;
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> _schedulerTrackingRugbyTournamentRepository;
         private readonly IRugbyService _rugbyService;
 
         static SemaphoreSlim FixuresSemaphore = new SemaphoreSlim(1, 1);
+        static SemaphoreSlim VenuesSemaphore = new SemaphoreSlim(1, 1);
+        static SemaphoreSlim TeamsSemaphore = new SemaphoreSlim(1, 1);
+        static SemaphoreSlim TournamentsSemaphore = new SemaphoreSlim(1, 1);
+        static SemaphoreSlim PlayersSemaphore = new SemaphoreSlim(1, 1);
 
         public RugbyIngestWorkerService(
             IStatsProzoneRugbyIngestService statsProzoneIngestService,
@@ -42,6 +47,7 @@
             IBaseEntityFrameworkRepository<RugbyVenue> rugbyVenueRepository,
             IBaseEntityFrameworkRepository<RugbyTeam> rugbyTeamRepository,
             IBaseEntityFrameworkRepository<RugbyFixture> rugbyFixturerRepository,
+            IBaseEntityFrameworkRepository<RugbyPlayer> rugbyPlayerRepository,
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> schedulerTrackingRugbyTournamentRepository,
             IRugbyService rugbyService)
         {
@@ -54,6 +60,7 @@
             _rugbyVenueRepository = rugbyVenueRepository;
             _rugbyTeamRepository = rugbyTeamRepository;
             _rugbyFixturesRepository = rugbyFixturerRepository;
+            _rugbyPlayerRepository = rugbyPlayerRepository;
             _schedulerTrackingRugbyTournamentRepository = schedulerTrackingRugbyTournamentRepository;
             _rugbyService = rugbyService;
         }
@@ -66,30 +73,58 @@
             var entitiesResponse =
                 _statsProzoneIngestService.IngestRugbyReferenceData(cancellationToken);
 
-            PersistVenuesInPublicSportsDataRepository(cancellationToken, entitiesResponse);
-            PersistTeamsInPublicSportsDataRepository(cancellationToken, entitiesResponse);
-            PersistRugbyTournamentsInRepositoryAsync(entitiesResponse, cancellationToken);
-
+            await PersistVenues(cancellationToken, entitiesResponse);
+            await PersistTeams(cancellationToken, entitiesResponse);
+            await PersistTournaments(cancellationToken, entitiesResponse);
+            await PersistPlayers(cancellationToken, entitiesResponse);
             await IngestRugbyTournamentSeasons(cancellationToken);
 
             _mongoDbRepository.Save(entitiesResponse);
+        }
 
-            // Save all the affected repositories.
-            await _rugbyVenueRepository.SaveAsync();
-            await _rugbyTeamRepository.SaveAsync();
-            await _rugbyTournamentRepository.SaveAsync();
+        private void PersistPlayersInPublicSportsDataRepository(CancellationToken cancellationToken, RugbyEntitiesResponse entitiesResponse)
+        {
+            var playersAlreadyInDb = _rugbyPlayerRepository.All().ToList();
+
+            foreach(var player in entitiesResponse.Entities.players)
+            {
+                var playerInDb = playersAlreadyInDb.Where(p => p.ProviderPlayerId == player.id).FirstOrDefault();
+
+                var newPlayer = new RugbyPlayer()
+                {
+                    FirstName = "",
+                    LastName = "",
+                    FullName = player.name,
+                    ProviderPlayerId = player.id,
+                    DataProvider = DataProvider.StatsProzone
+                };
+
+                if(playerInDb == null)
+                {
+                    _rugbyPlayerRepository.Add(newPlayer);
+                }
+                else
+                {
+                    playerInDb.FirstName = newPlayer.FirstName;
+                    playerInDb.LastName = newPlayer.LastName;
+                    playerInDb.FullName = newPlayer.FullName;
+
+                    _rugbyPlayerRepository.Update(playerInDb);
+                }
+            }
         }
 
         private void PersistRugbyTournamentsInSystemTrackingTable()
         {
             var activeTournaments = _rugbyService.GetActiveTournaments();
+            var seasonsAlreadyInDb = _schedulerTrackingRugbySeasonRepository.All().ToList();
 
             foreach (var tournament in activeTournaments)
             {
                 var currentSeasonId = _rugbyService.GetCurrentProviderSeasonIdForTournament(tournament.Id);
 
                 var seasonInDb =
-                    _schedulerTrackingRugbySeasonRepository
+                    seasonsAlreadyInDb
                         .Where(s => s.TournamentId == tournament.Id && s.RugbySeasonStatus == RugbySeasonStatus.InProgress).FirstOrDefault();
 
                 if (seasonInDb != null)
@@ -119,9 +154,11 @@
             if (cancellationToken.IsCancellationRequested)
                 return;
 
+            var teamsAlreadyInDb = _rugbyTeamRepository.All().ToList();
+
             foreach (var team in entitiesResponse.Entities.teams)
             {
-                var teamInDb = _rugbyTeamRepository.Where(t => t.ProviderTeamId == team.id).FirstOrDefault();
+                var teamInDb = teamsAlreadyInDb.Where(t => t.ProviderTeamId == team.id).FirstOrDefault();
 
                 if (teamInDb == null)
                 {
@@ -152,10 +189,12 @@
             if (cancellationToken.IsCancellationRequested)
                 return;
 
+            var venuesAlreadyInDb = _rugbyVenueRepository.All().ToList();
+
             foreach (var venue in entitiesResponse.Entities.venues)
             {
                 // Lookup in db
-                var venueInDb = _rugbyVenueRepository.Where(v => v.ProviderVenueId == venue.id).FirstOrDefault();
+                var venueInDb = venuesAlreadyInDb.Where(v => v.ProviderVenueId == venue.id).FirstOrDefault();
 
                 if (venueInDb == null)
                 {
@@ -233,7 +272,7 @@
                 return;
 
             var activeTournaments =
-                _rugbyTournamentRepository.Where(t => t.IsEnabled);
+                _rugbyTournamentRepository.Where(t => t.IsEnabled).ToList();
 
             foreach (var tournament in activeTournaments)
             {
@@ -241,10 +280,10 @@
                     _statsProzoneIngestService.IngestFixturesForTournament(
                         tournament, cancellationToken);
 
-                PersistFixturesData(cancellationToken, fixtures);
+                await PersistFixturesData(cancellationToken, fixtures);
 
                 // TODO: Also persist in SQL DB.
-                
+
                 PersistRugbySeasonDataInSchedulerTrackingRugbySeasonTable(fixtures);
                 PersistRugbyTournamentsInSystemTrackingTable();
                 _mongoDbRepository.Save(fixtures);
@@ -254,6 +293,38 @@
             
             await _schedulerTrackingRugbySeasonRepository.SaveAsync();
             await _schedulerTrackingRugbyTournamentRepository.SaveAsync();
+        }
+
+        private async Task PersistVenues(CancellationToken cancellationToken, RugbyEntitiesResponse entitiesResponse)
+        {
+            await VenuesSemaphore.WaitAsync();
+
+            try
+            {
+                PersistVenuesInPublicSportsDataRepository(cancellationToken, entitiesResponse);
+
+                await _rugbyVenueRepository.SaveAsync();
+            }
+            finally
+            {
+                VenuesSemaphore.Release();
+            }
+        }
+
+        private async Task PersistPlayers(CancellationToken cancellationToken, RugbyEntitiesResponse entitiesResponse)
+        {
+            await PlayersSemaphore.WaitAsync();
+
+            try
+            {
+                PersistPlayersInPublicSportsDataRepository(cancellationToken, entitiesResponse);
+
+                await _rugbyPlayerRepository.SaveAsync();
+            }
+            finally
+            {
+                PlayersSemaphore.Release();
+            }
         }
 
         private async Task PersistFixturesData(CancellationToken cancellationToken, RugbyFixturesResponse fixtures)
@@ -267,6 +338,7 @@
 
                 await _rugbyFixturesRepository.SaveAsync();
                 await _schedulerTrackingRugbyFixtureRepoitory.SaveAsync();
+                _mongoDbRepository.Save(fixtures);
             }
             finally
             {
@@ -274,13 +346,47 @@
             }
         }
 
+        private async Task PersistTournaments(CancellationToken cancellationToken, RugbyEntitiesResponse entitiesResponse)
+        {
+            await TournamentsSemaphore.WaitAsync();
+
+            try
+            {
+                PersistRugbyTournamentsInRepositoryAsync(entitiesResponse, cancellationToken);
+
+                await _rugbyTournamentRepository.SaveAsync();
+            }
+            finally
+            {
+                TournamentsSemaphore.Release();
+            }
+        }
+
+        private async Task PersistTeams(CancellationToken cancellationToken, RugbyEntitiesResponse entitiesResponse)
+        {
+            await TeamsSemaphore.WaitAsync();
+
+            try
+            {
+                PersistTeamsInPublicSportsDataRepository(cancellationToken, entitiesResponse);
+
+                await _rugbyTeamRepository.SaveAsync();
+            }
+            finally
+            {
+                TeamsSemaphore.Release();
+            }
+        }
+
         private void PersistRugbyFixturesToSchedulerTrackingRugbyFixturesTable(RugbyFixturesResponse fixtures)
         {
+            var fixturesAlreadyInDb = _rugbyFixturesRepository.All().ToList();
+
             foreach (var roundFixtures in fixtures.Fixtures.roundFixtures)
             {
                 foreach (var fixture in roundFixtures.gameFixtures)
                 {
-                    var fixtureInDb = _rugbyFixturesRepository.Where(f => f.ProviderFixtureId == fixture.gameId).FirstOrDefault();
+                    var fixtureInDb = fixturesAlreadyInDb.Where(f => f.ProviderFixtureId == fixture.gameId).FirstOrDefault();
                     var fixtureGuid = fixtureInDb.Id;
                     var tournamentGuid = fixtureInDb.RugbyTournament.Id;
 
@@ -594,19 +700,14 @@
 
         public async Task IngestFixturesForTournamentSeason(CancellationToken cancellationToken, int tournamentId, int seasonId)
         {
-            //if (cancellationToken.IsCancellationRequested)
-            //    return;
+            if (cancellationToken.IsCancellationRequested)
+                return;
 
-            //var fixtures =
-            //    _statsProzoneIngestService.IngestFixturesForTournamentSeason(
-            //        tournamentId, seasonId, cancellationToken);
+            var fixtures =
+                _statsProzoneIngestService.IngestFixturesForTournamentSeason(
+                    tournamentId, seasonId, cancellationToken);
 
-            //// TODO: Also persist in SQL DB.
-            //PersistRugbyFixturesToPublicSportsRepository(cancellationToken, fixtures);
-            //PersistRugbyFixturesToSchedulerTrackingRugbyFixturesTable(fixtures);
-
-            //await _rugbyFixturesRepository.SaveAsync();
-            //await _schedulerTrackingRugbyFixtureRepoitory.SaveAsync();
+            await PersistFixturesData(cancellationToken, fixtures);
         }
 
         public async Task IngestResultsForCurrentDayFixtures(CancellationToken cancellationToken)
@@ -666,7 +767,7 @@
         public async Task IngestOneMonthsFixturesForTournament(CancellationToken cancellationToken, int providerTournamentId)
         {
             var activeTournaments = 
-                    _rugbyTournamentRepository.Where(t => t.IsEnabled);
+                    _rugbyTournamentRepository.Where(t => t.IsEnabled).ToList();
 
             foreach (var tournament in activeTournaments)
             {
@@ -679,7 +780,7 @@
                 var upcomingFixtures = RemoveFixturesThatHaveBeenCompleted(fixtures);
                 RugbyFixturesResponse oneMonthsfixtures = RemoveFixturesMoreThanAMonthFromNow(upcomingFixtures);
 
-                PersistFixturesData(cancellationToken, oneMonthsfixtures);
+                await PersistFixturesData(cancellationToken, oneMonthsfixtures);
 
                 _mongoDbRepository.Save(fixtures);
             }

@@ -89,5 +89,10 @@ namespace SuperSportDataEngine.Tests.Common.Repositories.Test
         {
             return Task.FromResult<IEnumerable<T>>(_items.AsQueryable().Where(predicate));
         }
+
+        public IEnumerable<T> WhereIncludeLocal(Expression<Func<T, bool>> predicate)
+        {
+            return _items.AsQueryable().Where(predicate);
+        }
     }
 }
