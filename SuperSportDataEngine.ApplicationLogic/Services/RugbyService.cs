@@ -210,17 +210,18 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             var allFixtures = _rugbyFixturesRepository
                 .All()
                 .ToList()
-                .Where(t => t.RugbyTournament.Id == tournamentId);
+                .Where(t => t.RugbyTournament.Id == tournamentId &&
+                t.RugbyFixtureStatus == RugbyFixtureStatus.PreMatch);
 
             return allFixtures;
         }
 
-        public IEnumerable<RugbyFixture> GetTournamentFixtures(string tournamentName)
+        public IEnumerable<RugbyFixture> GetTournamentFixtures(string LeagueUrlName)
         {
             Guid tournamentId = _rugbyTournamentRepository
                 .All()
                 .ToList()
-                .Where(f => f.Slug == tournamentName)
+                .Where(f => f.Slug == LeagueUrlName)
                 .FirstOrDefault().Id;
 
             return GetTournamentFixtures(tournamentId);
