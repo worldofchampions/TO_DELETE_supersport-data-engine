@@ -19,6 +19,13 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed
             ConfigureFeedRequestHandler();
 
             ConfigureFeedMappings();
+
+            RegisterLegacyExceptionFilter();
+        }
+
+        private static void RegisterLegacyExceptionFilter()
+        {
+            GlobalConfiguration.Configuration.Filters.Add(new Filters.LegacyExceptionFilterAttribute());
         }
 
         private static void ConfigureResponseFormatters()

@@ -220,7 +220,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             Guid tournamentId = _rugbyTournamentRepository
                 .All()
                 .ToList()
-                .Where(f => f.Name == tournamentName)
+                .Where(f => f.Slug == tournamentName)
                 .FirstOrDefault().Id;
 
             return GetTournamentFixtures(tournamentId);

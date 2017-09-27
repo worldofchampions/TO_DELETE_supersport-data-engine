@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
+using SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.News;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby;
@@ -16,6 +17,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
     /// <summary>
     /// SuperSport Rugby Endpoints
     /// </summary>
+    [LegacyExceptionFilterAttribute]
     [RoutePrefix("rugby")]
     public class RugbyController : ApiController
     {
