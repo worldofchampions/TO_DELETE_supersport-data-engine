@@ -356,7 +356,6 @@
                     var teamB = _rugbyTeamRepository.Where(t => t.ProviderTeamId == team1.teamId).FirstOrDefault();
                     var newFixture = new RugbyFixture()
                     {
-                        LegacyFixtureId = fixtureId,
                         ProviderFixtureId = fixtureId,
                         StartDateTime = startTime,
                         RugbyVenue = _rugbyVenueRepository.Where(v => v.ProviderVenueId == fixture.venueId).FirstOrDefault(),

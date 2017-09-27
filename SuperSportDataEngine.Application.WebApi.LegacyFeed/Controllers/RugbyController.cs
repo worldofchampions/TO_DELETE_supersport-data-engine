@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
+using SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.News;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,6 +17,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
     /// <summary>
     /// SuperSport Rugby Endpoints
     /// </summary>
+    [LegacyExceptionFilterAttribute]
     [RoutePrefix("rugby")]
     public class RugbyController : ApiController
     {
@@ -60,10 +63,20 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("{category}/fixtures")]
-        [ResponseType(typeof(List<FixtureModel>))]
-        public IHttpActionResult GetFixtures()
+        [ResponseType(typeof(List<Fixture>))]
+        public async Task<IHttpActionResult> GetFixtures(string category)
         {
-            return Ok();
+
+            var cacheKey = $"rugby/{category}/fixtures";
+            var fixtures = await _cache.GetAsync<IEnumerable<Fixture>>(cacheKey);
+
+            if (fixtures == null)
+            {
+                fixtures = _rugbyService.GetTournamentFixtures(category).Select(log => Mapper.Map<Fixture>(log));
+                _cache.Add(cacheKey, fixtures);
+            }
+
+            return Ok(fixtures.ToList());
         }
 
         /// <summary>

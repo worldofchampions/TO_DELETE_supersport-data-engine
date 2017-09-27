@@ -113,6 +113,10 @@
     <Compile Include="Migrations\201709261331301_Added_grouped_logs_tables_and_other_related_changes.Designer.cs">
       <DependentUpon>201709261331301_Added_grouped_logs_tables_and_other_related_changes.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201709270913151_Use_int_For_LegacyFixtureId.cs" />
+    <Compile Include="Migrations\201709270913151_Use_int_For_LegacyFixtureId.Designer.cs">
+      <DependentUpon>201709270913151_Use_int_For_LegacyFixtureId.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -178,6 +182,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201709261331301_Added_grouped_logs_tables_and_other_related_changes.resx">
       <DependentUpon>201709261331301_Added_grouped_logs_tables_and_other_related_changes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201709270913151_Use_int_For_LegacyFixtureId.resx">
+      <DependentUpon>201709270913151_Use_int_For_LegacyFixtureId.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

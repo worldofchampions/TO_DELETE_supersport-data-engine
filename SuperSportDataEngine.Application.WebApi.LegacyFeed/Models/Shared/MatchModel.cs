@@ -3,14 +3,14 @@ using System.Collections.Generic;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models
 {
-    [Serializable]
+  //  [Serializable]
     public class MatchModel
     {
         public string LeagueName { get; set; }
         public string LeagueShortName { get; set; }
         public string LeagueUrlName { get; set; }
         public int LeagueId { get; set; }
-        public int MatchID { get; set; }
+        public long MatchID { get; set; }
         public string HomeTeam { get; set; }
         public string AwayTeam { get; set; }
         public string HomeTeamShortName { get; set; }
