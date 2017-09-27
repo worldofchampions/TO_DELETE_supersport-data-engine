@@ -9,7 +9,7 @@
         public Guid Id { get; set; }
 
         /// <summary> A unique int record identifier for legacy purposes. </summary>
-        public long LegacyFixtureId { get; set; }
+        public int LegacyFixtureId { get; set; }
 
         /// <summary> The provider's record identifier. </summary>
         public long ProviderFixtureId { get; set; }
