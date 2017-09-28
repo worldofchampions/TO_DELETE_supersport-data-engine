@@ -721,11 +721,16 @@
                         tournament.ProviderTournamentId, activeSeasonIdForTournament);
 
                     // TODO: Also persist in SQL DB.
-                    //await PersistGroupedLogs(cancellationToken, logs);
+                    await PersistGroupedLogs(cancellationToken, logs);
 
-                    //_mongoDbRepository.Save(logs);
+                    _mongoDbRepository.Save(logs);
                 }
             }
+        }
+
+        private async Task PersistGroupedLogs(CancellationToken cancellationToken, RugbyGroupedLogsResponse logs)
+        {
+            
         }
 
         private void PersistRugbyTournamentsInRepositoryAsync(RugbyEntitiesResponse entitiesResponse, CancellationToken cancellationToken)

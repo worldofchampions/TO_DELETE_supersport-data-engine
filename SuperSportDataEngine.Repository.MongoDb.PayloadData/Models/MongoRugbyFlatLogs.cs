@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Models.RugbyLogs
+namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Models.RugbyLogsFlat
 {
     public class RecentFormList
     {
@@ -72,7 +72,7 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Models.RugbyLogs
         public int? homeLosses { get; set; }
     }
 
-    public class MongoRugbyLogs
+    public class MongoRugbyFlatLogs
     {
         [BsonElement("request_time")]
         public DateTime RequestTime { get; set; }
