@@ -24,7 +24,7 @@
             modelBuilder.Entity<RugbyGroupedLog>().HasKey(x => new { x.RugbyTournamentId, x.RugbySeasonId, x.RoundNumber, x.RugbyTeamId, x.RugbyLogGroupId });
 
             modelBuilder.Entity<RugbyLogGroup>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
-            modelBuilder.Entity<RugbyLogGroup>().Property(x => x.ProviderLogGroupId).HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Seek_ProviderLogGroupId")));
+            modelBuilder.Entity<RugbyLogGroup>().Property(x => x.ProviderLogGroupId).IsOptional();
 
             modelBuilder.Entity<RugbyPlayer>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
             modelBuilder.Entity<RugbyPlayer>().Property(x => x.ProviderPlayerId).HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Seek_ProviderPlayerId")));

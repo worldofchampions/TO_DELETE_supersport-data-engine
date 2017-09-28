@@ -1,11 +1,11 @@
-﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyLogs;
+﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyFlatLogs;
 using System;
 
 namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.ResponseModels
 {
-    public class RugbyLogsResponse
+    public class RugbyFlatLogsResponse
     {
-        public RugbyLogs RugbyLogs { get; set; }
+        public RugbyFlatLogs RugbyFlatLogs { get; set; }
         public DateTime RequestTime { get; set; }
         public DateTime ResponseTime { get; set; }
     }

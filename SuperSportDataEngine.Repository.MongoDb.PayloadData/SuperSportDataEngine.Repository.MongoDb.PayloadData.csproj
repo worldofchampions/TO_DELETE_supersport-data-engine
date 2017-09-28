@@ -60,10 +60,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MappingProfiles\RugbyFixturesMappingProfile.cs" />
-    <Compile Include="MappingProfiles\RugbyLogsMappingProfile.cs" />
+    <Compile Include="MappingProfiles\RugbyGroupedLogsMappingProfile.cs" />
+    <Compile Include="MappingProfiles\RugbyFlatLogsMappingProfile.cs" />
     <Compile Include="Models\MongoRugbyEntities.cs" />
     <Compile Include="Models\MongoRugbyFixtures.cs" />
-    <Compile Include="Models\MongoRugbyLogs.cs" />
+    <Compile Include="Models\MongoRugbyFlatLogs.cs" />
+    <Compile Include="Models\MongoRugbyGroupedLogs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\MongoDbRugbyRepository.cs" />
     <Compile Include="MappingProfiles\RugbyEntitiesMappingProfile.cs" />
