@@ -17,20 +17,33 @@
         public Guid RugbyTeamId { get; set; }
 
         public int LogPosition { get; set; }
+
         public int GamesPlayed { get; set; }
+
         public int GamesWon { get; set; }
+
         public int GamesDrawn { get; set; }
+
         public int GamesLost { get; set; }
+
         public int PointsFor { get; set; }
+
         public int PointsAgainst { get; set; }
+
         public int PointsDifference { get; set; }
+
         public int TournamentPoints { get; set; }
+
         public int BonusPoints { get; set; }
+
         public int TriesFor { get; set; }
+
         public int TriesAgainst { get; set; }
 
         public virtual RugbyTournament RugbyTournament { get; set; }
+
         public virtual RugbySeason RugbySeason { get; set; }
+
         public virtual RugbyTeam RugbyTeam { get; set; }
     }
 }

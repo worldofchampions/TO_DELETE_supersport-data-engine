@@ -9,6 +9,7 @@
         {
         }
 
+        public DbSet<RugbyCommentary> RugbyCommentaries { get; set; }
         public DbSet<RugbyFixture> RugbyFixtures { get; set; }
         public DbSet<RugbyFlatLog> RugbyFlatLogs { get; set; }
         public DbSet<RugbyGroupedLog> RugbyGroupedLogs { get; set; }
