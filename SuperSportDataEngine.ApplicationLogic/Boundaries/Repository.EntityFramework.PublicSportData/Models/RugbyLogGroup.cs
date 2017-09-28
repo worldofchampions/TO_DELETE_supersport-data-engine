@@ -9,7 +9,7 @@
         public Guid Id { get; set; }
 
         /// <summary> The provider's record identifier. </summary>
-        public int ProviderLogGroupId { get; set; }
+        public int? ProviderLogGroupId { get; set; }
 
         public DataProvider DataProvider { get; set; }
 

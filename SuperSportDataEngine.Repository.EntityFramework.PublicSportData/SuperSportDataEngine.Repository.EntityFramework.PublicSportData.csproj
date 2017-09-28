@@ -121,6 +121,10 @@
     <Compile Include="Migrations\201709280717260_Added_RugbyCommentary_table.Designer.cs">
       <DependentUpon>201709280717260_Added_RugbyCommentary_table.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201709281002059_Make_ProviderLogGroupId_Nullable_Int_And_Optional.cs" />
+    <Compile Include="Migrations\201709281002059_Make_ProviderLogGroupId_Nullable_Int_And_Optional.Designer.cs">
+      <DependentUpon>201709281002059_Make_ProviderLogGroupId_Nullable_Int_And_Optional.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -192,6 +196,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201709280717260_Added_RugbyCommentary_table.resx">
       <DependentUpon>201709280717260_Added_RugbyCommentary_table.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201709281002059_Make_ProviderLogGroupId_Nullable_Int_And_Optional.resx">
+      <DependentUpon>201709281002059_Make_ProviderLogGroupId_Nullable_Int_And_Optional.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
