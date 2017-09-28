@@ -15,6 +15,7 @@
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
     using System.Text.RegularExpressions;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models.Enums;
 
     public class RugbyIngestWorkerService : IRugbyIngestWorkerService
     {
@@ -331,12 +332,12 @@
             }
         }
 
-        private async Task PersistFlatLogs(CancellationToken cancellationToken, RugbyLogsResponse logsResponse)
+        private async Task PersistFlatLogs(CancellationToken cancellationToken, RugbyFlatLogsResponse flatLogsResponse)
         {
             await LogsSemaphore.WaitAsync();
             try
             {
-                PersistLogsInPublicSportsDataRepository(cancellationToken, logsResponse);
+                PersistLogsInPublicSportsDataRepository(cancellationToken, flatLogsResponse);
                 Task.WaitAll(_rugbyFlatLogsRepository.SaveAsync());
             }
             finally
@@ -345,15 +346,18 @@
             }
         }
 
-        private void PersistLogsInPublicSportsDataRepository(CancellationToken cancellationToken, RugbyLogsResponse logsResponse)
+        private void PersistLogsInPublicSportsDataRepository(CancellationToken cancellationToken, RugbyFlatLogsResponse logsResponse)
         {
-            var tournamentId = logsResponse.RugbyLogs.competitionId;
-            var seasonId = logsResponse.RugbyLogs.seasonId;
-            var roundNumber = logsResponse.RugbyLogs.roundNumber;
+            var tournamentId = logsResponse.RugbyFlatLogs.competitionId;
+            var seasonId = logsResponse.RugbyFlatLogs.seasonId;
+            var roundNumber = logsResponse.RugbyFlatLogs.roundNumber;
 
             IList<RugbyFlatLog> laddersAlreadyInDb = _rugbyFlatLogsRepository.All().ToList();
 
-            foreach (var position in logsResponse.RugbyLogs.ladderposition)
+            if (logsResponse.RugbyFlatLogs.ladderposition == null)
+                return;
+
+            foreach (var position in logsResponse.RugbyFlatLogs.ladderposition)
             {
                 var ladderEntryInDb =
                     laddersAlreadyInDb.Where(
@@ -672,17 +676,7 @@
             IList<RugbyTournament> activeTournaments =
                 _rugbyTournamentRepository.Where(t => t.IsEnabled).ToList();
 
-            foreach (var tournament in activeTournaments)
-            {
-                var logs =
-                    _statsProzoneIngestService.IngestLogsForTournament(
-                        tournament, cancellationToken);
-
-                // TODO: Also persist in SQL DB.
-                await PersistFlatLogs(cancellationToken, logs);
-
-                _mongoDbRepository.Save(logs);
-            }
+            await IngestLogsHelper(activeTournaments, cancellationToken);
         }
 
         public async Task IngestLogsForCurrentTournaments(CancellationToken cancellationToken)
@@ -693,15 +687,44 @@
             var currentTournaments =
                 _rugbyService.GetCurrentTournaments();
 
-            foreach (var tournament in currentTournaments)
+            await IngestLogsHelper(currentTournaments, cancellationToken);
+        }
+
+        public async Task IngestLogsHelper(IEnumerable<RugbyTournament> tournaments, CancellationToken cancellationToken)
+        {
+            var seasons = _rugbySeasonRepository.All().ToList();
+
+            foreach (var tournament in tournaments)
             {
-                var logs =
-                    _statsProzoneIngestService.IngestLogsForTournament(
-                        tournament, cancellationToken);
+                int activeSeasonIdForTournament =
+                        _rugbyService.GetCurrentProviderSeasonIdForTournament(tournament.Id);
 
-                // TODO: Also persist in SQL DB.
+                var logType = seasons.Where(s => s.ProviderSeasonId == activeSeasonIdForTournament && 
+                                                 s.RugbyTournament.ProviderTournamentId == tournament.ProviderTournamentId)
+                                     .First().RugbyLogType;
 
-                _mongoDbRepository.Save(logs);
+                if (logType == RugbyLogType.FlatLogs)
+                {
+                    RugbyFlatLogsResponse logs =
+                    _statsProzoneIngestService.IngestFlatLogsForTournament(
+                        tournament.ProviderTournamentId, activeSeasonIdForTournament);
+
+                    // TODO: Also persist in SQL DB.
+                    await PersistFlatLogs(cancellationToken, logs);
+
+                    _mongoDbRepository.Save(logs);
+                }
+                else
+                {
+                    RugbyGroupedLogsResponse logs =
+                    _statsProzoneIngestService.IngestGroupedLogsForTournament(
+                        tournament.ProviderTournamentId, activeSeasonIdForTournament);
+
+                    // TODO: Also persist in SQL DB.
+                    //await PersistGroupedLogs(cancellationToken, logs);
+
+                    //_mongoDbRepository.Save(logs);
+                }
             }
         }
 
@@ -925,7 +948,7 @@
             if (cancellationToken.IsCancellationRequested)
                 return;
 
-            var results = await _statsProzoneIngestService.IngestLogsForTournament(providerTournamentId, seasonId);
+            var results = _statsProzoneIngestService.IngestFlatLogsForTournament(providerTournamentId, seasonId);
 
             // TODO: Also persist in SQL DB.
         }

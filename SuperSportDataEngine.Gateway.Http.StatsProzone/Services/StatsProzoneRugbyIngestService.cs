@@ -8,13 +8,12 @@
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.ResponseModels;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
     using System.Threading;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyFixtures;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyLogs;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyEntities;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models;
     using System.Threading.Tasks;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyFlatLogs;
 
     public class StatsProzoneRugbyIngestService : IStatsProzoneRugbyIngestService
     {
@@ -92,7 +91,7 @@
             }
         }
 
-        public RugbyLogsResponse IngestLogsForTournament(RugbyTournament tournament, CancellationToken cancellationToken)
+        public RugbyFlatLogsResponse IngestFlatLogsForTournament(RugbyTournament tournament, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
                 return null;
@@ -109,7 +108,7 @@
             request.ContentType = "application/json; charset=UTF-8";
 
             var logsResponse =
-                new RugbyLogsResponse()
+                new RugbyFlatLogsResponse()
                 {
                     RequestTime = DateTime.Now
                 };
@@ -119,8 +118,8 @@
                 using (Stream responseStream = response.GetResponseStream())
                 {
                     StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
-                    logsResponse.RugbyLogs =
-                        JsonConvert.DeserializeObject<RugbyLogs>(reader.ReadToEnd());
+                    logsResponse.RugbyFlatLogs =
+                        JsonConvert.DeserializeObject<RugbyFlatLogs>(reader.ReadToEnd());
 
                     // Not to be confused with the DateTime.Now call more above.
                     // This might be delayed due to provider being slow to process request,
@@ -216,19 +215,20 @@
             }
         }
 
-        public async Task<RugbyLogsResponse> IngestLogsForTournament(int competitionId, int seasonId)
+        public RugbyFlatLogsResponse IngestFlatLogsForTournament(int competitionId, int seasonId)
         {
             WebRequest request = GetWebRequestForLogsEndpoint(competitionId, seasonId);
 
-            var logsResponse = new RugbyLogsResponse() { RequestTime = DateTime.Now };
+            var logsResponse = new RugbyFlatLogsResponse() { RequestTime = DateTime.Now };
 
-            using (WebResponse response = await request.GetResponseAsync())
+            using (WebResponse response = request.GetResponse())
             {
                 using (Stream responseStream = response.GetResponseStream())
                 {
                     StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
-
-                    logsResponse.RugbyLogs = JsonConvert.DeserializeObject<RugbyLogs>(reader.ReadToEnd());
+                    string s = reader.ReadToEnd();
+                    logsResponse.RugbyFlatLogs =
+                        JsonConvert.DeserializeObject<RugbyFlatLogs>(s);
 
                     logsResponse.ResponseTime = DateTime.Now;
 
@@ -236,6 +236,29 @@
                 }
             }
         }
+
+        public RugbyGroupedLogsResponse IngestGroupedLogsForTournament(int competitionId, int seasonId)
+        {
+            WebRequest request = GetWebRequestForLogsEndpoint(competitionId, seasonId);
+
+            var logsResponse = new RugbyGroupedLogsResponse() { RequestTime = DateTime.Now };
+
+            using (WebResponse response = request.GetResponse())
+            {
+                using (Stream responseStream = response.GetResponseStream())
+                {
+                    StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
+                    string s = reader.ReadToEnd();
+                    logsResponse.RugbyGroupedLogs =
+                        JsonConvert.DeserializeObject<RugbyGroupedLogs>(s);
+
+                    logsResponse.ResponseTime = DateTime.Now;
+
+                    return logsResponse;
+                }
+            }
+        }
+
         private static WebRequest GetWebRequestForFixturesEndpoint(int competionId, int seasonId, int? roundId)
         {
             var baseUrl = "http://rugbyunion-api.stats.com/api/ru/competitions/fixtures/";
@@ -289,7 +312,7 @@
 
         private static WebRequest GetWebRequestForLogsEndpoint(int competitionId, int seasonId)
         {
-            var baseUrl = "http://rugbyunion-api.stats.com/api/RU/competitions/ladder";
+            var baseUrl = "http://rugbyunion-api.stats.com/api/RU/competitions/ladder/";
 
             var request = WebRequest.Create(baseUrl + competitionId + "/" + seasonId);
 

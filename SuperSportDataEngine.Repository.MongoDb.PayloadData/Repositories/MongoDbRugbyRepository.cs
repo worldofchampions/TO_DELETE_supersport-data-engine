@@ -59,14 +59,14 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
             collection.InsertOneAsync(mongoFixtures);
         }
 
-        public void Save(RugbyLogsResponse logsResponse)
+        public void Save(RugbyFlatLogsResponse logsResponse)
         {
             Mapper.Initialize(c => c.AddProfile<RugbyLogsMappingProfile>());
 
             // Map the provider data to a type mongo understands.
             var mongoLogs =
-                Mapper.Map<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyLogs.RugbyLogs, MongoRugbyLogs>(
-                    logsResponse.RugbyLogs);
+                Mapper.Map<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyFlatLogs.RugbyFlatLogs, MongoRugbyLogs>(
+                    logsResponse.RugbyFlatLogs);
 
             mongoLogs.RequestTime = logsResponse.RequestTime;
             mongoLogs.ResponseTime = logsResponse.ResponseTime;

@@ -7,9 +7,9 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.MappingProfiles
     {
         public RugbyLogsMappingProfile()
         {
-            CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyLogs.RugbyLogs, MongoRugbyLogs>().ReverseMap();
-            CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyLogs.RecentFormList, RecentFormList>().ReverseMap();
-            CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyLogs.Ladderposition, Ladderposition>().ReverseMap();
+            CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyFlatLogs.RugbyFlatLogs, MongoRugbyLogs>().ReverseMap();
+            CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyFlatLogs.RecentFormList, RecentFormList>().ReverseMap();
+            CreateMap<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyFlatLogs.Ladderposition, Ladderposition>().ReverseMap();
         }
     }
 }
