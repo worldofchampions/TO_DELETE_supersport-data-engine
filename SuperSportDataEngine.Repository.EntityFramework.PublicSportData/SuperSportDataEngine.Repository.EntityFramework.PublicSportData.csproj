@@ -125,6 +125,14 @@
     <Compile Include="Migrations\201709281002059_Make_ProviderLogGroupId_Nullable_Int_And_Optional.Designer.cs">
       <DependentUpon>201709281002059_Make_ProviderLogGroupId_Nullable_Int_And_Optional.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201709281027158_Removed_Annotation_On_ProviderLogGroupId.cs" />
+    <Compile Include="Migrations\201709281027158_Removed_Annotation_On_ProviderLogGroupId.Designer.cs">
+      <DependentUpon>201709281027158_Removed_Annotation_On_ProviderLogGroupId.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201709281034310_Add_Reference_To_RugbySeason_From_RugbyLogGroup.cs" />
+    <Compile Include="Migrations\201709281034310_Add_Reference_To_RugbySeason_From_RugbyLogGroup.Designer.cs">
+      <DependentUpon>201709281034310_Add_Reference_To_RugbySeason_From_RugbyLogGroup.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -199,6 +207,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201709281002059_Make_ProviderLogGroupId_Nullable_Int_And_Optional.resx">
       <DependentUpon>201709281002059_Make_ProviderLogGroupId_Nullable_Int_And_Optional.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201709281027158_Removed_Annotation_On_ProviderLogGroupId.resx">
+      <DependentUpon>201709281027158_Removed_Annotation_On_ProviderLogGroupId.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201709281034310_Add_Reference_To_RugbySeason_From_RugbyLogGroup.resx">
+      <DependentUpon>201709281034310_Add_Reference_To_RugbySeason_From_RugbyLogGroup.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

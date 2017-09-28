@@ -20,5 +20,7 @@
 
         /// <summary> A CMS driven value. </summary>
         public RugbyLogGroup ParentRugbyLogGroup { get; set; }
+
+        public virtual RugbySeason RugbySeason { get; set; }
     }
 }
