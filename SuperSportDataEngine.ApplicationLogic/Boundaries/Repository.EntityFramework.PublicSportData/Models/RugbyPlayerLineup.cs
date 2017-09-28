@@ -27,7 +27,9 @@
         public bool IsSubstitute { get; set; }
 
         public virtual RugbyFixture RugbyFixture { get; set; }
+
         public virtual RugbyTeam RugbyTeam { get; set; }
+
         public virtual RugbyPlayer RugbyPlayer { get; set; }
     }
 }

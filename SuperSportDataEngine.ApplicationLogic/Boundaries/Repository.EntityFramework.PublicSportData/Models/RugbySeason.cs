@@ -24,7 +24,7 @@
         /// <summary> A provider driven value. </summary>
         public DateTimeOffset EndDateTime { get; set; }
 
-        /// <summary> A CMS driven value to set the LogType. </summary>
+        /// <summary> A CMS driven value to set the corresponding RugbyLogType. </summary>
         public RugbyLogType RugbyLogType { get; set; }
 
         public DataProvider DataProvider { get; set; }
