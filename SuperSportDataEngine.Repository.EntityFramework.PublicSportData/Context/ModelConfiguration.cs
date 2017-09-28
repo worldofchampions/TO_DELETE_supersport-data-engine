@@ -9,6 +9,11 @@
     {
         internal static void ApplyFluentApiConfigurations(DbModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<RugbyCommentary>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+            modelBuilder.Entity<RugbyCommentary>().Property(x => x.GameTimeDisplayHoursMinutesSeconds).IsRequired();
+            modelBuilder.Entity<RugbyCommentary>().Property(x => x.GameTimeDisplayMinutesSeconds).IsRequired();
+            modelBuilder.Entity<RugbyCommentary>().Property(x => x.CommentaryText).IsRequired();
+
             modelBuilder.Entity<RugbyFixture>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
             modelBuilder.Entity<RugbyFixture>().Property(x => x.LegacyFixtureId).HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Unique_LegacyFixtureId") { IsUnique = true }))
                 .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
