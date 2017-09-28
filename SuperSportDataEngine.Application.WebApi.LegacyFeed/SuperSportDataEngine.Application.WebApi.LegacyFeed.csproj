@@ -220,6 +220,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\AppSettings\SuperSportDataApplicationSettingsHelper.cs" />
+    <Compile Include="Models\Mappers\LegacyMatchModelMapperProfile.cs" />
     <Compile Include="Models\Mappers\LegacyResultMapperProfile.cs" />
     <Compile Include="Models\Shared\AlternateCommentsModel.cs" />
     <Compile Include="Models\Shared\AuthModel.cs" />

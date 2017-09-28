@@ -15,6 +15,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.App_Start
                 cfg.AddProfile<LogModelMapperProfile>();
                 cfg.AddProfile<LogEntityMapperProfile>();
                 cfg.AddProfile<LegacyAuthMappingProfile>();
+                cfg.AddProfile<LegacyMatchModelMapperProfile>();
                 cfg.AddProfile<LegacyFixtureMapperProfile>();
                 cfg.AddProfile<LegacyResultMapperProfile>();
             });
