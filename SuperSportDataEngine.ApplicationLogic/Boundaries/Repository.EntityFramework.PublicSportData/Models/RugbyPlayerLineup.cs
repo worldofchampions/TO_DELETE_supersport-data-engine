@@ -17,7 +17,7 @@
         public int ShirtNumber { get; set; }
 
         /// <summary> A provider driven value. </summary>
-        public int PositionName { get; set; }
+        public string PositionName { get; set; }
 
         /// <summary> A provider driven value. </summary>
         public bool IsCaptain { get; set; }

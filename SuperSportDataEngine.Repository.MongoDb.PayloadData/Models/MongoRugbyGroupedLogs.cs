@@ -55,7 +55,7 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Models.RugbyLogsGr
         [BsonElement("season_form")]
         public string seasonForm { get; set; }
         [BsonElement("group")]
-        public int group { get; set; }
+        public int? group { get; set; }
         [BsonElement("group_name")]
         public string groupName { get; set; }
         [BsonElement("tries_for")]

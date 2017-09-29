@@ -133,6 +133,10 @@
     <Compile Include="Migrations\201709281034310_Add_Reference_To_RugbySeason_From_RugbyLogGroup.Designer.cs">
       <DependentUpon>201709281034310_Add_Reference_To_RugbySeason_From_RugbyLogGroup.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201709291302345_Changed_PositionName_From_Int_To_String.cs" />
+    <Compile Include="Migrations\201709291302345_Changed_PositionName_From_Int_To_String.Designer.cs">
+      <DependentUpon>201709291302345_Changed_PositionName_From_Int_To_String.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -213,6 +217,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201709281034310_Add_Reference_To_RugbySeason_From_RugbyLogGroup.resx">
       <DependentUpon>201709281034310_Add_Reference_To_RugbySeason_From_RugbyLogGroup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201709291302345_Changed_PositionName_From_Int_To_String.resx">
+      <DependentUpon>201709291302345_Changed_PositionName_From_Int_To_String.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

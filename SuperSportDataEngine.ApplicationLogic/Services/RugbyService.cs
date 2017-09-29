@@ -118,12 +118,31 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         {
             DateTimeOffset now = DateTimeOffset.UtcNow;
             DateTimeOffset nowPlus15Minutes = DateTimeOffset.UtcNow.AddMinutes(15);
-            return 
+
+            // Fake a game being played live! Specify the providerFixtureId
+            //return
+            //    _rugbyFixturesRepository
+            //        .Where(f => f.RugbyTournament.Id == tournamentId && f.ProviderFixtureId == 20171211210);
+
+            return
                 _rugbyFixturesRepository
                     .Where(
                         fixture => fixture.RugbyTournament.Id == tournamentId &&
-                        ( (fixture.RugbyFixtureStatus != RugbyFixtureStatus.Final &&
-                           fixture.StartDateTime <= nowPlus15Minutes) ||
+                        ((fixture.RugbyFixtureStatus != RugbyFixtureStatus.Final &&
+                          fixture.StartDateTime <= nowPlus15Minutes && fixture.StartDateTime >= now) ||
+                         (fixture.RugbyFixtureStatus == RugbyFixtureStatus.InProgress)));
+        }
+
+        public IEnumerable<RugbyFixture> GetLiveFixtures()
+        {
+            DateTimeOffset now = DateTimeOffset.UtcNow;
+            DateTimeOffset nowPlus15Minutes = DateTimeOffset.UtcNow.AddMinutes(15);
+            return
+                _rugbyFixturesRepository
+                    .Where(
+                        fixture =>
+                        ((fixture.RugbyFixtureStatus != RugbyFixtureStatus.Final &&
+                           fixture.StartDateTime <= nowPlus15Minutes && fixture.StartDateTime >= now) ||
                           (fixture.RugbyFixtureStatus == RugbyFixtureStatus.InProgress)));
         }
 
