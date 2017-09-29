@@ -34,7 +34,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsPro
         public RecentFormList recentFormList { get; set; }
         public string recentForm { get; set; }
         public string seasonForm { get; set; }
-        public int group { get; set; }
+        public int? group { get; set; }
         public string groupName { get; set; }
         public int triesFor { get; set; }
         public int triesConceded { get; set; }

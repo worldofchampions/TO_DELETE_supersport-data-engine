@@ -122,8 +122,21 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 _rugbyFixturesRepository
                     .Where(
                         fixture => fixture.RugbyTournament.Id == tournamentId &&
-                        ( (fixture.RugbyFixtureStatus != RugbyFixtureStatus.Final &&
-                           fixture.StartDateTime <= nowPlus15Minutes) ||
+                        ((fixture.RugbyFixtureStatus != RugbyFixtureStatus.Final &&
+                          fixture.StartDateTime <= nowPlus15Minutes && fixture.StartDateTime >= now) ||
+                         (fixture.RugbyFixtureStatus == RugbyFixtureStatus.InProgress)));
+        }
+
+        public IEnumerable<RugbyFixture> GetLiveFixtures()
+        {
+            DateTimeOffset now = DateTimeOffset.UtcNow;
+            DateTimeOffset nowPlus15Minutes = DateTimeOffset.UtcNow.AddMinutes(15);
+            return
+                _rugbyFixturesRepository
+                    .Where(
+                        fixture =>
+                        ((fixture.RugbyFixtureStatus != RugbyFixtureStatus.Final &&
+                           fixture.StartDateTime <= nowPlus15Minutes && fixture.StartDateTime >= now) ||
                           (fixture.RugbyFixtureStatus == RugbyFixtureStatus.InProgress)));
         }
 
