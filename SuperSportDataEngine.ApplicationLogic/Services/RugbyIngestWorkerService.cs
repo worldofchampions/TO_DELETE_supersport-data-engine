@@ -16,8 +16,6 @@
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
     using System.Text.RegularExpressions;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models.Enums;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyFlatLogs;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyGroupedLogs;
 
     public class RugbyIngestWorkerService : IRugbyIngestWorkerService
     {
@@ -34,6 +32,7 @@
         private readonly IBaseEntityFrameworkRepository<RugbyFlatLog> _rugbyFlatLogsRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyLogGroup> _rugbyLogGroupRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyGroupedLog> _rugbyGroupedLogsRepository;
+        private readonly IBaseEntityFrameworkRepository<RugbyPlayerLineup> _rugbyPlayerLineupsRepository;
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> _schedulerTrackingRugbyTournamentRepository;
         private readonly IRugbyService _rugbyService;
 
@@ -58,6 +57,7 @@
             IBaseEntityFrameworkRepository<RugbyFlatLog> rugbyFlatLogsRepository,
             IBaseEntityFrameworkRepository<RugbyLogGroup> rugbyLogGroupRepository,
             IBaseEntityFrameworkRepository<RugbyGroupedLog> rugbyGroupedLogsRepository,
+            IBaseEntityFrameworkRepository<RugbyPlayerLineup> rugbyPlayerLineupsRepository,
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> schedulerTrackingRugbyTournamentRepository,
             IRugbyService rugbyService)
         {
@@ -74,6 +74,7 @@
             _rugbyFlatLogsRepository = rugbyFlatLogsRepository;
             _rugbyLogGroupRepository = rugbyLogGroupRepository;
             _rugbyGroupedLogsRepository = rugbyGroupedLogsRepository;
+            _rugbyPlayerLineupsRepository = rugbyPlayerLineupsRepository;
             _schedulerTrackingRugbyTournamentRepository = schedulerTrackingRugbyTournamentRepository;
             _rugbyService = rugbyService;
         }
@@ -81,6 +82,11 @@
         public async Task IngestReferenceData(CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
+                return;
+
+            // If there is a live game happening while we are ingesting entities,
+            // Stop ingesting entities. It might interfere with the repo access.
+            if (_rugbyService.GetLiveFixtures().ToList().Any())
                 return;
 
             var entitiesResponse =
@@ -1031,15 +1037,83 @@
         {
             while (true)
             {
-                var fixtureResponse =
-                        await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, providerFixtureId);
+                var matchStatsResponse =
+                        await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, 20171211210);
 
-                if (fixtureResponse.RugbyMatchStats.gameState == "Game End")
+                await IngestPlayerLineups(cancellationToken, matchStatsResponse);
+
+                if (matchStatsResponse.RugbyMatchStats.gameState == "Game End")
                     break;
                 // Check if should stop looping?
 
                 Thread.Sleep(TimeSpan.FromSeconds(10));
             }
+        }
+
+        private async Task IngestPlayerLineups(CancellationToken cancellationToken, RugbyMatchStatsResponse matchStatsResponse)
+        {
+            // Do we have provider info?
+            if (matchStatsResponse.RugbyMatchStats.teams.teamsMatch.Count == 0)
+                return;
+
+            foreach(var squad in matchStatsResponse.RugbyMatchStats.teams.teamsMatch)
+            {
+                var lineup = squad.teamLineup;
+                var players = lineup.teamPlayer;
+                foreach(var player in players)
+                {
+                    var playerId = player.playerId;
+                    var dbPlayer = _rugbyPlayerRepository.Where(p => p.ProviderPlayerId == playerId).FirstOrDefault();
+
+                    var fixtureId = matchStatsResponse.RugbyMatchStats.gameId;
+                    var dbFixture = _rugbyFixturesRepository.Where(f => f.ProviderFixtureId == fixtureId).FirstOrDefault();
+
+                    var teamId = squad.teamId;
+                    var dbTeam = _rugbyTeamRepository.Where(t => t.ProviderTeamId == teamId).FirstOrDefault();
+
+                    var shirtNumber = player.shirtNum;
+                    var positionName = player.playerPosition;
+
+                    var isCaptain = player.isCaptain == null ? false : (bool)player.isCaptain;
+                    var isSubstitute = player.shirtNum == 16;
+
+                    var dbEntry = 
+                            _rugbyPlayerLineupsRepository
+                                .Where(l => 
+                                    l.RugbyPlayerId == dbPlayer.Id &&
+                                    l.RugbyFixtureId == dbFixture.Id &&
+                                    l.RugbyTeamId == dbTeam.Id).FirstOrDefault();
+
+                    if(dbEntry == null)
+                    {
+                        var newEntry = new RugbyPlayerLineup()
+                        {
+                            RugbyPlayerId = dbPlayer.Id,
+                            RugbyFixtureId = dbFixture.Id,
+                            RugbyTeamId = dbTeam.Id,
+                            RugbyFixture = dbFixture,
+                            RugbyTeam = dbTeam,
+                            RugbyPlayer = dbPlayer,
+                            IsCaptain = isCaptain,
+                            IsSubstitute = isSubstitute,
+                            PositionName = positionName,
+                            ShirtNumber = shirtNumber
+                        };
+
+                        _rugbyPlayerLineupsRepository.Add(newEntry);
+                    }
+                    else
+                    {
+                        dbEntry.IsSubstitute = isSubstitute;
+                        dbEntry.PositionName = positionName;
+                        dbEntry.ShirtNumber = shirtNumber;
+
+                        _rugbyPlayerLineupsRepository.Update(dbEntry);
+                    }
+                }
+            }
+
+            await _rugbyPlayerLineupsRepository.SaveAsync();
         }
 
         public async Task IngestLogsForTournamentSeason(CancellationToken cancellationToken, int providerTournamentId, int seasonId)
