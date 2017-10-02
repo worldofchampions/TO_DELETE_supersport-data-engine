@@ -254,7 +254,7 @@
     <Compile Include="Models\Shared\LeaderboardItemModel.cs" />
     <Compile Include="Models\Shared\LogModel.cs" />
     <Compile Include="Models\Shared\ManagementModel.cs" />
-    <Compile Include="Models\Mappers\LogModelMapperProfile.cs" />
+    <Compile Include="Models\Mappers\LegacyLogMapperProfile.cs" />
     <Compile Include="Models\Shared\MarginModel.cs" />
     <Compile Include="Models\Shared\MatchDetailsModel.cs" />
     <Compile Include="Models\Shared\MatchEventModel.cs" />

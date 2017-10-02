@@ -21,6 +21,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
         Mock<TestEntityFrameworkRepository<RugbyFixture>> MockFixtureRepository;
         Mock<TestEntityFrameworkRepository<RugbySeason>> MockSeasonRepository;
         Mock<TestEntityFrameworkRepository<RugbyTournament>> MockTournamentRepository;
+        Mock<TestEntityFrameworkRepository<RugbyFlatLog>> MockFlatLogRepository;
+
 
         [SetUp]
         public void SetUp()
@@ -43,7 +45,11 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
             MockSeasonRepository =
                     new Mock<TestEntityFrameworkRepository<RugbySeason>>(new List<RugbySeason>());
 
+            MockFlatLogRepository =
+                    new Mock<TestEntityFrameworkRepository<RugbyFlatLog>>(new List<RugbyFlatLog>());
+
             RugbyService = new RugbyService(
+                MockFlatLogRepository.Object,
                 MockTournamentRepository.Object,
                 MockSeasonRepository.Object,
                 MockSchedulerTrackingSeasonRepository.Object,

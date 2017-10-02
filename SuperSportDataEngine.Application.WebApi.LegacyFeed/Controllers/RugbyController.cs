@@ -5,7 +5,6 @@ using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.News;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -109,16 +108,15 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("{category}/logs")]
-        [ResponseType(typeof(List<LogModel>))]
+        [ResponseType(typeof(List<Log>))]
         public async Task<IHttpActionResult> GetLogs(string category)
-
         {
             var cacheKey = $"rugby/{category}/logs";
-            var logs = await _cache.GetAsync<IEnumerable<LogModel>>(cacheKey);
+            var logs = await _cache.GetAsync<IEnumerable<Log>>(cacheKey);
 
             if (logs == null)
             {
-                logs =  _rugbyService.GetLogs(category).Select(log => Mapper.Map<LogModel>(log));
+                logs =  _rugbyService.GetLogs(category).Select(log => Mapper.Map<Log>(log));
                 _cache.Add(cacheKey, logs);
             }
             return Ok(logs);
