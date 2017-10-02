@@ -52,17 +52,15 @@
             }
         }
 
-        public RugbyFixturesResponse IngestFixturesForTournament(RugbyTournament tournament, CancellationToken cancellationToken)
+        public RugbyFixturesResponse IngestFixturesForTournament(RugbyTournament tournament, int seasonId, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
                 return null;
 
             var tournamentId = tournament.ProviderTournamentId;
-            // TODO: This will need to be replaced with the season identifier.
-            var tournamentYear = 2017;
 
             WebRequest request =
-                WebRequest.Create("http://rugbyunion-api.stats.com/api/ru/competitions/fixtures/" + tournamentId + "/" + tournamentYear);
+                WebRequest.Create("http://rugbyunion-api.stats.com/api/ru/competitions/fixtures/" + tournamentId + "/" + seasonId);
 
             request.Method = "GET";
 
