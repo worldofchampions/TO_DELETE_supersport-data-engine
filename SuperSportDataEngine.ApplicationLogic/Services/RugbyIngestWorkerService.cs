@@ -1132,7 +1132,7 @@
                             IsCaptain = isCaptain,
                             IsSubstitute = isSubstitute,
                             PositionName = positionName,
-                            ShirtNumber = shirtNumber
+                            JerseyNumber = shirtNumber
                         };
 
                         _rugbyPlayerLineupsRepository.Add(newEntry);
@@ -1141,7 +1141,7 @@
                     {
                         dbEntry.IsSubstitute = isSubstitute;
                         dbEntry.PositionName = positionName;
-                        dbEntry.ShirtNumber = shirtNumber;
+                        dbEntry.JerseyNumber = shirtNumber;
 
                         _rugbyPlayerLineupsRepository.Update(dbEntry);
                     }

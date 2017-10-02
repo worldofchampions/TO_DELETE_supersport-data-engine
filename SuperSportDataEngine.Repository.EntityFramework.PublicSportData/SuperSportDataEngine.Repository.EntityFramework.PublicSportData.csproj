@@ -137,6 +137,10 @@
     <Compile Include="Migrations\201709291302345_Changed_PositionName_From_Int_To_String.Designer.cs">
       <DependentUpon>201709291302345_Changed_PositionName_From_Int_To_String.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201710021118075_Renamed_RugbyPlayerLineup_field_ShirtNumber_to_JerseyNumber.cs" />
+    <Compile Include="Migrations\201710021118075_Renamed_RugbyPlayerLineup_field_ShirtNumber_to_JerseyNumber.Designer.cs">
+      <DependentUpon>201710021118075_Renamed_RugbyPlayerLineup_field_ShirtNumber_to_JerseyNumber.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -220,6 +224,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201709291302345_Changed_PositionName_From_Int_To_String.resx">
       <DependentUpon>201709291302345_Changed_PositionName_From_Int_To_String.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201710021118075_Renamed_RugbyPlayerLineup_field_ShirtNumber_to_JerseyNumber.resx">
+      <DependentUpon>201710021118075_Renamed_RugbyPlayerLineup_field_ShirtNumber_to_JerseyNumber.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
