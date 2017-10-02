@@ -127,7 +127,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 _rugbyFixturesRepository
                     .Where(
                         fixture => fixture.RugbyTournament.Id == tournamentId &&
-                        ((fixture.RugbyFixtureStatus != RugbyFixtureStatus.Final &&
+                        ((fixture.RugbyFixtureStatus != RugbyFixtureStatus.GameEnd &&
                           fixture.StartDateTime <= nowPlus15Minutes && fixture.StartDateTime >= now) ||
                          (fixture.RugbyFixtureStatus == RugbyFixtureStatus.InProgress)));
         }
@@ -140,7 +140,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 _rugbyFixturesRepository
                     .Where(
                         fixture =>
-                        ((fixture.RugbyFixtureStatus != RugbyFixtureStatus.Final &&
+                        ((fixture.RugbyFixtureStatus != RugbyFixtureStatus.GameEnd &&
                            fixture.StartDateTime <= nowPlus15Minutes && fixture.StartDateTime >= now) ||
                           (fixture.RugbyFixtureStatus == RugbyFixtureStatus.InProgress)));
         }
@@ -149,7 +149,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         {
             return
                 _rugbyFixturesRepository.Where(
-                    f => f.RugbyFixtureStatus == RugbyFixtureStatus.Final);
+                    f => f.RugbyFixtureStatus == RugbyFixtureStatus.GameEnd);
         }
 
         public bool HasFixtureEnded(long providerFixtureId)
@@ -161,7 +161,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                         .FirstOrDefault();
 
             if (fixture != null)
-                return fixture.RugbyFixtureStatus == RugbyFixtureStatus.Final;
+                return fixture.RugbyFixtureStatus == RugbyFixtureStatus.GameEnd;
 
             // We can't find the fixture in the DB? But still running ingest code?
             // This is a bizzare condition but checking it nonetherless.
@@ -214,7 +214,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             var nowMinus6Months = DateTimeOffset.UtcNow - TimeSpan.FromDays(180);
             var itemsToDelete = _schedulerTrackingRugbyFixtureRepository
                 .Where(
-                    f => f.RugbyFixtureStatus == RugbyFixtureStatus.Final && f.StartDateTime < nowMinus6Months)
+                    f => f.RugbyFixtureStatus == RugbyFixtureStatus.GameEnd && f.StartDateTime < nowMinus6Months)
                 .ToList();
 
             foreach (var item in itemsToDelete)
@@ -255,7 +255,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         public IEnumerable<RugbyFixture> GetTournamentResults(string tournamentSlug)
         {
             Guid tournamentId = GetTournamentId(tournamentSlug);
-
             var fixturesInResultsState = GetTournamentFixtures(tournamentId, RugbyFixtureStatus.Final);
 
             return fixturesInResultsState;

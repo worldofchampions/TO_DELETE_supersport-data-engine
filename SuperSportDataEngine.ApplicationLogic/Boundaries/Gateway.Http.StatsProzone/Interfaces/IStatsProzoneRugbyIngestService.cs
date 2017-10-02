@@ -8,7 +8,7 @@
     public interface IStatsProzoneRugbyIngestService
     {
         RugbyEntitiesResponse IngestRugbyReferenceData(CancellationToken cancellationToken);
-        RugbyFixturesResponse IngestFixturesForTournament(RugbyTournament activeTournaments, CancellationToken cancellationToken);
+        RugbyFixturesResponse IngestFixturesForTournament(RugbyTournament activeTournaments, int seasonId, CancellationToken cancellationToken);
         RugbyFlatLogsResponse IngestFlatLogsForTournament(RugbyTournament activeTournaments, CancellationToken cancellationToken);
         RugbySeasonResponse IngestSeasonData(CancellationToken cancellationToken, int tournamentId, int tournamentYear);
         RugbyFixturesResponse IngestFixturesForTournamentSeason(int tournamentId, int seasonId, CancellationToken cancellationToken);

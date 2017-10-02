@@ -105,30 +105,22 @@
         {
             IList<RugbyPlayer> playersAlreadyInDb = _rugbyPlayerRepository.All().ToList();
 
-            foreach(var player in entitiesResponse.Entities.players)
+            foreach (var player in entitiesResponse.Entities.players)
             {
                 var playerInDb = playersAlreadyInDb.Where(p => p.ProviderPlayerId == player.id).FirstOrDefault();
 
                 var newPlayer = new RugbyPlayer()
                 {
-                    FirstName = "",
-                    LastName = "",
+                    FirstName = null,
+                    LastName = null,
                     FullName = player.name,
                     ProviderPlayerId = player.id,
                     DataProvider = DataProvider.StatsProzone
                 };
 
-                if(playerInDb == null)
+                if (playerInDb == null)
                 {
                     _rugbyPlayerRepository.Add(newPlayer);
-                }
-                else
-                {
-                    playerInDb.FirstName = newPlayer.FirstName;
-                    playerInDb.LastName = newPlayer.LastName;
-                    playerInDb.FullName = newPlayer.FullName;
-
-                    _rugbyPlayerRepository.Update(playerInDb);
                 }
             }
         }
@@ -295,9 +287,11 @@
 
             foreach (var tournament in activeTournaments)
             {
+                var activeSeasonId = _rugbyService.GetCurrentProviderSeasonIdForTournament(tournament.Id);
+
                 var fixtures =
                     _statsProzoneIngestService.IngestFixturesForTournament(
-                        tournament, cancellationToken);
+                        tournament, activeSeasonId, cancellationToken);
 
                 await PersistFixturesData(cancellationToken, fixtures);
 
@@ -309,7 +303,7 @@
             }
 
             // Saving to the DB's should not be done inside a for-loop (like above)
-            
+
             await _schedulerTrackingRugbySeasonRepository.SaveAsync();
             await _schedulerTrackingRugbyTournamentRepository.SaveAsync();
         }
@@ -882,7 +876,7 @@
         private string GetSlug(string name)
         {
             var lower_case = name.ToLower();
-            var lower_case_with_special_characters_removed = 
+            var lower_case_with_special_characters_removed =
                     RemoveSpecialCharacters(lower_case);
 
             var slug = lower_case_with_special_characters_removed.Replace(' ', '-');
@@ -900,7 +894,8 @@
 
             foreach (var tournament in activeTournaments)
             {
-                var results = _statsProzoneIngestService.IngestFixturesForTournament(tournament, cancellationToken);
+                var seasonId = _rugbyService.GetCurrentProviderSeasonIdForTournament(tournament.Id);
+                var results = _statsProzoneIngestService.IngestFixturesForTournament(tournament, seasonId, cancellationToken);
                 await PersistFixturesResultsInRepository(results, cancellationToken);
             }
         }
@@ -1007,7 +1002,7 @@
 
         private RugbyFixturesResponse RemoveFixturesThatHaveBeenCompleted(RugbyFixturesResponse fixtures)
         {
-            foreach(var round in fixtures.Fixtures.roundFixtures)
+            foreach (var round in fixtures.Fixtures.roundFixtures)
             {
                 round.gameFixtures.RemoveAll(f => f.gameStateName == "Final");
             }
@@ -1037,16 +1032,41 @@
         {
             while (true)
             {
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
                 var matchStatsResponse =
-                        await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, 20171211210);
+                    await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, providerFixtureId);
 
-                await IngestPlayerLineups(cancellationToken, matchStatsResponse);
-
+                //// Check if should stop looping?
                 if (matchStatsResponse.RugbyMatchStats.gameState == "Game End")
                     break;
-                // Check if should stop looping?
 
                 Thread.Sleep(TimeSpan.FromSeconds(10));
+            }
+        }
+
+        public async Task IngestLineupsForUpcomingGames(CancellationToken cancellationToken)
+        {
+            if (_rugbyService.GetLiveFixtures().ToList().Count > 0)
+                return;
+
+            var now = DateTime.UtcNow;
+            var NowPlusTwoDays = DateTime.UtcNow + TimeSpan.FromDays(2);
+
+            var gamesInTheNext2Days =
+                    _rugbyFixturesRepository
+                        .Where(
+                            f => f.StartDateTime >= now && f.StartDateTime <= NowPlusTwoDays)
+                        .ToList();
+
+            foreach(var fixture in gamesInTheNext2Days)
+            {
+                var fixtureId = fixture.ProviderFixtureId;
+                var matchStatsResponse =
+                    await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, fixtureId);
+
+                await IngestPlayerLineups(cancellationToken, matchStatsResponse);
             }
         }
 
@@ -1059,11 +1079,26 @@
             foreach(var squad in matchStatsResponse.RugbyMatchStats.teams.teamsMatch)
             {
                 var lineup = squad.teamLineup;
+
+                if (lineup == null)
+                    continue;
+
                 var players = lineup.teamPlayer;
+
+                if (players == null)
+                    continue;
+
                 foreach(var player in players)
                 {
                     var playerId = player.playerId;
                     var dbPlayer = _rugbyPlayerRepository.Where(p => p.ProviderPlayerId == playerId).FirstOrDefault();
+
+                    if (dbPlayer.FirstName == null && dbPlayer.LastName == null)
+                    {
+                        dbPlayer.FirstName = player.playerFirstName;
+                        dbPlayer.LastName = player.playerLastName;
+                        _rugbyPlayerRepository.Update(dbPlayer);
+                    }
 
                     var fixtureId = matchStatsResponse.RugbyMatchStats.gameId;
                     var dbFixture = _rugbyFixturesRepository.Where(f => f.ProviderFixtureId == fixtureId).FirstOrDefault();
@@ -1114,6 +1149,7 @@
             }
 
             await _rugbyPlayerLineupsRepository.SaveAsync();
+            await _rugbyPlayerRepository.SaveAsync();
         }
 
         public async Task IngestLogsForTournamentSeason(CancellationToken cancellationToken, int providerTournamentId, int seasonId)
