@@ -58,7 +58,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         /// <summary>
         /// Get Fixtures for Tournament
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="category"></param>
         /// <returns></returns>
         [HttpGet]
         [Route("{category}/fixtures")]
@@ -80,7 +80,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         /// <summary>
         /// Get Results for Tournament
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="category"></param>
         /// <returns></returns>
         [HttpGet]
         [Route("{category}/results")]
@@ -104,7 +104,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         /// <summary>
         /// Get Logs for Tournament
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="category"></param>
         /// <returns></returns>
         [HttpGet]
         [Route("{category}/logs")]
