@@ -14,7 +14,7 @@
         public Guid RugbyPlayerId { get; set; }
 
         /// <summary> A provider driven value. </summary>
-        public int ShirtNumber { get; set; }
+        public int JerseyNumber { get; set; }
 
         /// <summary> A provider driven value. </summary>
         public string PositionName { get; set; }

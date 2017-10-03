@@ -1,5 +1,4 @@
 ﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-using SuperSportDataEngine.ApplicationLogic.Entities;
 using System.Collections.Generic;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
 using System;
@@ -11,7 +10,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Inte
 {
     public interface IRugbyService
     {
-        IEnumerable<LogEntity> GetLogs(string tournamentName);
+        IEnumerable<RugbyFlatLog> GetLogs(string tournamentSlug);
         IEnumerable<RugbyTournament> GetActiveTournaments();
         IEnumerable<RugbyTournament> GetInactiveTournaments();
         IEnumerable<RugbyTournament> GetCurrentTournaments();

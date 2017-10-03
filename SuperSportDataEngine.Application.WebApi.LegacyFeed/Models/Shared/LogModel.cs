@@ -1,6 +1,6 @@
 ﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models
 {
-    public class LogModel
+    public class Log
     {
         public string GroupName
         {

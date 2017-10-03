@@ -68,12 +68,12 @@
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\ResponseModels\RugbySeasonResponse.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.Common\Models\Enums\DataProvider.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Enums\RugbyLogType.cs" />
-    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Legacy\LogEntityMapperProfile.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyCommentary.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyFixture.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyLogGroup.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyFlatLog.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyGroupedLog.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyMatchStatistics.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyPlayer.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyPlayerLineup.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbySeason.cs" />
@@ -109,6 +109,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Legacy\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
