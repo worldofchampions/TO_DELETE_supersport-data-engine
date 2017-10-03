@@ -1,10 +1,8 @@
-﻿using AutoMapper;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
-using SuperSportDataEngine.ApplicationLogic.Entities;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,7 +15,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
     public class RugbyService : IRugbyService
     {
         // TODO: This was commented out when deleting old Log DB table.
-        //private readonly IBaseEntityFrameworkRepository<Log> _logRepository;
+        private readonly IBaseEntityFrameworkRepository<RugbyFlatLog> _rugbyFlatLogsRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyTournament> _rugbyTournamentRepository;
         private readonly IBaseEntityFrameworkRepository<RugbySeason> _rugbySeasonRepository;
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> _schedulerTrackingRugbyTournamentRepository;
@@ -26,8 +24,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> _schedulerTrackingRugbyFixtureRepository;
 
         public RugbyService(
-            // TODO: This was commented out when deleting old Log DB table.
-            //IBaseEntityFrameworkRepository<Log> logRepository,
+            IBaseEntityFrameworkRepository<RugbyFlatLog> logRepository,
             IBaseEntityFrameworkRepository<RugbyTournament> rugbyTournamentRepository,
             IBaseEntityFrameworkRepository<RugbySeason> rugbySeasonRepository,
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> schedulerTrackingRugbySeasonRepository,
@@ -35,8 +32,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> schedulerTrackingRugbyTournamentRepository,
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> schedulerTrackingRugbyFixtureRepository)
         {
-            // TODO: This was commented out when deleting old Log DB table.
-            //_logRepository = logRepository;
+            _rugbyFlatLogsRepository = logRepository;
             _rugbyTournamentRepository = rugbyTournamentRepository;
             _rugbySeasonRepository = rugbySeasonRepository;
             _schedulerTrackingRugbySeasonRepository = schedulerTrackingRugbySeasonRepository;
@@ -45,12 +41,15 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             _schedulerTrackingRugbyTournamentRepository = schedulerTrackingRugbyTournamentRepository;
         }
 
-        public IEnumerable<LogEntity> GetLogs(string tournamentName)
+        public IEnumerable<RugbyFlatLog> GetLogs(string slug)
         {
-            // TODO: This was commented out when deleting old Log DB table.
-            //var logs = _logRepository.All().Select(log => Mapper.Map<LogEntity>(log));
-            //return logs;
-            return null;
+            var tournamentId = GetTournamentId(slug);
+
+            var flatLogs = _rugbyFlatLogsRepository.All()
+                .Where(t => t.RugbyTournament.IsEnabled && t.RugbyTournamentId == tournamentId)
+                .ToList();
+
+            return flatLogs;
         }
 
         public IEnumerable<RugbyTournament> GetActiveTournaments()
