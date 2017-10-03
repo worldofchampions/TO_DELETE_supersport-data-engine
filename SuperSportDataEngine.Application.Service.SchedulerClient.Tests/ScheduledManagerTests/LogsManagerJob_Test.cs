@@ -100,7 +100,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
                 }
             });
 
-            MockRugbyService.Setup(r => r.GetCurrentProviderSeasonIdForTournament(It.IsAny<Guid>())).Returns(2018);
+            MockRugbyService.Setup(r => r.GetCurrentProviderSeasonIdForTournament(It.IsAny<Guid>())).Returns(Task.FromResult(2018));
             MockRugbyService.Setup(r => r.GetSchedulerStateForManagerJobPolling(It.IsAny<Guid>())).Returns(SchedulerStateForManagerJobPolling.NotRunning);
 
             await LogsManagerJob.DoWorkAsync();
@@ -137,7 +137,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
                 }
             });
 
-            MockRugbyService.Setup(r => r.GetCurrentProviderSeasonIdForTournament(It.IsAny<Guid>())).Returns(2018);
+            MockRugbyService.Setup(r => r.GetCurrentProviderSeasonIdForTournament(It.IsAny<Guid>())).Returns(Task.FromResult(2018));
             MockRugbyService.Setup(r => r.GetSchedulerStateForManagerJobPolling(It.IsAny<Guid>())).Returns(SchedulerStateForManagerJobPolling.NotRunning);
 
             await LogsManagerJob.DoWorkAsync();

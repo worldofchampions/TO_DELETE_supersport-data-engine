@@ -143,7 +143,7 @@
                     var jobId = ConfigurationManager.AppSettings["ScheduleManagerJob_Fixtures_CurrentTournaments_JobIdPrefix"] + tournament.Name;
                     var jobCronExpression = ConfigurationManager.AppSettings["ScheduleManagerJob_Fixtures_CurrentTournaments_JobCronExpression"];
 
-                    var seasonId = _rugbyService.GetCurrentProviderSeasonIdForTournament(tournament.Id);
+                    var seasonId = await _rugbyService.GetCurrentProviderSeasonIdForTournament(tournament.Id);
 
                     RecurringJob.AddOrUpdate(
                         jobId,

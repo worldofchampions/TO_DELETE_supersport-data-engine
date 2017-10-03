@@ -43,7 +43,7 @@
 
             foreach (var tournament in activeTournaments)
             {
-                int seasonId = _rugbyService.GetCurrentProviderSeasonIdForTournament(tournament.Id);
+                int seasonId = await _rugbyService.GetCurrentProviderSeasonIdForTournament(tournament.Id);
 
                 if (_rugbyService.GetSchedulerStateForManagerJobPolling(tournament.Id) == SchedulerStateForManagerJobPolling.NotRunning)
                 {
