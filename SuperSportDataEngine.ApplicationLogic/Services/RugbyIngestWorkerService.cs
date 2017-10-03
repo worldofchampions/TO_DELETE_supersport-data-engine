@@ -439,21 +439,12 @@
 
         private async Task PersistFixturesData(CancellationToken cancellationToken, RugbyFixturesResponse fixtures)
         {
-            await FixuresSemaphore.WaitAsync();
+            PersistRugbyFixturesToPublicSportsRepository(cancellationToken, fixtures);
+            PersistRugbyFixturesToSchedulerTrackingRugbyFixturesTable(fixtures);
 
-            try
-            {
-                PersistRugbyFixturesToPublicSportsRepository(cancellationToken, fixtures);
-                PersistRugbyFixturesToSchedulerTrackingRugbyFixturesTable(fixtures);
-
-                await _rugbyFixturesRepository.SaveAsync();
-                await _schedulerTrackingRugbyFixtureRepoitory.SaveAsync();
-                _mongoDbRepository.Save(fixtures);
-            }
-            finally
-            {
-                FixuresSemaphore.Release();
-            }
+            await _rugbyFixturesRepository.SaveAsync();
+            await _schedulerTrackingRugbyFixtureRepoitory.SaveAsync();
+            _mongoDbRepository.Save(fixtures);
         }
 
         private async Task PersistTournaments(CancellationToken cancellationToken, RugbyEntitiesResponse entitiesResponse)
@@ -922,6 +913,8 @@
 
         public async Task IngestFixturesForTournamentSeason(CancellationToken cancellationToken, int tournamentId, int seasonId)
         {
+            await FixuresSemaphore.WaitAsync();
+
             if (cancellationToken.IsCancellationRequested)
                 return;
 
@@ -933,6 +926,8 @@
                     tournamentId, seasonId, cancellationToken);
 
             await PersistFixturesData(cancellationToken, fixtures);
+
+            FixuresSemaphore.Release();
         }
 
         public async Task IngestResultsForCurrentDayFixtures(CancellationToken cancellationToken)
@@ -997,13 +992,15 @@
 
         public async Task IngestOneMonthsFixturesForTournament(CancellationToken cancellationToken, int providerTournamentId)
         {
+            await FixuresSemaphore.WaitAsync();
+
             if (cancellationToken.IsCancellationRequested)
                 return;
 
             if (_rugbyService.GetLiveFixturesCount() > 0)
                 return;
 
-            var tournament = _rugbyTournamentRepository.Where(t => t.IsEnabled && t.ProviderTournamentId == providerTournamentId).FirstOrDefault();
+            var tournament = GetEnabledTournamentForId(providerTournamentId);
 
             if (tournament != null)
             {
@@ -1020,6 +1017,19 @@
 
                 _mongoDbRepository.Save(fixtures);
             }
+
+            FixuresSemaphore.Release();
+        }
+
+        private RugbyTournament GetEnabledTournamentForId(int id)
+        {
+            TournamentsSemaphore.WaitAsync();
+
+            var tournament = _rugbyTournamentRepository.All().Where(t => t.IsEnabled && t.ProviderTournamentId == id).FirstOrDefault();
+
+            TournamentsSemaphore.Release();
+
+            return tournament;
         }
 
         private RugbyFixturesResponse RemoveFixturesThatHaveBeenCompleted(RugbyFixturesResponse fixtures)

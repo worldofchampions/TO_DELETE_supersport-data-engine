@@ -23,6 +23,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         private readonly IBaseEntityFrameworkRepository<RugbyFixture> _rugbyFixturesRepository;
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> _schedulerTrackingRugbyFixtureRepository;
 
+        private static SemaphoreSlim FixturesRepoAccessControl = new SemaphoreSlim(1, 1);
+        private static SemaphoreSlim SeasonsRepoAccessControl = new SemaphoreSlim(1, 1);
+
         public RugbyService(
             IBaseEntityFrameworkRepository<RugbyFlatLog> logRepository,
             IBaseEntityFrameworkRepository<RugbyTournament> rugbyTournamentRepository,
@@ -100,10 +103,14 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public int GetCurrentProviderSeasonIdForTournament(Guid tournamentId)
         {
+            SeasonsRepoAccessControl.WaitAsync();
+
             var currentSeason =
-                _rugbySeasonRepository
+                _rugbySeasonRepository.All()
                     .Where(season => season.RugbyTournament.Id == tournamentId && season.IsCurrent)
                     .FirstOrDefault();
+
+            SeasonsRepoAccessControl.Release();
 
             if(currentSeason != null)
             {
@@ -123,13 +130,17 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             //    _rugbyFixturesRepository
             //        .Where(f => f.RugbyTournament.Id == tournamentId && (f.ProviderFixtureId == 20171211210 || f.ProviderFixtureId == 20171211220));
 
-            return
-                _rugbyFixturesRepository
+            FixturesRepoAccessControl.WaitAsync();
+
+            var liveGames = _rugbyFixturesRepository
                     .Where(
                         fixture => fixture.RugbyTournament.Id == tournamentId &&
                         ((fixture.RugbyFixtureStatus != RugbyFixtureStatus.GameEnd &&
                           fixture.StartDateTime <= nowPlus15Minutes && fixture.StartDateTime >= now) ||
-                         (fixture.RugbyFixtureStatus == RugbyFixtureStatus.InProgress)));
+                         (fixture.RugbyFixtureStatus == RugbyFixtureStatus.InProgress))).ToList();
+
+            FixturesRepoAccessControl.Release();
+            return liveGames;
         }
 
         public int GetLiveFixturesCount()
@@ -137,13 +148,19 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             DateTimeOffset now = DateTimeOffset.UtcNow;
             DateTimeOffset nowPlus15Minutes = DateTimeOffset.UtcNow.AddMinutes(15);
 
-            return
+            FixturesRepoAccessControl.WaitAsync();
+
+            int count = 
                 _rugbyFixturesRepository
                     .Where(
                         fixture =>
                         ((fixture.RugbyFixtureStatus != RugbyFixtureStatus.GameEnd &&
                            fixture.StartDateTime <= nowPlus15Minutes && fixture.StartDateTime >= now) ||
                           (fixture.RugbyFixtureStatus == RugbyFixtureStatus.InProgress))).Count();
+
+            FixturesRepoAccessControl.Release();
+
+            return count;
         }
 
         public IEnumerable<RugbyFixture> GetEndedFixtures()
