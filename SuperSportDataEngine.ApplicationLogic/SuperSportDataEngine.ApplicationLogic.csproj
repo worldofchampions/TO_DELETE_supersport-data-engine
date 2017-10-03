@@ -71,6 +71,7 @@
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyLogGroup.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyFlatLog.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyGroupedLog.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyMatchStatistics.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyPlayer.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyPlayerLineup.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbySeason.cs" />
