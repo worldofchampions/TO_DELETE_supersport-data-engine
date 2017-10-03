@@ -16,6 +16,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
     {
         // TODO: This was commented out when deleting old Log DB table.
         private readonly IBaseEntityFrameworkRepository<RugbyFlatLog> _rugbyFlatLogsRepository;
+        private readonly IBaseEntityFrameworkRepository<RugbyGroupedLog> _rugbyGroupedLogsRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyTournament> _rugbyTournamentRepository;
         private readonly IBaseEntityFrameworkRepository<RugbySeason> _rugbySeasonRepository;
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> _schedulerTrackingRugbyTournamentRepository;
@@ -24,6 +25,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> _schedulerTrackingRugbyFixtureRepository;
 
         public RugbyService(
+            IBaseEntityFrameworkRepository<RugbyGroupedLog> groupedLogsRepository,
             IBaseEntityFrameworkRepository<RugbyFlatLog> logRepository,
             IBaseEntityFrameworkRepository<RugbyTournament> rugbyTournamentRepository,
             IBaseEntityFrameworkRepository<RugbySeason> rugbySeasonRepository,
@@ -32,6 +34,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> schedulerTrackingRugbyTournamentRepository,
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> schedulerTrackingRugbyFixtureRepository)
         {
+            _rugbyGroupedLogsRepository = groupedLogsRepository;
             _rugbyFlatLogsRepository = logRepository;
             _rugbyTournamentRepository = rugbyTournamentRepository;
             _rugbySeasonRepository = rugbySeasonRepository;
@@ -39,17 +42,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             _rugbyFixturesRepository = rugbyFixturesRepository;
             _schedulerTrackingRugbyFixtureRepository = schedulerTrackingRugbyFixtureRepository;
             _schedulerTrackingRugbyTournamentRepository = schedulerTrackingRugbyTournamentRepository;
-        }
-
-        public IEnumerable<RugbyFlatLog> GetLogs(string slug)
-        {
-            var tournamentId = GetTournamentId(slug);
-
-            var flatLogs = _rugbyFlatLogsRepository.All()
-                .Where(t => t.RugbyTournament.IsEnabled && t.RugbyTournamentId == tournamentId)
-                .ToList();
-
-            return flatLogs;
         }
 
         public IEnumerable<RugbyTournament> GetActiveTournaments()
@@ -255,9 +247,32 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         public IEnumerable<RugbyFixture> GetTournamentResults(string tournamentSlug)
         {
             Guid tournamentId = GetTournamentId(tournamentSlug);
+
             var fixturesInResultsState = GetTournamentFixtures(tournamentId, RugbyFixtureStatus.Final);
 
             return fixturesInResultsState;
+        }
+
+        public IEnumerable<RugbyGroupedLog> GetGroupedLogs(string tournamentSlug)
+        {
+            var tournamentId = GetTournamentId(tournamentSlug);
+
+            var logs = _rugbyGroupedLogsRepository.All()
+                .Where(t => t.RugbyTournament.IsEnabled && t.RugbyTournamentId == tournamentId)
+                .ToList();
+
+            return logs;
+        }
+
+        public IEnumerable<RugbyFlatLog> GetFlatLogs(string tournamentSlug)
+        {
+            var tournamentId = GetTournamentId(tournamentSlug);
+
+            var flatLogs = _rugbyFlatLogsRepository.All()
+                .Where(t => t.RugbyTournament.IsEnabled && t.RugbyTournamentId == tournamentId)
+                .ToList();
+
+            return flatLogs;
         }
     }
 }

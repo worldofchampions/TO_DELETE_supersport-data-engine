@@ -10,7 +10,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Inte
 {
     public interface IRugbyService
     {
-        IEnumerable<RugbyFlatLog> GetLogs(string tournamentSlug);
+        IEnumerable<RugbyFlatLog> GetFlatLogs(string tournamentSlug);
         IEnumerable<RugbyTournament> GetActiveTournaments();
         IEnumerable<RugbyTournament> GetInactiveTournaments();
         IEnumerable<RugbyTournament> GetCurrentTournaments();
@@ -27,5 +27,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Inte
         IEnumerable<RugbyFixture> GetTournamentFixtures(string tournamentName);
         IEnumerable<RugbyFixture> GetTournamentResults(string tournamentSlug);
         Guid GetTournamentId(string tournamentSlug);
+        IEnumerable<RugbyGroupedLog> GetGroupedLogs(string tournamentSlug);
     }
 }
