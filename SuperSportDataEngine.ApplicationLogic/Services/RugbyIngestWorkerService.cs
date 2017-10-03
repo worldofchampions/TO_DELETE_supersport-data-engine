@@ -16,6 +16,7 @@
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
     using System.Text.RegularExpressions;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models.Enums;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models;
 
     public class RugbyIngestWorkerService : IRugbyIngestWorkerService
     {
@@ -33,6 +34,7 @@
         private readonly IBaseEntityFrameworkRepository<RugbyLogGroup> _rugbyLogGroupRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyGroupedLog> _rugbyGroupedLogsRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyPlayerLineup> _rugbyPlayerLineupsRepository;
+        private readonly IBaseEntityFrameworkRepository<RugbyCommentary> _rugbyCommentaryRepository;
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> _schedulerTrackingRugbyTournamentRepository;
         private readonly IRugbyService _rugbyService;
 
@@ -42,6 +44,7 @@
         static SemaphoreSlim TournamentsSemaphore = new SemaphoreSlim(1, 1);
         static SemaphoreSlim PlayersSemaphore = new SemaphoreSlim(1, 1);
         static SemaphoreSlim LogsSemaphore = new SemaphoreSlim(1, 1);
+        static SemaphoreSlim CommentarySemaphore = new SemaphoreSlim(1, 1);
 
         public RugbyIngestWorkerService(
             IStatsProzoneRugbyIngestService statsProzoneIngestService,
@@ -58,6 +61,7 @@
             IBaseEntityFrameworkRepository<RugbyLogGroup> rugbyLogGroupRepository,
             IBaseEntityFrameworkRepository<RugbyGroupedLog> rugbyGroupedLogsRepository,
             IBaseEntityFrameworkRepository<RugbyPlayerLineup> rugbyPlayerLineupsRepository,
+            IBaseEntityFrameworkRepository<RugbyCommentary> rugbyCommentaryRepository,
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> schedulerTrackingRugbyTournamentRepository,
             IRugbyService rugbyService)
         {
@@ -75,6 +79,7 @@
             _rugbyLogGroupRepository = rugbyLogGroupRepository;
             _rugbyGroupedLogsRepository = rugbyGroupedLogsRepository;
             _rugbyPlayerLineupsRepository = rugbyPlayerLineupsRepository;
+            _rugbyCommentaryRepository = rugbyCommentaryRepository;
             _schedulerTrackingRugbyTournamentRepository = schedulerTrackingRugbyTournamentRepository;
             _rugbyService = rugbyService;
         }
@@ -86,7 +91,7 @@
 
             // If there is a live game happening while we are ingesting entities,
             // Stop ingesting entities. It might interfere with the repo access.
-            if (_rugbyService.GetLiveFixtures().ToList().Any())
+            if (_rugbyService.GetLiveFixturesCount() > 0)
                 return;
 
             var entitiesResponse =
@@ -243,7 +248,12 @@
         private void PersistRugbySeasonDataToSystemSportsDataRepository(CancellationToken cancellationToken, RugbySeasonResponse season)
         {
             var providerTournamentId = season.RugbySeasons.competitionId;
+
+            if (season.RugbySeasons.season.Count == 0)
+                return;
+
             var providerSeasonId = season.RugbySeasons.season.First().id;
+
             var isSeasonCurrentlyActive = season.RugbySeasons.season.First().currentSeason;
 
             var seasonEntry =
@@ -280,6 +290,9 @@
         public async Task IngestFixturesForActiveTournaments(CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
+                return;
+
+            if (_rugbyService.GetLiveFixturesCount() > 0)
                 return;
 
             IList<RugbyTournament> activeTournaments =
@@ -912,6 +925,9 @@
             if (cancellationToken.IsCancellationRequested)
                 return;
 
+            if (_rugbyService.GetLiveFixturesCount() > 0)
+                return;
+
             var fixtures =
                 _statsProzoneIngestService.IngestFixturesForTournamentSeason(
                     tournamentId, seasonId, cancellationToken);
@@ -933,10 +949,16 @@
 
         public async Task IngestResultsForFixturesInResultsState(CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+                return;
+
             var fixtures = GetRoundFixturesInResultsStateForActiveTournaments();
 
             foreach (var fixture in fixtures)
             {
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
                 var results = await _statsProzoneIngestService.IngestFixtureResults(fixture.Item1, fixture.Item2, fixture.Item3);
 
                 // TODO: Also persist in SQL DB.
@@ -975,16 +997,16 @@
 
         public async Task IngestOneMonthsFixturesForTournament(CancellationToken cancellationToken, int providerTournamentId)
         {
+            if (cancellationToken.IsCancellationRequested)
+                return;
+
+            if (_rugbyService.GetLiveFixturesCount() > 0)
+                return;
+
             var tournament = _rugbyTournamentRepository.Where(t => t.IsEnabled && t.ProviderTournamentId == providerTournamentId).FirstOrDefault();
 
             if (tournament != null)
             {
-                var liveGames = _rugbyService.GetLiveFixtures().ToList();
-                // If there are live games happening, don't ingest fixtures
-                // Live games will need priority access to the fixtures repository.
-                if (liveGames != null && liveGames.Any())
-                    return;
-
                 var fixtures =
                         _statsProzoneIngestService.IngestFixturesForTournamentSeason(
                             tournament.ProviderTournamentId,
@@ -1038,6 +1060,21 @@
                 var matchStatsResponse =
                     await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, providerFixtureId);
 
+                var eventsFlowResponse =
+                    await _statsProzoneIngestService.IngestEventsFlow(cancellationToken, providerFixtureId);
+
+                await CommentarySemaphore.WaitAsync();
+
+                try
+                {
+                    await IngestCommentary(cancellationToken, eventsFlowResponse.RugbyEventsFlow.commentaryFlow, providerFixtureId);
+                }
+                finally
+                {
+                    CommentarySemaphore.Release();
+                }
+                
+
                 //// Check if should stop looping?
                 if (matchStatsResponse.RugbyMatchStats.gameState == "Game End")
                     break;
@@ -1046,9 +1083,64 @@
             }
         }
 
+        public async Task IngestCommentary(CancellationToken cancellationToken, CommentaryFlow commentary, long providerFixtureId)
+        {
+            if (commentary == null)
+                return;
+
+            if (commentary.commentaryEvent == null)
+                return;
+
+            foreach(var comment in commentary.commentaryEvent)
+            {
+                var commentText = comment.commentary;
+                var commentTimeInSeconds = comment.gameSeconds;
+                var commentaryTimeInMinutes = commentTimeInSeconds / 60;
+                var gameTimeDisplayHoursMinutesSeconds = comment.gameTime;
+                var gameTimeDisplayMinutesSeconds = comment.GameMinutes;
+
+                var fixture = (await _rugbyFixturesRepository.AllAsync()).Where(f => f.ProviderFixtureId == providerFixtureId).FirstOrDefault();
+                var team = (await _rugbyTeamRepository.AllAsync()).Where(t => t.ProviderTeamId == comment.teamId).FirstOrDefault();
+                var player = (await _rugbyPlayerRepository.AllAsync()).Where(p => p.ProviderPlayerId == comment.playerId).FirstOrDefault();
+
+                var dbCommentary = (await _rugbyCommentaryRepository.AllAsync()).Where(c => 
+                                                c.GameTimeRawSeconds == commentTimeInSeconds &&
+                                                c.RugbyFixture.Id == fixture.Id).FirstOrDefault();
+
+                var newCommentary = new RugbyCommentary()
+                {
+                    CommentaryText = commentText,
+                    DataProvider = DataProvider.StatsProzone,
+                    GameTimeDisplayHoursMinutesSeconds = gameTimeDisplayHoursMinutesSeconds,
+                    GameTimeDisplayMinutesSeconds = gameTimeDisplayMinutesSeconds,
+                    GameTimeRawMinutes = commentaryTimeInMinutes,
+                    GameTimeRawSeconds = commentTimeInSeconds,
+                    ProviderEventTypeId = 0,
+                    RugbyFixture = fixture,
+                    RugbyPlayer = player,
+                    RugbyTeam = team
+                };
+
+                if(dbCommentary == null)
+                {
+                    _rugbyCommentaryRepository.Add(newCommentary);
+                }
+                else
+                {
+                    if(dbCommentary.CommentaryText != commentText)
+                    {
+                        dbCommentary.CommentaryText = commentText;
+                        _rugbyCommentaryRepository.Update(dbCommentary);
+                    }
+                }
+            }
+
+            await _rugbyCommentaryRepository.SaveAsync();
+        }
+
         public async Task IngestLineupsForUpcomingGames(CancellationToken cancellationToken)
         {
-            if (_rugbyService.GetLiveFixtures().ToList().Count > 0)
+            if (_rugbyService.GetLiveFixturesCount() > 0)
                 return;
 
             var now = DateTime.UtcNow;

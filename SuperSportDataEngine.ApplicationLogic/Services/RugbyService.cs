@@ -122,7 +122,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             // Fake a game being played live! Specify the providerFixtureId
             //return
             //    _rugbyFixturesRepository
-            //        .Where(f => f.RugbyTournament.Id == tournamentId && f.ProviderFixtureId == 20171211210);
+            //        .Where(f => f.RugbyTournament.Id == tournamentId && (f.ProviderFixtureId == 20171211210 || f.ProviderFixtureId == 20171211220));
 
             return
                 _rugbyFixturesRepository
@@ -133,17 +133,18 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                          (fixture.RugbyFixtureStatus == RugbyFixtureStatus.InProgress)));
         }
 
-        public IEnumerable<RugbyFixture> GetLiveFixtures()
+        public int GetLiveFixturesCount()
         {
             DateTimeOffset now = DateTimeOffset.UtcNow;
             DateTimeOffset nowPlus15Minutes = DateTimeOffset.UtcNow.AddMinutes(15);
+
             return
                 _rugbyFixturesRepository
                     .Where(
                         fixture =>
                         ((fixture.RugbyFixtureStatus != RugbyFixtureStatus.GameEnd &&
                            fixture.StartDateTime <= nowPlus15Minutes && fixture.StartDateTime >= now) ||
-                          (fixture.RugbyFixtureStatus == RugbyFixtureStatus.InProgress)));
+                          (fixture.RugbyFixtureStatus == RugbyFixtureStatus.InProgress))).Count();
         }
 
         public IEnumerable<RugbyFixture> GetEndedFixtures()
