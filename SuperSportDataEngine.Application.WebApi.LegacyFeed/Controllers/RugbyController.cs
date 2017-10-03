@@ -56,6 +56,29 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             return Ok();
         }
 
+
+        /// <summary>
+        /// Get News for Rugby
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("live")]
+        [ResponseType(typeof(Fixture))]
+        public async Task<IHttpActionResult> GetTodayFixtures()
+        {
+            var cacheKey = $"rugby/live/today";
+            var fixtures = await _cache.GetAsync<IEnumerable<Fixture>>(cacheKey);
+
+            if (fixtures == null)
+            {
+                fixtures = _rugbyService.GetTodayFixtures().Select(res => Mapper.Map<Fixture>(res));
+                _cache.Add(cacheKey, fixtures);
+            }
+
+            return Ok(fixtures.ToList());
+        }
+
+
         /// <summary>
         /// Get Fixtures for Tournament
         /// </summary>

@@ -260,5 +260,15 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             return fixturesInResultsState;
         }
+
+        public IEnumerable<RugbyFixture> GetTodayFixtures()
+        {
+            var todayFixtures = _rugbyFixturesRepository
+                .All()
+                .ToList()
+                .Where(f => f.StartDateTime.Date == DateTime.UtcNow.Date);
+
+            return todayFixtures;
+        }
     }
 }
