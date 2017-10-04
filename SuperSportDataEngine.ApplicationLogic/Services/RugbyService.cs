@@ -170,7 +170,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             try
             {
                 await GetLiveFixturesCountControl.WaitAsync(cancellationToken);
-                //await AccessControl.PublicSportsData_FixturesRepo_Access.WaitAsync(cancellationToken);
 
                 int count =
                     (await _rugbyFixturesRepository.AllAsync())
@@ -184,7 +183,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             }
             finally
             {
-                //AccessControl.PublicSportsData_FixturesRepo_Access.Release();
                 GetLiveFixturesCountControl.Release();
             }
         }

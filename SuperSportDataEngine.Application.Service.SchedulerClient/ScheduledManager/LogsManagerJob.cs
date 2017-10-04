@@ -2,6 +2,7 @@
 {
     using Hangfire;
     using Hangfire.Common;
+    using Microsoft.Practices.Unity;
     using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
@@ -20,16 +21,21 @@
         IRugbyIngestWorkerService _rugbyIngestService;
         IRecurringJobManager _recurringJobManager;
         IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> _schedulerTrackingRugbySeasonRepository;
+
+        IUnityContainer _container;
+
         public LogsManagerJob(
             IRugbyService rugbyService,
             IRugbyIngestWorkerService rugbyIngestService,
             IRecurringJobManager recurringJobManager,
-            IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> schedulerTrackingRugbySeasonRepository)
+            IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> schedulerTrackingRugbySeasonRepository,
+            IUnityContainer container)
         {
             _rugbyService = rugbyService;
             _rugbyIngestService = rugbyIngestService;
             _recurringJobManager = recurringJobManager;
             _schedulerTrackingRugbySeasonRepository = schedulerTrackingRugbySeasonRepository;
+            _container = container;
         }
 
         public async Task DoWorkAsync()
@@ -76,7 +82,7 @@
         {
             _recurringJobManager.AddOrUpdate(
                 jobId,
-                Job.FromExpression(() => _rugbyIngestService.IngestLogsForTournamentSeason(CancellationToken.None, providerTournamentId, seasonId)),
+                Job.FromExpression(() => (_container.Resolve<IRugbyIngestWorkerService>()).IngestLogsForTournamentSeason(CancellationToken.None, providerTournamentId, seasonId)),
                 jobCronExpression,
                 TimeZoneInfo.Utc,
                 HangfireQueueConfiguration.HighPriority);

@@ -971,16 +971,26 @@
         /// </summary>
         /// <param name="tournamemnts"></param>
         /// <returns></returns>
+        private static SemaphoreSlim GetCurrentDayRoundFixturesForActiveTournamentsControl = new SemaphoreSlim(1, 1);
         public async Task<List<Tuple<int, int, int>>> GetCurrentDayRoundFixturesForActiveTournaments()
         {
-            var activeTournaments = await _rugbyService.GetActiveTournaments();
+            try
+            {
+                await GetCurrentDayRoundFixturesForActiveTournamentsControl.WaitAsync();
 
-            //TODO: Must be able to deduce the following fields via repository
-            int tournamentId = 121;
-            int seasonId = 2017;
-            int roundId = 1;
+                var activeTournaments = await _rugbyService.GetActiveTournaments();
 
-            return new List<Tuple<int, int, int>> { new Tuple<int, int, int>(tournamentId, seasonId, roundId) };
+                //TODO: Must be able to deduce the following fields via repository
+                int tournamentId = 121;
+                int seasonId = 2017;
+                int roundId = 1;
+
+                return new List<Tuple<int, int, int>> { new Tuple<int, int, int>(tournamentId, seasonId, roundId) };
+            }
+            finally
+            {
+                GetCurrentDayRoundFixturesForActiveTournamentsControl.Release();
+            }
         }
 
         /// <summary>
