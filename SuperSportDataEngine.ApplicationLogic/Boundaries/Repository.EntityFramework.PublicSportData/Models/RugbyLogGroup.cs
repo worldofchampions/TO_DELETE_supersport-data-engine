@@ -16,6 +16,12 @@
         public string GroupName { get; set; }
 
         /// <summary> A CMS driven value. </summary>
+        public string GroupShortName { get; set; }
+
+        /// <summary> A CMS driven value. </summary>
+        public bool IsConference { get; set; }
+
+        /// <summary> A CMS driven value. </summary>
         public int GroupHierarchyLevel { get; set; }
 
         /// <summary> A CMS driven value. </summary>
