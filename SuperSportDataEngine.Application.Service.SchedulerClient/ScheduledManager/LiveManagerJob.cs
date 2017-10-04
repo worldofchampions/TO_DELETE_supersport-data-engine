@@ -90,12 +90,13 @@
                             QueueName = HangfireQueueConfiguration.HighPriority
                         });
 
-                    _recurringJobManager.Trigger(jobId);
                     var fixtureInDb =
                             _schedulerTrackingRugbyFixtureRepository.All().Where(f => f.FixtureId == fixture.Id).FirstOrDefault();
 
-                    if (fixtureInDb != null)
+                    if (fixtureInDb != null && 
+                        fixtureInDb.SchedulerStateFixtures != SchedulerStateForRugbyFixturePolling.LivePolling)
                     {
+                        _recurringJobManager.Trigger(jobId);
                         fixtureInDb.SchedulerStateFixtures = SchedulerStateForRugbyFixturePolling.LivePolling;
                     }
                 }

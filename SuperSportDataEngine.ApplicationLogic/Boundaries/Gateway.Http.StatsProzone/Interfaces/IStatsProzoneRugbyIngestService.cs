@@ -16,5 +16,6 @@
         Task<RugbyMatchStatsResponse> IngestMatchStatsForFixtureAsync(CancellationToken cancellationToken, long providerFixtureId);
         RugbyFlatLogsResponse IngestFlatLogsForTournament(int competitionId, int seasonId);
         RugbyGroupedLogsResponse IngestGroupedLogsForTournament(int competitionId, int seasonId);
+        Task<RugbyEventsFlowResponse> IngestEventsFlow(CancellationToken cancellationToken, long providerFixtureId);
     }
 }

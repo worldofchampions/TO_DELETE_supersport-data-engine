@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
 using System.Threading;
+using SuperSportDataEngine.Common;
 
 namespace SuperSportDataEngine.ApplicationLogic.Services
 {
@@ -90,21 +91,32 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                     .Where(t => t.IsEnabled == false);
         }
 
-        public int GetCurrentProviderSeasonIdForTournament(Guid tournamentId)
+        private static SemaphoreSlim GetCurrentProviderSeasonIdForTournamentControl = new SemaphoreSlim(1, 1);
+        public async Task<int> GetCurrentProviderSeasonIdForTournament(Guid tournamentId)
         {
-            var currentSeason =
-                _rugbySeasonRepository
-                    .Where(season => season.RugbyTournament.Id == tournamentId && season.IsCurrent)
-                    .FirstOrDefault();
-
-            if(currentSeason != null)
+            try
             {
-                return currentSeason.ProviderSeasonId;
+                await GetCurrentProviderSeasonIdForTournamentControl.WaitAsync();
+
+                var currentSeason =
+                        _rugbySeasonRepository.All()
+                            .Where(season => season.RugbyTournament.Id == tournamentId && season.IsCurrent)
+                            .FirstOrDefault();
+
+                if (currentSeason != null)
+                {
+                    return currentSeason.ProviderSeasonId;
+                }
+            }
+            finally
+            {
+                GetCurrentProviderSeasonIdForTournamentControl.Release();
             }
 
             return DateTime.Now.Year;
         }
 
+        private static SemaphoreSlim GetLiveFixturesForCurrentTournamentControl = new SemaphoreSlim(1, 1);
         public IEnumerable<RugbyFixture> GetLiveFixturesForCurrentTournament(Guid tournamentId)
         {
             DateTimeOffset now = DateTimeOffset.UtcNow;
@@ -113,28 +125,53 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             // Fake a game being played live! Specify the providerFixtureId
             //return
             //    _rugbyFixturesRepository
-            //        .Where(f => f.RugbyTournament.Id == tournamentId && f.ProviderFixtureId == 20171211210);
+            //        .Where(f => f.RugbyTournament.Id == tournamentId && (f.ProviderFixtureId == 20171211210 || f.ProviderFixtureId == 20171211220));
 
-            return
-                _rugbyFixturesRepository
-                    .Where(
-                        fixture => fixture.RugbyTournament.Id == tournamentId &&
-                        ((fixture.RugbyFixtureStatus != RugbyFixtureStatus.GameEnd &&
-                          fixture.StartDateTime <= nowPlus15Minutes && fixture.StartDateTime >= now) ||
-                         (fixture.RugbyFixtureStatus == RugbyFixtureStatus.InProgress)));
+            try
+            {
+                GetLiveFixturesForCurrentTournamentControl.WaitAsync();
+
+                var liveGames = _rugbyFixturesRepository.All()
+                        .Where(
+                            fixture => fixture.RugbyTournament.Id == tournamentId &&
+                            ((fixture.RugbyFixtureStatus != RugbyFixtureStatus.GameEnd &&
+                              fixture.StartDateTime <= nowPlus15Minutes && fixture.StartDateTime >= now) ||
+                             (fixture.RugbyFixtureStatus == RugbyFixtureStatus.InProgress))).ToList();
+
+                return liveGames;
+            }
+            finally
+            {
+                GetLiveFixturesForCurrentTournamentControl.Release();
+            }
         }
 
-        public IEnumerable<RugbyFixture> GetLiveFixtures()
+        private static SemaphoreSlim GetLiveFixturesCountControl = new SemaphoreSlim(1, 1);
+        public async Task<int> GetLiveFixturesCount()
         {
             DateTimeOffset now = DateTimeOffset.UtcNow;
             DateTimeOffset nowPlus15Minutes = DateTimeOffset.UtcNow.AddMinutes(15);
-            return
-                _rugbyFixturesRepository
-                    .Where(
-                        fixture =>
-                        ((fixture.RugbyFixtureStatus != RugbyFixtureStatus.GameEnd &&
-                           fixture.StartDateTime <= nowPlus15Minutes && fixture.StartDateTime >= now) ||
-                          (fixture.RugbyFixtureStatus == RugbyFixtureStatus.InProgress)));
+
+            try
+            {
+                await GetLiveFixturesCountControl.WaitAsync();
+                await AccessControl.PublicSportsData_FixturesRepo_Access.WaitAsync();
+
+                int count =
+                    _rugbyFixturesRepository.All()
+                        .Where(
+                            fixture =>
+                            ((fixture.RugbyFixtureStatus != RugbyFixtureStatus.GameEnd &&
+                               fixture.StartDateTime <= nowPlus15Minutes && fixture.StartDateTime >= now) ||
+                              (fixture.RugbyFixtureStatus == RugbyFixtureStatus.InProgress))).Count();
+
+                return count;
+            }
+            finally
+            {
+                GetLiveFixturesCountControl.Release();
+                AccessControl.PublicSportsData_FixturesRepo_Access.Release();
+            }
         }
 
         public IEnumerable<RugbyFixture> GetEndedFixtures()

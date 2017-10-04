@@ -309,6 +309,42 @@
             }
         }
 
+        public async Task<RugbyEventsFlowResponse> IngestEventsFlow(CancellationToken cancellationToken, long providerFixtureId)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return null;
+
+            WebRequest request = WebRequest.Create("http://rugbyunion-api.stats.com/api/ru/matchStats/eventsflow/" + providerFixtureId + "/");
+
+            request.Method = "GET";
+
+            request.Headers["Authorization"] = "Basic U3VwZXJTcG9ydF9NZWRpYTpTdTkzUjdyMFA1";
+            request.ContentType = "application/json; charset=UTF-8";
+
+            var eventsFlowResponse =
+                new RugbyEventsFlowResponse()
+                {
+                    RequestTime = DateTime.Now
+                };
+
+            using (WebResponse response = await request.GetResponseAsync())
+            {
+                using (Stream responseStream = response.GetResponseStream())
+                {
+                    StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
+                    string stats = reader.ReadToEnd();
+                    eventsFlowResponse.RugbyEventsFlow =
+                        JsonConvert.DeserializeObject<RugbyEventsFlow>(stats);
+
+                    // Not to be confused with the DateTime.Now call more above.
+                    // This might be delayed due to provider being slow to process request,
+                    // and is intended.
+                    eventsFlowResponse.ResponseTime = DateTime.Now;
+                    return eventsFlowResponse;
+                }
+            }
+        }
+
         private static WebRequest GetWebRequestForLogsEndpoint(int competitionId, int seasonId)
         {
             var baseUrl = "http://rugbyunion-api.stats.com/api/RU/competitions/ladder/";
