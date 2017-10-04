@@ -115,7 +115,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 
             var flatLogsCache = await _cache.GetAsync<IEnumerable<Log>>(flatLogsCacheKey);
 
-            if (flatLogsCache.Any())
+            if (flatLogsCache != null)
             {
                 return Ok(flatLogsCache);
             }
@@ -124,7 +124,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 
             var groupedLogsCache = await _cache.GetAsync<IEnumerable<Log>>(groupedLogsCacheKey);
 
-            if (groupedLogsCache.Any())
+            if (groupedLogsCache != null)
             {
                 return Ok(groupedLogsCache);
             }
@@ -161,7 +161,9 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         {
             var flatLogsFromService = _rugbyService.GetFlatLogs(category);
 
-            if (flatLogsFromService.Any())
+            const int EmptyCollectionCount = 0;
+
+            if (flatLogsFromService.Count() > EmptyCollectionCount)
             {
                 var flatLogsCacheKey = $"rugby/flatLogs/{category}";
 
@@ -174,7 +176,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 
             var groupedLogsFromService = _rugbyService.GetGroupedLogs(category);
 
-            if (groupedLogsFromService.Any())
+            if (groupedLogsFromService.Count() > EmptyCollectionCount)
             {
                 var groupedLogsCacheKey = $"rugby/groupedLogs/{category}";
 
