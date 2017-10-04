@@ -185,7 +185,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
                 _cache.Add(groupedLogsCacheKey, groupedLogsCache);
             }
 
-            return Ok(new List<Log>());
+            return Ok(Enumerable.Empty<Log>());
         }
     }
 }

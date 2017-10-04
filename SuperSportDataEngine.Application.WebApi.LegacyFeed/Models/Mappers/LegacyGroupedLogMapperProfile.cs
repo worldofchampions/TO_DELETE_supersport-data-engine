@@ -13,15 +13,12 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
                     src => src.RugbyLogGroup.GroupName))
 
                 .ForMember(dest => dest.GroupShortName, expression => expression.MapFrom(
-                   src => src.RugbyLogGroup.GroupName))
+                   src => src.RugbyLogGroup.GroupShortName ?? src.RugbyLogGroup.GroupName))
 
                 .ForMember(dest => dest.LeagueName, expression => expression.MapFrom(
                     src => src.RugbyTournament.Name))
 
                 .ForMember(dest => dest.Team, expression => expression.MapFrom(
-                    src => src.RugbyTeam.Name))
-
-                .ForMember(dest => dest.TeamShortName, expression => expression.MapFrom(
                     src => src.RugbyTeam.Name))
 
                 .ForMember(dest => dest.TeamID, expression => expression.MapFrom(
@@ -58,6 +55,28 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
                     src => src.TournamentPoints))
 
                 .ForMember(dest => dest.Sport, src => src.UseValue(SportType.Rugby))
+
+                // rank here
+                .ForMember(dest => dest.rank, expression => expression.MapFrom(
+                    src => src.RugbyLogGroup.GroupHierarchyLevel == Constants.GroupHiearachyLevelZero ?
+                    src.LogPosition: 0))
+
+                // Combined rank here
+                .ForMember(dest => dest.CombinedRank, expression => expression.MapFrom(
+                    src => src.RugbyLogGroup.GroupHierarchyLevel == Constants.GroupHiearachyLevelOne ?
+                    src.LogPosition : 0 ))
+
+                 // ConferenceRank rank here
+                 .ForMember(dest => dest.ConferenceRank, expression => expression.MapFrom(
+                    src => src.RugbyLogGroup.GroupHierarchyLevel == Constants.GroupHiearachyLevelTwo ?
+                    src.LogPosition : 0))
+
+                // Home group here
+                .ForMember(dest => dest.HomeGroup, expression => expression.MapFrom(
+                    src => src.RugbyLogGroup.ParentRugbyLogGroup.GroupName))
+
+                .ForMember(dest => dest.IsConference, expression => expression.MapFrom(
+                    src => src.RugbyLogGroup.IsConference))
 
                 .ForMember(dest => dest.TriesFor, expression => expression.MapFrom(
                     src => src.TriesFor))
