@@ -13,6 +13,7 @@ using SuperSportDataEngine.Tests.Common.Repositories.Test;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.ScheduledManagerTests
@@ -64,14 +65,14 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
         {
             MockRugbyService
                 .Setup(r => r.GetEndedFixtures()).Returns(
-                    new List<RugbyFixture>() {
+                    Task.FromResult(new List<RugbyFixture>() {
                         new RugbyFixture
                         {
                             TeamA = new RugbyTeam() { Name = "TeamA" },
                             TeamB = new RugbyTeam() { Name = "TeamB" },
                             RugbyFixtureStatus = RugbyFixtureStatus.Final
                         }
-                    });
+                    }.AsEnumerable()));
 
             await LiveManagerJob.DoWorkAsync();
 
@@ -81,27 +82,27 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
         [Test]
         public async Task LiveManagerJob_NoCurrentTournaments_DoNotQueryForLiveFixtures()
         {
-            MockRugbyService.Setup(r => r.GetCurrentTournaments()).Returns(new List<RugbyTournament>());
+            MockRugbyService.Setup(r => r.GetCurrentTournaments()).Returns(Task.FromResult(new List<RugbyTournament>().AsEnumerable()));
 
             await LiveManagerJob.DoWorkAsync();
 
-            MockRugbyService.Verify(m => m.GetLiveFixturesForCurrentTournament(It.IsAny<Guid>()), Times.Never());
+            MockRugbyService.Verify(m => m.GetLiveFixturesForCurrentTournament(It.IsAny<CancellationToken>(), It.IsAny<Guid>()), Times.Never());
         }
 
         [Test]
         public async Task LiveManagerJob_OneCurrentTournament_OneCallForLiveFixtures()
         {
             MockRugbyService.Setup(r => r.GetCurrentTournaments()).Returns(
-                    new List<RugbyTournament>(){
+                    Task.FromResult(new List<RugbyTournament>(){
                         new RugbyTournament(){Id = Guid.NewGuid()}
-                    });
+                    }.AsEnumerable()));
 
             MockRugbyService.Setup(r => r.GetEndedFixtures()).Returns(
-                    new List<RugbyFixture>());
+                    Task.FromResult(new List<RugbyFixture>().AsEnumerable()));
 
             await LiveManagerJob.DoWorkAsync();
 
-            MockRugbyService.Verify(m => m.GetLiveFixturesForCurrentTournament(It.IsAny<Guid>()), Times.Once());
+            MockRugbyService.Verify(m => m.GetLiveFixturesForCurrentTournament(It.IsAny<CancellationToken>(), It.IsAny<Guid>()), Times.Once());
         }
 
         [Test]
@@ -109,19 +110,19 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
         {
             MockRugbyService
                 .Setup(r => r.GetCurrentTournaments()).Returns(
-                    new List<RugbyTournament>()
+                    Task.FromResult(new List<RugbyTournament>()
                     {
                         new RugbyTournament(){Id = Guid.NewGuid()},
                         new RugbyTournament(){Id = Guid.NewGuid()}
-                    });
+                    }.AsEnumerable()));
 
             MockRugbyService
                 .Setup(r => r.GetEndedFixtures()).Returns(
-                    new List<RugbyFixture>());
+                    Task.FromResult(new List<RugbyFixture>().AsEnumerable()));
 
             await LiveManagerJob.DoWorkAsync();
 
-            MockRugbyService.Verify(m => m.GetLiveFixturesForCurrentTournament(It.IsAny<Guid>()), Times.Exactly(2));
+            MockRugbyService.Verify(m => m.GetLiveFixturesForCurrentTournament(It.IsAny<CancellationToken>(), It.IsAny<Guid>()), Times.Exactly(2));
         }
 
         [Test]
@@ -137,10 +138,10 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
 
             MockRugbyService
                 .Setup(r => r.GetCurrentTournaments()).Returns(
-                    new List<RugbyTournament>() { tournament });
+                    Task.FromResult(new List<RugbyTournament>() { tournament }.AsEnumerable()));
 
             var rugbyFixtures =
-                new List<RugbyFixture>()
+                Task.FromResult(new List<RugbyFixture>()
                     {
                         new RugbyFixture
                         {
@@ -150,9 +151,9 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
                             TeamB = new RugbyTeam { Name = "TeamB" },
                             RugbyFixtureStatus = RugbyFixtureStatus.InProgress
                         }
-                    };
+                    }.AsEnumerable());
 
-            MockRugbyService.Setup(r => r.GetLiveFixturesForCurrentTournament(tournamentId)).Returns(rugbyFixtures);
+            MockRugbyService.Setup(r => r.GetLiveFixturesForCurrentTournament(CancellationToken.None, tournamentId)).Returns(rugbyFixtures);
 
             await LiveManagerJob.DoWorkAsync();
 

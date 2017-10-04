@@ -39,13 +39,13 @@
 
         private async Task<int> CreateChildJobsForFetchingLogs()
         {
-            var activeTournaments = _rugbyService.GetActiveTournamentsForMatchesInResultsState();
+            var activeTournaments = await _rugbyService.GetActiveTournamentsForMatchesInResultsState();
 
             foreach (var tournament in activeTournaments)
             {
-                int seasonId = await _rugbyService.GetCurrentProviderSeasonIdForTournament(tournament.Id);
+                int seasonId = await _rugbyService.GetCurrentProviderSeasonIdForTournament(CancellationToken.None, tournament.Id);
 
-                if (_rugbyService.GetSchedulerStateForManagerJobPolling(tournament.Id) == SchedulerStateForManagerJobPolling.NotRunning)
+                if (await _rugbyService.GetSchedulerStateForManagerJobPolling(tournament.Id) == SchedulerStateForManagerJobPolling.NotRunning)
                 {
                     var jobId = ConfigurationManager.AppSettings["ScheduleManagerJob_Logs_CurrentTournaments_JobIdPrefix"] + tournament.Name;
                     var jobCronExpression = ConfigurationManager.AppSettings["ScheduleManagerJob_Logs_CurrentTournaments_JobCronExpression_OneMinute"];

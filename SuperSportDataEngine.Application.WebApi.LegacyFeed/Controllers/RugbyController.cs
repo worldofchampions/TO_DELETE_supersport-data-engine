@@ -70,7 +70,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 
             if (fixtures == null)
             {
-                fixtures = _rugbyService.GetTournamentFixtures(category).Select(res => Mapper.Map<Fixture>(res));
+                fixtures = (await _rugbyService.GetTournamentFixtures(category)).Select(res => Mapper.Map<Fixture>(res));
                 _cache.Add(cacheKey, fixtures);
             }
 
@@ -93,7 +93,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 
             if (results == null)
             {
-                results = _rugbyService.GetTournamentResults(category).Select(res => Mapper.Map<Result>(res));
+                results = (await _rugbyService.GetTournamentResults(category)).Select(res => Mapper.Map<Result>(res));
                 _cache.Add(cacheKey, results);
             }
 
@@ -116,7 +116,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 
             if (logs == null)
             {
-                logs =  _rugbyService.GetLogs(category).Select(log => Mapper.Map<Log>(log));
+                logs =  (await _rugbyService.GetLogs(category)).Select(log => Mapper.Map<Log>(log));
                 _cache.Add(cacheKey, logs);
             }
             return Ok(logs);

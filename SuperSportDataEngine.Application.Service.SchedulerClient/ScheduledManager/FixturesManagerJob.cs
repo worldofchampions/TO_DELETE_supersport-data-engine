@@ -47,8 +47,7 @@
         private async Task<int> CreateChildJobsForFetchingOneMonthsFixturesForActiveTournaments()
         {
             var activeTournaments =
-                    _rugbyService
-                    .GetActiveTournaments();
+                    await _rugbyService.GetActiveTournaments();
 
             foreach (var tournament in activeTournaments)
             {
@@ -84,10 +83,10 @@
         private async Task DeleteChildJobsForInactiveAndEndedTournaments()
         {
             var endedTournaments =
-                _rugbyService.GetEndedTournaments();
+                await _rugbyService.GetEndedTournaments();
 
             var inactiveTournaments =
-                _rugbyService.GetInactiveTournaments();
+                await _rugbyService.GetInactiveTournaments();
 
             await DeleteJobsForFetchingFixturesForTournaments(endedTournaments);
             await DeleteJobsForFetchingFixturesForTournaments(inactiveTournaments);
@@ -133,17 +132,16 @@
         private async Task<int> CreateChildJobsForFetchingFixturesForTournamentSeason()
         {
             var currentTournaments =
-                _rugbyService
-                .GetCurrentTournaments();
+                await _rugbyService.GetCurrentTournaments();
 
             foreach (var tournament in currentTournaments)
             {
-                if (_rugbyService.GetSchedulerStateForManagerJobPolling(tournament.Id) == SchedulerStateForManagerJobPolling.NotRunning)
+                if ((await _rugbyService.GetSchedulerStateForManagerJobPolling(tournament.Id)) == SchedulerStateForManagerJobPolling.NotRunning)
                 {
                     var jobId = ConfigurationManager.AppSettings["ScheduleManagerJob_Fixtures_CurrentTournaments_JobIdPrefix"] + tournament.Name;
                     var jobCronExpression = ConfigurationManager.AppSettings["ScheduleManagerJob_Fixtures_CurrentTournaments_JobCronExpression"];
 
-                    var seasonId = await _rugbyService.GetCurrentProviderSeasonIdForTournament(tournament.Id);
+                    var seasonId = await _rugbyService.GetCurrentProviderSeasonIdForTournament(CancellationToken.None, tournament.Id);
 
                     RecurringJob.AddOrUpdate(
                         jobId,

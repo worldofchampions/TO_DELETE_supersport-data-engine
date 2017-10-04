@@ -42,7 +42,7 @@
         private async Task<int> DeleteChildJobsForFetchingMatchDataForFixturesEnded()
         {
             var endedGames =
-                    _rugbyService.GetEndedFixtures();
+                    await _rugbyService.GetEndedFixtures();
 
             foreach (var fixture in endedGames)
             {
@@ -67,12 +67,12 @@
         private async Task<int> CreateChildJobsForFetchingLiveMatchDataForCurrentFixtures()
         {
             var currentTournaments =
-                    _rugbyService.GetCurrentTournaments();
+                    await _rugbyService.GetCurrentTournaments();
 
             foreach (var tournament in currentTournaments)
             {
                 var liveFixtures =
-                    _rugbyService.GetLiveFixturesForCurrentTournament(tournament.Id);
+                    await _rugbyService.GetLiveFixturesForCurrentTournament(CancellationToken.None, tournament.Id);
 
                 foreach (var fixture in liveFixtures)
                 {

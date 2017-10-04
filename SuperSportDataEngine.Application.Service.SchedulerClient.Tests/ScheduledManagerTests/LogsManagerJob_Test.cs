@@ -12,6 +12,7 @@ using SuperSportDataEngine.Tests.Common.Repositories.Test;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.ScheduledManagerTests
@@ -46,7 +47,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
         [Test]
         public async Task LogsManagerJob_NoCurrentTournaments_NoJobsScheduled()
         {
-            MockRugbyService.Setup(r => r.GetActiveTournamentsForMatchesInResultsState()).Returns(new List<RugbyTournament>() { });
+            MockRugbyService.Setup(r => r.GetActiveTournamentsForMatchesInResultsState()).Returns(Task.FromResult(new List<RugbyTournament>() { }.AsEnumerable()));
 
             await LogsManagerJob.DoWorkAsync();
 
@@ -62,46 +63,49 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
         public async Task LogsManagerJob_OneCurrentTournament_GetActiveTournamentsForMatchesInResultsStateOnce()
         {
             MockRugbyService.Setup(r => r.GetActiveTournamentsForMatchesInResultsState()).Returns(
-            new List<RugbyTournament>() {
+            Task.FromResult(new List<RugbyTournament>() {
                 new RugbyTournament(){
                     Id = Guid.NewGuid()
                 }
-            });
+            }.AsEnumerable()));
 
             await LogsManagerJob.DoWorkAsync();
 
-            MockRugbyService.Verify(r => r.GetCurrentProviderSeasonIdForTournament(It.IsAny<Guid>()), Times.Once());
+            MockRugbyService.Verify(r => r.GetCurrentProviderSeasonIdForTournament(It.IsAny<CancellationToken>(), It.IsAny<Guid>()), Times.Once());
         }
 
         [Test]
         public async Task LogsManagerJob_TwoCurrentTournament_GetActiveTournamentsForMatchesInResultsStateTwice()
         {
-            MockRugbyService.Setup(r => r.GetActiveTournamentsForMatchesInResultsState()).Returns(new List<RugbyTournament>() {
-                new RugbyTournament(){
-                    Id = Guid.NewGuid()
-                },
-                new RugbyTournament(){
-                    Id = Guid.NewGuid()
-                }
-            });
+            MockRugbyService.Setup(r => r.GetActiveTournamentsForMatchesInResultsState()).Returns(
+                Task.FromResult(
+                new List<RugbyTournament>() {
+                    new RugbyTournament(){
+                        Id = Guid.NewGuid()
+                    },
+                    new RugbyTournament(){
+                        Id = Guid.NewGuid()
+                    }
+            }.AsEnumerable()));
 
             await LogsManagerJob.DoWorkAsync();
 
-            MockRugbyService.Verify(r => r.GetCurrentProviderSeasonIdForTournament(It.IsAny<Guid>()), Times.Exactly(2));
+            MockRugbyService.Verify(r => r.GetCurrentProviderSeasonIdForTournament(It.IsAny<CancellationToken>(), It.IsAny<Guid>()), Times.Exactly(2));
         }
 
         [Test]
         public async Task LogsManagerJob_ScheduleLogsForTournamentXAndSeason2018()
         {
-            MockRugbyService.Setup(r => r.GetActiveTournamentsForMatchesInResultsState()).Returns(new List<RugbyTournament>() {
+            MockRugbyService.Setup(r => r.GetActiveTournamentsForMatchesInResultsState()).Returns(
+                Task.FromResult(new List<RugbyTournament>() {
                 new RugbyTournament(){
                     Id = Guid.NewGuid(),
                     Name = "X"
                 }
-            });
+            }.AsEnumerable()));
 
-            MockRugbyService.Setup(r => r.GetCurrentProviderSeasonIdForTournament(It.IsAny<Guid>())).Returns(Task.FromResult(2018));
-            MockRugbyService.Setup(r => r.GetSchedulerStateForManagerJobPolling(It.IsAny<Guid>())).Returns(SchedulerStateForManagerJobPolling.NotRunning);
+            MockRugbyService.Setup(r => r.GetCurrentProviderSeasonIdForTournament(It.IsAny<CancellationToken>(), It.IsAny<Guid>())).Returns(Task.FromResult(2018));
+            MockRugbyService.Setup(r => r.GetSchedulerStateForManagerJobPolling(It.IsAny<Guid>())).Returns(Task.FromResult(SchedulerStateForManagerJobPolling.NotRunning));
 
             await LogsManagerJob.DoWorkAsync();
 
@@ -130,15 +134,16 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
 
             await MockSchedulerTrackingSeasonRepository.Object.SaveAsync();
 
-            MockRugbyService.Setup(r => r.GetActiveTournamentsForMatchesInResultsState()).Returns(new List<RugbyTournament>() {
+            MockRugbyService.Setup(r => r.GetActiveTournamentsForMatchesInResultsState()).Returns(
+                Task.FromResult(new List<RugbyTournament>() {
                 new RugbyTournament(){
                     Id = tournamentId,
                     Name = "X"
                 }
-            });
+            }.AsEnumerable()));
 
-            MockRugbyService.Setup(r => r.GetCurrentProviderSeasonIdForTournament(It.IsAny<Guid>())).Returns(Task.FromResult(2018));
-            MockRugbyService.Setup(r => r.GetSchedulerStateForManagerJobPolling(It.IsAny<Guid>())).Returns(SchedulerStateForManagerJobPolling.NotRunning);
+            MockRugbyService.Setup(r => r.GetCurrentProviderSeasonIdForTournament(It.IsAny<CancellationToken>(), It.IsAny<Guid>())).Returns(Task.FromResult(2018));
+            MockRugbyService.Setup(r => r.GetSchedulerStateForManagerJobPolling(It.IsAny<Guid>())).Returns(Task.FromResult(SchedulerStateForManagerJobPolling.NotRunning));
 
             await LogsManagerJob.DoWorkAsync();
 
