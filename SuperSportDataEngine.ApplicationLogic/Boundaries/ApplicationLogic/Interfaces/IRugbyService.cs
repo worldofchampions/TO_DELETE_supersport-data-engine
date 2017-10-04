@@ -28,5 +28,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Inte
         IEnumerable<RugbyFixture> GetTournamentResults(string tournamentSlug);
         Guid GetTournamentId(string tournamentSlug);
         IEnumerable<RugbyGroupedLog> GetGroupedLogs(string tournamentSlug);
+        IEnumerable<RugbyFixture> GetCurrentDayFixturesForActiveTournaments();
     }
 }

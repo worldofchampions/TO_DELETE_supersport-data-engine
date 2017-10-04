@@ -95,6 +95,7 @@
     <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\SchedulerDashboardUser.cs" />
     <Compile Include="Boundaries\Repository.MongoDb.PayloadData\Interfaces\IMongoDbRugbyRepository.cs" />
     <Compile Include="Boundaries\Repository.MongoDb.PayloadData\Interfaces\ITemporaryExampleMongoDbRepository.cs" />
+    <Compile Include="Constants\ProviderGameStateConstant.cs" />
     <Compile Include="Entities\Legacy\LegacyZoneSiteEntity.cs" />
     <Compile Include="Entities\Legacy\LegacyAuthFeedConsumerEntity.cs" />
     <Compile Include="Entities\Legacy\Mappers\LegacyAuthFeedConsumerMapper.cs" />

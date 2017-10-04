@@ -311,5 +311,14 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             return flatLogs;
         }
+
+        public IEnumerable<RugbyFixture> GetCurrentDayFixturesForActiveTournaments()
+        {
+            var todayFixtures = _rugbyFixturesRepository.All()
+                 .Where(f => f.StartDateTime.UtcDateTime.Date == DateTime.UtcNow.Date)
+                 .ToList();
+
+            return todayFixtures;
+        }
     }
 }
