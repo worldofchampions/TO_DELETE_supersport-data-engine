@@ -318,7 +318,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         public async Task <IEnumerable<RugbyFixture>> GetCurrentDayFixturesForActiveTournaments()
         {
             var todayFixtures = (await _rugbyFixturesRepository.AllAsync())
-                 .Where(f => f.StartDateTime.UtcDateTime.Date == DateTime.UtcNow.Date)
+                 .Where(f => f.StartDateTime.UtcDateTime.Date == DateTime.UtcNow.Date && f.RugbyTournament.IsEnabled)
                  .ToList();
 
             return todayFixtures;

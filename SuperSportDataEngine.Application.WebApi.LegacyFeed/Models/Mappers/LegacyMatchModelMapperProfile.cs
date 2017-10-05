@@ -9,7 +9,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
     {
         public LegacyMatchModelMapperProfile()
         {
-            CreateMap<RugbyFixture, MatchModel>()
+            CreateMap<RugbyFixture, Match>()
 
                 // For Away team 
                 .ForMember(dest => dest.AwayTeam, expression => expression.MapFrom(

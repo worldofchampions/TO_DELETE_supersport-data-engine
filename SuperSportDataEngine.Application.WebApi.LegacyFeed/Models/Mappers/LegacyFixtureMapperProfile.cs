@@ -9,7 +9,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
         {
             CreateMap<RugbyFixture, Fixture>()
 
-                .IncludeBase<RugbyFixture, MatchModel>()
+                .IncludeBase<RugbyFixture, Match>()
 
                 .ForMember(dest => dest.Sport, expression => expression.UseValue(SportType.Rugby))
 

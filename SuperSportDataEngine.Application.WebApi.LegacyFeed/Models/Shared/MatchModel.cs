@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models
 {
   //  [Serializable]
-    public class MatchModel
+    public class Match
     {
         public string LeagueName { get; set; }
         public string LeagueShortName { get; set; }

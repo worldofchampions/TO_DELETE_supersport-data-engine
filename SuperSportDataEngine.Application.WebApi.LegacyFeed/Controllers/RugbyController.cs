@@ -62,15 +62,15 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         /// <returns></returns>
         [HttpGet]
         [Route("live")]
-        [ResponseType(typeof(Fixture))]
+        [ResponseType(typeof(Match))]
         public async Task<IHttpActionResult> GetTodayFixtures()
         {
             var cacheKey = $"rugby/live/today";
-            var fixtures = await _cache.GetAsync<IEnumerable<Fixture>>(cacheKey);
+            var fixtures = await _cache.GetAsync<IEnumerable<Match>>(cacheKey);
 
             if (fixtures == null)
             {
-                 fixtures = (await _rugbyService.GetCurrentDayFixturesForActiveTournaments()).Select(res => Mapper.Map<Fixture>(res));
+                 fixtures = (await _rugbyService.GetCurrentDayFixturesForActiveTournaments()).Select(res => Mapper.Map<Match>(res));
                 _cache.Add(cacheKey, fixtures);
             }
 
