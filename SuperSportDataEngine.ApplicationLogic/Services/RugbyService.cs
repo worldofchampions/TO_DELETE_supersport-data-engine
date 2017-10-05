@@ -137,9 +137,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             DateTimeOffset now = DateTimeOffset.UtcNow;
             DateTimeOffset nowPlus15Minutes = DateTimeOffset.UtcNow.AddMinutes(15);
 
-            // Fake a game being played live! Specify the providerFixtureId
+            //Fake a game being played live!Specify the providerFixtureId
             //return
-            //    _rugbyFixturesRepository
+            //    (await _rugbyFixturesRepository.AllAsync())
             //        .Where(f => f.RugbyTournament.Id == tournamentId && (f.ProviderFixtureId == 20171211210 || f.ProviderFixtureId == 20171211220));
 
             try
