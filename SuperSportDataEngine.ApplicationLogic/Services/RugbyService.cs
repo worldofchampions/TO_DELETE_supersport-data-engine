@@ -1,10 +1,8 @@
-﻿using AutoMapper;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
-using SuperSportDataEngine.ApplicationLogic.Entities;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,7 +15,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
     public class RugbyService : IRugbyService
     {
         // TODO: This was commented out when deleting old Log DB table.
-        //private readonly IBaseEntityFrameworkRepository<Log> _logRepository;
+        private readonly IBaseEntityFrameworkRepository<RugbyFlatLog> _rugbyFlatLogsRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyTournament> _rugbyTournamentRepository;
         private readonly IBaseEntityFrameworkRepository<RugbySeason> _rugbySeasonRepository;
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> _schedulerTrackingRugbyTournamentRepository;
@@ -26,8 +24,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> _schedulerTrackingRugbyFixtureRepository;
 
         public RugbyService(
-            // TODO: This was commented out when deleting old Log DB table.
-            //IBaseEntityFrameworkRepository<Log> logRepository,
+            IBaseEntityFrameworkRepository<RugbyFlatLog> logRepository,
             IBaseEntityFrameworkRepository<RugbyTournament> rugbyTournamentRepository,
             IBaseEntityFrameworkRepository<RugbySeason> rugbySeasonRepository,
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> schedulerTrackingRugbySeasonRepository,
@@ -35,8 +32,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> schedulerTrackingRugbyTournamentRepository,
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> schedulerTrackingRugbyFixtureRepository)
         {
-            // TODO: This was commented out when deleting old Log DB table.
-            //_logRepository = logRepository;
+            _rugbyFlatLogsRepository = logRepository;
             _rugbyTournamentRepository = rugbyTournamentRepository;
             _rugbySeasonRepository = rugbySeasonRepository;
             _schedulerTrackingRugbySeasonRepository = schedulerTrackingRugbySeasonRepository;
@@ -45,29 +41,40 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             _schedulerTrackingRugbyTournamentRepository = schedulerTrackingRugbyTournamentRepository;
         }
 
-        public IEnumerable<LogEntity> GetLogs(string tournamentName)
+        public async Task<IEnumerable<RugbyFlatLog>> GetLogs(string slug)
         {
-            // TODO: This was commented out when deleting old Log DB table.
-            //var logs = _logRepository.All().Select(log => Mapper.Map<LogEntity>(log));
-            //return logs;
-            return null;
+            var tournamentId = await GetTournamentId(slug);
+
+            var flatLogs = (await _rugbyFlatLogsRepository.AllAsync())
+                .Where(t => t.RugbyTournament.IsEnabled && t.RugbyTournamentId == tournamentId).ToList();
+
+            return flatLogs;
         }
 
-        public IEnumerable<RugbyTournament> GetActiveTournaments()
+        private SemaphoreSlim GetActiveTournamentsControl = new SemaphoreSlim(1, 1);
+        public async Task<IEnumerable<RugbyTournament>> GetActiveTournaments()
         {
-            return _rugbyTournamentRepository.Where(c => c.IsEnabled);
+            try
+            {
+                await GetActiveTournamentsControl.WaitAsync();
+                return (await _rugbyTournamentRepository.AllAsync()).Where(c => c.IsEnabled).ToList();
+            }
+            finally
+            {
+                GetActiveTournamentsControl.Release();
+            }
         }
 
-        public IEnumerable<RugbyTournament> GetCurrentTournaments()
+        public async Task<IEnumerable<RugbyTournament>> GetCurrentTournaments()
         {
-            var tournamentsGuidsThatAreCurrent = _schedulerTrackingRugbySeasonRepository.Where(s => s.RugbySeasonStatus == RugbySeasonStatus.InProgress).Select(s => s.TournamentId);
-            return _rugbyTournamentRepository.Where(t => t.IsEnabled && tournamentsGuidsThatAreCurrent.Contains(t.Id)).Select(t => t);
+            var tournamentsGuidsThatAreCurrent = (await _schedulerTrackingRugbySeasonRepository.AllAsync()).Where(s => s.RugbySeasonStatus == RugbySeasonStatus.InProgress).Select(s => s.TournamentId);
+            return (await _rugbyTournamentRepository.AllAsync()).Where(t => t.IsEnabled && tournamentsGuidsThatAreCurrent.Contains(t.Id)).Select(t => t).ToList();
         }
 
-        public SchedulerStateForManagerJobPolling GetSchedulerStateForManagerJobPolling(Guid tournamentId)
+        public async Task<SchedulerStateForManagerJobPolling> GetSchedulerStateForManagerJobPolling(Guid tournamentId)
         {
             var season = 
-                _schedulerTrackingRugbySeasonRepository
+                (await _schedulerTrackingRugbySeasonRepository.AllAsync())
                     .Where(
                         s => s.TournamentId == tournamentId && 
                         ( s.RugbySeasonStatus == RugbySeasonStatus.InProgress ||
@@ -77,44 +84,55 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             return season != null ? season.SchedulerStateForManagerJobPolling : SchedulerStateForManagerJobPolling.Undefined;
         }
 
-        public IEnumerable<RugbyTournament> GetEndedTournaments()
+        public async Task<IEnumerable<RugbyTournament>> GetEndedTournaments()
         {
             var tournamentGuids = 
-                _schedulerTrackingRugbySeasonRepository
+                (await _schedulerTrackingRugbySeasonRepository.AllAsync())
                     .Where(
                         season => season.RugbySeasonStatus == RugbySeasonStatus.Ended && 
                         season.SchedulerStateForManagerJobPolling == SchedulerStateForManagerJobPolling.Running)
                     .Select(s => s.TournamentId);
 
             return 
-                _rugbyTournamentRepository
+                (await _rugbyTournamentRepository.AllAsync())
                     .Where(tournament => tournamentGuids.Contains(tournament.Id))
                     .Select(t => t);
         }
 
-        public IEnumerable<RugbyTournament> GetInactiveTournaments()
+        public async Task<IEnumerable<RugbyTournament>> GetInactiveTournaments()
         {
             return 
-                _rugbyTournamentRepository
+                (await _rugbyTournamentRepository.AllAsync())
                     .Where(t => t.IsEnabled == false);
         }
 
-        public int GetCurrentProviderSeasonIdForTournament(Guid tournamentId)
+        private static SemaphoreSlim GetCurrentProviderSeasonIdForTournamentControl = new SemaphoreSlim(1, 1);
+        public async Task<int> GetCurrentProviderSeasonIdForTournament(CancellationToken cancellationToken, Guid tournamentId)
         {
-            var currentSeason =
-                _rugbySeasonRepository
-                    .Where(season => season.RugbyTournament.Id == tournamentId && season.IsCurrent)
-                    .FirstOrDefault();
-
-            if(currentSeason != null)
+            try
             {
-                return currentSeason.ProviderSeasonId;
+                await GetCurrentProviderSeasonIdForTournamentControl.WaitAsync(cancellationToken);
+
+                var currentSeason =
+                        (await _rugbySeasonRepository.AllAsync())
+                            .Where(season => season.RugbyTournament.Id == tournamentId && season.IsCurrent)
+                            .FirstOrDefault();
+
+                if (currentSeason != null)
+                {
+                    return currentSeason.ProviderSeasonId;
+                }
+            }
+            finally
+            {
+                GetCurrentProviderSeasonIdForTournamentControl.Release();
             }
 
             return DateTime.Now.Year;
         }
 
-        public IEnumerable<RugbyFixture> GetLiveFixturesForCurrentTournament(Guid tournamentId)
+        private static SemaphoreSlim GetLiveFixturesForCurrentTournamentControl = new SemaphoreSlim(1, 1);
+        public async Task<IEnumerable<RugbyFixture>> GetLiveFixturesForCurrentTournament(CancellationToken cancellationToken, Guid tournamentId)
         {
             DateTimeOffset now = DateTimeOffset.UtcNow;
             DateTimeOffset nowPlus15Minutes = DateTimeOffset.UtcNow.AddMinutes(15);
@@ -122,57 +140,80 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             // Fake a game being played live! Specify the providerFixtureId
             //return
             //    _rugbyFixturesRepository
-            //        .Where(f => f.RugbyTournament.Id == tournamentId && f.ProviderFixtureId == 20171211210);
+            //        .Where(f => f.RugbyTournament.Id == tournamentId && (f.ProviderFixtureId == 20171211210 || f.ProviderFixtureId == 20171211220));
 
-            return
-                _rugbyFixturesRepository
-                    .Where(
-                        fixture => fixture.RugbyTournament.Id == tournamentId &&
-                        ((fixture.RugbyFixtureStatus != RugbyFixtureStatus.GameEnd &&
-                          fixture.StartDateTime <= nowPlus15Minutes && fixture.StartDateTime >= now) ||
-                         (fixture.RugbyFixtureStatus == RugbyFixtureStatus.InProgress)));
+            try
+            {
+                await GetLiveFixturesForCurrentTournamentControl.WaitAsync(cancellationToken);
+
+                var liveGames = (await _rugbyFixturesRepository.AllAsync())
+                        .Where(
+                            fixture => fixture.RugbyTournament.Id == tournamentId &&
+                            ((fixture.RugbyFixtureStatus != RugbyFixtureStatus.Final &&
+                              fixture.StartDateTime <= nowPlus15Minutes && fixture.StartDateTime >= now) ||
+                             (fixture.RugbyFixtureStatus == RugbyFixtureStatus.InProgress))).ToList();
+
+                return liveGames;
+            }
+            finally
+            {
+                GetLiveFixturesForCurrentTournamentControl.Release();
+            }
         }
 
-        public IEnumerable<RugbyFixture> GetLiveFixtures()
+        private static SemaphoreSlim GetLiveFixturesCountControl = new SemaphoreSlim(1, 1);
+        public async Task<int> GetLiveFixturesCount(CancellationToken cancellationToken)
         {
             DateTimeOffset now = DateTimeOffset.UtcNow;
             DateTimeOffset nowPlus15Minutes = DateTimeOffset.UtcNow.AddMinutes(15);
-            return
-                _rugbyFixturesRepository
-                    .Where(
-                        fixture =>
-                        ((fixture.RugbyFixtureStatus != RugbyFixtureStatus.GameEnd &&
-                           fixture.StartDateTime <= nowPlus15Minutes && fixture.StartDateTime >= now) ||
-                          (fixture.RugbyFixtureStatus == RugbyFixtureStatus.InProgress)));
+
+            try
+            {
+                await GetLiveFixturesCountControl.WaitAsync(cancellationToken);
+
+                int count =
+                    (await _rugbyFixturesRepository.AllAsync())
+                        .Where(
+                            fixture =>
+                            ((fixture.RugbyFixtureStatus != RugbyFixtureStatus.Final &&
+                               fixture.StartDateTime <= nowPlus15Minutes && fixture.StartDateTime >= now) ||
+                              (fixture.RugbyFixtureStatus == RugbyFixtureStatus.InProgress))).ToList().Count();
+
+                return count;
+            }
+            finally
+            {
+                GetLiveFixturesCountControl.Release();
+            }
         }
 
-        public IEnumerable<RugbyFixture> GetEndedFixtures()
+        public async Task<IEnumerable<RugbyFixture>> GetEndedFixtures()
         {
             return
-                _rugbyFixturesRepository.Where(
-                    f => f.RugbyFixtureStatus == RugbyFixtureStatus.GameEnd);
+                (await _rugbyFixturesRepository.AllAsync()).Where(
+                    f => f.RugbyFixtureStatus == RugbyFixtureStatus.Final);
         }
 
-        public bool HasFixtureEnded(long providerFixtureId)
+        public async Task<bool> HasFixtureEnded(long providerFixtureId)
         {
-            var fixture = 
-                    _rugbyFixturesRepository
+            var fixture =
+                    (await _rugbyFixturesRepository.AllAsync())
                         .Where(
                             f => f.ProviderFixtureId == providerFixtureId)
                         .FirstOrDefault();
 
             if (fixture != null)
-                return fixture.RugbyFixtureStatus == RugbyFixtureStatus.GameEnd;
+                return fixture.RugbyFixtureStatus == RugbyFixtureStatus.Final;
 
             // We can't find the fixture in the DB? But still running ingest code?
             // This is a bizzare condition but checking it nonetherless.
             return true;
         }
 
-        public IEnumerable<RugbyTournament> GetActiveTournamentsForMatchesInResultsState()
+        public async Task<IEnumerable<RugbyTournament>> GetActiveTournamentsForMatchesInResultsState()
         {
             var tournamentsThatHaveFixturesInResultState =
-                    _rugbyFixturesRepository
+                    (await _rugbyFixturesRepository.AllAsync())
                         .Where(f => f.RugbyFixtureStatus == RugbyFixtureStatus.Result)
                         .Select(f => f.RugbyTournament);
 
@@ -188,8 +229,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task CleanupSchedulerTrackingRugbyTournamentsTable()
         {
-            var disabledTournamentsIds = _rugbyTournamentRepository.Where(t => t.IsEnabled == false).Select(t => t.Id);
-            var itemsToDelete = _schedulerTrackingRugbyTournamentRepository.Where(t => disabledTournamentsIds.Contains(t.TournamentId)).ToList();
+            var disabledTournamentsIds = (await _rugbyTournamentRepository.AllAsync()).Where(t => t.IsEnabled == false).Select(t => t.Id);
+            var itemsToDelete = (await _schedulerTrackingRugbyTournamentRepository.AllAsync()).Where(t => disabledTournamentsIds.Contains(t.TournamentId)).ToList();
 
             foreach (var item in itemsToDelete)
                 _schedulerTrackingRugbyTournamentRepository.Delete(item);
@@ -199,7 +240,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task CleanupSchedulerTrackingRugbySeasonsTable()
         {
-            var endedSeasons = _schedulerTrackingRugbySeasonRepository
+            var endedSeasons = (await _schedulerTrackingRugbySeasonRepository.AllAsync())
                 .Where(
                     s => s.RugbySeasonStatus == RugbySeasonStatus.Ended)
                 .ToList();
@@ -213,9 +254,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         public async Task CleanupSchedulerTrackingRugbyFixturesTable()
         {
             var nowMinus6Months = DateTimeOffset.UtcNow - TimeSpan.FromDays(180);
-            var itemsToDelete = _schedulerTrackingRugbyFixtureRepository
+            var itemsToDelete = (await _schedulerTrackingRugbyFixtureRepository.AllAsync())
                 .Where(
-                    f => f.RugbyFixtureStatus == RugbyFixtureStatus.GameEnd && f.StartDateTime < nowMinus6Months)
+                    f => f.RugbyFixtureStatus == RugbyFixtureStatus.Final && f.StartDateTime < nowMinus6Months)
                 .ToList();
 
             foreach (var item in itemsToDelete)
@@ -224,10 +265,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             await _schedulerTrackingRugbyFixtureRepository.SaveAsync();
         }
 
-        public IEnumerable<RugbyFixture> GetTournamentFixtures(Guid tournamentId, RugbyFixtureStatus fixtureStatus)
+        public async Task<IEnumerable<RugbyFixture>> GetTournamentFixtures(Guid tournamentId, RugbyFixtureStatus fixtureStatus)
         {
-            var fixtures = _rugbyFixturesRepository
-                .All()
+            var fixtures = (await _rugbyFixturesRepository.AllAsync())
                 .ToList()
                 .Where(t => t.RugbyTournament.Id == tournamentId &&
                 t.RugbyFixtureStatus == fixtureStatus);
@@ -235,38 +275,36 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             return fixtures;
         }
 
-        public IEnumerable<RugbyFixture> GetTournamentFixtures(string tournamentSlug)
+        public async Task<IEnumerable<RugbyFixture>> GetTournamentFixtures(string tournamentSlug)
         {
-            Guid tournamentId = GetTournamentId(tournamentSlug);
+            Guid tournamentId = await GetTournamentId(tournamentSlug);
 
-            var fixtures = GetTournamentFixtures(tournamentId, RugbyFixtureStatus.PreMatch);
+            var fixtures = await GetTournamentFixtures(tournamentId, RugbyFixtureStatus.PreMatch);
 
             return fixtures;
         }
 
-        public Guid GetTournamentId(string tournamentSlug)
+        public async Task<Guid> GetTournamentId(string tournamentSlug)
         {
-            return _rugbyTournamentRepository
-                .All()
+            return (await _rugbyTournamentRepository.AllAsync())
                 .ToList()
                 .Where(f => f.Slug == tournamentSlug)
                 .FirstOrDefault().Id;
         }
 
-        public IEnumerable<RugbyFixture> GetTournamentResults(string tournamentSlug)
+        public async Task<IEnumerable<RugbyFixture>> GetTournamentResults(string tournamentSlug)
         {
-            Guid tournamentId = GetTournamentId(tournamentSlug);
-            var fixturesInResultsState = GetTournamentFixtures(tournamentId, RugbyFixtureStatus.Final);
+            Guid tournamentId = await GetTournamentId(tournamentSlug);
+            var fixturesInResultsState = await GetTournamentFixtures(tournamentId, RugbyFixtureStatus.Final);
 
             return fixturesInResultsState;
         }
 
-        public IEnumerable<RugbyFixture> GetTodayFixtures()
+        public async Task<IEnumerable<RugbyFixture>> GetCurrentDayFixturesForActiveTournaments()
         {
-            var todayFixtures = _rugbyFixturesRepository
-                .All()
-                .ToList()
-                .Where(f => f.StartDateTime.Date == DateTime.UtcNow.Date);
+            var todayFixtures = (await _rugbyFixturesRepository.AllAsync())
+               .ToList()
+               .Where(f => f.StartDateTime.Date == DateTime.UtcNow.Date);
 
             return todayFixtures;
         }

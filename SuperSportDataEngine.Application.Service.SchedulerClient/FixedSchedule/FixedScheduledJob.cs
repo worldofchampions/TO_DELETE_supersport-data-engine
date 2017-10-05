@@ -6,22 +6,19 @@ using System.Configuration;
 using System.Threading;
 using System;
 using Hangfire.Common;
-using SuperSportDataEngine.Application.Service.Common.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
 {
     public class FixedScheduledJob
     {
-        private readonly IRugbyIngestWorkerService _ingestService;
-        private readonly IRugbyService _rugbyService;
         private readonly IRecurringJobManager _recurringJobManager;
+        private readonly IUnityContainer _container;
 
         public FixedScheduledJob(IUnityContainer container)
         {
-            _ingestService = container.Resolve<IRugbyIngestWorkerService>();
-            _rugbyService = container.Resolve<IRugbyService>();
-            _recurringJobManager = container.Resolve<IRecurringJobManager>();
+            _container = container.CreateChildContainer();
+            _recurringJobManager = _container.Resolve<IRecurringJobManager>();
         }
 
         public void UpdateRecurringJobDefinitions()
@@ -41,7 +38,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
         {
             _recurringJobManager.AddOrUpdate(
                 ConfigurationManager.AppSettings["FixedScheduledJob_Lineups_Hourly_JobId"],
-                Job.FromExpression(() => _ingestService.IngestLineupsForUpcomingGames(CancellationToken.None)),
+                Job.FromExpression(() => (_container.Resolve<IRugbyIngestWorkerService>()).IngestLineupsForUpcomingGames(CancellationToken.None)),
                 ConfigurationManager.AppSettings["FixedScheduledJob_Lineups_Hourly_JobCronExpression"],
                 new RecurringJobOptions()
                 {
@@ -54,7 +51,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
         {
             _recurringJobManager.AddOrUpdate(
                 ConfigurationManager.AppSettings["FixedScheduledJob_Cleanup_Monthly_JobId"],
-                Job.FromExpression(() => _rugbyService.CleanupSchedulerTrackingTables(CancellationToken.None)),
+                Job.FromExpression(() => (_container.Resolve<IRugbyService>()).CleanupSchedulerTrackingTables(CancellationToken.None)),
                 ConfigurationManager.AppSettings["FixedScheduledJob_Cleanup_Monthly_JobCronExpression"],
                 new RecurringJobOptions()
                 {
@@ -70,7 +67,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
         {
             _recurringJobManager.AddOrUpdate(
                 ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_Hourly_JobId"],
-                Job.FromExpression(() => _ingestService.IngestResultsForFixturesInResultsState(CancellationToken.None)),
+                Job.FromExpression(() => (_container.Resolve<IRugbyIngestWorkerService>()).IngestResultsForFixturesInResultsState(CancellationToken.None)),
                 ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_Hourly_PollingExpression"],
                 new RecurringJobOptions() {
                     TimeZone = TimeZoneInfo.Utc,
@@ -84,7 +81,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
             // reference data from the provider.
             _recurringJobManager.AddOrUpdate(
                 ConfigurationManager.AppSettings["FixedScheduledJob_ReferenceData_JobId"],
-                Job.FromExpression(() => _ingestService.IngestReferenceData(CancellationToken.None)),
+                Job.FromExpression(() => (_container.Resolve<IRugbyIngestWorkerService>()).IngestReferenceData(CancellationToken.None)),
                 ConfigurationManager.AppSettings["FixedScheduledJob_ReferenceData_JobCronExpression"],
                 new RecurringJobOptions()
                 {
@@ -99,7 +96,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
             // fixtures for the active tournaments for the current year from the provider.
             _recurringJobManager.AddOrUpdate(
                 ConfigurationManager.AppSettings["FixedScheduledJob_FixturesData_JobId"],
-                Job.FromExpression(() => _ingestService.IngestFixturesForActiveTournaments(CancellationToken.None)),
+                Job.FromExpression(() => (_container.Resolve<IRugbyIngestWorkerService>()).IngestFixturesForActiveTournaments(CancellationToken.None)),
                 ConfigurationManager.AppSettings["FixedScheduledJob_FixturesData_JobCronExpression"],
                 new RecurringJobOptions()
                 {
@@ -116,7 +113,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
             // logs for active tournaments for the current year from the provider.
             _recurringJobManager.AddOrUpdate(
                 ConfigurationManager.AppSettings["FixedScheduledJob_LogsData_ActiveTournaments_JobId"],
-                Job.FromExpression(() => _ingestService.IngestLogsForActiveTournaments(CancellationToken.None)),
+                Job.FromExpression(() => (_container.Resolve<IRugbyIngestWorkerService>()).IngestLogsForActiveTournaments(CancellationToken.None)),
                 ConfigurationManager.AppSettings["FixedScheduledJob_LogsData_ActiveTournaments_JobCronExpression"],
                 new RecurringJobOptions()
                 {
@@ -131,7 +128,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
             // logs for current tournaments for the current season from the provider.
             _recurringJobManager.AddOrUpdate(
                 ConfigurationManager.AppSettings["FixedScheduledJob_LogsData_CurrentTournaments_JobId"],
-                Job.FromExpression(() => _ingestService.IngestLogsForCurrentTournaments(CancellationToken.None)),
+                Job.FromExpression(() => (_container.Resolve<IRugbyIngestWorkerService>()).IngestLogsForCurrentTournaments(CancellationToken.None)),
                 ConfigurationManager.AppSettings["FixedScheduledJob_LogsData_CurrentTournaments_JobCronExpression"],
                 TimeZoneInfo.Utc,
                 HangfireQueueConfiguration.NormalPriority);
@@ -144,7 +141,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
         {
             _recurringJobManager.AddOrUpdate(
                 ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_Daily_JobId"],
-                Job.FromExpression(() => _ingestService.IngestResultsForAllFixtures(CancellationToken.None)),
+                Job.FromExpression(() => (_container.Resolve<IRugbyIngestWorkerService>()).IngestResultsForAllFixtures(CancellationToken.None)),
                 ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_Daily_PollingExpression"],
                 new RecurringJobOptions()
                 {
@@ -160,7 +157,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
         {
             _recurringJobManager.AddOrUpdate(
                 ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_OnFixtureDay_JobId"],
-                Job.FromExpression(() => _ingestService.IngestResultsForCurrentDayFixtures(CancellationToken.None)),
+                Job.FromExpression(() => (_container.Resolve<IRugbyIngestWorkerService>()).IngestResultsForCurrentDayFixtures(CancellationToken.None)),
                 ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_OnFixtureDay_PollingExpression"],
                 new RecurringJobOptions()
                 {

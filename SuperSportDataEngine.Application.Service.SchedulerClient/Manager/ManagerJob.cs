@@ -41,25 +41,23 @@
 
             _fixturesManagerJob =
                 new FixturesManagerJob(
-                    _rugbyService,
-                    _rugbyIngestService,
-                    _schedulerTrackingRugbyFixtureRepository,
                     _schedulerTrackingRugbyTournamentRepository,
-                    _schedulerTrackingRugbySeasonRepository);
+                    _schedulerTrackingRugbySeasonRepository,
+                    container.CreateChildContainer());
 
             _liveManagerJob =
                 new LiveManagerJob(
-                    _rugbyService,
-                    _rugbyIngestService,
                     _recurringJobManager,
-                    _schedulerTrackingRugbyFixtureRepository);
+                    _schedulerTrackingRugbyFixtureRepository,
+                    container.CreateChildContainer());
 
             _logsManagerJob =
                 new LogsManagerJob(
                     _rugbyService,
                     _rugbyIngestService,
                     _recurringJobManager,
-                    _schedulerTrackingRugbySeasonRepository);
+                    _schedulerTrackingRugbySeasonRepository,
+                    container.CreateChildContainer());
         }
 
         private void ConfigureTimer()

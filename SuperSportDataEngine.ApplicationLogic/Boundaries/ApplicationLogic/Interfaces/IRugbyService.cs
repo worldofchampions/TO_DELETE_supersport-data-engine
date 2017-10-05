@@ -1,5 +1,4 @@
 ﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-using SuperSportDataEngine.ApplicationLogic.Entities;
 using System.Collections.Generic;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
 using System;
@@ -11,23 +10,23 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Inte
 {
     public interface IRugbyService
     {
-        IEnumerable<LogEntity> GetLogs(string tournamentName);
-        IEnumerable<RugbyTournament> GetActiveTournaments();
-        IEnumerable<RugbyTournament> GetInactiveTournaments();
-        IEnumerable<RugbyTournament> GetCurrentTournaments();
-        SchedulerStateForManagerJobPolling GetSchedulerStateForManagerJobPolling(Guid tournamentId);
-        IEnumerable<RugbyTournament> GetEndedTournaments();
-        int GetCurrentProviderSeasonIdForTournament(Guid tournamentId);
-        IEnumerable<RugbyFixture> GetLiveFixturesForCurrentTournament(Guid tournamentId);
-        IEnumerable<RugbyFixture> GetLiveFixtures();
-        IEnumerable<RugbyFixture> GetEndedFixtures();
-        bool HasFixtureEnded(long providerFixtureId);
-        IEnumerable<RugbyTournament> GetActiveTournamentsForMatchesInResultsState();
+        Task<IEnumerable<RugbyFlatLog>> GetLogs(string tournamentSlug);
+        Task<IEnumerable<RugbyTournament>> GetActiveTournaments();
+        Task<IEnumerable<RugbyTournament>> GetInactiveTournaments();
+        Task<IEnumerable<RugbyTournament>> GetCurrentTournaments();
+        Task<SchedulerStateForManagerJobPolling> GetSchedulerStateForManagerJobPolling(Guid tournamentId);
+        Task<IEnumerable<RugbyTournament>> GetEndedTournaments();
+        Task<int> GetCurrentProviderSeasonIdForTournament(CancellationToken cancellationToken, Guid tournamentId);
+        Task<IEnumerable<RugbyFixture>> GetLiveFixturesForCurrentTournament(CancellationToken cancellationToken, Guid tournamentId);
+        Task<int> GetLiveFixturesCount(CancellationToken cancellationToken);
+        Task<IEnumerable<RugbyFixture>> GetEndedFixtures();
+        Task<bool> HasFixtureEnded(long providerFixtureId);
+        Task<IEnumerable<RugbyTournament>> GetActiveTournamentsForMatchesInResultsState();
         Task CleanupSchedulerTrackingTables(CancellationToken none);
-        IEnumerable<RugbyFixture> GetTournamentFixtures(Guid tournamentId, RugbyFixtureStatus fixtureStatus);
-        IEnumerable<RugbyFixture> GetTournamentFixtures(string tournamentName);
-        IEnumerable<RugbyFixture> GetTournamentResults(string tournamentSlug);
-        Guid GetTournamentId(string tournamentSlug);
-        IEnumerable<RugbyFixture> GetTodayFixtures();
+        Task<IEnumerable<RugbyFixture>> GetTournamentFixtures(Guid tournamentId, RugbyFixtureStatus fixtureStatus);
+        Task<IEnumerable<RugbyFixture>> GetTournamentFixtures(string tournamentName);
+        Task<IEnumerable<RugbyFixture>> GetTournamentResults(string tournamentSlug);
+        Task<Guid> GetTournamentId(string tournamentSlug);
+        Task<IEnumerable<RugbyFixture>> GetCurrentDayFixturesForActiveTournaments();
     }
 }

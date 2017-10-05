@@ -77,83 +77,83 @@
 
         private static void ApplyRegistrationsForRepositoryEntityFrameworkPublicSportData(IUnityContainer container)
         {
-            container.RegisterType<DbContext, PublicSportDataContext>(PublicSportDataRepository, new PerThreadLifetimeManager());
+            container.RegisterType<DbContext, PublicSportDataContext>(PublicSportDataRepository, new HierarchicalLifetimeManager());
 
             container.RegisterType<IBaseEntityFrameworkRepository<RugbyCommentary>, BaseEntityFrameworkRepository<RugbyCommentary>>(
-                new ContainerControlledLifetimeManager(),
+                new HierarchicalLifetimeManager(),
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyCommentary>(container.Resolve<DbContext>(PublicSportDataRepository))));
 
             container.RegisterType<IBaseEntityFrameworkRepository<RugbyFixture>, BaseEntityFrameworkRepository<RugbyFixture>>(
-                new ContainerControlledLifetimeManager(),
+                new HierarchicalLifetimeManager(),
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyFixture>(container.Resolve<DbContext>(PublicSportDataRepository))));
 
             container.RegisterType<IBaseEntityFrameworkRepository<RugbyFlatLog>, BaseEntityFrameworkRepository<RugbyFlatLog>>(
-                new ContainerControlledLifetimeManager(),
+                new HierarchicalLifetimeManager(),
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyFlatLog>(container.Resolve<DbContext>(PublicSportDataRepository))));
 
             container.RegisterType<IBaseEntityFrameworkRepository<RugbyGroupedLog>, BaseEntityFrameworkRepository<RugbyGroupedLog>>(
-                new ContainerControlledLifetimeManager(),
+                new HierarchicalLifetimeManager(),
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyGroupedLog>(container.Resolve<DbContext>(PublicSportDataRepository))));
 
             container.RegisterType<IBaseEntityFrameworkRepository<RugbyLogGroup>, BaseEntityFrameworkRepository<RugbyLogGroup>>(
-                new ContainerControlledLifetimeManager(),
+                new HierarchicalLifetimeManager(),
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyLogGroup>(container.Resolve<DbContext>(PublicSportDataRepository))));
 
             container.RegisterType<IBaseEntityFrameworkRepository<RugbyMatchStatistics>, BaseEntityFrameworkRepository<RugbyMatchStatistics>>(
-                new ContainerControlledLifetimeManager(),
+                new HierarchicalLifetimeManager(),
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyMatchStatistics>(container.Resolve<DbContext>(PublicSportDataRepository))));
 
             container.RegisterType<IBaseEntityFrameworkRepository<RugbyPlayer>, BaseEntityFrameworkRepository<RugbyPlayer>>(
-                new ContainerControlledLifetimeManager(),
+                new HierarchicalLifetimeManager(),
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyPlayer>(container.Resolve<DbContext>(PublicSportDataRepository))));
 
             container.RegisterType<IBaseEntityFrameworkRepository<RugbyPlayerLineup>, BaseEntityFrameworkRepository<RugbyPlayerLineup>>(
-                new ContainerControlledLifetimeManager(),
+                new HierarchicalLifetimeManager(),
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyPlayerLineup>(container.Resolve<DbContext>(PublicSportDataRepository))));
 
             container.RegisterType<IBaseEntityFrameworkRepository<RugbySeason>, BaseEntityFrameworkRepository<RugbySeason>>(
-                new ContainerControlledLifetimeManager(),
+                new HierarchicalLifetimeManager(),
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbySeason>(container.Resolve<DbContext>(PublicSportDataRepository))));
 
             container.RegisterType<IBaseEntityFrameworkRepository<RugbyTeam>, BaseEntityFrameworkRepository<RugbyTeam>>(
-                new ContainerControlledLifetimeManager(),
+                new HierarchicalLifetimeManager(),
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyTeam>(container.Resolve<DbContext>(PublicSportDataRepository))));
 
             container.RegisterType<IBaseEntityFrameworkRepository<RugbyTournament>, BaseEntityFrameworkRepository<RugbyTournament>>(
-                new ContainerControlledLifetimeManager(),
+                new HierarchicalLifetimeManager(),
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyTournament>(container.Resolve<DbContext>(PublicSportDataRepository))));
 
             container.RegisterType<IBaseEntityFrameworkRepository<RugbyVenue>, BaseEntityFrameworkRepository<RugbyVenue>>(
-                new ContainerControlledLifetimeManager(),
+                new HierarchicalLifetimeManager(),
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyVenue>(container.Resolve<DbContext>(PublicSportDataRepository))));
         }
 
         private static void ApplyRegistrationsForRepositoryEntityFrameworkSystemSportData(IUnityContainer container)
         {
-            container.RegisterType<DbContext, SystemSportDataContext>(SystemSportDataRepository, new PerThreadLifetimeManager());
+            container.RegisterType<DbContext, SystemSportDataContext>(SystemSportDataRepository, new HierarchicalLifetimeManager());
 
             container.RegisterType<IBaseEntityFrameworkRepository<LegacyAuthFeedConsumer>, BaseEntityFrameworkRepository<LegacyAuthFeedConsumer>>(
-                new ContainerControlledLifetimeManager(),
+                new HierarchicalLifetimeManager(),
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<LegacyAuthFeedConsumer>(container.Resolve<DbContext>(SystemSportDataRepository))));
 
             container.RegisterType<IBaseEntityFrameworkRepository<LegacyZoneSite>, BaseEntityFrameworkRepository<LegacyZoneSite>>(
-                new ContainerControlledLifetimeManager(),
+                new HierarchicalLifetimeManager(),
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<LegacyZoneSite>(container.Resolve<DbContext>(SystemSportDataRepository))));
 
             container.RegisterType<IBaseEntityFrameworkRepository<SchedulerDashboardUser>, BaseEntityFrameworkRepository<SchedulerDashboardUser>>(
-                new ContainerControlledLifetimeManager(),
+                new HierarchicalLifetimeManager(),
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<SchedulerDashboardUser>(container.Resolve<DbContext>(SystemSportDataRepository))));
 
             container.RegisterType<IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture>, BaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture>>(
-                new ContainerControlledLifetimeManager(),
+                new HierarchicalLifetimeManager(),
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture>(container.Resolve<DbContext>(SystemSportDataRepository))));
 
             container.RegisterType<IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason>, BaseEntityFrameworkRepository<SchedulerTrackingRugbySeason>>(
-                new ContainerControlledLifetimeManager(),
+                new HierarchicalLifetimeManager(),
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<SchedulerTrackingRugbySeason>(container.Resolve<DbContext>(SystemSportDataRepository))));
 
             container.RegisterType<IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament>, BaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament>>(
-                new ContainerControlledLifetimeManager(),
+                new HierarchicalLifetimeManager(),
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament>(container.Resolve<DbContext>(SystemSportDataRepository))));
         }
 
