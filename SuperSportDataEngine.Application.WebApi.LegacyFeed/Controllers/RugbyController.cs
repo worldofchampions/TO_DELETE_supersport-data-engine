@@ -70,7 +70,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 
             if (fixtures == null)
             {
-                fixtures = _rugbyService.GetTournamentFixtures(category).Select(res => Mapper.Map<Fixture>(res));
+                fixtures = (await _rugbyService.GetTournamentFixtures(category)).Select(res => Mapper.Map<Fixture>(res));
                 _cache.Add(cacheKey, fixtures);
             }
 
@@ -93,7 +93,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 
             if (results == null)
             {
-                results = _rugbyService.GetTournamentResults(category).Select(res => Mapper.Map<Result>(res));
+                results = (await _rugbyService.GetTournamentResults(category)).Select(res => Mapper.Map<Result>(res));
                 _cache.Add(cacheKey, results);
             }
 
@@ -129,7 +129,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
                 return Ok(groupedLogsCache);
             }
 
-            return GetLogsFromService(category);
+            return await GetLogsFromService(category);
         }
 
         /// <summary>
@@ -157,9 +157,9 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             return Ok();
         }
 
-        private IHttpActionResult GetLogsFromService(string category)
+        private async Task<IHttpActionResult> GetLogsFromService(string category)
         {
-            var flatLogsFromService = _rugbyService.GetFlatLogs(category);
+            var flatLogsFromService = await _rugbyService.GetFlatLogs(category);
 
             const int EmptyCollectionCount = 0;
 
@@ -174,7 +174,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
                 return Ok(flatLogsCache);
             }
 
-            var groupedLogsFromService = _rugbyService.GetGroupedLogs(category);
+            var groupedLogsFromService = await _rugbyService.GetGroupedLogs(category);
 
             if (groupedLogsFromService.Count() > EmptyCollectionCount)
             {

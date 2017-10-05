@@ -85,7 +85,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
             {
                 FixtureId = Guid.NewGuid(),
                 StartDateTime = DateTimeOffset.UtcNow - TimeSpan.FromDays(181),
-                RugbyFixtureStatus = RugbyFixtureStatus.GameEnd
+                RugbyFixtureStatus = RugbyFixtureStatus.Final
             });
 
             await MockSchedulerTrackingFixtureRepository.Object.SaveAsync();
