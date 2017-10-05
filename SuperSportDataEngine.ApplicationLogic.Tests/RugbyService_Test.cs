@@ -22,6 +22,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
         Mock<TestEntityFrameworkRepository<RugbySeason>> MockSeasonRepository;
         Mock<TestEntityFrameworkRepository<RugbyTournament>> MockTournamentRepository;
         Mock<TestEntityFrameworkRepository<RugbyFlatLog>> MockFlatLogRepository;
+        Mock<TestEntityFrameworkRepository<RugbyGroupedLog>> MockGroupedLogRepository;
+
 
 
         [SetUp]
@@ -48,7 +50,11 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
             MockFlatLogRepository =
                     new Mock<TestEntityFrameworkRepository<RugbyFlatLog>>(new List<RugbyFlatLog>());
 
+            MockGroupedLogRepository =
+                    new Mock<TestEntityFrameworkRepository<RugbyGroupedLog>>(new List<RugbyGroupedLog>());
+
             RugbyService = new RugbyService(
+                MockGroupedLogRepository.Object,
                 MockFlatLogRepository.Object,
                 MockTournamentRepository.Object,
                 MockSeasonRepository.Object,

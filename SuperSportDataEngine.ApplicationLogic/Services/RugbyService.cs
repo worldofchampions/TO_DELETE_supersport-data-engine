@@ -16,6 +16,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
     {
         // TODO: This was commented out when deleting old Log DB table.
         private readonly IBaseEntityFrameworkRepository<RugbyFlatLog> _rugbyFlatLogsRepository;
+        private readonly IBaseEntityFrameworkRepository<RugbyGroupedLog> _rugbyGroupedLogsRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyTournament> _rugbyTournamentRepository;
         private readonly IBaseEntityFrameworkRepository<RugbySeason> _rugbySeasonRepository;
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> _schedulerTrackingRugbyTournamentRepository;
@@ -24,6 +25,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> _schedulerTrackingRugbyFixtureRepository;
 
         public RugbyService(
+            IBaseEntityFrameworkRepository<RugbyGroupedLog> groupedLogsRepository,
             IBaseEntityFrameworkRepository<RugbyFlatLog> logRepository,
             IBaseEntityFrameworkRepository<RugbyTournament> rugbyTournamentRepository,
             IBaseEntityFrameworkRepository<RugbySeason> rugbySeasonRepository,
@@ -32,6 +34,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> schedulerTrackingRugbyTournamentRepository,
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> schedulerTrackingRugbyFixtureRepository)
         {
+            _rugbyGroupedLogsRepository = groupedLogsRepository;
             _rugbyFlatLogsRepository = logRepository;
             _rugbyTournamentRepository = rugbyTournamentRepository;
             _rugbySeasonRepository = rugbySeasonRepository;
@@ -39,16 +42,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             _rugbyFixturesRepository = rugbyFixturesRepository;
             _schedulerTrackingRugbyFixtureRepository = schedulerTrackingRugbyFixtureRepository;
             _schedulerTrackingRugbyTournamentRepository = schedulerTrackingRugbyTournamentRepository;
-        }
-
-        public async Task<IEnumerable<RugbyFlatLog>> GetLogs(string slug)
-        {
-            var tournamentId = await GetTournamentId(slug);
-
-            var flatLogs = (await _rugbyFlatLogsRepository.AllAsync())
-                .Where(t => t.RugbyTournament.IsEnabled && t.RugbyTournamentId == tournamentId).ToList();
-
-            return flatLogs;
         }
 
         private SemaphoreSlim GetActiveTournamentsControl = new SemaphoreSlim(1, 1);
@@ -300,11 +293,33 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             return fixturesInResultsState;
         }
 
-        public async Task<IEnumerable<RugbyFixture>> GetCurrentDayFixturesForActiveTournaments()
+        public async Task<IEnumerable<RugbyGroupedLog>> GetGroupedLogs(string tournamentSlug)
+        {
+            var tournamentId = await GetTournamentId(tournamentSlug);
+
+            var logs = (await _rugbyGroupedLogsRepository.AllAsync())
+                .Where(t => t.RugbyTournament.IsEnabled && t.RugbyTournamentId == tournamentId)
+                .ToList();
+
+            return logs;
+        }
+
+        public async Task<IEnumerable<RugbyFlatLog>> GetFlatLogs(string tournamentSlug)
+        {
+            var tournamentId = await GetTournamentId(tournamentSlug);
+
+            var flatLogs = (await _rugbyFlatLogsRepository.AllAsync())
+                .Where(t => t.RugbyTournament.IsEnabled && t.RugbyTournamentId == tournamentId)
+                .ToList();
+
+            return flatLogs;
+        }
+
+        public async Task <IEnumerable<RugbyFixture>> GetCurrentDayFixturesForActiveTournaments()
         {
             var todayFixtures = (await _rugbyFixturesRepository.AllAsync())
-               .ToList()
-               .Where(f => f.StartDateTime.Date == DateTime.UtcNow.Date);
+                 .Where(f => f.StartDateTime.UtcDateTime.Date == DateTime.UtcNow.Date)
+                 .ToList();
 
             return todayFixtures;
         }
