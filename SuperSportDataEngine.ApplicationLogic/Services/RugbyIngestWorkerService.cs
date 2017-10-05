@@ -1256,9 +1256,39 @@
             if (cancellationToken.IsCancellationRequested)
                 return;
 
-            var results = _statsProzoneIngestService.IngestFlatLogsForTournament(providerTournamentId, seasonId);
+            IList<RugbySeason> seasons = (await _rugbySeasonRepository.AllAsync()).ToList();
+
+            var season = seasons.Where(s => s.ProviderSeasonId == seasonId &&
+                                            s.RugbyTournament.ProviderTournamentId == providerTournamentId).ToList();
 
             // TODO: Also persist in SQL DB.
+            if (season.Count == 0)
+                return;
+
+            var logType = season.First().RugbyLogType;
+
+            if (logType == RugbyLogType.FlatLogs)
+            {
+                RugbyFlatLogsResponse logs =
+                _statsProzoneIngestService.IngestFlatLogsForTournament(
+                    providerTournamentId, seasonId);
+
+                // TODO: Also persist in SQL DB.
+                await PersistFlatLogs(cancellationToken, logs);
+
+                _mongoDbRepository.Save(logs);
+            }
+            else
+            {
+                RugbyGroupedLogsResponse logs =
+                _statsProzoneIngestService.IngestGroupedLogsForTournament(
+                    providerTournamentId, seasonId);
+
+                // TODO: Also persist in SQL DB.
+                await PersistGroupedLogs(cancellationToken, logs);
+
+                _mongoDbRepository.Save(logs);
+            }
         }
     }
 }
