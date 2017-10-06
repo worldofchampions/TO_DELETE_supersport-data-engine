@@ -1156,7 +1156,7 @@
                     RugbyTeamId = team.Id,
                     YellowCards = (int)statsMap.GetValueOrDefault(2),
                     //CarriesCrossedGainLine = statsMap.GetValueOrDefault("(Time)Territory"),
-                    //CleanBreaks = statsMap.GetValueOrDefault("(Time)Territory"),
+                    CleanBreaks = (int)statsMap.GetValueOrDefault(7),
                     ConversionAttempts = (int)statsMap.GetValueOrDefault(2047),
                     Conversions = (int)statsMap.GetValueOrDefault(2046),
                     ConversionsMissed = (int)statsMap.GetValueOrDefault(2048),
