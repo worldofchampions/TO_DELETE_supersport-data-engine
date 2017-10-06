@@ -61,7 +61,7 @@
                     QueueJobForLowFrequencyPolling(tournament.Id, tournament.ProviderTournamentId, seasonId, jobId);
 
                     var season =
-                            _schedulerTrackingRugbySeasonRepository.All()
+                            (await _schedulerTrackingRugbySeasonRepository.AllAsync())
                                 .Where(
                                     s =>
                                         s.RugbySeasonStatus == RugbySeasonStatus.InProgress &&
@@ -71,6 +71,7 @@
                     if (season != null)
                     {
                         season.SchedulerStateForManagerJobPolling = SchedulerStateForManagerJobPolling.Running;
+                        _schedulerTrackingRugbySeasonRepository.Update(season);
                     }
                 }
             }
