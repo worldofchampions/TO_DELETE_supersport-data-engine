@@ -9,5 +9,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.MongoDb.Pa
         void Save(RugbyFlatLogsResponse logs);
         void Save(RugbyGroupedLogsResponse logs);
         void Save(RugbyMatchStatsResponse matchStatsResponse);
+        void Save(RugbyEventsFlowResponse eventsFlowResponse);
     }
 }

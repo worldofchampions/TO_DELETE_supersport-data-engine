@@ -16,9 +16,9 @@
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
     using System.Text.RegularExpressions;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models.Enums;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models;
     using SuperSportDataEngine.ApplicationLogic.Extensions;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyMatchStats;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyEventsFlow;
 
     public class RugbyIngestWorkerService : IRugbyIngestWorkerService
     {
@@ -687,6 +687,9 @@
             if (cancellationToken.IsCancellationRequested)
                 return;
 
+            if (await _rugbyService.GetLiveFixturesCount(cancellationToken) > 0)
+                return;
+
             var activeTournaments =
                 await _rugbyService.GetActiveTournaments();
 
@@ -696,6 +699,9 @@
         public async Task IngestLogsForCurrentTournaments(CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
+                return;
+
+            if (await _rugbyService.GetLiveFixturesCount(cancellationToken) > 0)
                 return;
 
             var currentTournaments =
@@ -1118,6 +1124,8 @@
 
                     await IngestCommentary(cancellationToken, eventsFlowResponse.RugbyEventsFlow.commentaryFlow, providerFixtureId);
                     await IngestMatchStatistics(cancellationToken, providerFixtureId);
+
+                    _mongoDbRepository.Save(eventsFlowResponse);
                 }
                 finally
                 {

@@ -10,6 +10,8 @@ using SuperSportDataEngine.Repository.MongoDb.PayloadData.Models.RugbyLogsGroupe
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyMatchStats;
 using SuperSportDataEngine.Repository.MongoDb.PayloadData.Models.MongoRugbyMatchStats;
 using System.Configuration;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyEventsFlow;
+using SuperSportDataEngine.Repository.MongoDb.PayloadData.Models.MongoRugbyEventsFlow;
 
 namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 {
@@ -123,6 +125,26 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
             // Add to the collection.
             var collection = db.GetCollection<MongoRugbyMatchStats>("matchStats");
             collection.InsertOneAsync(matchStats);
+        }
+
+        public void Save(RugbyEventsFlowResponse eventsFlowResponse)
+        {
+            Mapper.Initialize(c => c.AddProfile<RugbyEventsFlowMappingProfile>());
+
+            // Map the provider data to a type mongo understands.
+            var eventsFlow =
+                Mapper.Map<RugbyEventsFlow, MongoRugbyEventsFlow>(
+                    eventsFlowResponse.RugbyEventsFlow);
+
+            eventsFlow.RequestTime = eventsFlowResponse.RequestTime;
+            eventsFlow.ResponseTime = eventsFlowResponse.ResponseTime;
+
+            // Get the Mongo DB.
+            var db = _mongoClient.GetDatabase(_mongoDatabaseName);
+
+            // Add to the collection.
+            var collection = db.GetCollection<MongoRugbyEventsFlow>("eventsFlow");
+            collection.InsertOneAsync(eventsFlow);
         }
     }
 }
