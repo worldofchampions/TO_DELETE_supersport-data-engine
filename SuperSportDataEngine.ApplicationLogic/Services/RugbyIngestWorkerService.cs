@@ -17,6 +17,7 @@
     using System.Text.RegularExpressions;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models.Enums;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models;
+    using SuperSportDataEngine.ApplicationLogic.Extensions;
 
     public class RugbyIngestWorkerService : IRugbyIngestWorkerService
     {
@@ -35,6 +36,7 @@
         private readonly IBaseEntityFrameworkRepository<RugbyGroupedLog> _rugbyGroupedLogsRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyPlayerLineup> _rugbyPlayerLineupsRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyCommentary> _rugbyCommentaryRepository;
+        private readonly IBaseEntityFrameworkRepository<RugbyMatchStatistics> _rugbyMatchStatisticsRepository;
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> _schedulerTrackingRugbyTournamentRepository;
         private readonly IRugbyService _rugbyService;
 
@@ -55,6 +57,7 @@
             IBaseEntityFrameworkRepository<RugbyGroupedLog> rugbyGroupedLogsRepository,
             IBaseEntityFrameworkRepository<RugbyPlayerLineup> rugbyPlayerLineupsRepository,
             IBaseEntityFrameworkRepository<RugbyCommentary> rugbyCommentaryRepository,
+            IBaseEntityFrameworkRepository<RugbyMatchStatistics> rugbyMatchStatisticsRepository,
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> schedulerTrackingRugbyTournamentRepository,
             IRugbyService rugbyService)
         {
@@ -73,6 +76,7 @@
             _rugbyGroupedLogsRepository = rugbyGroupedLogsRepository;
             _rugbyPlayerLineupsRepository = rugbyPlayerLineupsRepository;
             _rugbyCommentaryRepository = rugbyCommentaryRepository;
+            _rugbyMatchStatisticsRepository = rugbyMatchStatisticsRepository;
             _schedulerTrackingRugbyTournamentRepository = schedulerTrackingRugbyTournamentRepository;
             _rugbyService = rugbyService;
         }
@@ -1104,7 +1108,9 @@
                 try
                 {
                     await IngestMatchStatsForFixtureControl.WaitAsync(cancellationToken);
+
                     await IngestCommentary(cancellationToken, eventsFlowResponse.RugbyEventsFlow.commentaryFlow, providerFixtureId);
+                    await IngestMatchStatistics(cancellationToken, providerFixtureId);
                 }
                 finally
                 {
@@ -1118,6 +1124,115 @@
 
                 Thread.Sleep(TimeSpan.FromSeconds(10));
             }
+        }
+
+        public async Task IngestMatchStatistics(CancellationToken cancellationToken, long providerFixtureId)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return;
+
+            var matchStatsResponse =
+                    await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, providerFixtureId);
+
+            var fixture = (await _rugbyFixturesRepository.AllAsync()).Where(f => f.ProviderFixtureId == providerFixtureId).FirstOrDefault();
+            var teamsInRepo = (await _rugbyTeamRepository.AllAsync());
+
+            var teamsFromProvider = matchStatsResponse.RugbyMatchStats.teams;
+            
+            foreach(var teamMatch in teamsFromProvider.teamsMatch)
+            {
+
+                var team = teamsInRepo.Where(t => t.ProviderTeamId == teamMatch.teamId).FirstOrDefault();
+
+                var stats = teamMatch.teamStats.matchStats.matchStat;
+                var statsInDb = (await _rugbyMatchStatisticsRepository.AllAsync()).Where(s => s.RugbyFixtureId == fixture.Id && s.RugbyTeamId == team.Id).FirstOrDefault();
+
+                var statsMap = MakeStatisticsMap(stats);
+                var newStats = new RugbyMatchStatistics()
+                {
+                    RugbyFixture = fixture,
+                    RugbyFixtureId = fixture.Id,
+                    RugbyTeam = team,
+                    RugbyTeamId = team.Id,
+                    YellowCards = (int)statsMap.GetValueOrDefault(2),
+                    //CarriesCrossedGainLine = statsMap.GetValueOrDefault("(Time)Territory"),
+                    //CleanBreaks = statsMap.GetValueOrDefault("(Time)Territory"),
+                    ConversionAttempts = (int)statsMap.GetValueOrDefault(2047),
+                    Conversions = (int)statsMap.GetValueOrDefault(2046),
+                    ConversionsMissed = (int)statsMap.GetValueOrDefault(2048),
+                    //DefendersBeaten = statsMap.GetValueOrDefault("(Time)Territory"),
+                    DropGoalAttempts = (int)statsMap.GetValueOrDefault(2049),
+                    DropGoals = (int)statsMap.GetValueOrDefault(2050),
+                    DropGoalsMissed = (int) (statsMap.GetValueOrDefault(2049) - statsMap.GetValueOrDefault(2050)),
+                    LineOutsLost = (int)statsMap.GetValueOrDefault(20),
+                    LineOutsWon = (int)statsMap.GetValueOrDefault(19),
+                    Offloads = (int)statsMap.GetValueOrDefault(46),
+                    Passes = (int)statsMap.GetValueOrDefault(2012),
+                    Penalties = (int)(statsMap.GetValueOrDefault(2038) - statsMap.GetValueOrDefault(2039)),
+                    PenaltiesConceded = (int)statsMap.GetValueOrDefault(2079),
+                    PenaltiesMissed = (int)statsMap.GetValueOrDefault(2039),
+                    PenaltyAttempts = (int)statsMap.GetValueOrDefault(2038),
+                    PenaltyTries = (int)statsMap.GetValueOrDefault(10530),
+                    Possession = (int)statsMap.GetValueOrDefault(42),
+                    RedCards = (int)statsMap.GetValueOrDefault(3),
+                    ScrumsLost = (int)statsMap.GetValueOrDefault(55),
+                    ScrumsWon = (int)statsMap.GetValueOrDefault(53),
+                    Tackles = (int)statsMap.GetValueOrDefault(72),
+                    TacklesMissed = (int)statsMap.GetValueOrDefault(71),
+                    Territory = (int)statsMap.GetValueOrDefault(10000),
+                    Tries = (int)statsMap.GetValueOrDefault(5)
+                };
+
+                if(statsInDb == null)
+                {
+                    _rugbyMatchStatisticsRepository.Add(newStats);
+                }
+                else
+                {
+                    statsInDb.YellowCards = newStats.YellowCards;
+                    statsInDb.CarriesCrossedGainLine = newStats.CarriesCrossedGainLine;
+                    statsInDb.CleanBreaks = newStats.CleanBreaks;
+                    statsInDb.ConversionAttempts = newStats.ConversionAttempts;
+                    statsInDb.Conversions = newStats.Conversions;
+                    statsInDb.ConversionsMissed = newStats.ConversionsMissed;
+                    statsInDb.DefendersBeaten = newStats.DefendersBeaten;
+                    statsInDb.DropGoalAttempts = newStats.DropGoalAttempts;
+                    statsInDb.DropGoals = newStats.DropGoals;
+                    statsInDb.DropGoalsMissed = newStats.DropGoalsMissed;
+                    statsInDb.LineOutsLost = newStats.LineOutsLost;
+                    statsInDb.LineOutsWon = newStats.LineOutsWon;
+                    statsInDb.Offloads = newStats.Offloads;
+                    statsInDb.Passes = newStats.Passes;
+                    statsInDb.Penalties = newStats.Penalties;
+                    statsInDb.PenaltiesConceded = newStats.PenaltiesConceded;
+                    statsInDb.PenaltiesMissed = newStats.PenaltiesMissed;
+                    statsInDb.PenaltyAttempts = newStats.PenaltyAttempts;
+                    statsInDb.PenaltyTries = newStats.PenaltyTries;
+                    statsInDb.Possession = newStats.Possession;
+                    statsInDb.RedCards = newStats.RedCards;
+                    statsInDb.ScrumsLost = newStats.ScrumsLost;
+                    statsInDb.ScrumsWon = newStats.ScrumsWon;
+                    statsInDb.Tackles = newStats.Tackles;
+                    statsInDb.TacklesMissed = newStats.TacklesMissed;
+                    statsInDb.Territory = newStats.Territory;
+                    statsInDb.Tries = newStats.Tries;
+
+                    _rugbyMatchStatisticsRepository.Update(statsInDb);
+                }
+            }
+
+            await _rugbyMatchStatisticsRepository.SaveAsync();
+        }
+
+        private IDictionary<int, double> MakeStatisticsMap(IList<MatchStat> matchStats)
+        {
+            var dictionary = new Dictionary<int, double>();
+            foreach(var stat in matchStats)
+            {
+                dictionary.Add(stat.StatTypeID, stat.StatValue);
+            }
+
+            return dictionary;
         }
 
         public async Task IngestCommentary(CancellationToken cancellationToken, CommentaryFlow commentary, long providerFixtureId)
