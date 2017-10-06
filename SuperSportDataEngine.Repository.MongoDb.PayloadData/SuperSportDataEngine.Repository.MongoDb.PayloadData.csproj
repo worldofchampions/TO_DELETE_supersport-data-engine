@@ -46,6 +46,7 @@
       <HintPath>..\packages\mongocsharpdriver.2.4.4\lib\net45\MongoDB.Driver.Legacy.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
@@ -60,12 +61,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MappingProfiles\RugbyFixturesMappingProfile.cs" />
+    <Compile Include="MappingProfiles\RugbyMatchStatsMappingProfile.cs" />
     <Compile Include="MappingProfiles\RugbyGroupedLogsMappingProfile.cs" />
     <Compile Include="MappingProfiles\RugbyFlatLogsMappingProfile.cs" />
     <Compile Include="Models\MongoRugbyEntities.cs" />
     <Compile Include="Models\MongoRugbyFixtures.cs" />
     <Compile Include="Models\MongoRugbyFlatLogs.cs" />
     <Compile Include="Models\MongoRugbyGroupedLogs.cs" />
+    <Compile Include="Models\MongoRugbyMatchStats.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\MongoDbRugbyRepository.cs" />
     <Compile Include="MappingProfiles\RugbyEntitiesMappingProfile.cs" />

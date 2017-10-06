@@ -18,6 +18,7 @@
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models.Enums;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models;
     using SuperSportDataEngine.ApplicationLogic.Extensions;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyMatchStats;
 
     public class RugbyIngestWorkerService : IRugbyIngestWorkerService
     {
@@ -941,6 +942,12 @@
 
         public async Task IngestResultsForCurrentDayFixtures(CancellationToken cancellationToken)
         {
+            if (cancellationToken.IsCancellationRequested)
+                return;
+
+            if (await _rugbyService.GetLiveFixturesCount(cancellationToken) > 0)
+                return;
+
             var currentRoundFixtures = await GetCurrentDayRoundFixturesForActiveTournaments();
 
             foreach (var round in currentRoundFixtures)
@@ -1222,6 +1229,7 @@
             }
 
             await _rugbyMatchStatisticsRepository.SaveAsync();
+            _mongoDbRepository.Save(matchStatsResponse);
         }
 
         private IDictionary<int, double> MakeStatisticsMap(IList<MatchStat> matchStats)
