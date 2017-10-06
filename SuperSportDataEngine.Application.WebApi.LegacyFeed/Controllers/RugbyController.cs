@@ -206,6 +206,8 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
                 var groupedLogsCache = groupedLogsFromService.Select(logItem => Mapper.Map<Log>(logItem)).ToList();
 
                 _cache.Add(groupedLogsCacheKey, groupedLogsCache);
+
+                return Ok(groupedLogsCache);
             }
 
             return Ok(Enumerable.Empty<Log>());

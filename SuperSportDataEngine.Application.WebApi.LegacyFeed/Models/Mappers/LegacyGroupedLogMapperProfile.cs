@@ -73,7 +73,8 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
 
                 // Home group here
                 .ForMember(dest => dest.HomeGroup, expression => expression.MapFrom(
-                    src => src.RugbyLogGroup.ParentRugbyLogGroup.GroupName))
+                    src => src.RugbyLogGroup.ParentRugbyLogGroup != null ? 
+                    src.RugbyLogGroup.ParentRugbyLogGroup.GroupName : src.RugbyLogGroup.GroupName))
 
                 .ForMember(dest => dest.IsConference, expression => expression.MapFrom(
                     src => src.RugbyLogGroup.IsConference))
