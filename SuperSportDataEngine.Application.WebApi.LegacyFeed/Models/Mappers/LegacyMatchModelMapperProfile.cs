@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
 using System;
-using System.Collections.Generic;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
 {
@@ -18,8 +17,8 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
                 .ForMember(dest => dest.AwayTeamId, expression => expression.MapFrom(
                     src => src.TeamAIsHomeTeam ? src.TeamB.LegacyTeamId : src.TeamA.LegacyTeamId))
 
-                .ForMember(dest => dest.AwayTeamShortName, expression => expression.MapFrom(
-                    src => src.TeamAIsHomeTeam ? src.TeamB.Name : src.TeamA.Name))
+                 .ForMember(dest => dest.AwayTeamScore, expression => expression.MapFrom(
+                    (src => (src.TeamAIsHomeTeam ? src.TeamBScore : src.TeamAScore) ?? 0)))
 
                 // For Home team 
                 .ForMember(dest => dest.HomeTeam, expression => expression.MapFrom(
@@ -28,15 +27,12 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
                 .ForMember(dest => dest.HomeTeamId, expression => expression.MapFrom(
                     src => src.TeamAIsHomeTeam ? src.TeamA.LegacyTeamId : src.TeamB.LegacyTeamId))
 
-                .ForMember(dest => dest.HomeTeamShortName, expression => expression.MapFrom(
-                    src => src.TeamAIsHomeTeam ? src.TeamA.Name : src.TeamB.Name))
+                .ForMember(dest => dest.HomeTeamScore, expression => expression.MapFrom(
+                    src => (src.TeamAIsHomeTeam ? src.TeamAScore : src.TeamBScore) ?? 0))
 
-                  // For Fixture specific
+                // For Fixture specific
                 .ForMember(dest => dest.LeagueName, expression => expression.MapFrom(
                     src => src.RugbyTournament.Name))
-
-                .ForMember(dest => dest.LeagueUrlName, expression => expression.MapFrom(
-                    src => src.RugbyTournament.Slug))
 
                 .ForMember(dest => dest.LeagueId, expression => expression.MapFrom(
                     src => src.RugbyTournament.LegacyTournamentId))
@@ -56,9 +52,6 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
                 .ForMember(dest => dest.MatchEndDateTimeString, expression => expression.UseValue(
                    DateTime.MinValue.ToString("s")))
 
-                .ForMember(dest => dest.Location, expression => expression.MapFrom(
-                    src => src.RugbyVenue.Name))
-
                 // TODO: Confirm where these come from?
                 .ForMember(dest => dest.International, expression => expression.UseValue(false))
 
@@ -66,8 +59,8 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
 
                 .ForMember(dest => dest.WalkOver, expression => expression.UseValue(false))
 
-                .ForMember(dest => dest.Channels, expression => expression.UseValue(new List<string>()))
-                
+                .ForMember(dest => dest.Status, expression => expression.UseValue(string.Empty))
+
                 // Ignore elements not used even by legacy feed
                 .ForAllOtherMembers(dest => dest.Ignore());
         }
