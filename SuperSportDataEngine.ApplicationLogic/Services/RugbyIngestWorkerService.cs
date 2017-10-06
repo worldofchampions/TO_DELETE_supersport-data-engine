@@ -1160,7 +1160,7 @@
                     ConversionAttempts = (int)statsMap.GetValueOrDefault(2047),
                     Conversions = (int)statsMap.GetValueOrDefault(2046),
                     ConversionsMissed = (int)statsMap.GetValueOrDefault(2048),
-                    //DefendersBeaten = statsMap.GetValueOrDefault("(Time)Territory"),
+                    DefendersBeaten = (int)statsMap.GetValueOrDefault(8),
                     DropGoalAttempts = (int)statsMap.GetValueOrDefault(2049),
                     DropGoals = (int)statsMap.GetValueOrDefault(2050),
                     DropGoalsMissed = (int) (statsMap.GetValueOrDefault(2049) - statsMap.GetValueOrDefault(2050)),
