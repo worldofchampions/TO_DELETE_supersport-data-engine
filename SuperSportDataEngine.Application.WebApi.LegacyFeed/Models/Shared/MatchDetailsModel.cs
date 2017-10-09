@@ -1,7 +1,5 @@
-﻿using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Timers;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models
 {
@@ -60,9 +58,6 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models
 
         public virtual List<CardsModel> TeamACards { get; set; }
         public virtual List<CardsModel> TeamBCards { get; set; }
-
-        //public virtual List<Management> TeamAManagement { get; set; }
-        //public virtual List<Management> TeamBManagement { get; set; }
 
         public List<OfficialModel> Officials { get; set; }
         public List<MatchVideoModel> Videos { get; set; }
