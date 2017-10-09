@@ -101,6 +101,7 @@
     <Compile Include="Entities\Legacy\Mappers\LegacyAuthFeedConsumerMapper.cs" />
     <Compile Include="Entities\Legacy\Mappers\LegacyAuthMappingProfile.cs" />
     <Compile Include="Entities\LogEntity.cs" />
+    <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\LegacyAuthService.cs" />
     <Compile Include="Services\RugbyIngestWorkerService.cs" />

@@ -19,16 +19,17 @@
     {
         private readonly IRecurringJobManager _recurringJobManager;
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> _schedulerTrackingRugbyFixtureRepository;
-        private readonly IUnityContainer _container;
+        private readonly IUnityContainer _childContainer;
 
         public LiveManagerJob(
             IRecurringJobManager recurringJobManager,
-            IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> schedulerTrackingRugbyFixtureRepository,
-            IUnityContainer container)
+            IUnityContainer childContainer)
         {
-            _container = container;
+            _childContainer = childContainer;
             _recurringJobManager = recurringJobManager;
-            _schedulerTrackingRugbyFixtureRepository = schedulerTrackingRugbyFixtureRepository;
+
+            _schedulerTrackingRugbyFixtureRepository = 
+                _childContainer.Resolve<IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture>>();
         }
 
         public async Task DoWorkAsync()
@@ -40,7 +41,7 @@
         private async Task<int> DeleteChildJobsForFetchingMatchDataForFixturesEnded()
         {
             var endedGames =
-                    await _container.Resolve<IRugbyService>().GetEndedFixtures();
+                    await _childContainer.Resolve<IRugbyService>().GetEndedFixtures();
 
             foreach (var fixture in endedGames)
             {
@@ -56,6 +57,7 @@
                 if (fixtureInDb != null)
                 {
                     fixtureInDb.SchedulerStateFixtures = SchedulerStateForRugbyFixturePolling.PostLivePolling;
+                    _schedulerTrackingRugbyFixtureRepository.Update(fixtureInDb);
                 }
             }
 
@@ -65,12 +67,12 @@
         private async Task<int> CreateChildJobsForFetchingLiveMatchDataForCurrentFixtures()
         {
             var currentTournaments =
-                    await _container.Resolve<IRugbyService>().GetCurrentTournaments();
+                    await _childContainer.Resolve<IRugbyService>().GetCurrentTournaments();
 
             foreach (var tournament in currentTournaments)
             {
                 var liveFixtures =
-                    await _container.Resolve<IRugbyService>().GetLiveFixturesForCurrentTournament(CancellationToken.None, tournament.Id);
+                    await _childContainer.Resolve<IRugbyService>().GetLiveFixturesForCurrentTournament(CancellationToken.None, tournament.Id);
 
                 foreach (var fixture in liveFixtures)
                 {
@@ -80,7 +82,7 @@
 
                     _recurringJobManager.AddOrUpdate(
                         jobId,
-                        Job.FromExpression(() => _container.Resolve<IRugbyIngestWorkerService>().IngestMatchStatsForFixture(CancellationToken.None, fixture.ProviderFixtureId)),
+                        Job.FromExpression(() => _childContainer.Resolve<IRugbyIngestWorkerService>().IngestMatchStatsForFixture(CancellationToken.None, fixture.ProviderFixtureId)),
                         jobCronExpression,
                         new RecurringJobOptions()
                         {
@@ -96,6 +98,7 @@
                     {
                         _recurringJobManager.Trigger(jobId);
                         fixtureInDb.SchedulerStateFixtures = SchedulerStateForRugbyFixturePolling.LivePolling;
+                        _schedulerTrackingRugbyFixtureRepository.Update(fixtureInDb);
                     }
                 }
             }
