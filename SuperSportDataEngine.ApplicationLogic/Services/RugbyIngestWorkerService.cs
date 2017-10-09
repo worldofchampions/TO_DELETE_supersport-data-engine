@@ -294,6 +294,8 @@
             if ((await _rugbyService.GetLiveFixturesCount(cancellationToken) > 0))
                 return;
 
+            await IngestRugbyTournamentSeasons(cancellationToken);
+
             var activeTournaments =
                 await _rugbyService.GetActiveTournaments();
 
@@ -307,10 +309,9 @@
 
                 await PersistFixturesData(cancellationToken, fixtures);
 
-                // TODO: Also persist in SQL DB.
-
                 await PersistRugbySeasonDataInSchedulerTrackingRugbySeasonTable(cancellationToken, fixtures);
                 await PersistRugbyTournamentsInSchedulerTrackingRugbyTournamentTable(cancellationToken);
+
                 _mongoDbRepository.Save(fixtures);
             }
         }
@@ -963,6 +964,8 @@
                 {
                     return;
                 }
+
+                await IngestRugbyTournamentSeasons(cancellationToken);
 
                 var fixtures =
                     _statsProzoneIngestService.IngestFixturesForTournamentSeason(
