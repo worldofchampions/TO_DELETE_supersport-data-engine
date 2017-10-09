@@ -17,25 +17,20 @@
 
     public class LogsManagerJob
     {
-        IRugbyService _rugbyService;
-        IRugbyIngestWorkerService _rugbyIngestService;
         IRecurringJobManager _recurringJobManager;
         IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> _schedulerTrackingRugbySeasonRepository;
 
-        IUnityContainer _container;
+        IUnityContainer _childContainer;
 
         public LogsManagerJob(
-            IRugbyService rugbyService,
-            IRugbyIngestWorkerService rugbyIngestService,
             IRecurringJobManager recurringJobManager,
-            IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> schedulerTrackingRugbySeasonRepository,
-            IUnityContainer container)
+            IUnityContainer childContainer)
         {
-            _rugbyService = rugbyService;
-            _rugbyIngestService = rugbyIngestService;
             _recurringJobManager = recurringJobManager;
-            _schedulerTrackingRugbySeasonRepository = schedulerTrackingRugbySeasonRepository;
-            _container = container;
+            _childContainer = childContainer;
+            
+            _schedulerTrackingRugbySeasonRepository = 
+                _childContainer.Resolve<IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason>>();
         }
 
         public async Task DoWorkAsync()
@@ -45,13 +40,13 @@
 
         private async Task<int> CreateChildJobsForFetchingLogs()
         {
-            var activeTournaments = await _rugbyService.GetActiveTournamentsForMatchesInResultsState();
+            var activeTournaments = await _childContainer.Resolve<IRugbyService>().GetActiveTournamentsForMatchesInResultsState();
 
             foreach (var tournament in activeTournaments)
             {
-                int seasonId = await _rugbyService.GetCurrentProviderSeasonIdForTournament(CancellationToken.None, tournament.Id);
+                int seasonId = await _childContainer.Resolve<IRugbyService>().GetCurrentProviderSeasonIdForTournament(CancellationToken.None, tournament.Id);
 
-                if (await _rugbyService.GetSchedulerStateForManagerJobPolling(tournament.Id) == SchedulerStateForManagerJobPolling.NotRunning)
+                if (await _childContainer.Resolve<IRugbyService>().GetSchedulerStateForManagerJobPolling(tournament.Id) == SchedulerStateForManagerJobPolling.NotRunning)
                 {
                     var jobId = ConfigurationManager.AppSettings["ScheduleManagerJob_Logs_CurrentTournaments_JobIdPrefix"] + tournament.Name;
                     var jobCronExpression = ConfigurationManager.AppSettings["ScheduleManagerJob_Logs_CurrentTournaments_JobCronExpression_OneMinute"];
@@ -83,10 +78,13 @@
         {
             _recurringJobManager.AddOrUpdate(
                 jobId,
-                Job.FromExpression(() => (_container.Resolve<IRugbyIngestWorkerService>()).IngestLogsForTournamentSeason(CancellationToken.None, providerTournamentId, seasonId)),
+                Job.FromExpression(() => (_childContainer.Resolve<IRugbyIngestWorkerService>()).IngestLogsForTournamentSeason(CancellationToken.None, providerTournamentId, seasonId)),
                 jobCronExpression,
-                TimeZoneInfo.Utc,
-                HangfireQueueConfiguration.HighPriority);
+                new RecurringJobOptions()
+                {
+                    TimeZone = TimeZoneInfo.Utc,
+                    QueueName = HangfireQueueConfiguration.HighPriority
+                });
         }
 
         private void QueueJobForLowFrequencyPolling(Guid tournamentId, int providerTournamentId, int seasonId, string jobId)

@@ -291,7 +291,7 @@
             if (cancellationToken.IsCancellationRequested)
                 return;
 
-            if ((await _rugbyService.GetLiveFixturesCount(cancellationToken)) > 0)
+            if ((await _rugbyService.GetLiveFixturesCount(cancellationToken) > 0))
                 return;
 
             var activeTournaments =
@@ -431,14 +431,23 @@
                 }
             }
         }
-        
+
+        private SemaphoreSlim PersistFixturesDataControl = new SemaphoreSlim(1, 1);
         private async Task PersistFixturesData(CancellationToken cancellationToken, RugbyFixturesResponse fixtures)
         {
-            await PersistRugbyFixturesToPublicSportsRepository(cancellationToken, fixtures);
+            try
+            {
+                await PersistFixturesDataControl.WaitAsync();
 
-            await PersistRugbyFixturesToSchedulerTrackingRugbyFixturesTable(fixtures);
-            await _schedulerTrackingRugbyFixtureRepository.SaveAsync();
-            _mongoDbRepository.Save(fixtures);
+                await PersistRugbyFixturesToPublicSportsRepository(cancellationToken, fixtures);
+
+                await PersistRugbyFixturesToSchedulerTrackingRugbyFixturesTable(fixtures);
+                _mongoDbRepository.Save(fixtures);
+            }
+            finally
+            {
+                PersistFixturesDataControl.Release();
+            }
         }
 
         private static SemaphoreSlim PersistTournamentsControl = new SemaphoreSlim(1, 1);
@@ -484,7 +493,7 @@
                     var tournamentGuid = fixtureInDb.RugbyTournament.Id;
 
                     var fixtureSchedule =
-                            (await _schedulerTrackingRugbyFixtureRepository.AllAsync())
+                            (await _schedulerTrackingRugbyFixtureRepository.AllAsync()).ToList()
                                 .Where(
                                     f => f.FixtureId == fixtureGuid && f.TournamentId == tournamentGuid)
                                 .FirstOrDefault();
@@ -522,88 +531,100 @@
                     }
                 }
             }
+
+            await _schedulerTrackingRugbyFixtureRepository.SaveAsync();
         }
 
         private bool HasFixtureEnded(string gameStateName)
         {
             return gameStateName == "Final";
         }
-        
+
+        private SemaphoreSlim PersistRugbyFixturesToPublicSportsRepositoryControl = new SemaphoreSlim(1, 1);
         private async Task PersistRugbyFixturesToPublicSportsRepository(CancellationToken cancellationToken, RugbyFixturesResponse fixtures)
         {
             if (cancellationToken.IsCancellationRequested)
                 return;
 
-            var tournament = (await _rugbyTournamentRepository.AllAsync()).Where(t => t.ProviderTournamentId == fixtures.Fixtures.competitionId).FirstOrDefault();
-
-            var allFixtures = (await _rugbyFixturesRepository.AllAsync()).ToList();
-            var allTeams = (await _rugbyTeamRepository.AllAsync()).ToList();
-            var allVenues = (await _rugbyVenueRepository.AllAsync()).ToList();
-
-            foreach (var roundFixture in fixtures.Fixtures.roundFixtures)
+            try
             {
-                foreach (var fixture in roundFixture.gameFixtures)
+                await PersistRugbyFixturesToPublicSportsRepositoryControl.WaitAsync();
+
+                var tournament = (await _rugbyTournamentRepository.AllAsync()).ToList().Where(t => t.ProviderTournamentId == fixtures.Fixtures.competitionId).FirstOrDefault();
+
+                var allFixtures = (await _rugbyFixturesRepository.AllAsync()).ToList();
+                var allTeams = (await _rugbyTeamRepository.AllAsync()).ToList();
+                var allVenues = (await _rugbyVenueRepository.AllAsync()).ToList();
+
+                foreach (var roundFixture in fixtures.Fixtures.roundFixtures)
                 {
-                    var fixtureId = fixture.gameId;
-
-                    // Lookup in Db
-                    var fixtureInDb = allFixtures.Where(f => f.ProviderFixtureId == fixtureId).FirstOrDefault();
-                    DateTimeOffset.TryParse(fixture.startTimeUTC, out DateTimeOffset startTime);
-                    var teams = fixture.teams.ToArray();
-                    // We need temporary variables here.
-                    // Cannot use indexing in Linq Where clause.
-                    var team0 = teams[0];
-                    var team1 = teams[1];
-
-                    var teamA = allTeams.Where(t => t.ProviderTeamId == team0.teamId).FirstOrDefault();
-                    var teamB = allTeams.Where(t => t.ProviderTeamId == team1.teamId).FirstOrDefault();
-                    var newFixture = new RugbyFixture()
+                    foreach (var fixture in roundFixture.gameFixtures)
                     {
-                        ProviderFixtureId = fixtureId,
-                        StartDateTime = startTime,
-                        RugbyVenue = allVenues.Where(v => v.ProviderVenueId == fixture.venueId).FirstOrDefault(),
-                        RugbyTournament = tournament,
-                        TeamA = teamA,
-                        TeamB = teamB,
-                        TeamAIsHomeTeam = team0.isHomeTeam,
-                        TeamBIsHomeTeam = team1.isHomeTeam,
-                        RugbyFixtureStatus = GetFixtureStatusFromProviderFixtureState(fixture.gameStateName),
-                        DataProvider = DataProvider.StatsProzone
-                    };
+                        var fixtureId = fixture.gameId;
 
-                    if (fixtureInDb == null)
-                    {
-                        _rugbyFixturesRepository.Add(newFixture);
-                    }
-                    else
-                    {
-                        // Only update the scores for games that are completed.
-                        // Real-time scores will be updated separately 
-                        // in a method that runs more frequently.
-                        if (fixtureInDb.RugbyFixtureStatus == RugbyFixtureStatus.Final)
+                        // Lookup in Db
+                        var fixtureInDb = allFixtures.Where(f => f.ProviderFixtureId == fixtureId).FirstOrDefault();
+                        DateTimeOffset.TryParse(fixture.startTimeUTC, out DateTimeOffset startTime);
+                        var teams = fixture.teams.ToArray();
+                        // We need temporary variables here.
+                        // Cannot use indexing in Linq Where clause.
+                        var team0 = teams[0];
+                        var team1 = teams[1];
+
+                        var teamA = allTeams.Where(t => t.ProviderTeamId == team0.teamId).FirstOrDefault();
+                        var teamB = allTeams.Where(t => t.ProviderTeamId == team1.teamId).FirstOrDefault();
+                        var newFixture = new RugbyFixture()
                         {
-                            newFixture.TeamAScore = team0.teamFinalScore;
-                            newFixture.TeamBScore = team1.teamFinalScore;
+                            ProviderFixtureId = fixtureId,
+                            StartDateTime = startTime,
+                            RugbyVenue = allVenues.Where(v => v.ProviderVenueId == fixture.venueId).FirstOrDefault(),
+                            RugbyTournament = tournament,
+                            TeamA = teamA,
+                            TeamB = teamB,
+                            TeamAIsHomeTeam = team0.isHomeTeam,
+                            TeamBIsHomeTeam = team1.isHomeTeam,
+                            RugbyFixtureStatus = GetFixtureStatusFromProviderFixtureState(fixture.gameStateName),
+                            DataProvider = DataProvider.StatsProzone
+                        };
 
-                            fixtureInDb.TeamAScore = newFixture.TeamAScore;
-                            fixtureInDb.TeamBScore = newFixture.TeamBScore;
+                        if (fixtureInDb == null)
+                        {
+                            _rugbyFixturesRepository.Add(newFixture);
                         }
+                        else
+                        {
+                            // Only update the scores for games that are completed.
+                            // Real-time scores will be updated separately 
+                            // in a method that runs more frequently.
+                            if (fixtureInDb.RugbyFixtureStatus == RugbyFixtureStatus.Final)
+                            {
+                                newFixture.TeamAScore = team0.teamFinalScore;
+                                newFixture.TeamBScore = team1.teamFinalScore;
 
-                        fixtureInDb.StartDateTime = startTime;
-                        fixtureInDb.RugbyFixtureStatus = GetFixtureStatusFromProviderFixtureState(fixture.gameStateName);
-                        fixtureInDb.RugbyVenue = newFixture.RugbyVenue;
-                        fixtureInDb.TeamA = newFixture.TeamA;
-                        fixtureInDb.TeamB = newFixture.TeamB;
-                        fixtureInDb.TeamAIsHomeTeam = newFixture.TeamAIsHomeTeam;
-                        fixtureInDb.TeamBIsHomeTeam = newFixture.TeamBIsHomeTeam;
-                        fixtureInDb.RugbyTournament = newFixture.RugbyTournament;
+                                fixtureInDb.TeamAScore = newFixture.TeamAScore;
+                                fixtureInDb.TeamBScore = newFixture.TeamBScore;
+                            }
 
-                        _rugbyFixturesRepository.Update(fixtureInDb);
+                            fixtureInDb.StartDateTime = startTime;
+                            fixtureInDb.RugbyFixtureStatus = GetFixtureStatusFromProviderFixtureState(fixture.gameStateName);
+                            fixtureInDb.RugbyVenue = newFixture.RugbyVenue;
+                            fixtureInDb.TeamA = newFixture.TeamA;
+                            fixtureInDb.TeamB = newFixture.TeamB;
+                            fixtureInDb.TeamAIsHomeTeam = newFixture.TeamAIsHomeTeam;
+                            fixtureInDb.TeamBIsHomeTeam = newFixture.TeamBIsHomeTeam;
+                            fixtureInDb.RugbyTournament = newFixture.RugbyTournament;
+
+                            _rugbyFixturesRepository.Update(fixtureInDb);
+                        }
                     }
                 }
-            }
 
-            await _rugbyFixturesRepository.SaveAsync();
+                await _rugbyFixturesRepository.SaveAsync();
+            }
+            finally
+            {
+                PersistRugbyFixturesToPublicSportsRepositoryControl.Release();
+            }
         }
 
         private RugbyFixtureStatus GetFixtureStatusFromProviderFixtureState(string gameStateName)
@@ -696,18 +717,28 @@
             await IngestLogsHelper(activeTournaments, cancellationToken);
         }
 
+        private static SemaphoreSlim IngestLogsForCurrentTournamentsControl = new SemaphoreSlim(1, 1);
         public async Task IngestLogsForCurrentTournaments(CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
                 return;
 
-            if (await _rugbyService.GetLiveFixturesCount(cancellationToken) > 0)
-                return;
+            try
+            {
+                await IngestLogsForCurrentTournamentsControl.WaitAsync();
 
-            var currentTournaments =
-                await _rugbyService.GetCurrentTournaments();
+                if (await _rugbyService.GetLiveFixturesCount(cancellationToken) > 0)
+                    return;
 
-            await IngestLogsHelper(currentTournaments, cancellationToken);
+                var currentTournaments =
+                    await _rugbyService.GetCurrentTournaments();
+
+                await IngestLogsHelper(currentTournaments, cancellationToken);
+            }
+            finally
+            {
+                IngestLogsForCurrentTournamentsControl.Release();
+            }
         }
 
         public async Task IngestLogsHelper(IEnumerable<RugbyTournament> tournaments, CancellationToken cancellationToken)
@@ -928,7 +959,7 @@
             {
                 await IngestFixturesForTournamentSeasonControl.WaitAsync(cancellationToken);
 
-                if (cancellationToken.IsCancellationRequested || (await _rugbyService.GetLiveFixturesCount(cancellationToken)) > 0)
+                if (cancellationToken.IsCancellationRequested || (await _rugbyService.GetLiveFixturesCount(cancellationToken) > 0))
                 {
                     return;
                 }
@@ -1029,7 +1060,7 @@
             {
                 await IngestOneMonthsFixturesForTournamentControl.WaitAsync(cancellationToken);
 
-                if (cancellationToken.IsCancellationRequested || (await _rugbyService.GetLiveFixturesCount(cancellationToken)) > 0)
+                if (cancellationToken.IsCancellationRequested || (await _rugbyService.GetLiveFixturesCount(cancellationToken) > 0))
                 {
                     return;
                 }
