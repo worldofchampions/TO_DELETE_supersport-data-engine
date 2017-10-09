@@ -182,6 +182,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="Filters\LegacyExceptionFilterAttribute.cs" />
     <Compile Include="Models\Mappers\Constants.cs" />
+    <Compile Include="Models\Mappers\LegacyCommentaryMapperProfile.cs" />
     <Compile Include="Models\Mappers\LegacyFixtureMapperProfile.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\UnityConfig.cs" />
@@ -223,6 +224,7 @@
     <Compile Include="Helpers\AppSettings\SuperSportDataApplicationSettingsHelper.cs" />
     <Compile Include="Models\Mappers\LegacyGroupedLogMapperProfile.cs" />
     <Compile Include="Models\Mappers\LegacyMatchModelMapperProfile.cs" />
+    <Compile Include="Models\Mappers\LegacyMatchDetailsMapperProfile.cs" />
     <Compile Include="Models\Mappers\LegacyResultMapperProfile.cs" />
     <Compile Include="Models\Shared\AlternateCommentsModel.cs" />
     <Compile Include="Models\Shared\AuthModel.cs" />
