@@ -83,6 +83,14 @@
                 new HierarchicalLifetimeManager(),
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyCommentary>(container.Resolve<DbContext>(PublicSportDataRepository))));
 
+            container.RegisterType<IBaseEntityFrameworkRepository<RugbyEventType>, BaseEntityFrameworkRepository<RugbyEventType>>(
+                new HierarchicalLifetimeManager(),
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyEventType>(container.Resolve<DbContext>(PublicSportDataRepository))));
+
+            container.RegisterType<IBaseEntityFrameworkRepository<RugbyEventTypeProviderMapping>, BaseEntityFrameworkRepository<RugbyEventTypeProviderMapping>>(
+                new HierarchicalLifetimeManager(),
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyEventTypeProviderMapping>(container.Resolve<DbContext>(PublicSportDataRepository))));
+
             container.RegisterType<IBaseEntityFrameworkRepository<RugbyFixture>, BaseEntityFrameworkRepository<RugbyFixture>>(
                 new HierarchicalLifetimeManager(),
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyFixture>(container.Resolve<DbContext>(PublicSportDataRepository))));
@@ -98,6 +106,10 @@
             container.RegisterType<IBaseEntityFrameworkRepository<RugbyLogGroup>, BaseEntityFrameworkRepository<RugbyLogGroup>>(
                 new HierarchicalLifetimeManager(),
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyLogGroup>(container.Resolve<DbContext>(PublicSportDataRepository))));
+
+            container.RegisterType<IBaseEntityFrameworkRepository<RugbyMatchEvent>, BaseEntityFrameworkRepository<RugbyMatchEvent>>(
+                new HierarchicalLifetimeManager(),
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyMatchEvent>(container.Resolve<DbContext>(PublicSportDataRepository))));
 
             container.RegisterType<IBaseEntityFrameworkRepository<RugbyMatchStatistics>, BaseEntityFrameworkRepository<RugbyMatchStatistics>>(
                 new HierarchicalLifetimeManager(),

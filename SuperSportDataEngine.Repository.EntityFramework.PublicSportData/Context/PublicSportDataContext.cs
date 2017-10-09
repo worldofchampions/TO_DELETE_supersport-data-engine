@@ -10,10 +10,13 @@
         }
 
         public DbSet<RugbyCommentary> RugbyCommentaries { get; set; }
+        public DbSet<RugbyEventType> RugbyEventTypes { get; set; }
+        public DbSet<RugbyEventTypeProviderMapping> RugbyEventTypeProviderMappings { get; set; }
         public DbSet<RugbyFixture> RugbyFixtures { get; set; }
         public DbSet<RugbyFlatLog> RugbyFlatLogs { get; set; }
         public DbSet<RugbyGroupedLog> RugbyGroupedLogs { get; set; }
         public DbSet<RugbyLogGroup> RugbyLogGroups { get; set; }
+        public DbSet<RugbyMatchEvent> RugbyMatchEvents { get; set; }
         public DbSet<RugbyMatchStatistics> RugbyMatchStatistics { get; set; }
         public DbSet<RugbyPlayer> RugbyPlayers { get; set; }
         public DbSet<RugbyPlayerLineup> RugbyPlayerLineups { get; set; }

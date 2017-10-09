@@ -145,7 +145,13 @@
     <Compile Include="Migrations\201710030512071_Added_RugbyMatchStatistics_table.Designer.cs">
       <DependentUpon>201710030512071_Added_RugbyMatchStatistics_table.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201710091422082_Added_rugby_events_related_tables.cs" />
+    <Compile Include="Migrations\201710091422082_Added_rugby_events_related_tables.Designer.cs">
+      <DependentUpon>201710091422082_Added_rugby_events_related_tables.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Migrations\Seed\SeedRugbyEventTypeProviderMappings.cs" />
+    <Compile Include="Migrations\Seed\SeedRugbyEventTypes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -235,9 +241,13 @@
     <EmbeddedResource Include="Migrations\201710030512071_Added_RugbyMatchStatistics_table.resx">
       <DependentUpon>201710030512071_Added_RugbyMatchStatistics_table.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201710091422082_Added_rugby_events_related_tables.resx">
+      <DependentUpon>201710091422082_Added_rugby_events_related_tables.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
