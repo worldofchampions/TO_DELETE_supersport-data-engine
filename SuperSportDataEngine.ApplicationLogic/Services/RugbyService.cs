@@ -143,7 +143,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
                 var liveGames = (await _rugbyFixturesRepository.AllAsync())
                         .Where(
-                            fixture => fixture.RugbyTournament.Id == tournamentId &&
+                            fixture => (fixture.RugbyTournament != null && fixture.RugbyTournament.Id == tournamentId) &&
                             ((fixture.RugbyFixtureStatus != RugbyFixtureStatus.Final &&
                               fixture.StartDateTime <= nowPlus15Minutes && fixture.StartDateTime >= now) ||
                              (fixture.RugbyFixtureStatus == RugbyFixtureStatus.InProgress))).ToList();
