@@ -56,7 +56,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
                 new RecurringJobOptions()
                 {
                     TimeZone = TimeZoneInfo.Utc,
-                    QueueName = HangfireQueueConfiguration.HighPriority
+                    QueueName = HangfireQueueConfiguration.NormalPriority
                 });
         }
 
@@ -71,7 +71,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
                 ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_Hourly_PollingExpression"],
                 new RecurringJobOptions() {
                     TimeZone = TimeZoneInfo.Utc,
-                    QueueName = HangfireQueueConfiguration.HighPriority
+                    QueueName = HangfireQueueConfiguration.NormalPriority
                 });
         }
 
@@ -86,7 +86,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
                 new RecurringJobOptions()
                 {
                     TimeZone = TimeZoneInfo.Utc,
-                    QueueName = HangfireQueueConfiguration.HighPriority
+                    QueueName = HangfireQueueConfiguration.NormalPriority
                 });
         }
 
