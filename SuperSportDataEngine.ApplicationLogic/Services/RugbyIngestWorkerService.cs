@@ -1314,19 +1314,16 @@
                 var dbCommentary = (await _rugbyCommentaryRepository.AllAsync()).Where(c =>
                                                 c.GameTimeRawSeconds == commentTimeInSeconds &&
                                                 c.RugbyFixture.Id == fixture.Id &&
-                                                c.ProviderEventTypeId == comment.statId &&
                                                 c.RugbyPlayer == player &&
                                                 c.RugbyTeam == team).FirstOrDefault();
 
                 var newCommentary = new RugbyCommentary()
                 {
                     CommentaryText = commentText,
-                    DataProvider = DataProvider.StatsProzone,
                     GameTimeDisplayHoursMinutesSeconds = gameTimeDisplayHoursMinutesSeconds,
                     GameTimeDisplayMinutesSeconds = gameTimeDisplayMinutesSeconds,
                     GameTimeRawMinutes = commentaryTimeInMinutes,
                     GameTimeRawSeconds = commentTimeInSeconds,
-                    ProviderEventTypeId = comment.statId,
                     RugbyFixture = fixture,
                     RugbyPlayer = player,
                     RugbyTeam = team

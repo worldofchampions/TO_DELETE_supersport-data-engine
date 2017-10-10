@@ -14,6 +14,13 @@
             modelBuilder.Entity<RugbyCommentary>().Property(x => x.GameTimeDisplayMinutesSeconds).IsRequired();
             modelBuilder.Entity<RugbyCommentary>().Property(x => x.CommentaryText).IsRequired();
 
+            modelBuilder.Entity<RugbyEventType>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+            modelBuilder.Entity<RugbyEventType>().Property(x => x.EventCode).HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Unique_EventCode") { IsUnique = true }));
+            modelBuilder.Entity<RugbyEventType>().Property(x => x.EventName).IsRequired();
+
+            modelBuilder.Entity<RugbyEventTypeProviderMapping>().HasKey(x => new { x.DataProvider, x.ProviderEventTypeId });
+            modelBuilder.Entity<RugbyEventTypeProviderMapping>().Property(x => x.ProviderEventName).IsRequired();
+
             modelBuilder.Entity<RugbyFixture>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
             modelBuilder.Entity<RugbyFixture>().Property(x => x.LegacyFixtureId).HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Unique_LegacyFixtureId") { IsUnique = true }))
                 .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
@@ -25,6 +32,8 @@
 
             modelBuilder.Entity<RugbyLogGroup>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
             modelBuilder.Entity<RugbyLogGroup>().Property(x => x.ProviderLogGroupId).IsOptional();
+
+            modelBuilder.Entity<RugbyMatchEvent>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
 
             modelBuilder.Entity<RugbyMatchStatistics>().HasKey(x => new { x.RugbyFixtureId, x.RugbyTeamId });
 
