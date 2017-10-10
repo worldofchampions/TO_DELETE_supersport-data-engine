@@ -1158,6 +1158,7 @@
 
                     await IngestCommentary(cancellationToken, eventsFlowResponse.RugbyEventsFlow.commentaryFlow, providerFixtureId);
                     await IngestMatchStatistics(cancellationToken, providerFixtureId);
+                    await IngestScoresForFixture(cancellationToken, matchStatsResponse);
 
                     _mongoDbRepository.Save(eventsFlowResponse);
                 }
@@ -1173,6 +1174,49 @@
 
                 Thread.Sleep(TimeSpan.FromSeconds(10));
             }
+        }
+
+        private async Task IngestScoresForFixture(CancellationToken cancellationToken, RugbyMatchStatsResponse matchStatsResponse)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return;
+
+            var allFixtures = (await _rugbyFixturesRepository.AllAsync()).ToList();
+
+            var scores = GetScoresForFixture(cancellationToken, matchStatsResponse);
+            var fixtureId = matchStatsResponse.RugbyMatchStats.gameId;
+
+            var fixtureInDb = allFixtures.Where(f => f.ProviderFixtureId == fixtureId).FirstOrDefault();
+
+            if(fixtureInDb == null)
+            {
+                // Is this even possible?
+                // To be ingesting scores for a fixture that doesnt
+                // exist in the DB.
+            }
+            else
+            {
+                fixtureInDb.TeamAScore = scores.teamAScore;
+                fixtureInDb.TeamBScore = scores.teamBScore;
+                _rugbyFixturesRepository.Update(fixtureInDb);
+            }
+
+            await _rugbyFixturesRepository.SaveAsync();
+        }
+
+        private (int teamAScore, int teamBScore) GetScoresForFixture(CancellationToken cancellationToken, RugbyMatchStatsResponse matchStatsResponse)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return (0, 0);
+
+            if (matchStatsResponse.RugbyMatchStats == null)
+                return (0, 0);
+
+            var teams = matchStatsResponse.RugbyMatchStats.teams;
+            var teamAScore = teams.teamsMatch[0].score.points;
+            var teamBScore = teams.teamsMatch[1].score.points;
+
+            return (teamAScore, teamBScore);
         }
 
         public async Task IngestMatchStatistics(CancellationToken cancellationToken, long providerFixtureId)
