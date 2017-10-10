@@ -40,7 +40,9 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         [ResponseType(typeof(RugbyMatchDetailsModel))]
         public IHttpActionResult GetMatchDetails(int id)
         {
-            return Ok();
+            var matchDetails = _rugbyService.GetMatchDetails(id);
+
+            return Ok(matchDetails);
         }
 
         /// <summary>

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData;
 
 namespace SuperSportDataEngine.ApplicationLogic.Tests
 {
@@ -23,8 +24,10 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
         Mock<TestEntityFrameworkRepository<RugbyTournament>> MockTournamentRepository;
         Mock<TestEntityFrameworkRepository<RugbyFlatLog>> MockFlatLogRepository;
         Mock<TestEntityFrameworkRepository<RugbyGroupedLog>> MockGroupedLogRepository;
-
-
+        Mock<TestEntityFrameworkRepository<RugbyMatchDetails>> MockMatchDetailsRepository;
+        public Mock<TestEntityFrameworkRepository<RugbyCommentary>> MockCommentaryRepository;
+        public Mock<TestEntityFrameworkRepository<RugbyPlayerLineup>> MockLineupRepository;
+        public Mock<TestEntityFrameworkRepository<RugbyMatchStatistics>> MockMatchStatisticsRepository;
 
         [SetUp]
         public void SetUp()
@@ -53,7 +56,22 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
             MockGroupedLogRepository =
                     new Mock<TestEntityFrameworkRepository<RugbyGroupedLog>>(new List<RugbyGroupedLog>());
 
+            MockMatchDetailsRepository =
+                    new Mock<TestEntityFrameworkRepository<RugbyMatchDetails>>(new List<RugbyMatchDetails>());
+
+            MockCommentaryRepository =
+                     new Mock<TestEntityFrameworkRepository<RugbyCommentary>>(new List<RugbyCommentary>());
+
+            MockLineupRepository =
+                    new Mock<TestEntityFrameworkRepository<RugbyPlayerLineup>>(new List<RugbyPlayerLineup>());
+
+            MockMatchStatisticsRepository =
+                    new Mock<TestEntityFrameworkRepository<RugbyMatchStatistics>>(new List<RugbyMatchStatistics>());
+
             RugbyService = new RugbyService(
+                MockMatchStatisticsRepository.Object,
+                MockLineupRepository.Object,
+                MockCommentaryRepository.Object,
                 MockGroupedLogRepository.Object,
                 MockFlatLogRepository.Object,
                 MockTournamentRepository.Object,

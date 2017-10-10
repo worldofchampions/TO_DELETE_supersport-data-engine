@@ -5,6 +5,7 @@ using System;
 using System.Threading.Tasks;
 using System.Threading;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData;
 
 namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces
 {
@@ -22,6 +23,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Inte
         Task<IEnumerable<RugbyFixture>> GetEndedFixtures();
         Task<bool> HasFixtureEnded(long providerFixtureId);
         Task<IEnumerable<RugbyTournament>> GetActiveTournamentsForMatchesInResultsState();
+        Task<RugbyMatchDetails> GetMatchDetails(int matchId);
         Task CleanupSchedulerTrackingTables(CancellationToken none);
         Task<IEnumerable<RugbyFixture>> GetTournamentFixtures(Guid tournamentId, RugbyFixtureStatus fixtureStatus);
         Task<IEnumerable<RugbyFixture>> GetTournamentFixtures(string tournamentName);
