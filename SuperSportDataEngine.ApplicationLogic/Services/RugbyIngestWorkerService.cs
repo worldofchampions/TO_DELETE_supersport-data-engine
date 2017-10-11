@@ -538,7 +538,7 @@
 
         private bool HasFixtureEnded(string gameStateName)
         {
-            return gameStateName == "Final";
+            return GetFixtureStatusFromProviderFixtureState(gameStateName) == RugbyFixtureStatus.PostMatch;
         }
 
         private SemaphoreSlim PersistRugbyFixturesToPublicSportsRepositoryControl = new SemaphoreSlim(1, 1);
@@ -1114,7 +1114,9 @@
         {
             foreach (var round in fixtures.Fixtures.roundFixtures)
             {
-                round.gameFixtures.RemoveAll(f => f.gameStateName == "Final");
+                round.gameFixtures
+                    .RemoveAll(
+                        f => GetFixtureStatusFromProviderFixtureState(f.gameStateName) == RugbyFixtureStatus.PostMatch);
             }
 
             return fixtures;
@@ -1170,7 +1172,8 @@
 
 
                 //// Check if should stop looping?
-                if (matchStatsResponse.RugbyMatchStats.gameState == "Final")
+                if (GetFixtureStatusFromProviderFixtureState(
+                        matchStatsResponse.RugbyMatchStats.gameState) == RugbyFixtureStatus.PostMatch)
                     break;
 
                 Thread.Sleep(TimeSpan.FromSeconds(10));
