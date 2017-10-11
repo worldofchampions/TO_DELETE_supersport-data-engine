@@ -7,6 +7,7 @@
     using SuperSportDataEngine.Application.Service.Common.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Services;
     using System;
+    using System.Threading.Tasks;
 
     internal class WindowsService : IWindowsServiceContract
     {
@@ -18,6 +19,11 @@
         }
 
         public void StartService()
+        {
+            Task.Run(() => { DoServiceWork(); });
+        }
+
+        private void DoServiceWork()
         {
             var ingestService = _container.Resolve<IRugbyIngestWorkerService>();
 

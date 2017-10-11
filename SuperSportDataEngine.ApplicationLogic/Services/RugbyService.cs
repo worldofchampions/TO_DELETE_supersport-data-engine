@@ -145,12 +145,12 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
                 var liveGames = (await _rugbyFixturesRepository.AllAsync())
                         .Where(
-                            fixture => fixture.RugbyTournament.Id == tournamentId &&
+                            fixture => (fixture.RugbyTournament != null && fixture.RugbyTournament.Id == tournamentId) &&
                             ((fixture.RugbyFixtureStatus != RugbyFixtureStatus.Final &&
                               fixture.StartDateTime <= nowPlus15Minutes && fixture.StartDateTime >= now) ||
                              (fixture.RugbyFixtureStatus == RugbyFixtureStatus.InProgress))).ToList();
 
-                //Fake a game being played live!Specify the providerFixtureId
+                // For debugging when there's no live games.
                 //return
                 //    (await _rugbyFixturesRepository.AllAsync())
                 //        .Where(f => f.RugbyTournament.Id == tournamentId && (f.ProviderFixtureId == 20171211210 || f.ProviderFixtureId == 20171211220));
@@ -181,6 +181,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                                fixture.StartDateTime <= nowPlus15Minutes && fixture.StartDateTime >= now) ||
                               (fixture.RugbyFixtureStatus == RugbyFixtureStatus.InProgress))).ToList().Count();
 
+                // For debugging when there's no live games.
+                //return 2;
+
                 return count;
             }
             finally
@@ -191,6 +194,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<IEnumerable<RugbyFixture>> GetEndedFixtures()
         {
+            // For debugging when there's no live games.
+            //return new List<RugbyFixture>();
             return
                 (await _rugbyFixturesRepository.AllAsync()).Where(
                     f => f.RugbyFixtureStatus == RugbyFixtureStatus.Final);

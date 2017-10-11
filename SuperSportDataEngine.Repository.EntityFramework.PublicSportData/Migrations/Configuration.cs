@@ -1,8 +1,10 @@
 namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations
 {
+    using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
+    using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed;
     using System.Data.Entity.Migrations;
 
-    internal sealed class Configuration : DbMigrationsConfiguration<SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context.PublicSportDataContext>
+    internal sealed class Configuration : DbMigrationsConfiguration<PublicSportDataContext>
     {
         public const string DataProviderCodeStatsProzone = "stats_prozone";
 
@@ -11,20 +13,10 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
             AutomaticMigrationsEnabled = false;
         }
 
-        protected override void Seed(SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context.PublicSportDataContext context)
+        protected override void Seed(PublicSportDataContext context)
         {
-            //  This method will be called after migrating to the latest version.
-
-            //  You can use the DbSet<T>.AddOrUpdate() helper extension method
-            //  to avoid creating duplicate seed data. E.g.
-            //
-            //    context.People.AddOrUpdate(
-            //      p => p.FullName,
-            //      new Person { FullName = "Andrew Peters" },
-            //      new Person { FullName = "Brice Lambson" },
-            //      new Person { FullName = "Rowan Miller" }
-            //    );
-            //
+            SeedRugbyEventTypes.Seed(context);
+            SeedRugbyEventTypeProviderMappings.Seed(context);
         }
     }
 }

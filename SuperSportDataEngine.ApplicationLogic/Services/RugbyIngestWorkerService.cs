@@ -295,6 +295,8 @@
             if ((await _rugbyService.GetLiveFixturesCount(cancellationToken) > 0))
                 return;
 
+            await IngestRugbyTournamentSeasons(cancellationToken);
+
             var activeTournaments =
                 await _rugbyService.GetActiveTournaments();
 
@@ -308,10 +310,9 @@
 
                 await PersistFixturesData(cancellationToken, fixtures);
 
-                // TODO: Also persist in SQL DB.
-
                 await PersistRugbySeasonDataInSchedulerTrackingRugbySeasonTable(cancellationToken, fixtures);
                 await PersistRugbyTournamentsInSchedulerTrackingRugbyTournamentTable(cancellationToken);
+
                 _mongoDbRepository.Save(fixtures);
             }
         }
@@ -958,6 +959,8 @@
                     return;
                 }
 
+                await IngestRugbyTournamentSeasons(cancellationToken);
+
                 var fixtures =
                     _statsProzoneIngestService.IngestFixturesForTournamentSeason(
                         tournamentId, seasonId, cancellationToken);
@@ -1115,6 +1118,7 @@
 
                     await IngestCommentary(cancellationToken, eventsFlowResponse.RugbyEventsFlow.commentaryFlow, providerFixtureId);
                     await IngestMatchStatistics(cancellationToken, providerFixtureId);
+                    await IngestScoresForFixture(cancellationToken, matchStatsResponse);
 
                     _mongoDbRepository.Save(eventsFlowResponse);
                 }
@@ -1133,6 +1137,49 @@
 
                 Thread.Sleep(TimeSpan.FromSeconds(10));
             }
+        }
+
+        private async Task IngestScoresForFixture(CancellationToken cancellationToken, RugbyMatchStatsResponse matchStatsResponse)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return;
+
+            var allFixtures = (await _rugbyFixturesRepository.AllAsync()).ToList();
+
+            var scores = GetScoresForFixture(cancellationToken, matchStatsResponse);
+            var fixtureId = matchStatsResponse.RugbyMatchStats.gameId;
+
+            var fixtureInDb = allFixtures.Where(f => f.ProviderFixtureId == fixtureId).FirstOrDefault();
+
+            if(fixtureInDb == null)
+            {
+                // Is this even possible?
+                // To be ingesting scores for a fixture that doesnt
+                // exist in the DB.
+            }
+            else
+            {
+                fixtureInDb.TeamAScore = scores.teamAScore;
+                fixtureInDb.TeamBScore = scores.teamBScore;
+                _rugbyFixturesRepository.Update(fixtureInDb);
+            }
+
+            await _rugbyFixturesRepository.SaveAsync();
+        }
+
+        private (int teamAScore, int teamBScore) GetScoresForFixture(CancellationToken cancellationToken, RugbyMatchStatsResponse matchStatsResponse)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return (0, 0);
+
+            if (matchStatsResponse.RugbyMatchStats == null)
+                return (0, 0);
+
+            var teams = matchStatsResponse.RugbyMatchStats.teams;
+            var teamAScore = teams.teamsMatch[0].score.points;
+            var teamBScore = teams.teamsMatch[1].score.points;
+
+            return (teamAScore, teamBScore);
         }
 
         public async Task IngestMatchStatistics(CancellationToken cancellationToken, long providerFixtureId)
@@ -1274,19 +1321,16 @@
                 var dbCommentary = (await _rugbyCommentaryRepository.AllAsync()).Where(c =>
                                                 c.GameTimeRawSeconds == commentTimeInSeconds &&
                                                 c.RugbyFixture.Id == fixture.Id &&
-                                                c.ProviderEventTypeId == comment.statId &&
                                                 c.RugbyPlayer == player &&
                                                 c.RugbyTeam == team).FirstOrDefault();
 
                 var newCommentary = new RugbyCommentary()
                 {
                     CommentaryText = commentText,
-                    DataProvider = DataProvider.StatsProzone,
                     GameTimeDisplayHoursMinutesSeconds = gameTimeDisplayHoursMinutesSeconds,
                     GameTimeDisplayMinutesSeconds = gameTimeDisplayMinutesSeconds,
                     GameTimeRawMinutes = commentaryTimeInMinutes,
                     GameTimeRawSeconds = commentTimeInSeconds,
-                    ProviderEventTypeId = comment.statId,
                     RugbyFixture = fixture,
                     RugbyPlayer = player,
                     RugbyTeam = team
