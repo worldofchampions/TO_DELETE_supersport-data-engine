@@ -1119,6 +1119,7 @@
                     await IngestCommentary(cancellationToken, eventsFlowResponse.RugbyEventsFlow.commentaryFlow, providerFixtureId);
                     await IngestMatchStatistics(cancellationToken, providerFixtureId);
                     await IngestScoresForFixture(cancellationToken, matchStatsResponse);
+                    await IngestFixtureState(cancellationToken, matchStatsResponse);
 
                     _mongoDbRepository.Save(eventsFlowResponse);
                 }
@@ -1137,6 +1138,24 @@
 
                 Thread.Sleep(TimeSpan.FromSeconds(10));
             }
+        }
+
+        private async Task IngestFixtureState(CancellationToken cancellationToken, RugbyMatchStatsResponse matchStatsResponse)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return;
+
+            var fixtureId = matchStatsResponse.RugbyMatchStats.gameId;
+            var fixtureInDb = (await _rugbyFixturesRepository.AllAsync()).Where(f => f.ProviderFixtureId == fixtureId).FirstOrDefault();
+            var fixtureState = GetFixtureStatusFromProviderFixtureState(matchStatsResponse.RugbyMatchStats.gameState);
+
+            if (fixtureInDb != null)
+            {
+                fixtureInDb.RugbyFixtureStatus = fixtureState;
+                _rugbyFixturesRepository.Update(fixtureInDb);
+            }
+
+            await _rugbyFixturesRepository.SaveAsync();
         }
 
         private async Task IngestScoresForFixture(CancellationToken cancellationToken, RugbyMatchStatsResponse matchStatsResponse)
