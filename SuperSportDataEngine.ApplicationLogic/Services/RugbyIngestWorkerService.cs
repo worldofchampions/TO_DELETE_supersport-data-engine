@@ -597,7 +597,7 @@
                             // Only update the scores for games that are completed.
                             // Real-time scores will be updated separately 
                             // in a method that runs more frequently.
-                            if (fixtureInDb.RugbyFixtureStatus == RugbyFixtureStatus.Final)
+                            if (fixtureInDb.RugbyFixtureStatus == RugbyFixtureStatus.PostMatch)
                             {
                                 newFixture.TeamAScore = team0.teamFinalScore;
                                 newFixture.TeamBScore = team1.teamFinalScore;
@@ -634,10 +634,10 @@
                 return RugbyFixtureStatus.PreMatch;
 
             if (gameStateName == "Final")
-                return RugbyFixtureStatus.Final;
+                return RugbyFixtureStatus.PostMatch;
 
             if (gameStateName == "Game End")
-                return RugbyFixtureStatus.GameEnd;
+                return RugbyFixtureStatus.PostMatch;
 
             if (gameStateName == "Full Time")
                 return RugbyFixtureStatus.Result;
