@@ -10,6 +10,8 @@
     using System.Configuration;
     using System.Threading;
     using SuperSportDataEngine.Application.Service.SchedulerClient.Manager;
+    using System.Threading.Tasks;
+    using System;
 
     internal class WindowsService : IWindowsServiceContract
     {
@@ -25,6 +27,11 @@
         }
 
         public void StartService()
+        {
+            Task.Run(() => { DoServiceWork(); });
+        }
+
+        private void DoServiceWork()
         {
             GlobalConfiguration.Configuration.UseStorage(HangfireConfiguration.JobStorage);
             GlobalJobFilters.Filters.Add(new ExpirationTimeAttribute());
