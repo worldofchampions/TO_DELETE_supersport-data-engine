@@ -25,7 +25,7 @@
 
         private void DoServiceWork()
         {
-            var ingestService = _container.Resolve<IRugbyIngestWorkerService>();
+            //var ingestService = _container.Resolve<IRugbyIngestWorkerService>();
 
             GlobalConfiguration.Configuration.UseStorage(HangfireConfiguration.JobStorage);
             GlobalConfiguration.Configuration.UseActivator(new ContainerJobActivator(_container));
