@@ -17,5 +17,13 @@
                 return "normal_priority";
             }
         }
+
+        public static string Default
+        {
+            get
+            {
+                return "default";
+            }
+        }
     }
 }

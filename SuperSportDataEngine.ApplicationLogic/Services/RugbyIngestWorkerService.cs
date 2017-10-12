@@ -539,7 +539,7 @@
 
         private bool HasFixtureEnded(string gameStateName)
         {
-            return gameStateName == "Final";
+            return GetFixtureStatusFromProviderFixtureState(gameStateName) == RugbyFixtureStatus.PostMatch;
         }
 
         private SemaphoreSlim PersistRugbyFixturesToPublicSportsRepositoryControl = new SemaphoreSlim(1, 1);
@@ -598,7 +598,7 @@
                             // Only update the scores for games that are completed.
                             // Real-time scores will be updated separately 
                             // in a method that runs more frequently.
-                            if (fixtureInDb.RugbyFixtureStatus == RugbyFixtureStatus.Final)
+                            if (fixtureInDb.RugbyFixtureStatus == RugbyFixtureStatus.PostMatch)
                             {
                                 newFixture.TeamAScore = team0.teamFinalScore;
                                 newFixture.TeamBScore = team1.teamFinalScore;
@@ -634,11 +634,11 @@
             if (gameStateName.Equals(ProviderGameStateConstant.PreGame, StringComparison.InvariantCultureIgnoreCase))
                 return RugbyFixtureStatus.PreMatch;
 
-            if (gameStateName.Equals(ProviderGameStateConstant.Final, StringComparison.InvariantCultureIgnoreCase))
-                return RugbyFixtureStatus.Final;
+            if (gameStateName == "Final")
+                return RugbyFixtureStatus.PostMatch;
 
-            if (gameStateName.Equals(ProviderGameStateConstant.GameEnd, StringComparison.InvariantCultureIgnoreCase))
-                return RugbyFixtureStatus.GameEnd;
+            if (gameStateName == "Game End")
+                return RugbyFixtureStatus.PostMatch;
 
             if (gameStateName.Equals(ProviderGameStateConstant.FullTime, StringComparison.InvariantCultureIgnoreCase))
                 return RugbyFixtureStatus.Result;
@@ -1073,8 +1073,9 @@
         {
             foreach (var round in fixtures.Fixtures.roundFixtures)
             {
-                round.gameFixtures.RemoveAll(f => 
-                f.gameStateName.Equals(ProviderGameStateConstant.Final, StringComparison.InvariantCultureIgnoreCase));
+                round.gameFixtures
+                    .RemoveAll(
+                        f => GetFixtureStatusFromProviderFixtureState(f.gameStateName) == RugbyFixtureStatus.PostMatch);
             }
 
             return fixtures;
@@ -1130,10 +1131,9 @@
 
                 var currentGameState = matchStatsResponse.RugbyMatchStats.gameState;
 
-                var shouldBreakIngest = 
-                    currentGameState.Equals(ProviderGameStateConstant.GameEnd, StringComparison.InvariantCultureIgnoreCase);
-
-                if (shouldBreakIngest)
+                //// Check if should stop looping?
+                if (GetFixtureStatusFromProviderFixtureState(
+                        matchStatsResponse.RugbyMatchStats.gameState) == RugbyFixtureStatus.PostMatch)
                     break;
 
                 Thread.Sleep(TimeSpan.FromSeconds(10));
