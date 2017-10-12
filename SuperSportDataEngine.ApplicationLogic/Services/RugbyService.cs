@@ -286,7 +286,11 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         {
             Guid tournamentId = await GetTournamentId(tournamentSlug);
 
-            var fixtures = await GetTournamentFixtures(tournamentId, RugbyFixtureStatus.PreMatch);
+            var fixtures = (await _rugbyFixturesRepository.AllAsync())
+                            .ToList()
+                            .Where(t => t.RugbyTournament.Id == tournamentId &&
+                            t.RugbyFixtureStatus == RugbyFixtureStatus.PreMatch || 
+                            t.RugbyFixtureStatus == RugbyFixtureStatus.InProgress);
 
             return fixtures;
         }
