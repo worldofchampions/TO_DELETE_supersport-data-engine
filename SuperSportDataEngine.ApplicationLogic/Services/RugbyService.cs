@@ -348,8 +348,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             // Query for commentary
             var matchCommentary = ( _rugbyCommentaryRepository.All())
-                .ToList()
-                .Where(c => c.RugbyFixture.Id == fixture.Id);
+                .Where(c => c.RugbyFixture.Id == fixture.Id)
+                .ToList();
 
             // Query for team A lineups
             var teamAlineup = ( _rugbyPlayerLineupsRepository.All())
@@ -364,13 +364,15 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                  .ToList();
 
             // 4. Query for Match stats
-            var statsA = ( _rugbyMatchStatisticsRepository.All())
-                .Where(s => s.RugbyFixture.Id == fixture.Id && s.RugbyTeam.Id == fixture.TeamA.Id)
-                .ToList();
+            var statsA = (_rugbyMatchStatisticsRepository.All())
+                    .Where(s => s.RugbyFixture.Id == fixture.Id)
+                    .ToList()
+                    .Where(f => f.RugbyTeamId == fixture.TeamA.Id).FirstOrDefault();
 
             var statsB = (_rugbyMatchStatisticsRepository.All())
-                .Where(s => s.RugbyFixture.Id == fixture.Id && s.RugbyTeam.Id == fixture.TeamB.Id)
-                .ToList();
+                    .Where(s => s.RugbyFixture.Id == fixture.Id)
+                    .ToList()
+                    .Where(f => f.RugbyTeamId == fixture.TeamB.Id).FirstOrDefault();
 
 
             var matchDetails = new RugbyMatchDetails

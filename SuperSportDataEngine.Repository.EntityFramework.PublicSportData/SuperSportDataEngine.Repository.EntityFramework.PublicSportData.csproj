@@ -153,6 +153,10 @@
     <Compile Include="Migrations\201710091422082_Added_rugby_events_related_tables.Designer.cs">
       <DependentUpon>201710091422082_Added_rugby_events_related_tables.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201710111141271_update-models.cs" />
+    <Compile Include="Migrations\201710111141271_update-models.Designer.cs">
+      <DependentUpon>201710111141271_update-models.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypeProviderMappings.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypes.cs" />
@@ -250,6 +254,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201710091422082_Added_rugby_events_related_tables.resx">
       <DependentUpon>201710091422082_Added_rugby_events_related_tables.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201710111141271_update-models.resx">
+      <DependentUpon>201710111141271_update-models.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -38,11 +38,13 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         [HttpGet]
         [Route("matchdetails/{id:int}")]
         [ResponseType(typeof(RugbyMatchDetailsModel))]
-        public IHttpActionResult GetMatchDetails(int id)
+        public async Task<IHttpActionResult> GetMatchDetails(int id)
         {
-            var matchDetails = _rugbyService.GetMatchDetails(id);
+            var matchDetails = await _rugbyService.GetMatchDetails(id);
 
-            return Ok(matchDetails);
+            var response = Mapper.Map<RugbyMatchDetailsModel>(matchDetails);
+
+            return Ok(response);
         }
 
         /// <summary>

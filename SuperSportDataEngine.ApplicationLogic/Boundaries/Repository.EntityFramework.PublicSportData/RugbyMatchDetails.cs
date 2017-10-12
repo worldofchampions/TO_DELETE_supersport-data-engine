@@ -6,14 +6,14 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFram
 {
     public class RugbyMatchDetails
     {
-        public IEnumerable<RugbyCommentary> Commentary { get; set; }
+        public List<RugbyCommentary> Commentary { get; set; }
 
-        public IEnumerable<RugbyPlayerLineup> TeamALineup { get; set; }
+        public List<RugbyPlayerLineup> TeamALineup { get; set; }
 
-        public IEnumerable<RugbyPlayerLineup> TeamBLineup { get; set; }
+        public List<RugbyPlayerLineup> TeamBLineup { get; set; }
 
-        public IEnumerable<RugbyMatchStatistics> TeamAMatchStatistics { get; set; }
+        public RugbyMatchStatistics TeamAMatchStatistics { get; set; }
 
-        public IEnumerable<RugbyMatchStatistics> TeamBMatchStatistics { get; set; }
+        public RugbyMatchStatistics TeamBMatchStatistics { get; set; }
     }
 }
