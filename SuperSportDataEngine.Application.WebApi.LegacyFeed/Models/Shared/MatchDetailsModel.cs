@@ -70,7 +70,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models
 
         public string Group { get; set; }
 
-        public List<MatchEventModel> Events { get; set; }
+        public List<MatchEvent> Events { get; set; }
         public virtual List<PlayerModel> Teamsheet { get; set; }
 
         public virtual List<PlayerModel> TeamATeamsheet { get; set; }
@@ -95,7 +95,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models
 
         public List<MatchLiveVideoModel> LiveVideos { get; set; }
 
-        public List<MatchEventModel> Commentary { get; set; }
+        public List<MatchEvent> Commentary { get; set; }
 
         public Boolean Postponed { get; set; }
 

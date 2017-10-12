@@ -22,6 +22,9 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
                 .ForMember(dest => dest.TeamBStats, exp => exp.MapFrom(
                     src => src.TeamBMatchStatistics))
 
+               .ForMember(dest => dest.Commentary, exp => exp.MapFrom(
+                    src => src.Commentary))
+
                .ForAllOtherMembers(dest => dest.Ignore());
         }
     }

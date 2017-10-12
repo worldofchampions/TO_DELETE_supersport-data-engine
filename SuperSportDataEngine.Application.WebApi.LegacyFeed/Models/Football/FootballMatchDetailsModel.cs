@@ -22,7 +22,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Football
 
         public int TeamBPenalties { get; set; }
 
-        public List<MatchEventModel> Commentary { get; set; }
+        public List<MatchEvent> Commentary { get; set; }
 
         public List<AlternateCommentsModel> AlternateCommentary { get; set; }
 

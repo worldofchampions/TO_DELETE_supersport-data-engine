@@ -8,6 +8,6 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models
     public class AlternateCommentsModel
     {
         public string Language { get; set; }
-        public List<MatchEventModel> Commentary { get; set; }
+        public List<MatchEvent> Commentary { get; set; }
     }
 }

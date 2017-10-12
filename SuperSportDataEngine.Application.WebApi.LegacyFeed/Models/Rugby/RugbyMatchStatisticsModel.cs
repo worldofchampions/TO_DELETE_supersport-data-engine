@@ -32,7 +32,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby
         public int ScrumsLost { get; set; }
         public int PenaltyTries { get; set; }
 
-        private List<MatchEventModel> matchEvents { get; set; }
+        private List<MatchEvent> matchEvents { get; set; }
         private int teamId { get; set; }
     }
 }

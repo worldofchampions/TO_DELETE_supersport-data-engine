@@ -519,7 +519,8 @@
                         // If the schedule already is in the system repo
                         // we need to update the status of the game.
                         fixtureSchedule.RugbyFixtureStatus = GetFixtureStatusFromProviderFixtureState(fixture.gameStateName);
-
+                        fixtureSchedule.StartDateTime = fixtureInDb.StartDateTime;
+                        
                         if (HasFixtureEnded(fixture.gameStateName) &&
                            fixtureSchedule.EndedDateTime == DateTimeOffset.MinValue)
                         {
