@@ -25,6 +25,9 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
                .ForMember(dest => dest.Commentary, exp => exp.MapFrom(
                     src => src.Commentary))
 
+               .ForMember(dest => dest.KickoffDateTime, exp => exp.MapFrom(
+                    src => src.RugbyFixture.StartDateTime.UtcDateTime.ToLocalTime().ToString("s")))
+
                .ForAllOtherMembers(dest => dest.Ignore());
         }
     }
