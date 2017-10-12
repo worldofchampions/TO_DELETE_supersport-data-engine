@@ -38,9 +38,13 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         [HttpGet]
         [Route("matchdetails/{id:int}")]
         [ResponseType(typeof(RugbyMatchDetailsModel))]
-        public IHttpActionResult GetMatchDetails(int id)
+        public async Task<IHttpActionResult> GetMatchDetails(int id)
         {
-            return Ok();
+            var matchDetails = await _rugbyService.GetMatchDetails(id);
+
+            var response = Mapper.Map<RugbyMatchDetailsModel>(matchDetails);
+
+            return Ok(response);
         }
 
         /// <summary>
@@ -54,6 +58,29 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         {
             return Ok();
         }
+
+
+        /// <summary>
+        /// Get News for Rugby
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("live")]
+        [ResponseType(typeof(Match))]
+        public async Task<IHttpActionResult> GetTodayFixtures()
+        {
+            var cacheKey = $"rugby/live/today";
+            var fixtures = await _cache.GetAsync<IEnumerable<Match>>(cacheKey);
+
+            if (fixtures == null)
+            {
+                 fixtures = (await _rugbyService.GetCurrentDayFixturesForActiveTournaments()).Select(res => Mapper.Map<Match>(res));
+                _cache.Add(cacheKey, fixtures);
+            }
+
+            return Ok(fixtures.ToList());
+        }
+
 
         /// <summary>
         /// Get Fixtures for Tournament
@@ -111,15 +138,25 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         [ResponseType(typeof(List<Log>))]
         public async Task<IHttpActionResult> GetLogs(string category)
         {
-            var cacheKey = $"rugby/{category}/logs";
-            var logs = await _cache.GetAsync<IEnumerable<Log>>(cacheKey);
+            var flatLogsCacheKey = $"rugby/flatLogs/{category}";
 
-            if (logs == null)
+            var flatLogsCache = await _cache.GetAsync<IEnumerable<Log>>(flatLogsCacheKey);
+
+            if (flatLogsCache != null)
             {
-                logs =  (await _rugbyService.GetLogs(category)).Select(log => Mapper.Map<Log>(log));
-                _cache.Add(cacheKey, logs);
+                return Ok(flatLogsCache);
             }
-            return Ok(logs);
+
+            var groupedLogsCacheKey = $"rugby/groupedLogs/{category}";
+
+            var groupedLogsCache = await _cache.GetAsync<IEnumerable<Log>>(groupedLogsCacheKey);
+
+            if (groupedLogsCache != null)
+            {
+                return Ok(groupedLogsCache);
+            }
+
+            return await GetLogsFromService(category);
         }
 
         /// <summary>
@@ -145,6 +182,39 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         public IHttpActionResult GetTournamentNews(int id)
         {
             return Ok();
+        }
+
+        private async Task<IHttpActionResult> GetLogsFromService(string category)
+        {
+            var flatLogsFromService = await _rugbyService.GetFlatLogs(category);
+
+            const int EmptyCollectionCount = 0;
+
+            if (flatLogsFromService.Count() > EmptyCollectionCount)
+            {
+                var flatLogsCacheKey = $"rugby/flatLogs/{category}";
+
+                var flatLogsCache = flatLogsFromService.Select(logItem => Mapper.Map<Log>(logItem));
+
+                _cache.Add(flatLogsCacheKey, flatLogsCache);
+
+                return Ok(flatLogsCache);
+            }
+
+            var groupedLogsFromService = await _rugbyService.GetGroupedLogs(category);
+
+            if (groupedLogsFromService.Count() > EmptyCollectionCount)
+            {
+                var groupedLogsCacheKey = $"rugby/groupedLogs/{category}";
+
+                var groupedLogsCache = groupedLogsFromService.Select(logItem => Mapper.Map<Log>(logItem)).ToList();
+
+                _cache.Add(groupedLogsCacheKey, groupedLogsCache);
+
+                return Ok(groupedLogsCache);
+            }
+
+            return Ok(Enumerable.Empty<Log>());
         }
     }
 }
