@@ -8,7 +8,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
     {
         public LegacyCommentaryMapperProfile()
         {
-            CreateMap<RugbyCommentary, MatchEventModel>()
+            CreateMap<RugbyCommentary, MatchEvent>()
 
                 .ForMember(dest => dest.Comments, exp => exp.MapFrom(
                     src => src.CommentaryText))

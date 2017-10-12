@@ -6,7 +6,7 @@ using System.Text;
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models
 {
     [Serializable]
-    public class MatchEventModel
+    public class MatchEvent
     {
         public long Id { get; set; }
         public int Player1Id { get; set; }
