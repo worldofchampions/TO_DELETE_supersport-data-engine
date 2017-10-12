@@ -385,7 +385,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 TeamALineup = teamAlineup,
                 TeamBLineup = teamBlineup,
                 TeamAMatchStatistics = statsA,
-                TeamBMatchStatistics = statsB
+                TeamBMatchStatistics = statsB,
+                RugbyFixture = fixture
             };
 
             return matchDetails;

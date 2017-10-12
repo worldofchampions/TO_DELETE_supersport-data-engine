@@ -15,5 +15,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFram
         public RugbyMatchStatistics TeamAMatchStatistics { get; set; }
 
         public RugbyMatchStatistics TeamBMatchStatistics { get; set; }
+
+        public RugbyFixture RugbyFixture { get; set; }
     }
 }
