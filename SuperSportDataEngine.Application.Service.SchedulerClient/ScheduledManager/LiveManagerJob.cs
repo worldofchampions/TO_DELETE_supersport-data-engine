@@ -18,7 +18,6 @@
     public class LiveManagerJob
     {
         private readonly IRecurringJobManager _recurringJobManager;
-        private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> _schedulerTrackingRugbyFixtureRepository;
         private readonly IUnityContainer _childContainer;
 
         public LiveManagerJob(
@@ -27,9 +26,6 @@
         {
             _childContainer = childContainer;
             _recurringJobManager = recurringJobManager;
-
-            _schedulerTrackingRugbyFixtureRepository = 
-                _childContainer.Resolve<IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture>>();
         }
 
         public async Task DoWorkAsync()
@@ -40,6 +36,9 @@
 
         private async Task<int> DeleteChildJobsForFetchingMatchDataForFixturesEnded()
         {
+            var _schedulerTrackingRugbyFixtureRepository =
+                _childContainer.Resolve<IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture>>();
+
             var endedGames =
                     await _childContainer.Resolve<IRugbyService>().GetEndedFixtures();
 
@@ -66,6 +65,9 @@
 
         private async Task<int> CreateChildJobsForFetchingLiveMatchDataForCurrentFixtures()
         {
+            var _schedulerTrackingRugbyFixtureRepository =
+                _childContainer.Resolve<IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture>>();
+
             var currentTournaments =
                     await _childContainer.Resolve<IRugbyService>().GetCurrentTournaments();
 

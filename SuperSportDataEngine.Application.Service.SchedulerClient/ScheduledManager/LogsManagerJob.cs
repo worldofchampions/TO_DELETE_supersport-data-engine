@@ -18,7 +18,6 @@
     public class LogsManagerJob
     {
         IRecurringJobManager _recurringJobManager;
-        IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> _schedulerTrackingRugbySeasonRepository;
 
         IUnityContainer _childContainer;
 
@@ -28,9 +27,6 @@
         {
             _recurringJobManager = recurringJobManager;
             _childContainer = childContainer;
-            
-            _schedulerTrackingRugbySeasonRepository = 
-                _childContainer.Resolve<IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason>>();
         }
 
         public async Task DoWorkAsync()
@@ -40,6 +36,9 @@
 
         private async Task<int> CreateChildJobsForFetchingLogs()
         {
+            var _schedulerTrackingRugbySeasonRepository =
+                            _childContainer.Resolve<IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason>>();
+
             var activeTournaments = await _childContainer.Resolve<IRugbyService>().GetActiveTournamentsForMatchesInResultsState();
 
             foreach (var tournament in activeTournaments)

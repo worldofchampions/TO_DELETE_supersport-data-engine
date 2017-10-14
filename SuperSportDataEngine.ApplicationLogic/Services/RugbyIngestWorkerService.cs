@@ -88,11 +88,6 @@
             if (cancellationToken.IsCancellationRequested)
                 return;
 
-            // If there is a live game happening while we are ingesting entities,
-            // Stop ingesting entities. It might interfere with the repo access.
-            if (await _rugbyService.GetLiveFixturesCount(cancellationToken) > 0)
-                return;
-
             var entitiesResponse =
                 _statsProzoneIngestService.IngestRugbyReferenceData(cancellationToken);
 
@@ -290,9 +285,6 @@
         public async Task IngestFixturesForActiveTournaments(CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
-                return;
-
-            if ((await _rugbyService.GetLiveFixturesCount(cancellationToken) > 0))
                 return;
 
             await IngestRugbyTournamentSeasons(cancellationToken);
@@ -520,7 +512,7 @@
                         // we need to update the status of the game.
                         fixtureSchedule.RugbyFixtureStatus = GetFixtureStatusFromProviderFixtureState(fixture.gameStateName);
                         fixtureSchedule.StartDateTime = fixtureInDb.StartDateTime;
-                        
+
                         if (HasFixtureEnded(fixture.gameStateName) &&
                            fixtureSchedule.EndedDateTime == DateTimeOffset.MinValue)
                         {
@@ -711,9 +703,6 @@
             if (cancellationToken.IsCancellationRequested)
                 return;
 
-            if (await _rugbyService.GetLiveFixturesCount(cancellationToken) > 0)
-                return;
-
             var activeTournaments =
                 await _rugbyService.GetActiveTournaments();
 
@@ -729,9 +718,6 @@
             try
             {
                 await IngestLogsForCurrentTournamentsControl.WaitAsync();
-
-                if (await _rugbyService.GetLiveFixturesCount(cancellationToken) > 0)
-                    return;
 
                 var currentTournaments =
                     await _rugbyService.GetCurrentTournaments();
@@ -955,7 +941,7 @@
             {
                 await IngestFixturesForTournamentSeasonControl.WaitAsync(cancellationToken);
 
-                if (cancellationToken.IsCancellationRequested || (await _rugbyService.GetLiveFixturesCount(cancellationToken) > 0))
+                if (cancellationToken.IsCancellationRequested)
                 {
                     return;
                 }
@@ -966,7 +952,7 @@
                     _statsProzoneIngestService.IngestFixturesForTournamentSeason(
                         tournamentId, seasonId, cancellationToken);
 
-            
+
                 await PersistFixturesData(cancellationToken, fixtures);
             }
             finally
@@ -1023,10 +1009,8 @@
             {
                 await IngestOneMonthsFixturesForTournamentControl.WaitAsync(cancellationToken);
 
-                if (cancellationToken.IsCancellationRequested || (await _rugbyService.GetLiveFixturesCount(cancellationToken) > 0))
-                {
+                if (cancellationToken.IsCancellationRequested)
                     return;
-                }
 
                 var tournament = await GetEnabledTournamentForId(providerTournamentId);
 
@@ -1171,7 +1155,7 @@
 
             var fixtureInDb = allFixtures.Where(f => f.ProviderFixtureId == fixtureId).FirstOrDefault();
 
-            if(fixtureInDb == null)
+            if (fixtureInDb == null)
             {
                 // Is this even possible?
                 // To be ingesting scores for a fixture that doesnt
@@ -1214,10 +1198,9 @@
             var teamsInRepo = (await _rugbyTeamRepository.AllAsync());
 
             var teamsFromProvider = matchStatsResponse.RugbyMatchStats.teams;
-            
-            foreach(var teamMatch in teamsFromProvider.teamsMatch)
-            {
 
+            foreach (var teamMatch in teamsFromProvider.teamsMatch)
+            {
                 var team = teamsInRepo.Where(t => t.ProviderTeamId == teamMatch.teamId).FirstOrDefault();
 
                 var stats = teamMatch.teamStats.matchStats.matchStat;
@@ -1239,7 +1222,7 @@
                     DefendersBeaten = (int)statsMap.GetValueOrDefault(8),
                     DropGoalAttempts = (int)statsMap.GetValueOrDefault(2049),
                     DropGoals = (int)statsMap.GetValueOrDefault(2050),
-                    DropGoalsMissed = (int) (statsMap.GetValueOrDefault(2049) - statsMap.GetValueOrDefault(2050)),
+                    DropGoalsMissed = (int)(statsMap.GetValueOrDefault(2049) - statsMap.GetValueOrDefault(2050)),
                     LineOutsLost = (int)statsMap.GetValueOrDefault(20),
                     LineOutsWon = (int)statsMap.GetValueOrDefault(19),
                     Offloads = (int)statsMap.GetValueOrDefault(46),
@@ -1259,7 +1242,7 @@
                     Tries = (int)statsMap.GetValueOrDefault(5)
                 };
 
-                if(statsInDb == null)
+                if (statsInDb == null)
                 {
                     _rugbyMatchStatisticsRepository.Add(newStats);
                 }
@@ -1304,7 +1287,7 @@
         private IDictionary<int, double> MakeStatisticsMap(IList<MatchStat> matchStats)
         {
             var dictionary = new Dictionary<int, double>();
-            foreach(var stat in matchStats)
+            foreach (var stat in matchStats)
             {
                 dictionary.Add(stat.StatTypeID, stat.StatValue);
             }
@@ -1373,7 +1356,7 @@
 
         public async Task IngestLineupsForUpcomingGames(CancellationToken cancellationToken)
         {
-            if (await _rugbyService.GetLiveFixturesCount(cancellationToken) > 0)
+            if (cancellationToken.IsCancellationRequested)
                 return;
 
             var now = DateTime.UtcNow;
@@ -1382,8 +1365,10 @@
             var gamesInTheNext2Days =
                     (await _rugbyFixturesRepository.AllAsync())
                         .Where(
-                            f => f.StartDateTime >= now && f.StartDateTime <= NowPlusTwoDays)
-                        .ToList();
+                            fixture => fixture.RugbyTournament != null &&
+                                       fixture.RugbyTournament.IsEnabled &&
+                                       fixture.StartDateTime >= now &&
+                                       fixture.StartDateTime <= NowPlusTwoDays).ToList();
 
             foreach (var fixture in gamesInTheNext2Days)
             {
@@ -1484,8 +1469,11 @@
 
             IList<RugbySeason> seasons = (await _rugbySeasonRepository.AllAsync()).ToList();
 
-            var season = seasons.Where(s => s.ProviderSeasonId == seasonId &&
-                                            s.RugbyTournament.ProviderTournamentId == providerTournamentId).ToList();
+            var season =
+                    seasons
+                        .Where(s =>
+                            s.ProviderSeasonId == seasonId &&
+                            s.RugbyTournament.ProviderTournamentId == providerTournamentId).ToList();
 
             // TODO: Also persist in SQL DB.
             if (season.Count == 0)
