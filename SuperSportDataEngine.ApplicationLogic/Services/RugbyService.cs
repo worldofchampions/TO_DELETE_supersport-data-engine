@@ -51,18 +51,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             return flatLogs;
         }
 
-        private SemaphoreSlim GetActiveTournamentsControl = new SemaphoreSlim(1, 1);
         public async Task<IEnumerable<RugbyTournament>> GetActiveTournaments()
         {
-            try
-            {
-                await GetActiveTournamentsControl.WaitAsync();
-                return (await _rugbyTournamentRepository.AllAsync()).Where(c => c.IsEnabled).ToList();
-            }
-            finally
-            {
-                GetActiveTournamentsControl.Release();
-            }
+            return (await _rugbyTournamentRepository.AllAsync()).Where(c => c.IsEnabled).ToList();
         }
 
         public async Task<IEnumerable<RugbyTournament>> GetCurrentTournaments()
@@ -73,12 +64,12 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<SchedulerStateForManagerJobPolling> GetSchedulerStateForManagerJobPolling(Guid tournamentId)
         {
-            var season = 
+            var season =
                 (await _schedulerTrackingRugbySeasonRepository.AllAsync())
                     .Where(
-                        s => s.TournamentId == tournamentId && 
-                        ( s.RugbySeasonStatus == RugbySeasonStatus.InProgress ||
-                          s.RugbySeasonStatus == RugbySeasonStatus.NotActive ))
+                        s => s.TournamentId == tournamentId &&
+                        (s.RugbySeasonStatus == RugbySeasonStatus.InProgress ||
+                          s.RugbySeasonStatus == RugbySeasonStatus.NotActive))
                    .FirstOrDefault();
 
             return season != null ? season.SchedulerStateForManagerJobPolling : SchedulerStateForManagerJobPolling.Undefined;
@@ -86,14 +77,14 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<IEnumerable<RugbyTournament>> GetEndedTournaments()
         {
-            var tournamentGuids = 
+            var tournamentGuids =
                 (await _schedulerTrackingRugbySeasonRepository.AllAsync())
                     .Where(
-                        season => season.RugbySeasonStatus == RugbySeasonStatus.Ended && 
+                        season => season.RugbySeasonStatus == RugbySeasonStatus.Ended &&
                         season.SchedulerStateForManagerJobPolling == SchedulerStateForManagerJobPolling.Running)
                     .Select(s => s.TournamentId);
 
-            return 
+            return
                 (await _rugbyTournamentRepository.AllAsync())
                     .Where(tournament => tournamentGuids.Contains(tournament.Id))
                     .Select(t => t);
@@ -101,93 +92,64 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<IEnumerable<RugbyTournament>> GetInactiveTournaments()
         {
-            return 
+            return
                 (await _rugbyTournamentRepository.AllAsync())
                     .Where(t => t.IsEnabled == false);
         }
 
-        private static SemaphoreSlim GetCurrentProviderSeasonIdForTournamentControl = new SemaphoreSlim(1, 1);
         public async Task<int> GetCurrentProviderSeasonIdForTournament(CancellationToken cancellationToken, Guid tournamentId)
         {
-            try
-            {
-                await GetCurrentProviderSeasonIdForTournamentControl.WaitAsync(cancellationToken);
+            
+            var currentSeason =
+                    (await _rugbySeasonRepository.AllAsync())
+                        .Where(season => season.RugbyTournament.Id == tournamentId && season.IsCurrent)
+                        .FirstOrDefault();
 
-                var currentSeason =
-                        (await _rugbySeasonRepository.AllAsync())
-                            .Where(season => season.RugbyTournament.Id == tournamentId && season.IsCurrent)
-                            .FirstOrDefault();
-
-                if (currentSeason != null)
-                {
-                    return currentSeason.ProviderSeasonId;
-                }
-            }
-            finally
+            if (currentSeason != null)
             {
-                GetCurrentProviderSeasonIdForTournamentControl.Release();
+                return currentSeason.ProviderSeasonId;
             }
 
             return DateTime.Now.Year;
         }
 
-        private static SemaphoreSlim GetLiveFixturesForCurrentTournamentControl = new SemaphoreSlim(1, 1);
         public async Task<IEnumerable<RugbyFixture>> GetLiveFixturesForCurrentTournament(CancellationToken cancellationToken, Guid tournamentId)
         {
             DateTimeOffset now = DateTimeOffset.UtcNow;
             DateTimeOffset nowPlus15Minutes = DateTimeOffset.UtcNow.AddMinutes(15);
+            
+            var liveGames = (await _rugbyFixturesRepository.AllAsync())
+                    .Where(
+                        fixture => (fixture.RugbyTournament != null && fixture.RugbyTournament.Id == tournamentId) &&
+                        ((fixture.RugbyFixtureStatus != RugbyFixtureStatus.PostMatch &&
+                            fixture.StartDateTime <= nowPlus15Minutes && fixture.StartDateTime >= now) ||
+                            (fixture.RugbyFixtureStatus == RugbyFixtureStatus.InProgress))).ToList();
 
-            try
-            {
-                await GetLiveFixturesForCurrentTournamentControl.WaitAsync(cancellationToken);
+            // For debugging when there's no live games.
+            //return
+            //    (await _rugbyFixturesRepository.AllAsync())
+            //        .Where(f => f.RugbyTournament.Id == tournamentId && (f.ProviderFixtureId == 20171211210 || f.ProviderFixtureId == 20171211220));
 
-                var liveGames = (await _rugbyFixturesRepository.AllAsync())
-                        .Where(
-                            fixture => (fixture.RugbyTournament != null && fixture.RugbyTournament.Id == tournamentId) &&
-                            ((fixture.RugbyFixtureStatus != RugbyFixtureStatus.PostMatch &&
-                              fixture.StartDateTime <= nowPlus15Minutes && fixture.StartDateTime >= now) ||
-                             (fixture.RugbyFixtureStatus == RugbyFixtureStatus.InProgress))).ToList();
-
-                // For debugging when there's no live games.
-                //return
-                //    (await _rugbyFixturesRepository.AllAsync())
-                //        .Where(f => f.RugbyTournament.Id == tournamentId && (f.ProviderFixtureId == 20171211210 || f.ProviderFixtureId == 20171211220));
-
-                return liveGames;
-            }
-            finally
-            {
-                GetLiveFixturesForCurrentTournamentControl.Release();
-            }
+            return liveGames;
         }
 
-        private static SemaphoreSlim GetLiveFixturesCountControl = new SemaphoreSlim(1, 1);
         public async Task<int> GetLiveFixturesCount(CancellationToken cancellationToken)
         {
             DateTimeOffset now = DateTimeOffset.UtcNow;
             DateTimeOffset nowPlus15Minutes = DateTimeOffset.UtcNow.AddMinutes(15);
 
-            try
-            {
-                await GetLiveFixturesCountControl.WaitAsync(cancellationToken);
+            int count =
+                (await _rugbyFixturesRepository.AllAsync())
+                    .Where(
+                        fixture =>
+                        ((fixture.RugbyFixtureStatus != RugbyFixtureStatus.PostMatch &&
+                            fixture.StartDateTime <= nowPlus15Minutes && fixture.StartDateTime >= now) ||
+                            (fixture.RugbyFixtureStatus == RugbyFixtureStatus.InProgress))).ToList().Count();
 
-                int count =
-                    (await _rugbyFixturesRepository.AllAsync())
-                        .Where(
-                            fixture =>
-                            ((fixture.RugbyFixtureStatus != RugbyFixtureStatus.PostMatch &&
-                               fixture.StartDateTime <= nowPlus15Minutes && fixture.StartDateTime >= now) ||
-                              (fixture.RugbyFixtureStatus == RugbyFixtureStatus.InProgress))).ToList().Count();
+            // For debugging when there's no live games.
+            //return 2;
 
-                // For debugging when there's no live games.
-                //return 2;
-
-                return count;
-            }
-            finally
-            {
-                GetLiveFixturesCountControl.Release();
-            }
+            return count;
         }
 
         public async Task<IEnumerable<RugbyFixture>> GetEndedFixtures()
@@ -196,7 +158,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             //return new List<RugbyFixture>();
             return
                 (await _rugbyFixturesRepository.AllAsync()).Where(
-                    f => f.RugbyFixtureStatus == RugbyFixtureStatus.PostMatch);
+                    f => f.RugbyFixtureStatus == RugbyFixtureStatus.PostMatch ||
+                         f.RugbyFixtureStatus == RugbyFixtureStatus.Result);
         }
 
         public async Task<bool> HasFixtureEnded(long providerFixtureId)
