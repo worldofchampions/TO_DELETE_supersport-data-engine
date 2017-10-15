@@ -77,106 +77,110 @@
 
         private static void ApplyRegistrationsForRepositoryEntityFrameworkPublicSportData(IUnityContainer container)
         {
-            container.RegisterType<DbContext, PublicSportDataContext>(PublicSportDataRepository, new HierarchicalLifetimeManager());
+            // Having a DbContext registered in the IoC container causes issues for a few reasons.
+            // 1. This context will be used for all the repositories.
+            //    For example, multiple repositories will be using the same context. This is an Exeption thrown by the Hangfire jobs.
+            // 2. We should ideally be using new DbContext's for each repository. Hence the changes below.
+
+            //container.RegisterType<DbContext, PublicSportDataContext>(PublicSportDataRepository, new HierarchicalLifetimeManager());
 
             container.RegisterType<IBaseEntityFrameworkRepository<RugbyCommentary>, BaseEntityFrameworkRepository<RugbyCommentary>>(
                 new HierarchicalLifetimeManager(),
-                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyCommentary>(container.Resolve<DbContext>(PublicSportDataRepository))));
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyCommentary>(new PublicSportDataContext())));
 
             container.RegisterType<IBaseEntityFrameworkRepository<RugbyEventType>, BaseEntityFrameworkRepository<RugbyEventType>>(
                 new HierarchicalLifetimeManager(),
-                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyEventType>(container.Resolve<DbContext>(PublicSportDataRepository))));
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyEventType>(new PublicSportDataContext())));
 
             container.RegisterType<IBaseEntityFrameworkRepository<RugbyEventTypeProviderMapping>, BaseEntityFrameworkRepository<RugbyEventTypeProviderMapping>>(
                 new HierarchicalLifetimeManager(),
-                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyEventTypeProviderMapping>(container.Resolve<DbContext>(PublicSportDataRepository))));
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyEventTypeProviderMapping>(new PublicSportDataContext())));
 
             container.RegisterType<IBaseEntityFrameworkRepository<RugbyFixture>, BaseEntityFrameworkRepository<RugbyFixture>>(
                 new HierarchicalLifetimeManager(),
-                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyFixture>(container.Resolve<DbContext>(PublicSportDataRepository))));
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyFixture>(new PublicSportDataContext())));
 
             container.RegisterType<IBaseEntityFrameworkRepository<RugbyFlatLog>, BaseEntityFrameworkRepository<RugbyFlatLog>>(
                 new HierarchicalLifetimeManager(),
-                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyFlatLog>(container.Resolve<DbContext>(PublicSportDataRepository))));
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyFlatLog>(new PublicSportDataContext())));
 
             container.RegisterType<IBaseEntityFrameworkRepository<RugbyGroupedLog>, BaseEntityFrameworkRepository<RugbyGroupedLog>>(
                 new HierarchicalLifetimeManager(),
-                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyGroupedLog>(container.Resolve<DbContext>(PublicSportDataRepository))));
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyGroupedLog>(new PublicSportDataContext())));
 
             container.RegisterType<IBaseEntityFrameworkRepository<RugbyLogGroup>, BaseEntityFrameworkRepository<RugbyLogGroup>>(
                 new HierarchicalLifetimeManager(),
-                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyLogGroup>(container.Resolve<DbContext>(PublicSportDataRepository))));
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyLogGroup>(new PublicSportDataContext())));
 
             container.RegisterType<IBaseEntityFrameworkRepository<RugbyMatchEvent>, BaseEntityFrameworkRepository<RugbyMatchEvent>>(
                 new HierarchicalLifetimeManager(),
-                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyMatchEvent>(container.Resolve<DbContext>(PublicSportDataRepository))));
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyMatchEvent>(new PublicSportDataContext())));
 
             container.RegisterType<IBaseEntityFrameworkRepository<RugbyMatchStatistics>, BaseEntityFrameworkRepository<RugbyMatchStatistics>>(
                 new HierarchicalLifetimeManager(),
-                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyMatchStatistics>(container.Resolve<DbContext>(PublicSportDataRepository))));
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyMatchStatistics>(new PublicSportDataContext())));
 
             container.RegisterType<IBaseEntityFrameworkRepository<RugbyPlayer>, BaseEntityFrameworkRepository<RugbyPlayer>>(
                 new HierarchicalLifetimeManager(),
-                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyPlayer>(container.Resolve<DbContext>(PublicSportDataRepository))));
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyPlayer>(new PublicSportDataContext())));
 
             container.RegisterType<IBaseEntityFrameworkRepository<RugbyPlayerLineup>, BaseEntityFrameworkRepository<RugbyPlayerLineup>>(
                 new HierarchicalLifetimeManager(),
-                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyPlayerLineup>(container.Resolve<DbContext>(PublicSportDataRepository))));
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyPlayerLineup>(new PublicSportDataContext())));
 
             container.RegisterType<IBaseEntityFrameworkRepository<RugbySeason>, BaseEntityFrameworkRepository<RugbySeason>>(
                 new HierarchicalLifetimeManager(),
-                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbySeason>(container.Resolve<DbContext>(PublicSportDataRepository))));
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbySeason>(new PublicSportDataContext())));
 
             container.RegisterType<IBaseEntityFrameworkRepository<RugbyTeam>, BaseEntityFrameworkRepository<RugbyTeam>>(
                 new HierarchicalLifetimeManager(),
-                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyTeam>(container.Resolve<DbContext>(PublicSportDataRepository))));
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyTeam>(new PublicSportDataContext())));
 
             container.RegisterType<IBaseEntityFrameworkRepository<RugbyTournament>, BaseEntityFrameworkRepository<RugbyTournament>>(
                 new HierarchicalLifetimeManager(),
-                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyTournament>(container.Resolve<DbContext>(PublicSportDataRepository))));
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyTournament>(new PublicSportDataContext())));
 
             container.RegisterType<IBaseEntityFrameworkRepository<RugbyVenue>, BaseEntityFrameworkRepository<RugbyVenue>>(
                 new HierarchicalLifetimeManager(),
-                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyVenue>(container.Resolve<DbContext>(PublicSportDataRepository))));
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyVenue>(new PublicSportDataContext())));
         }
 
         private static void ApplyRegistrationsForRepositoryEntityFrameworkSystemSportData(IUnityContainer container)
         {
-            container.RegisterType<DbContext, SystemSportDataContext>(SystemSportDataRepository, new HierarchicalLifetimeManager());
+            // Having a DbContext registered in the IoC container causes issues for a few reasons.
+            // 1. This context will be used for all the repositories.
+            //    For example, multiple repositories will be using the same context. This is an Exeption thrown by the Hangfire jobs.
+            // 2. We should ideally be using new DbContext's for each repository. Hence the changes below.
+
+            //container.RegisterType<DbContext, SystemSportDataContext>(SystemSportDataRepository, new HierarchicalLifetimeManager());
 
             container.RegisterType<IBaseEntityFrameworkRepository<LegacyAuthFeedConsumer>, BaseEntityFrameworkRepository<LegacyAuthFeedConsumer>>(
                 new HierarchicalLifetimeManager(),
-                new InjectionFactory(x => new BaseEntityFrameworkRepository<LegacyAuthFeedConsumer>(container.Resolve<DbContext>(SystemSportDataRepository))));
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<LegacyAuthFeedConsumer>(new SystemSportDataContext())));
 
             container.RegisterType<IBaseEntityFrameworkRepository<LegacyZoneSite>, BaseEntityFrameworkRepository<LegacyZoneSite>>(
                 new HierarchicalLifetimeManager(),
-                new InjectionFactory(x => new BaseEntityFrameworkRepository<LegacyZoneSite>(container.Resolve<DbContext>(SystemSportDataRepository))));
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<LegacyZoneSite>(new SystemSportDataContext())));
 
             container.RegisterType<IBaseEntityFrameworkRepository<SchedulerDashboardUser>, BaseEntityFrameworkRepository<SchedulerDashboardUser>>(
                 new HierarchicalLifetimeManager(),
-                new InjectionFactory(x => new BaseEntityFrameworkRepository<SchedulerDashboardUser>(container.Resolve<DbContext>(SystemSportDataRepository))));
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<SchedulerDashboardUser>(new SystemSportDataContext())));
 
             container.RegisterType<IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture>, BaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture>>(
                 new HierarchicalLifetimeManager(),
-                new InjectionFactory(x => new BaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture>(container.Resolve<DbContext>(SystemSportDataRepository))));
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture>(new SystemSportDataContext())));
 
             container.RegisterType<IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason>, BaseEntityFrameworkRepository<SchedulerTrackingRugbySeason>>(
                 new HierarchicalLifetimeManager(),
-                new InjectionFactory(x => new BaseEntityFrameworkRepository<SchedulerTrackingRugbySeason>(container.Resolve<DbContext>(SystemSportDataRepository))));
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<SchedulerTrackingRugbySeason>(new SystemSportDataContext())));
 
             container.RegisterType<IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament>, BaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament>>(
                 new HierarchicalLifetimeManager(),
-                new InjectionFactory(x => new BaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament>(container.Resolve<DbContext>(SystemSportDataRepository))));
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament>(new SystemSportDataContext())));
         }
 
         private static void ApplyRegistrationsForRepositoryMongoDbPayloadData(IUnityContainer container, ApplicationScope applicationScope)
         {
-            // TODO: [Davide] Conceptually this scope should be restricted to execution on ServiceSchedulerIngestServer only. Finalize this condition after determining what the Hangfire dependencies are for job definition creation etc.
-            //if (applicationScope == ApplicationScope.ServiceSchedulerIngestServer)
-            //{
-            //    container.RegisterType<IRugbyIngestWorkerService, RugbyIngestWorkerService>();
-            //}
-
             if (applicationScope == ApplicationScope.ServiceSchedulerClient ||
                 applicationScope == ApplicationScope.ServiceSchedulerIngestServer)
             {

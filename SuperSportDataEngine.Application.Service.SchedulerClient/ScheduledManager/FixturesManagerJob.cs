@@ -32,9 +32,18 @@
 
         public async Task DoWorkAsync()
         {
+            CreateNewContainer();
+
             await CreateChildJobsForFetchingOneMonthsFixturesForActiveTournaments();
             await CreateChildJobsForFetchingFixturesForTournamentSeason();
             await DeleteChildJobsForInactiveAndEndedTournaments();
+        }
+
+        private void CreateNewContainer()
+        {
+            var parent = _childContainer.Parent;
+            _childContainer.Dispose();
+            _childContainer = parent.CreateChildContainer();
         }
 
         private async Task<int> CreateChildJobsForFetchingOneMonthsFixturesForActiveTournaments()
