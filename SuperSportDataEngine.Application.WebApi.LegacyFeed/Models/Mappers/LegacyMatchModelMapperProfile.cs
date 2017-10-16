@@ -17,18 +17,12 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
                 .ForMember(dest => dest.AwayTeamId, expression => expression.MapFrom(
                     src => src.TeamAIsHomeTeam ? src.TeamB.LegacyTeamId : src.TeamA.LegacyTeamId))
 
-                 .ForMember(dest => dest.AwayTeamScore, expression => expression.MapFrom(
-                    (src => (src.TeamAIsHomeTeam ? src.TeamBScore : src.TeamAScore) ?? 0)))
-
                 // For Home team 
                 .ForMember(dest => dest.HomeTeam, expression => expression.MapFrom(
                     src => src.TeamAIsHomeTeam ? src.TeamA.Name : src.TeamB.Name))
 
                 .ForMember(dest => dest.HomeTeamId, expression => expression.MapFrom(
                     src => src.TeamAIsHomeTeam ? src.TeamA.LegacyTeamId : src.TeamB.LegacyTeamId))
-
-                .ForMember(dest => dest.HomeTeamScore, expression => expression.MapFrom(
-                    src => (src.TeamAIsHomeTeam ? src.TeamAScore : src.TeamBScore) ?? 0))
 
                 // For Fixture specific
                 .ForMember(dest => dest.LeagueName, expression => expression.MapFrom(
