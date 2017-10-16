@@ -36,7 +36,13 @@
             GlobalConfiguration.Configuration.UseStorage(HangfireConfiguration.JobStorage);
             GlobalJobFilters.Filters.Add(new ExpirationTimeAttribute());
 
-            using (WebApp.Start<StartUp>(ConfigurationManager.AppSettings["HangfireDashboardUrl"]))
+            var options = new StartOptions();
+            options.Urls.Add(ConfigurationManager.AppSettings["HangfireDashboardUrl"]);
+            options.Urls.Add("http://localhost:9622");
+            options.Urls.Add("http://127.0.0.1:9622");
+            options.Urls.Add(string.Format("http://{0}:9622", Environment.MachineName));
+
+            using (WebApp.Start<StartUp>(options))
             {
                 JobStorage.Current = HangfireConfiguration.JobStorage;
 
