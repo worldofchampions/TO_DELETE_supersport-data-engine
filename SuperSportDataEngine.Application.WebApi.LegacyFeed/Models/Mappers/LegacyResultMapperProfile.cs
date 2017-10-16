@@ -15,7 +15,13 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
 
                 .ForMember(dest => dest.LeagueUrlName, expression =>  expression.MapFrom(
                     src => src.RugbyTournament.Slug))
-                 
+
+                .ForMember(dest => dest.HomeTeamScore, expression => expression.MapFrom(
+                    src => (src.TeamAIsHomeTeam ? src.TeamAScore : src.TeamBScore) ?? 0))
+
+                .ForMember(dest => dest.AwayTeamScore, expression => expression.MapFrom(
+                   (src => (src.TeamAIsHomeTeam ? src.TeamBScore : src.TeamAScore) ?? 0)))
+
                 .ForMember(dest => dest.AwayTeamShortName, expression => expression.MapFrom(
                     src => src.TeamAIsHomeTeam ? src.TeamB.Name : src.TeamA.Name))
 
