@@ -77,7 +77,13 @@
 
         private static void ApplyRegistrationsForRepositoryEntityFrameworkPublicSportData(IUnityContainer container)
         {
-            container.RegisterType<DbContext, PublicSportDataContext>(PublicSportDataRepository, new HierarchicalLifetimeManager());
+            // Having a DbContext registered in the IoC container causes issues for a few reasons.
+            // 1. This context will be used for all the repositories.
+            //    For example, multiple repositories will be using the same context. This is an Exeption thrown by the Hangfire jobs.
+            // 2. We should ideally be using new DbContext's for each repository. Hence the changes below.
+            // 3. Ammended, added back the context. The real issue was that multiple threads were using the same context.
+            //    Multiple repositories in a Hangfire job using the same context is fine.
+            container.RegisterType<DbContext, PublicSportDataContext>(PublicSportDataRepository, new PerThreadLifetimeManager());
 
             container.RegisterType<IBaseEntityFrameworkRepository<RugbyCommentary>, BaseEntityFrameworkRepository<RugbyCommentary>>(
                 new HierarchicalLifetimeManager(),
@@ -142,7 +148,13 @@
 
         private static void ApplyRegistrationsForRepositoryEntityFrameworkSystemSportData(IUnityContainer container)
         {
-            container.RegisterType<DbContext, SystemSportDataContext>(SystemSportDataRepository, new HierarchicalLifetimeManager());
+            // Having a DbContext registered in the IoC container causes issues for a few reasons.
+            // 1. This context will be used for all the repositories.
+            //    For example, multiple repositories will be using the same context. This is an Exeption thrown by the Hangfire jobs.
+            // 2. We should ideally be using new DbContext's for each repository. Hence the changes below.
+            // 3. Ammended, added back the context. The real issue was that multiple threads were using the same context.
+            //    Multiple repositories in a Hangfire job using the same context is fine.
+            container.RegisterType<DbContext, SystemSportDataContext>(SystemSportDataRepository, new PerThreadLifetimeManager());
 
             container.RegisterType<IBaseEntityFrameworkRepository<LegacyAuthFeedConsumer>, BaseEntityFrameworkRepository<LegacyAuthFeedConsumer>>(
                 new HierarchicalLifetimeManager(),
@@ -171,12 +183,6 @@
 
         private static void ApplyRegistrationsForRepositoryMongoDbPayloadData(IUnityContainer container, ApplicationScope applicationScope)
         {
-            // TODO: [Davide] Conceptually this scope should be restricted to execution on ServiceSchedulerIngestServer only. Finalize this condition after determining what the Hangfire dependencies are for job definition creation etc.
-            //if (applicationScope == ApplicationScope.ServiceSchedulerIngestServer)
-            //{
-            //    container.RegisterType<IRugbyIngestWorkerService, RugbyIngestWorkerService>();
-            //}
-
             if (applicationScope == ApplicationScope.ServiceSchedulerClient ||
                 applicationScope == ApplicationScope.ServiceSchedulerIngestServer)
             {
