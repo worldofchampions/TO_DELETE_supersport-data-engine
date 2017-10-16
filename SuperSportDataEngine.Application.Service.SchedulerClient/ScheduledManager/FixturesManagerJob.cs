@@ -19,8 +19,6 @@
 
     internal class FixturesManagerJob
     {
-        IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> _schedulerTrackingRugbyTournaments;
-        IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> _schedulerTrackingRugbySeasonRepository;
         IUnityContainer _childContainer;
         IRecurringJobManager _recurringJobManager;
 
@@ -30,23 +28,29 @@
         {
             _recurringJobManager = recurringJobManager;
             _childContainer = childContainer;
-
-            _schedulerTrackingRugbyTournaments = 
-                _childContainer.Resolve<IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament>>();
-
-            _schedulerTrackingRugbySeasonRepository = 
-                _childContainer.Resolve<IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason>>();
         }
 
         public async Task DoWorkAsync()
         {
+            CreateNewContainer();
+
             await CreateChildJobsForFetchingOneMonthsFixturesForActiveTournaments();
             await CreateChildJobsForFetchingFixturesForTournamentSeason();
             await DeleteChildJobsForInactiveAndEndedTournaments();
         }
 
+        private void CreateNewContainer()
+        {
+            var parent = _childContainer.Parent;
+            _childContainer.Dispose();
+            _childContainer = parent.CreateChildContainer();
+        }
+
         private async Task<int> CreateChildJobsForFetchingOneMonthsFixturesForActiveTournaments()
         {
+            var _schedulerTrackingRugbyTournaments =
+                _childContainer.Resolve<IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament>>();
+
             var activeTournaments =
                     await _childContainer.Resolve<IRugbyService>().GetActiveTournaments();
 
@@ -100,6 +104,9 @@
 
         private async Task<int> StopSchedulingInactiveTournaments(IEnumerable<RugbyTournament> inactiveTournaments)
         {
+            var _schedulerTrackingRugbyTournaments =
+                _childContainer.Resolve<IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament>>();
+
             foreach (var tournament in inactiveTournaments)
             {
                 var seasons = (await _schedulerTrackingRugbyTournaments.AllAsync()).Where(t => t.TournamentId == tournament.Id);
@@ -115,6 +122,9 @@
 
         private async Task<int> DeleteJobsForFetchingFixturesForTournaments(IEnumerable<RugbyTournament> tournaments)
         {
+            var _schedulerTrackingRugbyTournaments =
+                _childContainer.Resolve<IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament>>();
+
             foreach (var tournament in tournaments)
             {
                 var activeTournamentJobId = ConfigurationManager.AppSettings["ScheduleManagerJob_Fixtures_ActiveTournaments_JobIdPrefix"] + tournament.Name;
@@ -141,6 +151,9 @@
 
         private async Task<int> CreateChildJobsForFetchingFixturesForTournamentSeason()
         {
+            var _schedulerTrackingRugbySeasonRepository =
+                _childContainer.Resolve<IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason>>();
+
             var currentTournaments =
                 await _childContainer.Resolve<IRugbyService>().GetCurrentTournaments();
 
