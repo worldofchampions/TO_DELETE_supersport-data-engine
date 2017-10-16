@@ -1,10 +1,10 @@
 ﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-using System;
 using System.Collections.Generic;
 
-namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData
+namespace SuperSportDataEngine.ApplicationLogic.Entities.Legacy
+
 {
-    public class RugbyMatchDetails
+    public class RugbyMatchDetailsEntity
     {
         public List<RugbyCommentary> Commentary { get; set; }
 

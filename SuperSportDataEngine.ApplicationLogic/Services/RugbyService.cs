@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
 using System.Threading;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData;
+using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
 
 namespace SuperSportDataEngine.ApplicationLogic.Services
 {
@@ -298,7 +298,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             return todayFixtures;
         }
 
-        public async Task<RugbyMatchDetails> GetMatchDetails(int matchId)
+        public async Task<RugbyMatchDetailsEntity> GetMatchDetails(int matchId)
         {
             // Query for fixture
             var fixture = (_rugbyFixturesRepository.All())
@@ -335,7 +335,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                     .Where(f => f.RugbyTeamId == fixture.TeamB.Id).FirstOrDefault();
 
 
-            var matchDetails = new RugbyMatchDetails
+            var matchDetails = new RugbyMatchDetailsEntity
             {
                 Commentary = matchCommentary,
                 TeamALineup = teamAlineup,
