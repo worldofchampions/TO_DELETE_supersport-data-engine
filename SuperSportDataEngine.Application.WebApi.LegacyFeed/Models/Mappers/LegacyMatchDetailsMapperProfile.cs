@@ -3,13 +3,13 @@
     using AutoMapper;
     using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData;
+    using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
 
     public class LegacyMatchDetailsMapperProfile : Profile
     {
         public LegacyMatchDetailsMapperProfile()
         {
-            CreateMap<RugbyMatchDetails, RugbyMatchDetailsModel>()
+            CreateMap<RugbyMatchDetailsEntity, RugbyMatchDetails>()
 
                 // Team A Details
                 .ForMember(dest => dest.TeamAStats, exp => exp.MapFrom(src => src.TeamAMatchStatistics))
@@ -18,7 +18,7 @@
 
                 .ForMember(dest => dest.TeamAName, exp => exp.MapFrom(src => src.RugbyFixture.TeamA.Name))
 
-                .ForMember(dest => dest.TeamAShortName, exp => exp.MapFrom(src => src.RugbyFixture.TeamA.Abbreviation))
+                .ForMember(dest => dest.TeamAShortName, src =>src.UseValue(string.Empty))
 
                 .ForMember(dest => dest.TeamAScore, exp => exp.MapFrom(src => src.RugbyFixture.TeamAScore))
                 
@@ -31,7 +31,7 @@
 
                 .ForMember(dest => dest.TeamBName, exp => exp.MapFrom(src => src.RugbyFixture.TeamB.Name))
 
-                .ForMember(dest => dest.TeamBShortName, exp => exp.MapFrom(src => src.RugbyFixture.TeamB.Abbreviation))
+                 .ForMember(dest => dest.TeamBShortName, src => src.UseValue(string.Empty))
 
                 .ForMember(dest => dest.TeamBScore, exp => exp.MapFrom(src => src.RugbyFixture.TeamBScore))
 

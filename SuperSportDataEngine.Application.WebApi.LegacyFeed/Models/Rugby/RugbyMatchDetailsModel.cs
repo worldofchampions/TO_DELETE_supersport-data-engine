@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby
 {
     [Serializable]
-    public class RugbyMatchDetailsModel : MatchDetailsModel
+    public class RugbyMatchDetails : MatchDetailsModel
     {
         public bool isScoredLive { get; set; }
 
