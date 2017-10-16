@@ -58,6 +58,16 @@
                     src => src.RugbyFixture.RugbyFixtureStatus == RugbyFixtureStatus.Result ||
                            src.RugbyFixture.RugbyFixtureStatus == RugbyFixtureStatus.PostMatch ? true : false))
 
+                .ForMember(dest => dest.Status, exp => exp.MapFrom(
+                    src => src.RugbyFixture.RugbyFixtureStatus == RugbyFixtureStatus.Result ||
+                           src.RugbyFixture.RugbyFixtureStatus == RugbyFixtureStatus.PostMatch ? 
+                           Constants.SecondHalfStatusDescription : Constants.FirstHalfStatusDescription))
+
+                .ForMember(dest => dest.StatusId, exp => exp.MapFrom(
+                    src => src.RugbyFixture.RugbyFixtureStatus == RugbyFixtureStatus.Result ||
+                           src.RugbyFixture.RugbyFixtureStatus == RugbyFixtureStatus.PostMatch ?
+                           Constants.SecondHalfStatusId : Constants.FirstHalfStatusId))
+
                 .ForMember(dest => dest.MatchID, exp => exp.MapFrom(src => src.RugbyFixture.LegacyFixtureId))
 
                 .ForMember(dest => dest.MatchTime, exp => exp.MapFrom(
