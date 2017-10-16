@@ -38,7 +38,7 @@
                 .ForMember(dest => dest.TeamBId, exp => exp.MapFrom(src => src.RugbyFixture.TeamB.LegacyTeamId))
 
                 // Fixture Specific Details
-                .ForMember(dest => dest.Commentary, exp => exp.MapFrom(src => src.Commentary))
+                .ForMember(dest => dest.Events, exp => exp.MapFrom(src => src.Commentary))
 
                 .ForMember(dest => dest.KickoffDateTime, exp => exp.MapFrom(
                     src => src.RugbyFixture.StartDateTime.UtcDateTime.ToLocalTime().ToString("s")))
