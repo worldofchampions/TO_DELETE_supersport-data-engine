@@ -4,12 +4,11 @@
     using Microsoft.Practices.Unity;
     using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
     using SuperSportDataEngine.Application.Service.Common.Interfaces;
-    using System;
-    using System.Threading.Tasks;
 
     internal class WindowsService : IWindowsServiceContract
     {
         private readonly UnityContainer _container;
+        private BackgroundJobServer _jobServer;
 
         public WindowsService(UnityContainer container)
         {
@@ -18,26 +17,16 @@
 
         public void StartService()
         {
-            Task.Run(() => { DoServiceWork(); });
-        }
-
-        private void DoServiceWork()
-        {
             GlobalConfiguration.Configuration.UseStorage(HangfireConfiguration.JobStorage);
             GlobalConfiguration.Configuration.UseUnityActivator(_container);
 
-            using (var server = new BackgroundJobServer(HangfireConfiguration.JobServerOptions))
-            {
-                JobStorage.Current = HangfireConfiguration.JobStorage;
-                // Processing of jobs happen here.
-
-                Console.ReadLine();
-            }
+            _jobServer = new BackgroundJobServer(HangfireConfiguration.JobServerOptions);
         }
 
         public void StopService()
         {
             // TODO: Implement resource disposal/clean-up here.
+            _jobServer.Dispose();
         }
     }
 }
