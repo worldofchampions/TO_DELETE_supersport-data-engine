@@ -83,6 +83,11 @@ namespace SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration
                                 Convert.ToInt32(ConfigurationManager.AppSettings["WorkerCountMultiplier"]),
                             Queues =
                                 new[] {
+                                    // The default queue is added first because
+                                    // Hangfire places jobs in this queue when it gets retried.
+                                    // This will be the highest priority queue.
+                                    // In code, no jobs will be scheduled on this queue.
+                                    HangfireQueueConfiguration.Default,
                                     HangfireQueueConfiguration.HighPriority,
                                     HangfireQueueConfiguration.NormalPriority },
                             ServerName =

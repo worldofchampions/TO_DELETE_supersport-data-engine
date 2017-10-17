@@ -30,7 +30,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models
         public List<Bowler> Bowlers { get; set; }
         public List<Wicket> FallOfWickets { get; set; }
         public List<Partnership> PartnerShips { get; set; }
-        public List<MatchEventModel> Commentary { get; set; }
+        public List<MatchEvent> Commentary { get; set; }
     }
 
     [Serializable]

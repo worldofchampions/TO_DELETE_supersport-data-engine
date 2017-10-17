@@ -73,7 +73,7 @@
         {
             var requestUrl = message.RequestUri.ToString();
             var testUrl = requestUrl.Remove(requestUrl.IndexOf('?'));
-            if (testUrl.Contains("/matchdetails") && testUrl.Contains("/rugby/"))
+            if (testUrl.Contains("/matchdetails") || testUrl.Contains("/rugby/"))
             {
                 return true;
             }

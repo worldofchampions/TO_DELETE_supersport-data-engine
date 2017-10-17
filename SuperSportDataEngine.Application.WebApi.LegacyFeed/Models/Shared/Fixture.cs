@@ -3,7 +3,7 @@
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models
 {
     [Serializable]
-    public class Fixture : MatchModel
+    public class Fixture : Match
     {
         public SportType Sport { get; set; }
         public int Preview { get; set; }
