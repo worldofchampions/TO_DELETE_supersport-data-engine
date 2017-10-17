@@ -9,13 +9,17 @@ using System.Threading.Tasks;
 using System;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
 using System.Threading;
+using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
 
 namespace SuperSportDataEngine.ApplicationLogic.Services
 {
     public class RugbyService : IRugbyService
     {
-        // TODO: This was commented out when deleting old Log DB table.
+        private readonly IBaseEntityFrameworkRepository<RugbyMatchStatistics> _rugbyMatchStatisticsRepository;
+        private readonly IBaseEntityFrameworkRepository<RugbyCommentary> _rugbyCommentaryRepository;
+        private readonly IBaseEntityFrameworkRepository<RugbyPlayerLineup> _rugbyPlayerLineupsRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyFlatLog> _rugbyFlatLogsRepository;
+        private readonly IBaseEntityFrameworkRepository<RugbyGroupedLog> _rugbyGroupedLogsRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyTournament> _rugbyTournamentRepository;
         private readonly IBaseEntityFrameworkRepository<RugbySeason> _rugbySeasonRepository;
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> _schedulerTrackingRugbyTournamentRepository;
@@ -24,6 +28,10 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> _schedulerTrackingRugbyFixtureRepository;
 
         public RugbyService(
+            IBaseEntityFrameworkRepository<RugbyMatchStatistics> rugbyMatchStatisticsRepository,
+            IBaseEntityFrameworkRepository<RugbyPlayerLineup> rugbyPlayerLineupsRepository,
+            IBaseEntityFrameworkRepository<RugbyCommentary> rugbyCommentaryRepository,
+            IBaseEntityFrameworkRepository<RugbyGroupedLog> groupedLogsRepository,
             IBaseEntityFrameworkRepository<RugbyFlatLog> logRepository,
             IBaseEntityFrameworkRepository<RugbyTournament> rugbyTournamentRepository,
             IBaseEntityFrameworkRepository<RugbySeason> rugbySeasonRepository,
@@ -32,6 +40,10 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> schedulerTrackingRugbyTournamentRepository,
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> schedulerTrackingRugbyFixtureRepository)
         {
+            _rugbyMatchStatisticsRepository = rugbyMatchStatisticsRepository;
+            _rugbyPlayerLineupsRepository = rugbyPlayerLineupsRepository;
+            _rugbyCommentaryRepository = rugbyCommentaryRepository;
+            _rugbyGroupedLogsRepository = groupedLogsRepository;
             _rugbyFlatLogsRepository = logRepository;
             _rugbyTournamentRepository = rugbyTournamentRepository;
             _rugbySeasonRepository = rugbySeasonRepository;
@@ -40,17 +52,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             _schedulerTrackingRugbyFixtureRepository = schedulerTrackingRugbyFixtureRepository;
             _schedulerTrackingRugbyTournamentRepository = schedulerTrackingRugbyTournamentRepository;
         }
-
-        public async Task<IEnumerable<RugbyFlatLog>> GetLogs(string slug)
-        {
-            var tournamentId = await GetTournamentId(slug);
-
-            var flatLogs = (await _rugbyFlatLogsRepository.AllAsync())
-                .Where(t => t.RugbyTournament.IsEnabled && t.RugbyTournamentId == tournamentId);
-
-            return flatLogs;
-        }
-
         public async Task<IEnumerable<RugbyTournament>> GetActiveTournaments()
         {
             return (await _rugbyTournamentRepository.AllAsync()).Where(c => c.IsEnabled);
@@ -242,7 +243,11 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         {
             Guid tournamentId = await GetTournamentId(tournamentSlug);
 
-            var fixtures = await GetTournamentFixtures(tournamentId, RugbyFixtureStatus.PreMatch);
+            var fixtures = (await _rugbyFixturesRepository.AllAsync())
+                            .ToList()
+                            .Where(t => t.RugbyTournament.Id == tournamentId &&
+                            t.RugbyFixtureStatus == RugbyFixtureStatus.PreMatch || 
+                            t.RugbyFixtureStatus == RugbyFixtureStatus.InProgress);
 
             return fixtures;
         }
@@ -260,6 +265,87 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             var fixturesInResultsState = await GetTournamentFixtures(tournamentId, RugbyFixtureStatus.PostMatch);
 
             return fixturesInResultsState;
+        }
+
+        public async Task<IEnumerable<RugbyGroupedLog>> GetGroupedLogs(string tournamentSlug)
+        {
+            var tournamentId = await GetTournamentId(tournamentSlug);
+
+            var logs = (await _rugbyGroupedLogsRepository.AllAsync())
+                .Where(t => t.RugbyTournament.IsEnabled && t.RugbyTournamentId == tournamentId)
+                .ToList();
+
+            return logs;
+        }
+
+        public async Task<IEnumerable<RugbyFlatLog>> GetFlatLogs(string tournamentSlug)
+        {
+            var tournamentId = await GetTournamentId(tournamentSlug);
+
+            var flatLogs = (await _rugbyFlatLogsRepository.AllAsync())
+                .Where(t => t.RugbyTournament.IsEnabled && t.RugbyTournamentId == tournamentId)
+                .ToList();
+
+            return flatLogs;
+        }
+
+        public async Task <IEnumerable<RugbyFixture>> GetCurrentDayFixturesForActiveTournaments()
+        {
+            var todayFixtures = (await _rugbyFixturesRepository.AllAsync())
+                 .Where(f => f.StartDateTime.UtcDateTime.Date == DateTime.UtcNow.Date && f.RugbyTournament.IsEnabled)
+                 .ToList();
+
+            return todayFixtures;
+        }
+
+        public async Task<RugbyMatchDetailsEntity> GetMatchDetails(int matchId)
+        {
+            // Query for fixture
+            var fixture = (_rugbyFixturesRepository.All())
+                .Where(f => f.LegacyFixtureId == matchId)
+                .ToList()
+                .FirstOrDefault();
+
+            // Query for commentary
+            var matchCommentary = ( _rugbyCommentaryRepository.All())
+                .Where(c => c.RugbyFixture.Id == fixture.Id)
+                .ToList();
+
+            // Query for team A lineups
+            var teamAlineup = ( _rugbyPlayerLineupsRepository.All())
+                 .Where(l => l.RugbyFixture.Id == fixture.Id)
+                 .TakeWhile( l => l.RugbyTeam.Id == fixture.TeamA.Id)
+                 .ToList();
+
+            // Query for team B lineups
+            var teamBlineup = ( _rugbyPlayerLineupsRepository.All())
+                 .Where(l => l.RugbyFixture.Id == fixture.Id)
+                 .TakeWhile(l => l.RugbyTeam.Id == fixture.TeamB.Id)
+                 .ToList();
+
+            // 4. Query for Match stats
+            var statsA = (_rugbyMatchStatisticsRepository.All())
+                    .Where(s => s.RugbyFixture.Id == fixture.Id)
+                    .ToList()
+                    .Where(f => f.RugbyTeamId == fixture.TeamA.Id).FirstOrDefault();
+
+            var statsB = (_rugbyMatchStatisticsRepository.All())
+                    .Where(s => s.RugbyFixture.Id == fixture.Id)
+                    .ToList()
+                    .Where(f => f.RugbyTeamId == fixture.TeamB.Id).FirstOrDefault();
+
+
+            var matchDetails = new RugbyMatchDetailsEntity
+            {
+                Commentary = matchCommentary,
+                TeamALineup = teamAlineup,
+                TeamBLineup = teamBlineup,
+                TeamAMatchStatistics = statsA,
+                TeamBMatchStatistics = statsB,
+                RugbyFixture = fixture
+            };
+
+            return matchDetails;
         }
     }
 }

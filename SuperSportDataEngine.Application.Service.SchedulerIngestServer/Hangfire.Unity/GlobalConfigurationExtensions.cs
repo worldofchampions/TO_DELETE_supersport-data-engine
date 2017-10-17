@@ -1,6 +1,7 @@
 ﻿using Hangfire;
 using Hangfire.Annotations;
 using Microsoft.Practices.Unity;
+using SuperSportDataEngine.Application.Service.SchedulerClient;
 using System;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerIngestServer

@@ -19,6 +19,7 @@
     using SuperSportDataEngine.ApplicationLogic.Extensions;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyMatchStats;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyEventsFlow;
+    using SuperSportDataEngine.ApplicationLogic.Constants;
 
     public class RugbyIngestWorkerService : IRugbyIngestWorkerService
     {
@@ -539,7 +540,7 @@
 
         private RugbyFixtureStatus GetFixtureStatusFromProviderFixtureState(string gameStateName)
         {
-            if (gameStateName == "Pre Game")
+            if (gameStateName.Equals(ProviderGameStateConstant.PreGame, StringComparison.InvariantCultureIgnoreCase))
                 return RugbyFixtureStatus.PreMatch;
 
             if (gameStateName == "Final")
@@ -548,7 +549,7 @@
             if (gameStateName == "Game End")
                 return RugbyFixtureStatus.PostMatch;
 
-            if (gameStateName == "Full Time")
+            if (gameStateName.Equals(ProviderGameStateConstant.FullTime, StringComparison.InvariantCultureIgnoreCase))
                 return RugbyFixtureStatus.Result;
 
             return RugbyFixtureStatus.InProgress;
@@ -836,15 +837,8 @@
             {
                 var seasonId = await _rugbyService.GetCurrentProviderSeasonIdForTournament(cancellationToken, tournament.Id);
                 var results = _statsProzoneIngestService.IngestFixturesForTournament(tournament, seasonId, cancellationToken);
-                await PersistFixturesResultsInRepository(results, cancellationToken);
+                await PersistRugbyFixturesToPublicSportsRepository(cancellationToken, results);
             }
-        }
-
-        private async Task PersistFixturesResultsInRepository(RugbyFixturesResponse fixturesResponse, CancellationToken cancellationToken)
-        {
-            // Only persist data for completed matches.
-            // The provider endpoint for results is just a variation of the fixtures endpoint,
-            // It will also return results for completed matches.
         }
 
         public async Task IngestFixturesForTournamentSeason(CancellationToken cancellationToken, int tournamentId, int seasonId)
@@ -868,13 +862,20 @@
             if (cancellationToken.IsCancellationRequested)
                 return;
 
-            var currentRoundFixtures = await GetCurrentDayRoundFixturesForActiveTournaments();
+            if (await _rugbyService.GetLiveFixturesCount(cancellationToken) > 0)
+                return;
 
-            foreach (var round in currentRoundFixtures)
+            var currentDayFixtures = await _rugbyService.GetCurrentDayFixturesForActiveTournaments(); 
+
+            foreach (var fixture in currentDayFixtures)
             {
-                var results = await _statsProzoneIngestService.IngestFixtureResults(round.Item1, round.Item2, round.Item3);
+                var tournamentId = fixture.RugbyTournament.ProviderTournamentId;
 
-                // TODO: Also persist in SQL DB.
+                var seasonId = await _rugbyService.GetCurrentProviderSeasonIdForTournament(cancellationToken, fixture.RugbyTournament.Id);
+
+                var results = _statsProzoneIngestService.IngestFixturesForTournamentSeason(tournamentId, seasonId, cancellationToken);
+
+                 await PersistRugbyFixturesToPublicSportsRepository(cancellationToken,results);
             }
         }
 
@@ -883,48 +884,19 @@
             if (cancellationToken.IsCancellationRequested)
                 return;
 
-            var fixtures = await GetRoundFixturesInResultsStateForActiveTournaments();
+            var fixtures = await _rugbyService.GetCurrentDayFixturesForActiveTournaments();
 
             foreach (var fixture in fixtures)
             {
-                if (cancellationToken.IsCancellationRequested)
-                    return;
+                var tournamentId = fixture.RugbyTournament.ProviderTournamentId;
 
-                var results = await _statsProzoneIngestService.IngestFixtureResults(fixture.Item1, fixture.Item2, fixture.Item3);
+                var seasonId = await _rugbyService.GetCurrentProviderSeasonIdForTournament(cancellationToken, fixture.RugbyTournament.Id);
 
-                // TODO: Also persist in SQL DB.
+                var results = _statsProzoneIngestService.IngestFixturesForTournamentSeason(tournamentId, seasonId, cancellationToken);
+
+                await PersistRugbyFixturesToPublicSportsRepository(cancellationToken, results);
             }
         }
-
-        #region TempHelpers_Remove_Once_Properly_Implemented
-        /// <summary>
-        /// Returs round fixtures playing on current day.
-        /// </summary>
-        /// <param name="tournamemnts"></param>
-        /// <returns></returns>
-        public async Task<List<Tuple<int, int, int>>> GetCurrentDayRoundFixturesForActiveTournaments()
-        {
-            var activeTournaments = await _rugbyService.GetActiveTournaments();
-
-            //TODO: Must be able to deduce the following fields via repository
-            int tournamentId = 121;
-            int seasonId = 2017;
-            int roundId = 1;
-
-            return new List<Tuple<int, int, int>> { new Tuple<int, int, int>(tournamentId, seasonId, roundId) };
-        }
-
-        /// <summary>
-        /// Returs round fixtures that has been played.
-        /// </summary>
-        /// <param name="list"></param>
-        /// <returns></returns>
-        private async Task<List<Tuple<int, int, int>>> GetRoundFixturesInResultsStateForActiveTournaments()
-        {
-            //TODO:
-            return await GetCurrentDayRoundFixturesForActiveTournaments();
-        }
-        #endregion
 
         public async Task IngestOneMonthsFixturesForTournament(CancellationToken cancellationToken, int providerTournamentId)
         {

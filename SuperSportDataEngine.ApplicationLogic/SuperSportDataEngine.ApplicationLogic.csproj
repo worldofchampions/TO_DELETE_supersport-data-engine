@@ -83,6 +83,7 @@
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyTeam.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyTournament.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyVenue.cs" />
+    <Compile Include="Entities\Legacy\RugbyMatchDetailsEntity.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\Enums\RugbySeasonStatus.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.Common\Models\Enums\RugbyFixtureStatus.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\Enums\SchedulerStateForRugbyFixturePolling.cs" />
@@ -98,6 +99,7 @@
     <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\SchedulerDashboardUser.cs" />
     <Compile Include="Boundaries\Repository.MongoDb.PayloadData\Interfaces\IMongoDbRugbyRepository.cs" />
     <Compile Include="Boundaries\Repository.MongoDb.PayloadData\Interfaces\ITemporaryExampleMongoDbRepository.cs" />
+    <Compile Include="Constants\ProviderGameStateConstant.cs" />
     <Compile Include="Entities\Legacy\LegacyZoneSiteEntity.cs" />
     <Compile Include="Entities\Legacy\LegacyAuthFeedConsumerEntity.cs" />
     <Compile Include="Entities\Legacy\Mappers\LegacyAuthFeedConsumerMapper.cs" />
