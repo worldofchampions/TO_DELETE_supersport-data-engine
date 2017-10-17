@@ -120,10 +120,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Hangfire.Unity\GlobalConfigurationExtensions.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Hangfire.Unity\UnityJobActivator.cs" />
     <Compile Include="WindowsService.cs" />
   </ItemGroup>
   <ItemGroup>
