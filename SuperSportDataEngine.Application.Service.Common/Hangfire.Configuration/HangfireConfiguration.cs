@@ -84,7 +84,9 @@ namespace SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration
                             Queues =
                                 new[] {
                                     HangfireQueueConfiguration.HighPriority,
-                                    HangfireQueueConfiguration.NormalPriority }
+                                    HangfireQueueConfiguration.NormalPriority },
+                            ServerName =
+                                ConfigurationManager.AppSettings["HangfireServerName"]
                         };
                 }
 
