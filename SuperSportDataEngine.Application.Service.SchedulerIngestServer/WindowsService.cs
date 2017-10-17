@@ -4,8 +4,6 @@
     using Microsoft.Practices.Unity;
     using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
     using SuperSportDataEngine.Application.Service.Common.Interfaces;
-    using System;
-    using System.Threading.Tasks;
 
     internal class WindowsService : IWindowsServiceContract
     {

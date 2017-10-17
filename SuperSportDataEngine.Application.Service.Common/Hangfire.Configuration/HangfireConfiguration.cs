@@ -89,9 +89,7 @@ namespace SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration
                                     // In code, no jobs will be scheduled on this queue.
                                     HangfireQueueConfiguration.Default,
                                     HangfireQueueConfiguration.HighPriority,
-                                    HangfireQueueConfiguration.NormalPriority },
-                            ServerName =
-                                ConfigurationManager.AppSettings["HangfireServerName"]
+                                    HangfireQueueConfiguration.NormalPriority }
                         };
                 }
 
