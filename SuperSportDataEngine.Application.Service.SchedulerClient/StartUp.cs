@@ -5,7 +5,6 @@ using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
 using Microsoft.Practices.Unity;
 using SuperSportDataEngine.Application.Container;
 using SuperSportDataEngine.Application.Container.Enums;
-using Hangfire.Dashboard;
 
 [assembly: OwinStartup(typeof(SuperSportDataEngine.Application.Service.SchedulerClient.StartUp))]
 
