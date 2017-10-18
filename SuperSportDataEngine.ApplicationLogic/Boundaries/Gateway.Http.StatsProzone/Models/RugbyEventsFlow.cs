@@ -46,7 +46,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsPro
 
     public class Team
     {
-        public List<Team2> team { get; set; }
+        public Team2 team { get; set; }
     }
 
     public class ScoreEvent

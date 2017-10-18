@@ -27,7 +27,7 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
             _mongoDatabaseName = ConfigurationManager.AppSettings["MongoDbName"];
         }
 
-        public void Save(RugbyEntitiesResponse entitiesResponse)
+        public void SaveEntities(RugbyEntitiesResponse entitiesResponse)
         {
             Mapper.Initialize(c => c.AddProfile<RugbyEntitiesMappingProfile>());
 
