@@ -42,6 +42,7 @@
         private readonly IBaseEntityFrameworkRepository<RugbyMatchStatistics> _rugbyMatchStatisticsRepository;
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> _schedulerTrackingRugbyTournamentRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyMatchEvent> _rugbyMatchEventsRepository;
+        private readonly IBaseEntityFrameworkRepository<RugbyEventTypeProviderMapping> _rugbyEventTypeMappingRepository;
         private readonly IRugbyService _rugbyService;
 
         public RugbyIngestWorkerService(
@@ -63,6 +64,7 @@
             IBaseEntityFrameworkRepository<RugbyMatchStatistics> rugbyMatchStatisticsRepository,
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> schedulerTrackingRugbyTournamentRepository,
             IBaseEntityFrameworkRepository<RugbyMatchEvent> rugbyMatchEventsRepository,
+            IBaseEntityFrameworkRepository<RugbyEventTypeProviderMapping> rugbyEventTypeMappingRepository,
             IRugbyService rugbyService)
         {
             _statsProzoneIngestService = statsProzoneIngestService;
@@ -83,6 +85,7 @@
             _rugbyMatchStatisticsRepository = rugbyMatchStatisticsRepository;
             _schedulerTrackingRugbyTournamentRepository = schedulerTrackingRugbyTournamentRepository;
             _rugbyMatchEventsRepository = rugbyMatchEventsRepository;
+            _rugbyEventTypeMappingRepository = rugbyEventTypeMappingRepository;
             _rugbyService = rugbyService;
         }
 
@@ -1019,28 +1022,36 @@
             var players = (await _rugbyPlayerRepository.AllAsync()).ToList();
             var teamsInDb = (await _rugbyTeamRepository.AllAsync()).ToList();
             var events = (await _rugbyMatchEventsRepository.AllAsync()).ToList();
+            var eventTypeProviderMappings = (await _rugbyEventTypeMappingRepository.AllAsync());
 
             var fixture = fixtures.Where(f => f.ProviderFixtureId == providerFixtureId).FirstOrDefault();
 
             Parallel.ForEach(
                 penalties,
-                (penalty) =>
+                (penaltyEvent) =>
                 {
-                    var teamInDb = teamsInDb.Where(t => t.ProviderTeamId == penalty.teamId).FirstOrDefault();
+                    // Can we find a mapping for this event in the db?
+                    var eventTypeMapping = eventTypeProviderMappings.Where(m => m.ProviderEventTypeId == penaltyEvent.statId).FirstOrDefault();
+                    if (eventTypeMapping == null)
+                        return;
+
+                    if (eventTypeMapping.RugbyEventType == null)
+                        return;
+
+                    var teamInDb = teamsInDb.Where(t => t.ProviderTeamId == penaltyEvent.teamId).FirstOrDefault();
 
                     var newEvent = new RugbyMatchEvent()
                     {
-                        EventValue = (float)penalty.statValue,
-                        GameTimeInSeconds = penalty.gameSeconds,
-                        GameTimeInMinutes = penalty.gameSeconds / 60,
+                        EventValue = (float)penaltyEvent.statValue,
+                        GameTimeInSeconds = penaltyEvent.gameSeconds,
+                        GameTimeInMinutes = penaltyEvent.gameSeconds / 60,
                         RugbyFixture = fixture,
                         RugbyFixtureId = fixture.Id,
                         RugbyPlayer1 = null,
                         RugbyPlayer2 = null,
                         RugbyTeam = teamInDb,
                         RugbyTeamId = teamInDb.Id,
-                            // TODO: Need to do a lookup for the internal event type.
-                            RugbyEventTypeId = new Guid("3A140F4E-29B3-E711-8218-1002B54EEB33")
+                        RugbyEventTypeId = eventTypeMapping.RugbyEventTypeId
                     };
 
                         // Try to do a lookup for an event. All the properties checked here might
@@ -1084,6 +1095,7 @@
             var players = (await _rugbyPlayerRepository.AllAsync()).ToList();
             var teamsInDb = (await _rugbyTeamRepository.AllAsync()).ToList();
             var events = (await _rugbyMatchEventsRepository.AllAsync()).ToList();
+            var eventTypeProviderMappings = (await _rugbyEventTypeMappingRepository.AllAsync());
 
             var fixture = fixtures.Where(f => f.ProviderFixtureId == providerFixtureId).FirstOrDefault();
 
@@ -1099,6 +1111,14 @@
                     scoreEvents,
                     (scoreEvent) =>
                     {
+                        // Can we find a mapping for this event in the db?
+                        var eventTypeMapping = eventTypeProviderMappings.Where(m => m.ProviderEventTypeId == scoreEvent.statId).FirstOrDefault();
+                        if (eventTypeMapping == null)
+                            return;
+
+                        if (eventTypeMapping.RugbyEventType == null)
+                            return;
+
                         var player = players.Where(p => p.ProviderPlayerId == scoreEvent.playerId).FirstOrDefault();
 
                         var newEvent = new RugbyMatchEvent()
@@ -1112,8 +1132,7 @@
                             RugbyPlayer2 = null,
                             RugbyTeam = teamInDb,
                             RugbyTeamId = teamInDb.Id,
-                            // TODO: Need to do a lookup for the internal event type.
-                            RugbyEventTypeId = new Guid("3A140F4E-29B3-E711-8218-1002B54EEB33")
+                            RugbyEventTypeId = eventTypeMapping.RugbyEventType.Id
                         };
 
                         // Try to do a lookup for an event. All the properties checked here might
