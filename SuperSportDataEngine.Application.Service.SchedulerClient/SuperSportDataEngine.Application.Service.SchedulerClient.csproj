@@ -133,6 +133,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FixedSchedule\FixedScheduledJob.cs" />
+    <Compile Include="Hangfire.Dashboard.Pages\ProcessingJobsPage.cs" />
+    <Compile Include="Hangfire.Dashboard.Pages\RecurringJobsPage.cs" />
     <Compile Include="HangfireDashboardConfiguration.cs" />
     <Compile Include="Manager\ManagerJob.cs" />
     <Compile Include="Program.cs" />
