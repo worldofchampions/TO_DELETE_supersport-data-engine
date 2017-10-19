@@ -1140,7 +1140,6 @@
                     var eventInDb = events.Where(e =>
                                         e.RugbyFixtureId == newEvent.RugbyFixtureId &&
                                         e.RugbyTeamId == newEvent.RugbyTeamId &&
-                                        e.RugbyPlayer1.Id == newEvent.RugbyPlayer1.Id &&
                                         e.RugbyEventTypeId == newEvent.RugbyEventTypeId &&
                                         e.GameTimeInSeconds == newEvent.GameTimeInSeconds).FirstOrDefault();
 
