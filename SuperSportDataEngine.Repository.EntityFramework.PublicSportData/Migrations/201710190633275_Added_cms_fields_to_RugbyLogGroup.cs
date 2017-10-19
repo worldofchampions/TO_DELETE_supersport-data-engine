@@ -3,7 +3,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class dummymigration : DbMigration
+    public partial class Added_cms_fields_to_RugbyLogGroup : DbMigration
     {
         public override void Up()
         {

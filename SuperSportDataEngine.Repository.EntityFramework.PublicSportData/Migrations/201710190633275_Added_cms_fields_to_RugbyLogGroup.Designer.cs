@@ -7,13 +7,13 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class dummymigration : IMigrationMetadata
+    public sealed partial class Added_cms_fields_to_RugbyLogGroup : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(dummymigration));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(Added_cms_fields_to_RugbyLogGroup));
         
         string IMigrationMetadata.Id
         {
-            get { return "201710120705379_dummy-migration"; }
+            get { return "201710190633275_Added_cms_fields_to_RugbyLogGroup"; }
         }
         
         string IMigrationMetadata.Source
