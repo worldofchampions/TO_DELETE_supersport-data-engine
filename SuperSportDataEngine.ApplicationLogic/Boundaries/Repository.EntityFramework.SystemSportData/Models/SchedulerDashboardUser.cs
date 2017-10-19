@@ -3,6 +3,6 @@
     public class SchedulerDashboardUser
     {
         public string Username { get; set; }
-        public string PasswordPlain{ get; set; }
+        public string PasswordPlain { get; set; }
     }
 }

@@ -126,11 +126,11 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                             (fixture.RugbyFixtureStatus == RugbyFixtureStatus.InProgress)));
 
             // For debugging when there's no live games.
-            //return
-            //    (await _rugbyFixturesRepository.AllAsync())
-            //        .Where(f => f.RugbyTournament.Id == tournamentId && (f.ProviderFixtureId == 20171211210 || f.ProviderFixtureId == 20171211220));
+            return
+                (await _rugbyFixturesRepository.AllAsync())
+                    .Where(f => f.RugbyTournament.Id == tournamentId && (f.ProviderFixtureId == 20171211210 || f.ProviderFixtureId == 20171211220));
 
-            return liveGames;
+            //return liveGames;
         }
 
         public async Task<int> GetLiveFixturesCount(CancellationToken cancellationToken)
@@ -147,19 +147,19 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                             (fixture.RugbyFixtureStatus == RugbyFixtureStatus.InProgress))).Count();
 
             // For debugging when there's no live games.
-            //return 2;
+            return 2;
 
-            return count;
+            //return count;
         }
 
         public async Task<IEnumerable<RugbyFixture>> GetEndedFixtures()
         {
             // For debugging when there's no live games.
-            //return new List<RugbyFixture>();
-            return
-                (await _rugbyFixturesRepository.AllAsync()).Where(
-                    f => f.RugbyFixtureStatus == RugbyFixtureStatus.PostMatch ||
-                         f.RugbyFixtureStatus == RugbyFixtureStatus.Result);
+            return new List<RugbyFixture>();
+            //return
+            //    (await _rugbyFixturesRepository.AllAsync()).Where(
+            //        f => f.RugbyFixtureStatus == RugbyFixtureStatus.PostMatch ||
+            //             f.RugbyFixtureStatus == RugbyFixtureStatus.Result);
         }
 
         public async Task<bool> HasFixtureEnded(long providerFixtureId)

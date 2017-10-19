@@ -4,7 +4,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.MongoDb.Pa
 {
     public interface IMongoDbRugbyRepository
     {
-        void Save(RugbyEntitiesResponse entities);
+        void SaveEntities(RugbyEntitiesResponse entities);
         void Save(RugbyFixturesResponse fixtures);
         void Save(RugbyFlatLogsResponse logs);
         void Save(RugbyGroupedLogsResponse logs);
