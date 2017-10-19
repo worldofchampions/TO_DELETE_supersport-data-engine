@@ -145,17 +145,9 @@
     <Compile Include="Migrations\201710030512071_Added_RugbyMatchStatistics_table.Designer.cs">
       <DependentUpon>201710030512071_Added_RugbyMatchStatistics_table.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201710041025536_Add_GroupShortName_and_IsConference_Into_RugbyLogGroup.cs" />
-    <Compile Include="Migrations\201710041025536_Add_GroupShortName_and_IsConference_Into_RugbyLogGroup.Designer.cs">
-      <DependentUpon>201710041025536_Add_GroupShortName_and_IsConference_Into_RugbyLogGroup.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201710091422082_Added_rugby_events_related_tables.cs" />
-    <Compile Include="Migrations\201710091422082_Added_rugby_events_related_tables.Designer.cs">
-      <DependentUpon>201710091422082_Added_rugby_events_related_tables.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201710190633275_Added_cms_fields_to_RugbyLogGroup.cs" />
-    <Compile Include="Migrations\201710190633275_Added_cms_fields_to_RugbyLogGroup.Designer.cs">
-      <DependentUpon>201710190633275_Added_cms_fields_to_RugbyLogGroup.cs</DependentUpon>
+    <Compile Include="Migrations\201710190823257_Rescaffolded_RugbyLogGroup_and_rugby_events_related_tables.cs" />
+    <Compile Include="Migrations\201710190823257_Rescaffolded_RugbyLogGroup_and_rugby_events_related_tables.Designer.cs">
+      <DependentUpon>201710190823257_Rescaffolded_RugbyLogGroup_and_rugby_events_related_tables.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypeProviderMappings.cs" />
@@ -249,14 +241,8 @@
     <EmbeddedResource Include="Migrations\201710030512071_Added_RugbyMatchStatistics_table.resx">
       <DependentUpon>201710030512071_Added_RugbyMatchStatistics_table.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201710041025536_Add_GroupShortName_and_IsConference_Into_RugbyLogGroup.resx">
-      <DependentUpon>201710041025536_Add_GroupShortName_and_IsConference_Into_RugbyLogGroup.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201710091422082_Added_rugby_events_related_tables.resx">
-      <DependentUpon>201710091422082_Added_rugby_events_related_tables.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201710190633275_Added_cms_fields_to_RugbyLogGroup.resx">
-      <DependentUpon>201710190633275_Added_cms_fields_to_RugbyLogGroup.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201710190823257_Rescaffolded_RugbyLogGroup_and_rugby_events_related_tables.resx">
+      <DependentUpon>201710190823257_Rescaffolded_RugbyLogGroup_and_rugby_events_related_tables.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

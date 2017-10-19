@@ -7,13 +7,13 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class Add_GroupShortName_and_IsConference_Into_RugbyLogGroup : IMigrationMetadata
+    public sealed partial class Rescaffolded_RugbyLogGroup_and_rugby_events_related_tables : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(Add_GroupShortName_and_IsConference_Into_RugbyLogGroup));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(Rescaffolded_RugbyLogGroup_and_rugby_events_related_tables));
         
         string IMigrationMetadata.Id
         {
-            get { return "201710041025536_Add_GroupShortName_and_IsConference_Into_RugbyLogGroup"; }
+            get { return "201710190823257_Rescaffolded_RugbyLogGroup_and_rugby_events_related_tables"; }
         }
         
         string IMigrationMetadata.Source
