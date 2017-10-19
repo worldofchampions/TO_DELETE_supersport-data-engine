@@ -20,7 +20,6 @@
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyMatchStats;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyEventsFlow;
     using SuperSportDataEngine.ApplicationLogic.Constants;
-    using System.Diagnostics;
 
     public class RugbyIngestWorkerService : IRugbyIngestWorkerService
     {
@@ -1533,6 +1532,27 @@
 
                 _mongoDbRepository.Save(logs);
             }
+        }
+
+        public async Task IngestLineupsForPastGames(CancellationToken cancellationToken)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return;
+
+            var now = DateTime.UtcNow;
+            var NowMinus30days = DateTime.UtcNow - TimeSpan.FromDays(30);
+
+            var gamesInPastMonth =
+                    (await _rugbyFixturesRepository.AllAsync())
+                        .Where(
+                            fixture => fixture.RugbyTournament != null &&
+                                       fixture.RugbyTournament.IsEnabled &&
+                                       fixture.StartDateTime < now &&
+                                       fixture.StartDateTime >= NowMinus30days &&
+                                       (fixture.RugbyFixtureStatus == RugbyFixtureStatus.PostMatch ||
+                                        fixture.RugbyFixtureStatus == RugbyFixtureStatus.Result));
+
+            await IngestLineUpsForFixtures(cancellationToken, gamesInPastMonth);
         }
     }
 }
