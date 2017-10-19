@@ -1540,9 +1540,9 @@
                 return;
 
             var now = DateTime.UtcNow;
-            var NowMinus30days = DateTime.UtcNow - TimeSpan.FromDays(30);
+            var NowMinus30days = DateTime.UtcNow - TimeSpan.FromDays(1);
 
-            var gamesInPastMonth =
+            var gamesInPastDay =
                     (await _rugbyFixturesRepository.AllAsync())
                         .Where(
                             fixture => fixture.RugbyTournament != null &&
@@ -1552,7 +1552,7 @@
                                        (fixture.RugbyFixtureStatus == RugbyFixtureStatus.PostMatch ||
                                         fixture.RugbyFixtureStatus == RugbyFixtureStatus.Result));
 
-            await IngestLineUpsForFixtures(cancellationToken, gamesInPastMonth);
+            await IngestLineUpsForFixtures(cancellationToken, gamesInPastDay);
         }
     }
 }
