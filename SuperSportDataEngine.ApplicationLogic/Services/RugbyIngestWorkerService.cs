@@ -1026,54 +1026,54 @@
 
             var fixture = fixtures.Where(f => f.ProviderFixtureId == providerFixtureId).FirstOrDefault();
 
-            Parallel.ForEach(
-                penalties,
-                (penaltyEvent) =>
+            foreach(var penaltyEvent in penalties)
+            {
+                // Can we find a mapping for this event in the db?
+                var eventTypeMapping = eventTypeProviderMappings.Where(m => m.ProviderEventTypeId == penaltyEvent.statId).FirstOrDefault();
+                if (eventTypeMapping == null)
+                    return;
+
+                if (eventTypeMapping.RugbyEventType == null)
+                    return;
+
+                var teamInDb = teamsInDb.Where(t => t.ProviderTeamId == penaltyEvent.teamId).FirstOrDefault();
+
+                var newEvent = new RugbyMatchEvent()
                 {
-                    // Can we find a mapping for this event in the db?
-                    var eventTypeMapping = eventTypeProviderMappings.Where(m => m.ProviderEventTypeId == penaltyEvent.statId).FirstOrDefault();
-                    if (eventTypeMapping == null)
-                        return;
+                    EventValue = (float)penaltyEvent.statValue,
+                    GameTimeInSeconds = penaltyEvent.gameSeconds,
+                    GameTimeInMinutes = penaltyEvent.gameSeconds / 60,
+                    RugbyFixture = fixture,
+                    RugbyFixtureId = fixture.Id,
+                    RugbyPlayer1 = null,
+                    RugbyPlayer2 = null,
+                    RugbyTeam = teamInDb,
+                    RugbyTeamId = teamInDb.Id,
+                    RugbyEventTypeId = eventTypeMapping.RugbyEventTypeId
+                };
 
-                    if (eventTypeMapping.RugbyEventType == null)
-                        return;
+                // Try to do a lookup for an event. All the properties checked here might
+                // change by the provider and end up with a duplicate entry in the db
+                // One with the correct event data and the other with incorrect data.
+                // This is because there isn't a unique id provided for the event by the provider.
+                var eventInDb = events.Where(e =>
+                                    e.RugbyFixtureId == newEvent.RugbyFixtureId &&
+                                    e.RugbyTeamId == newEvent.RugbyTeamId &&
+                                    e.RugbyEventTypeId == newEvent.RugbyEventTypeId &&
+                                    e.GameTimeInSeconds == newEvent.GameTimeInSeconds).FirstOrDefault();
 
-                    var teamInDb = teamsInDb.Where(t => t.ProviderTeamId == penaltyEvent.teamId).FirstOrDefault();
+                if (eventInDb == null)
+                {
+                    _rugbyMatchEventsRepository.Add(newEvent);
+                }
+                else
+                {
+                    // TODO: We need to update an existing record here.
+                    _rugbyMatchEventsRepository.Update(eventInDb);
+                }
+            }
 
-                    var newEvent = new RugbyMatchEvent()
-                    {
-                        EventValue = (float)penaltyEvent.statValue,
-                        GameTimeInSeconds = penaltyEvent.gameSeconds,
-                        GameTimeInMinutes = penaltyEvent.gameSeconds / 60,
-                        RugbyFixture = fixture,
-                        RugbyFixtureId = fixture.Id,
-                        RugbyPlayer1 = null,
-                        RugbyPlayer2 = null,
-                        RugbyTeam = teamInDb,
-                        RugbyTeamId = teamInDb.Id,
-                        RugbyEventTypeId = eventTypeMapping.RugbyEventTypeId
-                    };
-
-                        // Try to do a lookup for an event. All the properties checked here might
-                        // change by the provider and end up with a duplicate entry in the db
-                        // One with the correct event data and the other with incorrect data.
-                        // This is because there isn't a unique id provided for the event by the provider.
-                        var eventInDb = events.Where(e =>
-                                            e.RugbyFixtureId == newEvent.RugbyFixtureId &&
-                                            e.RugbyTeamId == newEvent.RugbyTeamId &&
-                                            e.RugbyEventTypeId == newEvent.RugbyEventTypeId &&
-                                            e.GameTimeInSeconds == newEvent.GameTimeInSeconds).FirstOrDefault();
-
-                    if (eventInDb == null)
-                    {
-                        _rugbyMatchEventsRepository.Add(newEvent);
-                    }
-                    else
-                    {
-                        // TODO: We need to update an existing record here.
-                        _rugbyMatchEventsRepository.Update(eventInDb);
-                    }
-                });
+            await _rugbyMatchEventsRepository.SaveAsync();
         }
 
         private async Task IngestScoreEvents(CancellationToken cancellationToken, ScoreFlow scoreFlow, long providerFixtureId)
@@ -1107,55 +1107,55 @@
                 if (scoreEvents == null)
                     continue;
 
-                Parallel.ForEach(
-                    scoreEvents,
-                    (scoreEvent) =>
+                foreach(var scoreEvent in scoreEvents)
+                {
+                    // Can we find a mapping for this event in the db?
+                    var eventTypeMapping = eventTypeProviderMappings.Where(m => m.ProviderEventTypeId == scoreEvent.statId).FirstOrDefault();
+                    if (eventTypeMapping == null)
+                        return;
+
+                    if (eventTypeMapping.RugbyEventType == null)
+                        return;
+
+                    var player = players.Where(p => p.ProviderPlayerId == scoreEvent.playerId).FirstOrDefault();
+
+                    var newEvent = new RugbyMatchEvent()
                     {
-                        // Can we find a mapping for this event in the db?
-                        var eventTypeMapping = eventTypeProviderMappings.Where(m => m.ProviderEventTypeId == scoreEvent.statId).FirstOrDefault();
-                        if (eventTypeMapping == null)
-                            return;
+                        EventValue = (float)scoreEvent.statValue,
+                        GameTimeInSeconds = scoreEvent.gameSeconds,
+                        GameTimeInMinutes = scoreEvent.gameSeconds / 60,
+                        RugbyFixture = fixture,
+                        RugbyFixtureId = fixture.Id,
+                        RugbyPlayer1 = player,
+                        RugbyPlayer2 = null,
+                        RugbyTeam = teamInDb,
+                        RugbyTeamId = teamInDb.Id,
+                        RugbyEventTypeId = eventTypeMapping.RugbyEventType.Id
+                    };
 
-                        if (eventTypeMapping.RugbyEventType == null)
-                            return;
+                    // Try to do a lookup for an event. All the properties checked here might
+                    // change by the provider and end up with a duplicate entry in the db
+                    // One with the correct event data and the other with incorrect data.
+                    // This is because there isn't a unique id provided for the event by the provider.
+                    var eventInDb = events.Where(e =>
+                                        e.RugbyFixtureId == newEvent.RugbyFixtureId &&
+                                        e.RugbyTeamId == newEvent.RugbyTeamId &&
+                                        e.RugbyPlayer1.Id == newEvent.RugbyPlayer1.Id &&
+                                        e.RugbyEventTypeId == newEvent.RugbyEventTypeId &&
+                                        e.GameTimeInSeconds == newEvent.GameTimeInSeconds).FirstOrDefault();
 
-                        var player = players.Where(p => p.ProviderPlayerId == scoreEvent.playerId).FirstOrDefault();
+                    if (eventInDb == null)
+                    {
+                        _rugbyMatchEventsRepository.Add(newEvent);
+                    }
+                    else
+                    {
+                        // TODO: We need to update an existing record here.
+                        _rugbyMatchEventsRepository.Update(eventInDb);
+                    }
+                }
 
-                        var newEvent = new RugbyMatchEvent()
-                        {
-                            EventValue = (float)scoreEvent.statValue,
-                            GameTimeInSeconds = scoreEvent.gameSeconds,
-                            GameTimeInMinutes = scoreEvent.gameSeconds / 60,
-                            RugbyFixture = fixture,
-                            RugbyFixtureId = fixture.Id,
-                            RugbyPlayer1 = player,
-                            RugbyPlayer2 = null,
-                            RugbyTeam = teamInDb,
-                            RugbyTeamId = teamInDb.Id,
-                            RugbyEventTypeId = eventTypeMapping.RugbyEventType.Id
-                        };
-
-                        // Try to do a lookup for an event. All the properties checked here might
-                        // change by the provider and end up with a duplicate entry in the db
-                        // One with the correct event data and the other with incorrect data.
-                        // This is because there isn't a unique id provided for the event by the provider.
-                        var eventInDb = events.Where(e =>
-                                            e.RugbyFixtureId == newEvent.RugbyFixtureId &&
-                                            e.RugbyTeamId == newEvent.RugbyTeamId &&
-                                            e.RugbyPlayer1.Id == newEvent.RugbyPlayer1.Id &&
-                                            e.RugbyEventTypeId == newEvent.RugbyEventTypeId &&
-                                            e.GameTimeInSeconds == newEvent.GameTimeInSeconds).FirstOrDefault();
-
-                        if (eventInDb == null)
-                        {
-                            _rugbyMatchEventsRepository.Add(newEvent);
-                        }
-                        else
-                        {
-                            // TODO: We need to update an existing record here.
-                            _rugbyMatchEventsRepository.Update(eventInDb);
-                        }
-                    });
+                await _rugbyMatchEventsRepository.SaveAsync();
             }
         }
 
@@ -1231,88 +1231,86 @@
 
             var teamsFromProvider = matchStatsResponse.RugbyMatchStats.teams;
 
-            Parallel.ForEach(
-                teamsFromProvider.teamsMatch,
-                (teamMatch) =>
+            foreach(var teamMatch in teamsFromProvider.teamsMatch)
+            {
+                var team = teamsInRepo.Where(t => t.ProviderTeamId == teamMatch.teamId).FirstOrDefault();
+
+                var stats = teamMatch.teamStats.matchStats.matchStat;
+                var statsInDb = matchStatistics.Where(s => s.RugbyFixtureId == fixture.Id && s.RugbyTeamId == team.Id).FirstOrDefault();
+
+                var statsMap = MakeStatisticsMap(stats);
+                var newStats = new RugbyMatchStatistics()
                 {
-                    var team = teamsInRepo.Where(t => t.ProviderTeamId == teamMatch.teamId).FirstOrDefault();
+                    RugbyFixture = fixture,
+                    RugbyFixtureId = fixture.Id,
+                    RugbyTeam = team,
+                    RugbyTeamId = team.Id,
+                    YellowCards = (int)statsMap.GetValueOrDefault(2),
+                    //CarriesCrossedGainLine = statsMap.GetValueOrDefault("(Time)Territory"),
+                    CleanBreaks = (int)statsMap.GetValueOrDefault(7),
+                    ConversionAttempts = (int)statsMap.GetValueOrDefault(2047),
+                    Conversions = (int)statsMap.GetValueOrDefault(2046),
+                    ConversionsMissed = (int)statsMap.GetValueOrDefault(2048),
+                    DefendersBeaten = (int)statsMap.GetValueOrDefault(8),
+                    DropGoalAttempts = (int)statsMap.GetValueOrDefault(2049),
+                    DropGoals = (int)statsMap.GetValueOrDefault(2050),
+                    DropGoalsMissed = (int)(statsMap.GetValueOrDefault(2049) - statsMap.GetValueOrDefault(2050)),
+                    LineOutsLost = (int)statsMap.GetValueOrDefault(20),
+                    LineOutsWon = (int)statsMap.GetValueOrDefault(19),
+                    Offloads = (int)statsMap.GetValueOrDefault(46),
+                    Passes = (int)statsMap.GetValueOrDefault(2012),
+                    Penalties = (int)(statsMap.GetValueOrDefault(2038) - statsMap.GetValueOrDefault(2039)),
+                    PenaltiesConceded = (int)statsMap.GetValueOrDefault(2079),
+                    PenaltiesMissed = (int)statsMap.GetValueOrDefault(2039),
+                    PenaltyAttempts = (int)statsMap.GetValueOrDefault(2038),
+                    PenaltyTries = (int)statsMap.GetValueOrDefault(10530),
+                    Possession = (int)statsMap.GetValueOrDefault(42),
+                    RedCards = (int)statsMap.GetValueOrDefault(3),
+                    ScrumsLost = (int)statsMap.GetValueOrDefault(55),
+                    ScrumsWon = (int)statsMap.GetValueOrDefault(53),
+                    Tackles = (int)statsMap.GetValueOrDefault(72),
+                    TacklesMissed = (int)statsMap.GetValueOrDefault(71),
+                    Territory = (int)statsMap.GetValueOrDefault(10000),
+                    Tries = (int)statsMap.GetValueOrDefault(5)
+                };
 
-                    var stats = teamMatch.teamStats.matchStats.matchStat;
-                    var statsInDb = matchStatistics.Where(s => s.RugbyFixtureId == fixture.Id && s.RugbyTeamId == team.Id).FirstOrDefault();
+                if (statsInDb == null)
+                {
+                    _rugbyMatchStatisticsRepository.Add(newStats);
+                }
+                else
+                {
+                    statsInDb.YellowCards = newStats.YellowCards;
+                    statsInDb.CarriesCrossedGainLine = newStats.CarriesCrossedGainLine;
+                    statsInDb.CleanBreaks = newStats.CleanBreaks;
+                    statsInDb.ConversionAttempts = newStats.ConversionAttempts;
+                    statsInDb.Conversions = newStats.Conversions;
+                    statsInDb.ConversionsMissed = newStats.ConversionsMissed;
+                    statsInDb.DefendersBeaten = newStats.DefendersBeaten;
+                    statsInDb.DropGoalAttempts = newStats.DropGoalAttempts;
+                    statsInDb.DropGoals = newStats.DropGoals;
+                    statsInDb.DropGoalsMissed = newStats.DropGoalsMissed;
+                    statsInDb.LineOutsLost = newStats.LineOutsLost;
+                    statsInDb.LineOutsWon = newStats.LineOutsWon;
+                    statsInDb.Offloads = newStats.Offloads;
+                    statsInDb.Passes = newStats.Passes;
+                    statsInDb.Penalties = newStats.Penalties;
+                    statsInDb.PenaltiesConceded = newStats.PenaltiesConceded;
+                    statsInDb.PenaltiesMissed = newStats.PenaltiesMissed;
+                    statsInDb.PenaltyAttempts = newStats.PenaltyAttempts;
+                    statsInDb.PenaltyTries = newStats.PenaltyTries;
+                    statsInDb.Possession = newStats.Possession;
+                    statsInDb.RedCards = newStats.RedCards;
+                    statsInDb.ScrumsLost = newStats.ScrumsLost;
+                    statsInDb.ScrumsWon = newStats.ScrumsWon;
+                    statsInDb.Tackles = newStats.Tackles;
+                    statsInDb.TacklesMissed = newStats.TacklesMissed;
+                    statsInDb.Territory = newStats.Territory;
+                    statsInDb.Tries = newStats.Tries;
 
-                    var statsMap = MakeStatisticsMap(stats);
-                    var newStats = new RugbyMatchStatistics()
-                    {
-                        RugbyFixture = fixture,
-                        RugbyFixtureId = fixture.Id,
-                        RugbyTeam = team,
-                        RugbyTeamId = team.Id,
-                        YellowCards = (int)statsMap.GetValueOrDefault(2),
-                        //CarriesCrossedGainLine = statsMap.GetValueOrDefault("(Time)Territory"),
-                        CleanBreaks = (int)statsMap.GetValueOrDefault(7),
-                        ConversionAttempts = (int)statsMap.GetValueOrDefault(2047),
-                        Conversions = (int)statsMap.GetValueOrDefault(2046),
-                        ConversionsMissed = (int)statsMap.GetValueOrDefault(2048),
-                        DefendersBeaten = (int)statsMap.GetValueOrDefault(8),
-                        DropGoalAttempts = (int)statsMap.GetValueOrDefault(2049),
-                        DropGoals = (int)statsMap.GetValueOrDefault(2050),
-                        DropGoalsMissed = (int)(statsMap.GetValueOrDefault(2049) - statsMap.GetValueOrDefault(2050)),
-                        LineOutsLost = (int)statsMap.GetValueOrDefault(20),
-                        LineOutsWon = (int)statsMap.GetValueOrDefault(19),
-                        Offloads = (int)statsMap.GetValueOrDefault(46),
-                        Passes = (int)statsMap.GetValueOrDefault(2012),
-                        Penalties = (int)(statsMap.GetValueOrDefault(2038) - statsMap.GetValueOrDefault(2039)),
-                        PenaltiesConceded = (int)statsMap.GetValueOrDefault(2079),
-                        PenaltiesMissed = (int)statsMap.GetValueOrDefault(2039),
-                        PenaltyAttempts = (int)statsMap.GetValueOrDefault(2038),
-                        PenaltyTries = (int)statsMap.GetValueOrDefault(10530),
-                        Possession = (int)statsMap.GetValueOrDefault(42),
-                        RedCards = (int)statsMap.GetValueOrDefault(3),
-                        ScrumsLost = (int)statsMap.GetValueOrDefault(55),
-                        ScrumsWon = (int)statsMap.GetValueOrDefault(53),
-                        Tackles = (int)statsMap.GetValueOrDefault(72),
-                        TacklesMissed = (int)statsMap.GetValueOrDefault(71),
-                        Territory = (int)statsMap.GetValueOrDefault(10000),
-                        Tries = (int)statsMap.GetValueOrDefault(5)
-                    };
-
-                    if (statsInDb == null)
-                    {
-                        _rugbyMatchStatisticsRepository.Add(newStats);
-                    }
-                    else
-                    {
-                        statsInDb.YellowCards = newStats.YellowCards;
-                        statsInDb.CarriesCrossedGainLine = newStats.CarriesCrossedGainLine;
-                        statsInDb.CleanBreaks = newStats.CleanBreaks;
-                        statsInDb.ConversionAttempts = newStats.ConversionAttempts;
-                        statsInDb.Conversions = newStats.Conversions;
-                        statsInDb.ConversionsMissed = newStats.ConversionsMissed;
-                        statsInDb.DefendersBeaten = newStats.DefendersBeaten;
-                        statsInDb.DropGoalAttempts = newStats.DropGoalAttempts;
-                        statsInDb.DropGoals = newStats.DropGoals;
-                        statsInDb.DropGoalsMissed = newStats.DropGoalsMissed;
-                        statsInDb.LineOutsLost = newStats.LineOutsLost;
-                        statsInDb.LineOutsWon = newStats.LineOutsWon;
-                        statsInDb.Offloads = newStats.Offloads;
-                        statsInDb.Passes = newStats.Passes;
-                        statsInDb.Penalties = newStats.Penalties;
-                        statsInDb.PenaltiesConceded = newStats.PenaltiesConceded;
-                        statsInDb.PenaltiesMissed = newStats.PenaltiesMissed;
-                        statsInDb.PenaltyAttempts = newStats.PenaltyAttempts;
-                        statsInDb.PenaltyTries = newStats.PenaltyTries;
-                        statsInDb.Possession = newStats.Possession;
-                        statsInDb.RedCards = newStats.RedCards;
-                        statsInDb.ScrumsLost = newStats.ScrumsLost;
-                        statsInDb.ScrumsWon = newStats.ScrumsWon;
-                        statsInDb.Tackles = newStats.Tackles;
-                        statsInDb.TacklesMissed = newStats.TacklesMissed;
-                        statsInDb.Territory = newStats.Territory;
-                        statsInDb.Tries = newStats.Tries;
-
-                        _rugbyMatchStatisticsRepository.Update(statsInDb);
-                    }
-                });
+                    _rugbyMatchStatisticsRepository.Update(statsInDb);
+                }
+            }
 
             await _rugbyMatchStatisticsRepository.SaveAsync();
         }
@@ -1339,49 +1337,47 @@
             var fixtures = (await _rugbyFixturesRepository.AllAsync()).ToList();
             var teams = (await _rugbyTeamRepository.AllAsync()).ToList();
             var players = (await _rugbyPlayerRepository.AllAsync()).ToList();
-            var commentaries = (await _rugbyCommentaryRepository.AllAsync());
+            var commentaries = (await _rugbyCommentaryRepository.AllAsync()).ToList();
 
-            Parallel.ForEach(
-                commentary.commentaryEvent,
-                (comment) =>
+            foreach(var comment in commentary.commentaryEvent)
+            {
+                var commentText = comment.commentary;
+                var commentTimeInSeconds = comment.gameSeconds;
+                var commentaryTimeInMinutes = commentTimeInSeconds / 60;
+                var gameTimeDisplayHoursMinutesSeconds = comment.gameTime;
+                var gameTimeDisplayMinutesSeconds = comment.GameMinutes;
+
+                var fixture = fixtures.Where(f => f.ProviderFixtureId == providerFixtureId).FirstOrDefault();
+                var team = teams.Where(t => t.ProviderTeamId == comment.teamId).FirstOrDefault();
+                var player = players.Where(p => p.ProviderPlayerId == comment.playerId).FirstOrDefault();
+
+                var dbCommentary = commentaries.Where(c =>
+                                                c.GameTimeRawSeconds == commentTimeInSeconds &&
+                                                c.RugbyFixture.Id == fixture.Id &&
+                                                c.RugbyPlayer == player &&
+                                                c.RugbyTeam == team).FirstOrDefault();
+
+                var newCommentary = new RugbyCommentary()
                 {
-                    var commentText = comment.commentary;
-                    var commentTimeInSeconds = comment.gameSeconds;
-                    var commentaryTimeInMinutes = commentTimeInSeconds / 60;
-                    var gameTimeDisplayHoursMinutesSeconds = comment.gameTime;
-                    var gameTimeDisplayMinutesSeconds = comment.GameMinutes;
+                    CommentaryText = commentText,
+                    GameTimeDisplayHoursMinutesSeconds = gameTimeDisplayHoursMinutesSeconds,
+                    GameTimeDisplayMinutesSeconds = gameTimeDisplayMinutesSeconds,
+                    GameTimeRawMinutes = commentaryTimeInMinutes,
+                    GameTimeRawSeconds = commentTimeInSeconds,
+                    RugbyFixture = fixture,
+                    RugbyPlayer = player,
+                    RugbyTeam = team
+                };
 
-                    var fixture = fixtures.Where(f => f.ProviderFixtureId == providerFixtureId).FirstOrDefault();
-                    var team = teams.Where(t => t.ProviderTeamId == comment.teamId).FirstOrDefault();
-                    var player = players.Where(p => p.ProviderPlayerId == comment.playerId).FirstOrDefault();
-
-                    var dbCommentary = commentaries.Where(c =>
-                                                    c.GameTimeRawSeconds == commentTimeInSeconds &&
-                                                    c.RugbyFixture.Id == fixture.Id &&
-                                                    c.RugbyPlayer == player &&
-                                                    c.RugbyTeam == team).FirstOrDefault();
-
-                    var newCommentary = new RugbyCommentary()
-                    {
-                        CommentaryText = commentText,
-                        GameTimeDisplayHoursMinutesSeconds = gameTimeDisplayHoursMinutesSeconds,
-                        GameTimeDisplayMinutesSeconds = gameTimeDisplayMinutesSeconds,
-                        GameTimeRawMinutes = commentaryTimeInMinutes,
-                        GameTimeRawSeconds = commentTimeInSeconds,
-                        RugbyFixture = fixture,
-                        RugbyPlayer = player,
-                        RugbyTeam = team
-                    };
-
-                    if (dbCommentary == null)
-                    {
-                        _rugbyCommentaryRepository.Add(newCommentary);
-                    }
-                    else
-                    {
-                        // There isnt something which uniquely identifies 
-                    }
-                });
+                if (dbCommentary == null)
+                {
+                    _rugbyCommentaryRepository.Add(newCommentary);
+                }
+                else
+                {
+                    // There isnt something which uniquely identifies 
+                }
+            }
 
             await _rugbyCommentaryRepository.SaveAsync();
         }
