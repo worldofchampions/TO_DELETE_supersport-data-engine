@@ -14,8 +14,9 @@
         Task IngestFixturesForTournamentSeason(CancellationToken cancellationToken, int tournamentId, int seasonId);
         Task IngestLogsForCurrentTournaments(CancellationToken cancellationToken);
         Task IngestOneMonthsFixturesForTournament(CancellationToken cancellationToken, int providerTournamentId);
-        Task IngestMatchStatsForFixture(CancellationToken cancellationToken, long providerFixtureId);
+        Task IngestLiveMatchData(CancellationToken cancellationToken, long providerFixtureId);
         Task IngestLogsForTournamentSeason(CancellationToken cancellationToken, int providerTournamentId, int seasonId);
         Task IngestLineupsForUpcomingGames(CancellationToken cancellationToken);
+        Task IngestLineupsForPastGames(CancellationToken cancellationToken);
     }
 }
