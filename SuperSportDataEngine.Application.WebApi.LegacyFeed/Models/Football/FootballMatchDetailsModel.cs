@@ -38,9 +38,9 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Football
 
         public override List<Player> TeamBTeamsheet { get; set; }
 
-        public override List<ScorerModel> TeamAScorers { get; set; }
+        public override List<Scorer> TeamAScorers { get; set; }
 
-        public override List<ScorerModel> TeamBScorers { get; set; }
+        public override List<Scorer> TeamBScorers { get; set; }
 
         public override List<SubstituteModel> TeamASubstitutes { get; set; }
 
@@ -53,7 +53,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Football
 
         private List<CardsModel> GetCards { get; set; }
 
-        private List<ScorerModel> GetScorers { get; set; }
+        private List<Scorer> GetScorers { get; set; }
 
         private bool IsTypeOfGoal { get; set; }
 
