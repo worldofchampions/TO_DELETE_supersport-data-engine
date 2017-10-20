@@ -8,6 +8,10 @@ namespace SuperSportDataEngine.ApplicationLogic.Entities.Legacy
     {
         public List<RugbyMatchEvent> MatchEvents { get; set; }
 
+        public List<LegacyRugbyScorerEntity> TeamAScorers { get; set; }
+
+        public List<LegacyRugbyScorerEntity> TeamBScorers { get; set; }
+
         public List<RugbyPlayerLineup> TeamALineup { get; set; }
 
         public List<RugbyPlayerLineup> TeamBLineup { get; set; }

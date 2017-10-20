@@ -77,9 +77,9 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models
 
         public virtual List<Player> TeamBTeamsheet { get; set; }
 
-        public virtual List<ScorerModel> TeamAScorers { get; set; }
+        public virtual List<Scorer> TeamAScorers { get; set; }
 
-        public virtual List<ScorerModel> TeamBScorers { get; set; }
+        public virtual List<Scorer> TeamBScorers { get; set; }
 
         public virtual List<SubstituteModel> TeamASubstitutes { get; set; }
 

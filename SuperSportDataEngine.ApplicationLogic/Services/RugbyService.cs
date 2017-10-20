@@ -321,6 +321,10 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             events.AddRange(matchCommentaryAsEvents);
 
+            var teamAScorers = await GetTeamScorersForRugbyFixture(fixture.Id, fixture.TeamA.Id);
+
+            var teamBScorers = await GetTeamScorersForRugbyFixture(fixture.Id, fixture.TeamB.Id);
+
             var matchDetails = new RugbyMatchDetailsEntity
             {
                 TeamALineup = teamAlineup,
@@ -329,10 +333,49 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 TeamBMatchStatistics = statsB,
                 RugbyFixture = fixture,
                 TeamsLineups = bothTeamsLineups,
-                MatchEvents = events
+                MatchEvents = events,
+                TeamAScorers = teamAScorers,
+                TeamBScorers = teamBScorers
             };
 
             return matchDetails;
+        }
+
+        private async Task<List<LegacyRugbyScorerEntity>> GetTeamScorersForRugbyFixture(Guid fixtureId, Guid TeamId)
+        {
+            var events = (await _rugbyMatchEventsRepository.AllAsync())
+                .Where(s => s.RugbyFixture.Id == fixtureId && s.RugbyTeamId == TeamId)
+                .ToList()
+                .Where(e => e.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.Try ||
+                e.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.Conversion ||
+                e.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.Penalty ||
+                e.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.PenaltyTryFivePoints ||
+                e.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.PenaltyTrySevenPoints ||
+                e.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.DropGoal ||
+                e.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.DropGoalFromMark)
+                .ToList();
+
+            var scorers = new List<LegacyRugbyScorerEntity>();
+
+            foreach (var rugbyEvent in events)
+            {
+                var scorer = new LegacyRugbyScorerEntity
+                {
+                    CombinedName = rugbyEvent.RugbyPlayer1.FullName,
+                    DisplayName = rugbyEvent.RugbyPlayer1.FullName,
+                    EventId = rugbyEvent.RugbyEventType.EventCode,
+                    Name = rugbyEvent.RugbyPlayer1.FirstName,
+                    NickName = null,
+                    PersonId = rugbyEvent.RugbyPlayer1.LegacyPlayerId,
+                    Surname = rugbyEvent.RugbyPlayer1.LastName,
+                    Time = rugbyEvent.GameTimeInMinutes.ToString(),
+                    Type = rugbyEvent.RugbyEventType.EventName
+                };
+
+                scorers.Add(scorer);
+            }
+
+            return scorers;
         }
 
         private async Task<RugbyFixture> GetRugbyFixtureByLegacyMatchId(int LegacyMatchId)
