@@ -179,7 +179,8 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\UnityResolver.cs" />
     <Compile Include="Filters\LegacyExceptionFilterAttribute.cs" />
-    <Compile Include="Models\Mappers\Constants.cs" />
+    <Compile Include="Models\Mappers\LegacyFeedConstants.cs" />
+    <Compile Include="Models\Mappers\LegacyCommentaryAsEventMapperProfile.cs" />
     <Compile Include="Models\Mappers\LegacyCommentaryMapperProfile.cs" />
     <Compile Include="Models\Mappers\LegacyFixtureMapperProfile.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />

@@ -1,6 +1,6 @@
 ﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
 {
-    public static class Constants
+    public static class LegacyFeedConstants
     {
         public const int GroupHiearachyLevelZero = 0;
 
@@ -15,5 +15,7 @@
         public const int SecondHalfStatusId = 7;
 
         public const string SecondHalfStatusDescription = "Second Half";
+
+        public const int CommentaryEventId = 0;
     }
 }

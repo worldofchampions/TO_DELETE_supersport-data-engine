@@ -6,7 +6,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Entities.Legacy
 {
     public class RugbyMatchDetailsEntity
     {
-        public List<RugbyCommentary> Commentary { get; set; }
+        public List<RugbyMatchEvent> MatchEvents { get; set; }
 
         public List<RugbyPlayerLineup> TeamALineup { get; set; }
 
