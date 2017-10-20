@@ -21,7 +21,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
         {
             if (_dashboardOptions is null)
             {
-
                 var filter = new BasicAuthAuthorizationFilter(new BasicAuthAuthorizationFilterOptions
                 {
                     // Require secure connection for dashboard
