@@ -305,11 +305,11 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         {
             var fixture = await GetRugbyFixtureByLegacyMatchId(LegacyMatchId);
 
-            var teamAlineup = await GetTeamLineups(fixture.Id, fixture.TeamA.Id);
+            var teamAlineup = await GetTeamLineupForFixture(fixture.Id, fixture.TeamA.Id);
 
-            var teamBlineup = await GetTeamLineups(fixture.Id, fixture.TeamB.Id);
+            var teamBlineup = await GetTeamLineupForFixture(fixture.Id, fixture.TeamB.Id);
 
-            var allTeamsLineups = teamAlineup.Concat(teamBlineup).ToList();
+            var bothTeamsLineups = teamAlineup.Concat(teamBlineup).ToList();
 
             var statsA = await GetMatchStatsForTeam(fixture.Id, fixture.TeamA.Id);
 
@@ -328,7 +328,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 TeamAMatchStatistics = statsA,
                 TeamBMatchStatistics = statsB,
                 RugbyFixture = fixture,
-                TeamsLineups = allTeamsLineups,
+                TeamsLineups = bothTeamsLineups,
                 MatchEvents = events
             };
 
@@ -358,7 +358,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                     .Where(f => f.RugbyTeamId == TeamId).FirstOrDefault();
         }
 
-        private async Task<List<RugbyPlayerLineup>> GetTeamLineups(Guid fixtureId, Guid TeamId)
+        private async Task<List<RugbyPlayerLineup>> GetTeamLineupForFixture(Guid fixtureId, Guid TeamId)
         {
             return (await _rugbyPlayerLineupsRepository.AllAsync())
                  .Where(l => l.RugbyFixture.Id == fixtureId)
@@ -372,19 +372,19 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             var matchCommentaryAsEvents = new List<LegacyRugbyMatchEventEntity>();
 
-            foreach (var item in matchCommentary)
+            foreach (var commentary in matchCommentary)
             {
                 var matchEvent = new LegacyRugbyMatchEventEntity
                 {
-                    GameTimeInMinutes = item.GameTimeRawMinutes,
-                    GameTimeInSeconds = item.GameTimeRawSeconds,
-                    RugbyPlayer1 = item.RugbyPlayer,
+                    GameTimeInMinutes = commentary.GameTimeRawMinutes,
+                    GameTimeInSeconds = commentary.GameTimeRawSeconds,
+                    RugbyPlayer1 = commentary.RugbyPlayer,
                     RugbyFixtureId = fixtureId,
-                    RugbyFixture = item.RugbyFixture,
-                    RugbyTeam = item.RugbyTeam,
-                    RugbyTeamId = item.RugbyTeam.Id,
-                    Id = item.Id,
-                    Comments = item.CommentaryText,
+                    RugbyFixture = commentary.RugbyFixture,
+                    RugbyTeam = commentary.RugbyTeam,
+                    RugbyTeamId = commentary.RugbyTeam.Id,
+                    Id = commentary.Id,
+                    Comments = commentary.CommentaryText
                 };
 
                 matchCommentaryAsEvents.Add(matchEvent);
