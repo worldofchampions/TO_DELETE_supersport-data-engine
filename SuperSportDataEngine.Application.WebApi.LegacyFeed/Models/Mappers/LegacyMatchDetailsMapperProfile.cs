@@ -3,10 +3,7 @@
     using AutoMapper;
     using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
     using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
-    using System.Collections.Generic;
-    using System.Linq;
 
     public class LegacyMatchDetailsMapperProfile : Profile
     {
@@ -29,6 +26,8 @@
 
                 .ForMember(dest => dest.TeamATeamsheet, exp => exp.MapFrom(src => src.TeamALineup))
 
+                .ForMember(dest => dest.TeamAScorers, exp => exp.MapFrom(src => src.TeamAScorers))
+
                 // Team B Details
                 .ForMember(dest => dest.TeamBStats, exp => exp.MapFrom(src => src.TeamBMatchStatistics))
 
@@ -44,11 +43,11 @@
 
                 .ForMember(dest => dest.TeamBTeamsheet, exp => exp.MapFrom(src => src.TeamBLineup))
 
+                .ForMember(dest => dest.TeamBScorers, exp => exp.MapFrom(src => src.TeamBScorers))
+
                 // Fixture Specific Details
 
                 .ForMember(dest => dest.Teamsheet, exp => exp.MapFrom(src => src.TeamsLineups))
-
-                //.ForMember(dest => dest.Events, exp => exp.MapFrom(src => src.Commentary))
 
                 .ForMember(dest => dest.Events, exp => exp.MapFrom(src => src.MatchEvents))
 

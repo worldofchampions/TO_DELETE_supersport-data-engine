@@ -8,7 +8,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models
     {
         public SportType Sport { get; set; }
         public int Sorting { get; set; }
-        public virtual List<ScorerModel> HomeTeamScorers { get; set; }
-        public virtual List<ScorerModel> AwayTeamScorers { get; set; }
+        public virtual List<Scorer> HomeTeamScorers { get; set; }
+        public virtual List<Scorer> AwayTeamScorers { get; set; }
     }
 }
