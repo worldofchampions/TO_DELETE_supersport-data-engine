@@ -6,7 +6,7 @@ using System.Text;
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Cricket
 {
     [Serializable]
-    public class CricketPlayerModel: PlayerModel
+    public class CricketPlayerModel: Player
     {
         public bool IsCaptain { get; set; }
         public bool IsKeeper { get; set; }

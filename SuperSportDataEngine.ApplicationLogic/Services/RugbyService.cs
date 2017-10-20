@@ -312,18 +312,23 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 .ToList();
 
             // Query for team A lineups
-            var teamAlineup = ( _rugbyPlayerLineupsRepository.All())
+            var teamAlineup = (_rugbyPlayerLineupsRepository.All())
                  .Where(l => l.RugbyFixture.Id == fixture.Id)
-                 .TakeWhile( l => l.RugbyTeam.Id == fixture.TeamA.Id)
-                 .ToList();
+                 .ToList()
+                 .Where(l => l.RugbyTeam.Id == fixture.TeamA.Id).ToList();
 
             // Query for team B lineups
-            var teamBlineup = ( _rugbyPlayerLineupsRepository.All())
+            var teamBlineup = (_rugbyPlayerLineupsRepository.All())
                  .Where(l => l.RugbyFixture.Id == fixture.Id)
-                 .TakeWhile(l => l.RugbyTeam.Id == fixture.TeamB.Id)
-                 .ToList();
+                 .ToList()
+                 .Where(l => l.RugbyTeam.Id == fixture.TeamB.Id).ToList();
 
-            // 4. Query for Match stats
+            // Both teams lineups
+            var allTeamsLineups = new List<RugbyPlayerLineup>(teamAlineup.Count + teamBlineup.Count);
+            allTeamsLineups.AddRange(teamAlineup);
+            allTeamsLineups.AddRange(teamBlineup);
+
+            // Query for Match stats
             var statsA = (_rugbyMatchStatisticsRepository.All())
                     .Where(s => s.RugbyFixture.Id == fixture.Id)
                     .ToList()
@@ -342,7 +347,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 TeamBLineup = teamBlineup,
                 TeamAMatchStatistics = statsA,
                 TeamBMatchStatistics = statsB,
-                RugbyFixture = fixture
+                RugbyFixture = fixture,
+                TeamsLineups = allTeamsLineups
             };
 
             return matchDetails;

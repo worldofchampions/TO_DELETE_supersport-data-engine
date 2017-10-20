@@ -12,6 +12,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Entities.Legacy
 
         public List<RugbyPlayerLineup> TeamBLineup { get; set; }
 
+        public List<RugbyPlayerLineup> TeamsLineups { get; set; }
+
         public RugbyMatchStatistics TeamAMatchStatistics { get; set; }
 
         public RugbyMatchStatistics TeamBMatchStatistics { get; set; }
