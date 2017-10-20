@@ -64,6 +64,7 @@
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -110,6 +111,7 @@
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyTeam.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyTournament.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyVenue.cs" />
+    <Compile Include="Entities\Legacy\LegacyRugbyMatchEventEntity.cs" />
     <Compile Include="Entities\Legacy\RugbyMatchDetailsEntity.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\Enums\RugbySeasonStatus.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.Common\Models\Enums\RugbyFixtureStatus.cs" />

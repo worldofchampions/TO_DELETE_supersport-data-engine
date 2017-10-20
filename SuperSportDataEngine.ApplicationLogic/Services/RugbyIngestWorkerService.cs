@@ -998,8 +998,81 @@
         {
             await IngestScoreEvents(cancellationToken, eventsFlowResponse.RugbyEventsFlow.scoreFlow, eventsFlowResponse.RugbyEventsFlow.gameId);
             await IngestPenaltyEvents(cancellationToken, eventsFlowResponse.RugbyEventsFlow.penaltyFlow, eventsFlowResponse.RugbyEventsFlow.gameId);
+            await IngestErrorEvents(cancellationToken, eventsFlowResponse.RugbyEventsFlow.errorFlow, eventsFlowResponse.RugbyEventsFlow.gameId);
 
             await _rugbyMatchEventsRepository.SaveAsync();
+        }
+
+        private async Task IngestErrorEvents(CancellationToken cancellationToken, ErrorFlow errorFlow, long providerFixtureId)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return;
+
+            if (errorFlow == null)
+                return;
+
+            if (errorFlow.errorEvent == null)
+                return;
+
+            if (errorFlow.errorEvent.statErrorEvent == null)
+                return;
+
+            var fixtures = (await _rugbyFixturesRepository.AllAsync()).ToList();
+            var players = (await _rugbyPlayerRepository.AllAsync()).ToList();
+            var teamsInDb = (await _rugbyTeamRepository.AllAsync()).ToList();
+            var events = (await _rugbyMatchEventsRepository.AllAsync()).ToList();
+            var eventTypeProviderMappings = (await _rugbyEventTypeMappingRepository.AllAsync());
+            var fixture = fixtures.Where(f => f.ProviderFixtureId == providerFixtureId).FirstOrDefault();
+
+            foreach (var error in errorFlow.errorEvent.statErrorEvent)
+            {
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
+                var eventTypeMapping = eventTypeProviderMappings.Where(m => m.ProviderEventTypeId == error.statId).FirstOrDefault();
+
+                if (eventTypeMapping == null)
+                    return;
+
+                if (eventTypeMapping.RugbyEventType == null)
+                    return;
+
+                var teamInDb = teamsInDb.Where(t => t.ProviderTeamId == error.teamId).FirstOrDefault();
+
+                var newEvent = new RugbyMatchEvent()
+                {
+                    EventValue = (float)error.statValue,
+                    GameTimeInSeconds = error.gameSeconds,
+                    GameTimeInMinutes = error.gameSeconds / 60,
+                    RugbyFixture = fixture,
+                    RugbyFixtureId = fixture.Id,
+                    RugbyPlayer1 = null,
+                    RugbyPlayer2 = null,
+                    RugbyTeam = teamInDb,
+                    RugbyTeamId = teamInDb.Id,
+                    RugbyEventTypeId = eventTypeMapping.RugbyEventTypeId
+                };
+
+                // Try to do a lookup for an event. All the properties checked here might
+                // change by the provider and end up with a duplicate entry in the db
+                // One with the correct event data and the other with incorrect data.
+                // This is because there isn't a unique id provided for the event by the provider.
+                var eventInDb = events.Where(e =>
+                                    e.RugbyFixtureId == newEvent.RugbyFixtureId &&
+                                    e.RugbyTeamId == newEvent.RugbyTeamId &&
+                                    e.RugbyEventTypeId == newEvent.RugbyEventTypeId &&
+                                    e.GameTimeInSeconds == newEvent.GameTimeInSeconds).FirstOrDefault();
+
+                if (eventInDb == null)
+                {
+                    _rugbyMatchEventsRepository.Add(newEvent);
+                }
+                else
+                {
+                    // TODO: We need to update an existing record here.
+                    _rugbyMatchEventsRepository.Update(eventInDb);
+                }
+            }
         }
 
         private async Task IngestPenaltyEvents(CancellationToken cancellationToken, PenaltyFlow penaltyFlow, long providerFixtureId)
@@ -1027,6 +1100,9 @@
 
             foreach(var penaltyEvent in penalties)
             {
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
                 // Can we find a mapping for this event in the db?
                 var eventTypeMapping = eventTypeProviderMappings.Where(m => m.ProviderEventTypeId == penaltyEvent.statId).FirstOrDefault();
                 if (eventTypeMapping == null)
@@ -1071,8 +1147,6 @@
                     _rugbyMatchEventsRepository.Update(eventInDb);
                 }
             }
-
-            await _rugbyMatchEventsRepository.SaveAsync();
         }
 
         private async Task IngestScoreEvents(CancellationToken cancellationToken, ScoreFlow scoreFlow, long providerFixtureId)
@@ -1100,6 +1174,9 @@
 
             foreach (var team in teams.team)
             {
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
                 var teamInDb = teamsInDb.Where(t => t.ProviderTeamId == team.teamId).FirstOrDefault();
 
                 var scoreEvents = team.statScoringEvent;
@@ -1152,8 +1229,6 @@
                         _rugbyMatchEventsRepository.Update(eventInDb);
                     }
                 }
-
-                await _rugbyMatchEventsRepository.SaveAsync();
             }
         }
 

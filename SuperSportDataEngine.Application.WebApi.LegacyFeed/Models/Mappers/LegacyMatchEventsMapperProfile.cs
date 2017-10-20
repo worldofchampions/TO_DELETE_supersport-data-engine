@@ -34,9 +34,11 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
 
                 .ForMember(dest => dest.Time, exp => exp.MapFrom(src => src.GameTimeInMinutes))
 
+                .ForMember(dest => dest.TeamId, exp => exp.MapFrom(src => src.RugbyTeam.LegacyTeamId))
+                
                 .ForMember(dest => dest.EventName, exp => exp.MapFrom(src => src.RugbyEventType.EventName))
 
-                .ForMember(dest => dest.TeamId, exp => exp.MapFrom(src => src.RugbyTeam.LegacyTeamId))
+                .ForMember(dest => dest.EventId, exp => exp.MapFrom( src => src.RugbyEventType.EventCode))
 
                 .ForAllOtherMembers(dest => dest.Ignore());
         }
