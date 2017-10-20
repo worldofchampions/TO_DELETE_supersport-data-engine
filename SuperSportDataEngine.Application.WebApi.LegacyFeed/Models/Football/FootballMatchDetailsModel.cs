@@ -32,11 +32,11 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Football
 
         public FootballMatchStatisticsModel MatchStatisticsTeamB { get; set; }
 
-        public override List<PlayerModel> Teamsheet { get; set; }
+        public override List<Player> Teamsheet { get; set; }
 
-        public override List<PlayerModel> TeamATeamsheet { get; set; }
+        public override List<Player> TeamATeamsheet { get; set; }
 
-        public override List<PlayerModel> TeamBTeamsheet { get; set; }
+        public override List<Player> TeamBTeamsheet { get; set; }
 
         public override List<ScorerModel> TeamAScorers { get; set; }
 

@@ -71,11 +71,11 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models
         public string Group { get; set; }
 
         public List<MatchEvent> Events { get; set; }
-        public virtual List<PlayerModel> Teamsheet { get; set; }
+        public virtual List<Player> Teamsheet { get; set; }
 
-        public virtual List<PlayerModel> TeamATeamsheet { get; set; }
+        public virtual List<Player> TeamATeamsheet { get; set; }
 
-        public virtual List<PlayerModel> TeamBTeamsheet { get; set; }
+        public virtual List<Player> TeamBTeamsheet { get; set; }
 
         public virtual List<ScorerModel> TeamAScorers { get; set; }
 
