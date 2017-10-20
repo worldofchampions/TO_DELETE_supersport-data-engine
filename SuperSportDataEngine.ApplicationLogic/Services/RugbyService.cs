@@ -309,7 +309,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             var teamBlineup = await GetTeamLineupForFixture(fixture.Id, fixture.TeamB.Id);
 
-            var bothTeamsLineups = teamAlineup.Concat(teamBlineup).ToList();
+            var bothTeamsLineups = teamAlineup.Concat(teamBlineup).OrderBy(p => p.JerseyNumber).ToList();
 
             var statsA = await GetMatchStatsForTeam(fixture.Id, fixture.TeamA.Id);
 
