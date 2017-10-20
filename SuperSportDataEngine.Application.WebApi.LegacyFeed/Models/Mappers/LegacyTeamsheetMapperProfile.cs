@@ -27,6 +27,8 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
 
                 .ForMember(dest => dest.PersonId, exp => exp.MapFrom(src => src.RugbyPlayer.LegacyPlayerId))
 
+                .ForMember(dest => dest.Number, exp => exp.MapFrom(src => src.JerseyNumber))
+
                 .ForAllOtherMembers(dest => dest.Ignore());
         }
     }
