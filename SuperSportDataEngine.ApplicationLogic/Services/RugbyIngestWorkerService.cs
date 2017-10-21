@@ -1508,6 +1508,9 @@
                     var playerId = player.playerId;
                     var dbPlayer = (await _rugbyPlayerRepository.AllAsync()).Where(p => p.ProviderPlayerId == playerId).FirstOrDefault();
 
+                    if (dbPlayer == null)
+                        continue;
+
                     if (dbPlayer.FirstName == null && dbPlayer.LastName == null)
                     {
                         dbPlayer.FirstName = player.playerFirstName;
