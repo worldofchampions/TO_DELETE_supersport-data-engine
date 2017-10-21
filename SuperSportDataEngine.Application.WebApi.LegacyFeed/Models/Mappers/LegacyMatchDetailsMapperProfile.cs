@@ -12,7 +12,7 @@
             CreateMap<RugbyMatchDetailsEntity, RugbyMatchDetails>()
 
                 // Team A Details
-                .ForMember(dest => dest.TeamAStats, exp => exp.MapFrom(src => src.TeamAMatchStatistics))
+                .ForMember(dest => dest.teamAStats, exp => exp.MapFrom(src => src.TeamAMatchStatistics))
 
                 .ForMember(dest => dest.MatchStatisticsTeamA, exp => exp.MapFrom(src => src.TeamAMatchStatistics))
 
@@ -29,7 +29,7 @@
                 .ForMember(dest => dest.TeamAScorers, exp => exp.MapFrom(src => src.TeamAScorers))
 
                 // Team B Details
-                .ForMember(dest => dest.TeamBStats, exp => exp.MapFrom(src => src.TeamBMatchStatistics))
+                .ForMember(dest => dest.teamBStats, exp => exp.MapFrom(src => src.TeamBMatchStatistics))
 
                 .ForMember(dest => dest.MatchStatisticsTeamB, exp => exp.MapFrom(src => src.TeamBMatchStatistics))
 
