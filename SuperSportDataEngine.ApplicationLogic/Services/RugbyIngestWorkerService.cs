@@ -1528,7 +1528,7 @@
                     var positionName = player.playerPosition;
 
                     var isCaptain = player.isCaptain == null ? false : (bool)player.isCaptain;
-                    var isSubstitute = player.shirtNum == 16;
+                    var isSubstitute = player.shirtNum >= 16;
 
                     var dbEntry =
                             (await _rugbyPlayerLineupsRepository.AllAsync())
