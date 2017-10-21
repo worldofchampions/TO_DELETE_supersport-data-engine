@@ -958,6 +958,8 @@
 
         public async Task IngestLiveMatchData(CancellationToken cancellationToken, long providerFixtureId)
         {
+            var fixtureInDb = (await _rugbyFixturesRepository.AllAsync()).Where(f => f.ProviderFixtureId == providerFixtureId).FirstOrDefault();
+
             while (true)
             {
                 if (cancellationToken.IsCancellationRequested)
@@ -974,10 +976,7 @@
                 await IngestScoreData(cancellationToken, matchStatsResponse);
                 await IngestFixtureStatusData(cancellationToken, matchStatsResponse);
 
-                // This is too expensive to do during a live match.
-                // Too time consuming to ingest lineups during a live game.
-                //var fixtureInDb = (await _rugbyFixturesRepository.AllAsync()).Where(f => f.ProviderFixtureId == providerFixtureId).FirstOrDefault();
-                //await IngestLineUpsForFixtures(cancellationToken, new List<RugbyFixture>(){ fixtureInDb });
+                await IngestLineUpsForFixtures(cancellationToken, new List<RugbyFixture>(){ fixtureInDb });
 
                 await IngestEvents(cancellationToken, eventsFlowResponse);
 
@@ -985,10 +984,10 @@
                 _mongoDbRepository.Save(eventsFlowResponse);
 
                 //// Check if should stop looping?
-                //var matchState = GetFixtureStatusFromProviderFixtureState(matchStatsResponse.RugbyMatchStats.gameState);
-                //if (matchState == RugbyFixtureStatus.PostMatch ||
-                //    matchState == RugbyFixtureStatus.Result)
-                //    break;
+                var matchState = GetFixtureStatusFromProviderFixtureState(matchStatsResponse.RugbyMatchStats.gameState);
+                if (matchState == RugbyFixtureStatus.PostMatch ||
+                    matchState == RugbyFixtureStatus.Result)
+                    break;
 
                 Thread.Sleep(5_000);
             }
