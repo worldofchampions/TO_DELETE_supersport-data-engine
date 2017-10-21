@@ -321,7 +321,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             events.AddRange(matchCommentaryAsEvents);
 
-            events.OrderByDescending(e => e.GameTimeInMinutes);
+            events = events.OrderByDescending(e => e.GameTimeInMinutes).ToList();
 
             var teamAScorers =  GetTeamScorersForRugbyFixture(fixture.Id, fixture.TeamA.Id);
 
