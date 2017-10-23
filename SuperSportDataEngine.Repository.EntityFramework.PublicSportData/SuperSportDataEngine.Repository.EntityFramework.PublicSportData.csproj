@@ -30,7 +30,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'QA|AnyCPU'">
-	<DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\QA</OutputPath>
@@ -40,7 +40,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Staging|AnyCPU'">
-	<DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Staging</OutputPath>
@@ -50,7 +50,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Prod|AnyCPU'">
-	<DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Prod</OutputPath>
@@ -78,6 +78,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Context\ModelConfiguration.cs" />
+    <Compile Include="Context\PublicSportDatabaseInitializer.cs" />
     <Compile Include="Context\PublicSportDataContext.cs" />
     <Compile Include="Migrations\201708171158341_Initial_migration.cs" />
     <Compile Include="Migrations\201708171158341_Initial_migration.Designer.cs">
