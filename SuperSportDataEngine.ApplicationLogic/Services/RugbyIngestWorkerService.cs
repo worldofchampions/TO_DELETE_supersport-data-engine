@@ -441,7 +441,8 @@
                             fixtureSchedule.EndedDateTime =
                                 fixtureSchedule.StartDateTime
                                     .AddSeconds(
-                                        fixture.gameSeconds);
+                                        fixture.gameSeconds)
+                                    .AddMinutes(30); // This is for half-time break.
                         }
 
                         _schedulerTrackingRugbyFixtureRepository.Update(fixtureSchedule);
