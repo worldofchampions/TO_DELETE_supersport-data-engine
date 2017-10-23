@@ -547,6 +547,9 @@
                 return RugbyFixtureStatus.PostMatch;
 
             if (gameStateName.Equals(ProviderGameStateConstant.FullTime, StringComparison.InvariantCultureIgnoreCase))
+                return RugbyFixtureStatus.PostMatch;
+
+            if (gameStateName.Equals("Final"))
                 return RugbyFixtureStatus.Result;
 
             return RugbyFixtureStatus.InProgress;
@@ -975,6 +978,7 @@
                 await IngestMatchStatisticsData(cancellationToken, matchStatsResponse, providerFixtureId);
                 await IngestScoreData(cancellationToken, matchStatsResponse);
                 await IngestFixtureStatusData(cancellationToken, matchStatsResponse);
+                await UpdateFixtureSchedulingTrackingTable(fixtureInDb.Id, matchStatsResponse.RugbyMatchStats.gameState);
 
                 await IngestLineUpsForFixtures(cancellationToken, new List<RugbyFixture>(){ fixtureInDb });
 
@@ -991,6 +995,24 @@
 
                 Thread.Sleep(5_000);
             }
+        }
+
+        private async Task UpdateFixtureSchedulingTrackingTable(Guid fixtureId, string gameState)
+        {
+            var schedule = (await _schedulerTrackingRugbyFixtureRepository.AllAsync())
+                                .Where(s => s.FixtureId == fixtureId).FirstOrDefault();
+
+            if (schedule == null)
+            {
+                return;
+            }
+            else
+            {
+                schedule.RugbyFixtureStatus = GetFixtureStatusFromProviderFixtureState(gameState);
+                _schedulerTrackingRugbyFixtureRepository.Update(schedule);
+            }
+
+            await _schedulerTrackingRugbyFixtureRepository.SaveAsync();
         }
 
         private async Task IngestEvents(CancellationToken cancellationToken, RugbyEventsFlowResponse eventsFlowResponse)
