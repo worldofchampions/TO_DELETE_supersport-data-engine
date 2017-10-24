@@ -1445,6 +1445,7 @@
 
                 var dbCommentary = commentaries.Where(c =>
                                                 c.GameTimeRawSeconds == commentTimeInSeconds &&
+                                                c.CommentaryText == commentText &&
                                                 c.RugbyFixture.Id == fixture.Id &&
                                                 c.RugbyPlayer == player &&
                                                 c.RugbyTeam == team).FirstOrDefault();
@@ -1464,6 +1465,8 @@
                 if (dbCommentary == null)
                 {
                     _rugbyCommentaryRepository.Add(newCommentary);
+                    // Add the commentary to the local list.
+                    commentaries.Add(newCommentary);
                 }
                 else
                 {
