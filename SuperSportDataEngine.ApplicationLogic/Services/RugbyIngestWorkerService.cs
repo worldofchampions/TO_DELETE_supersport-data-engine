@@ -548,6 +548,9 @@
                 return RugbyFixtureStatus.PostMatch;
 
             if (gameStateName.Equals(ProviderGameStateConstant.FullTime, StringComparison.InvariantCultureIgnoreCase))
+                return RugbyFixtureStatus.PostMatch;
+
+            if (gameStateName.Equals("Final"))
                 return RugbyFixtureStatus.Result;
 
             return RugbyFixtureStatus.InProgress;

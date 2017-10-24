@@ -15,6 +15,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 {
     public class RugbyService : IRugbyService
     {
+        private readonly IBaseEntityFrameworkRepository<RugbyMatchEvent> _rugbyMatchEventsRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyMatchStatistics> _rugbyMatchStatisticsRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyCommentary> _rugbyCommentaryRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyPlayerLineup> _rugbyPlayerLineupsRepository;
@@ -28,6 +29,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> _schedulerTrackingRugbyFixtureRepository;
 
         public RugbyService(
+            IBaseEntityFrameworkRepository<RugbyMatchEvent> rugbyMatchEventsRepository,
             IBaseEntityFrameworkRepository<RugbyMatchStatistics> rugbyMatchStatisticsRepository,
             IBaseEntityFrameworkRepository<RugbyPlayerLineup> rugbyPlayerLineupsRepository,
             IBaseEntityFrameworkRepository<RugbyCommentary> rugbyCommentaryRepository,
@@ -40,6 +42,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> schedulerTrackingRugbyTournamentRepository,
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> schedulerTrackingRugbyFixtureRepository)
         {
+            _rugbyMatchEventsRepository = rugbyMatchEventsRepository;
             _rugbyMatchStatisticsRepository = rugbyMatchStatisticsRepository;
             _rugbyPlayerLineupsRepository = rugbyPlayerLineupsRepository;
             _rugbyCommentaryRepository = rugbyCommentaryRepository;
@@ -117,7 +120,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         {
             DateTimeOffset now = DateTimeOffset.UtcNow;
             DateTimeOffset nowPlus15Minutes = DateTimeOffset.UtcNow.AddMinutes(15);
-            
+
             var liveGames = (await _rugbyFixturesRepository.AllAsync())
                     .Where(
                         fixture => (fixture.RugbyTournament != null && fixture.RugbyTournament.Id == tournamentId) &&
@@ -246,7 +249,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             var fixtures = (await _rugbyFixturesRepository.AllAsync())
                             .ToList()
                             .Where(t => t.RugbyTournament.Id == tournamentId &&
-                            t.RugbyFixtureStatus == RugbyFixtureStatus.PreMatch || 
+                            t.RugbyFixtureStatus == RugbyFixtureStatus.PreMatch ||
                             t.RugbyFixtureStatus == RugbyFixtureStatus.InProgress);
 
             return fixtures;
@@ -289,7 +292,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             return flatLogs;
         }
 
-        public async Task <IEnumerable<RugbyFixture>> GetCurrentDayFixturesForActiveTournaments()
+        public async Task<IEnumerable<RugbyFixture>> GetCurrentDayFixturesForActiveTournaments()
         {
             var todayFixtures = (await _rugbyFixturesRepository.AllAsync())
                  .Where(f => f.StartDateTime.UtcDateTime.Date == DateTime.UtcNow.Date && f.RugbyTournament.IsEnabled)
@@ -298,54 +301,148 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             return todayFixtures;
         }
 
-        public async Task<RugbyMatchDetailsEntity> GetMatchDetails(int matchId)
+        public async Task<RugbyMatchDetailsEntity> GetMatchDetails(int LegacyMatchId)
         {
-            // Query for fixture
-            var fixture = (_rugbyFixturesRepository.All())
-                .Where(f => f.LegacyFixtureId == matchId)
-                .ToList()
-                .FirstOrDefault();
+            var fixture = GetRugbyFixtureByLegacyMatchId(LegacyMatchId);
 
-            // Query for commentary
-            var matchCommentary = ( _rugbyCommentaryRepository.All())
-                .Where(c => c.RugbyFixture.Id == fixture.Id)
-                .ToList();
+            var teamAlineup = GetTeamLineupForFixture(fixture.Id, fixture.TeamA.Id);
 
-            // Query for team A lineups
-            var teamAlineup = ( _rugbyPlayerLineupsRepository.All())
-                 .Where(l => l.RugbyFixture.Id == fixture.Id)
-                 .TakeWhile( l => l.RugbyTeam.Id == fixture.TeamA.Id)
-                 .ToList();
+            var teamBlineup = GetTeamLineupForFixture(fixture.Id, fixture.TeamB.Id);
 
-            // Query for team B lineups
-            var teamBlineup = ( _rugbyPlayerLineupsRepository.All())
-                 .Where(l => l.RugbyFixture.Id == fixture.Id)
-                 .TakeWhile(l => l.RugbyTeam.Id == fixture.TeamB.Id)
-                 .ToList();
+            var bothTeamsLineups = teamAlineup.Concat(teamBlineup).OrderBy(p => p.JerseyNumber).ToList();
 
-            // 4. Query for Match stats
-            var statsA = (_rugbyMatchStatisticsRepository.All())
-                    .Where(s => s.RugbyFixture.Id == fixture.Id)
-                    .ToList()
-                    .Where(f => f.RugbyTeamId == fixture.TeamA.Id).FirstOrDefault();
+            var statsA = GetMatchStatsForTeam(fixture.Id, fixture.TeamA.Id);
 
-            var statsB = (_rugbyMatchStatisticsRepository.All())
-                    .Where(s => s.RugbyFixture.Id == fixture.Id)
-                    .ToList()
-                    .Where(f => f.RugbyTeamId == fixture.TeamB.Id).FirstOrDefault();
+            var statsB = GetMatchStatsForTeam(fixture.Id, fixture.TeamB.Id);
 
+            var events = GetRugbyFixtureEvents(fixture);
+
+            var matchCommentaryAsEvents = GetCommentaryAsRugbyMatchEvents(fixture.Id);
+
+            events.AddRange(matchCommentaryAsEvents);
+
+            events = events.OrderByDescending(e => e.GameTimeInMinutes).ToList();
+
+            var teamAScorers =  GetTeamScorersForRugbyFixture(fixture.Id, fixture.TeamA.Id);
+
+            var teamBScorers =  GetTeamScorersForRugbyFixture(fixture.Id, fixture.TeamB.Id);
 
             var matchDetails = new RugbyMatchDetailsEntity
             {
-                Commentary = matchCommentary,
                 TeamALineup = teamAlineup,
                 TeamBLineup = teamBlineup,
                 TeamAMatchStatistics = statsA,
                 TeamBMatchStatistics = statsB,
-                RugbyFixture = fixture
+                RugbyFixture = fixture,
+                TeamsLineups = bothTeamsLineups,
+                MatchEvents = events,
+                TeamAScorers = teamAScorers,
+                TeamBScorers = teamBScorers
             };
 
             return matchDetails;
+        }
+
+        private List<LegacyRugbyScorerEntity> GetTeamScorersForRugbyFixture(Guid fixtureId, Guid TeamId)
+        {
+            var events = ( _rugbyMatchEventsRepository.All())
+                .Where(s => s.RugbyFixture.Id == fixtureId && s.RugbyTeamId == TeamId)
+                .ToList()
+                .Where(e => e.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.Try ||
+                e.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.Conversion ||
+                e.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.Penalty ||
+                e.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.PenaltyTryFivePoints ||
+                e.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.PenaltyTrySevenPoints ||
+                e.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.DropGoal ||
+                e.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.DropGoalFromMark)
+                .ToList();
+
+            var scorers = new List<LegacyRugbyScorerEntity>();
+
+            foreach (var rugbyEvent in events)
+            {
+                var scorer = new LegacyRugbyScorerEntity
+                {
+                    CombinedName = rugbyEvent.RugbyPlayer1.FullName,
+                    DisplayName = rugbyEvent.RugbyPlayer1.FullName,
+                    EventId = rugbyEvent.RugbyEventType.EventCode,
+                    Name = rugbyEvent.RugbyPlayer1.FirstName,
+                    NickName = null,
+                    PersonId = rugbyEvent.RugbyPlayer1.LegacyPlayerId,
+                    Surname = rugbyEvent.RugbyPlayer1.LastName,
+                    Time = rugbyEvent.GameTimeInMinutes.ToString(),
+                    Type = rugbyEvent.RugbyEventType.EventName
+                };
+
+                scorers.Add(scorer);
+            }
+
+            return scorers;
+        }
+
+        private RugbyFixture GetRugbyFixtureByLegacyMatchId(int LegacyMatchId)
+        {
+            return ( _rugbyFixturesRepository.All())
+                .Where(f => f.LegacyFixtureId == LegacyMatchId)
+                .ToList()
+                .FirstOrDefault();
+        }
+
+        private List<RugbyMatchEvent> GetRugbyFixtureEvents(RugbyFixture fixture)
+        {
+            return ( _rugbyMatchEventsRepository.All())
+                .Where(s => s.RugbyFixture.Id == fixture.Id)
+                .ToList();
+        }
+
+        private RugbyMatchStatistics GetMatchStatsForTeam(Guid fixtureId, Guid TeamId)
+        {
+            return ( _rugbyMatchStatisticsRepository.All())
+                    .Where(s => s.RugbyFixture.Id == fixtureId)
+                    .ToList()
+                    .Where(f => f.RugbyTeamId == TeamId).FirstOrDefault();
+        }
+
+        private List<RugbyPlayerLineup> GetTeamLineupForFixture(Guid fixtureId, Guid TeamId)
+        {
+            return (_rugbyPlayerLineupsRepository.All())
+                 .Where(l => l.RugbyFixture.Id == fixtureId)
+                 .ToList()
+                 .Where(l => l.RugbyTeam.Id == TeamId).ToList();
+        }
+
+        private List<LegacyRugbyMatchEventEntity> GetCommentaryAsRugbyMatchEvents(Guid fixtureId)
+        {
+            var matchCommentary = GetRugbyMatchCommentary(fixtureId);
+
+            var matchCommentaryAsEvents = new List<LegacyRugbyMatchEventEntity>();
+
+            foreach (var commentary in matchCommentary)
+            {
+                var matchEvent = new LegacyRugbyMatchEventEntity
+                {
+                    GameTimeInMinutes = commentary.GameTimeRawMinutes,
+                    GameTimeInSeconds = commentary.GameTimeRawSeconds,
+                    RugbyPlayer1 = commentary.RugbyPlayer,
+                    RugbyFixtureId = fixtureId,
+                    RugbyFixture = commentary.RugbyFixture,
+                    RugbyTeam = commentary.RugbyTeam,
+                    RugbyTeamId = commentary.RugbyTeam.Id,
+                    Id = commentary.Id,
+                    Comments = commentary.CommentaryText
+                };
+
+                matchCommentaryAsEvents.Add(matchEvent);
+            }
+
+            return matchCommentaryAsEvents;
+        }
+
+        private List<RugbyCommentary> GetRugbyMatchCommentary(Guid fixtureId)
+        {
+            return (_rugbyCommentaryRepository.All())
+                 .Where(c => c.RugbyFixture.Id == fixtureId)
+                 .ToList();
         }
     }
 }

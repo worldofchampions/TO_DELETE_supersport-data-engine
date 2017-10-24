@@ -10,16 +10,16 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby
 
         public List<AlternateCommentsModel> AlternateCommentary { get; set; }
 
-        public List<ScorerModel> TeamA_Scorers { get; set; }
+        public List<Scorer> TeamA_Scorers { get; set; }
 
-        public List<ScorerModel> TeamB_Scorers { get; set; }
+        public List<Scorer> TeamB_Scorers { get; set; }
 
         public RugbyMatchStatisticsModel MatchStatisticsTeamA { get; set; }
 
         public RugbyMatchStatisticsModel MatchStatisticsTeamB { get; set; }
 
-        public RugbyMatchStatisticsModel TeamAStats { get; set; }
+        public RugbyMatchStatisticsModel teamAStats { get; set; }
 
-        public RugbyMatchStatisticsModel TeamBStats { get; set; }
+        public RugbyMatchStatisticsModel teamBStats { get; set; }
     }
 }

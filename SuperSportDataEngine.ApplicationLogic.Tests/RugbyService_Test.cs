@@ -26,9 +26,11 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
         Mock<TestEntityFrameworkRepository<RugbyFlatLog>> MockFlatLogRepository;
         Mock<TestEntityFrameworkRepository<RugbyGroupedLog>> MockGroupedLogRepository;
         Mock<TestEntityFrameworkRepository<RugbyMatchDetailsEntity>> MockMatchDetailsRepository;
-        public Mock<TestEntityFrameworkRepository<RugbyCommentary>> MockCommentaryRepository;
-        public Mock<TestEntityFrameworkRepository<RugbyPlayerLineup>> MockLineupRepository;
-        public Mock<TestEntityFrameworkRepository<RugbyMatchStatistics>> MockMatchStatisticsRepository;
+        Mock<TestEntityFrameworkRepository<RugbyCommentary>> MockCommentaryRepository;
+        Mock<TestEntityFrameworkRepository<RugbyPlayerLineup>> MockLineupRepository;
+        Mock<TestEntityFrameworkRepository<RugbyMatchStatistics>> MockMatchStatisticsRepository;
+        Mock<TestEntityFrameworkRepository<RugbyMatchEvent>> MockMatchEventsRepository;
+
 
         [SetUp]
         public void SetUp()
@@ -69,7 +71,12 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
             MockMatchStatisticsRepository =
                     new Mock<TestEntityFrameworkRepository<RugbyMatchStatistics>>(new List<RugbyMatchStatistics>());
 
-            RugbyService = new RugbyService(
+            MockMatchEventsRepository =
+                    new Mock<TestEntityFrameworkRepository<RugbyMatchEvent>>(new List<RugbyMatchEvent>());
+
+
+        RugbyService = new RugbyService(
+                MockMatchEventsRepository.Object,
                 MockMatchStatisticsRepository.Object,
                 MockLineupRepository.Object,
                 MockCommentaryRepository.Object,

@@ -12,7 +12,7 @@
             CreateMap<RugbyMatchDetailsEntity, RugbyMatchDetails>()
 
                 // Team A Details
-                .ForMember(dest => dest.TeamAStats, exp => exp.MapFrom(src => src.TeamAMatchStatistics))
+                .ForMember(dest => dest.teamAStats, exp => exp.MapFrom(src => src.TeamAMatchStatistics))
 
                 .ForMember(dest => dest.MatchStatisticsTeamA, exp => exp.MapFrom(src => src.TeamAMatchStatistics))
 
@@ -24,8 +24,12 @@
                 
                 .ForMember(dest => dest.TeamAId, exp => exp.MapFrom(src => src.RugbyFixture.TeamA.LegacyTeamId))
 
+                .ForMember(dest => dest.TeamATeamsheet, exp => exp.MapFrom(src => src.TeamALineup))
+
+                .ForMember(dest => dest.TeamAScorers, exp => exp.MapFrom(src => src.TeamAScorers))
+
                 // Team B Details
-                .ForMember(dest => dest.TeamBStats, exp => exp.MapFrom(src => src.TeamBMatchStatistics))
+                .ForMember(dest => dest.teamBStats, exp => exp.MapFrom(src => src.TeamBMatchStatistics))
 
                 .ForMember(dest => dest.MatchStatisticsTeamB, exp => exp.MapFrom(src => src.TeamBMatchStatistics))
 
@@ -37,8 +41,15 @@
 
                 .ForMember(dest => dest.TeamBId, exp => exp.MapFrom(src => src.RugbyFixture.TeamB.LegacyTeamId))
 
+                .ForMember(dest => dest.TeamBTeamsheet, exp => exp.MapFrom(src => src.TeamBLineup))
+
+                .ForMember(dest => dest.TeamBScorers, exp => exp.MapFrom(src => src.TeamBScorers))
+
                 // Fixture Specific Details
-                .ForMember(dest => dest.Events, exp => exp.MapFrom(src => src.Commentary))
+
+                .ForMember(dest => dest.Teamsheet, exp => exp.MapFrom(src => src.TeamsLineups))
+
+                .ForMember(dest => dest.Events, exp => exp.MapFrom(src => src.MatchEvents))
 
                 .ForMember(dest => dest.KickoffDateTime, exp => exp.MapFrom(
                     src => src.RugbyFixture.StartDateTime.UtcDateTime.ToLocalTime().ToString("s")))
@@ -61,12 +72,12 @@
                 .ForMember(dest => dest.Status, exp => exp.MapFrom(
                     src => src.RugbyFixture.RugbyFixtureStatus == RugbyFixtureStatus.Result ||
                            src.RugbyFixture.RugbyFixtureStatus == RugbyFixtureStatus.PostMatch ? 
-                           Constants.SecondHalfStatusDescription : Constants.FirstHalfStatusDescription))
+                           LegacyFeedConstants.SecondHalfStatusDescription : LegacyFeedConstants.FirstHalfStatusDescription))
 
                 .ForMember(dest => dest.StatusId, exp => exp.MapFrom(
                     src => src.RugbyFixture.RugbyFixtureStatus == RugbyFixtureStatus.Result ||
                            src.RugbyFixture.RugbyFixtureStatus == RugbyFixtureStatus.PostMatch ?
-                           Constants.SecondHalfStatusId : Constants.FirstHalfStatusId))
+                           LegacyFeedConstants.SecondHalfStatusId : LegacyFeedConstants.FirstHalfStatusId))
 
                 .ForMember(dest => dest.MatchID, exp => exp.MapFrom(src => src.RugbyFixture.LegacyFixtureId))
 

@@ -181,7 +181,8 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="Filters\LegacyExceptionFilterAttribute.cs" />
-    <Compile Include="Models\Mappers\Constants.cs" />
+    <Compile Include="Models\Mappers\LegacyFeedConstants.cs" />
+    <Compile Include="Models\Mappers\LegacyCommentaryAsEventMapperProfile.cs" />
     <Compile Include="Models\Mappers\LegacyCommentaryMapperProfile.cs" />
     <Compile Include="Models\Mappers\LegacyFixtureMapperProfile.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
@@ -227,6 +228,8 @@
     <Compile Include="Models\Mappers\LegacyMatchDetailsMapperProfile.cs" />
     <Compile Include="Models\Mappers\LegacyMatchStatsMapperProfile.cs" />
     <Compile Include="Models\Mappers\LegacyResultMapperProfile.cs" />
+    <Compile Include="Models\Mappers\LegacyScorerModelMapperProfile.cs" />
+    <Compile Include="Models\Mappers\LegacyTeamsheetMapperProfile.cs" />
     <Compile Include="Models\Shared\AlternateCommentsModel.cs" />
     <Compile Include="Models\Shared\AuthModel.cs" />
     <Compile Include="Models\Shared\CardsModel.cs" />
@@ -363,7 +366,9 @@
     <Content Include="Scripts\respond.matchmedia.addListener.js" />
     <Content Include="Scripts\respond.matchmedia.addListener.min.js" />
     <Content Include="Scripts\respond.min.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
