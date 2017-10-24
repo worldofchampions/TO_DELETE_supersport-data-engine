@@ -441,7 +441,8 @@
                             fixtureSchedule.EndedDateTime =
                                 fixtureSchedule.StartDateTime
                                     .AddSeconds(
-                                        fixture.gameSeconds);
+                                        fixture.gameSeconds)
+                                    .AddMinutes(30); // This is for half-time break.
                         }
 
                         _schedulerTrackingRugbyFixtureRepository.Update(fixtureSchedule);
@@ -978,7 +979,7 @@
                 await IngestMatchStatisticsData(cancellationToken, matchStatsResponse, providerFixtureId);
                 await IngestScoreData(cancellationToken, matchStatsResponse);
                 await IngestFixtureStatusData(cancellationToken, matchStatsResponse);
-                await UpdateFixtureSchedulingTrackingTable(fixtureInDb.Id, matchStatsResponse.RugbyMatchStats.gameState);
+                await UpdateSchedulerTrackingFixturesTable(fixtureInDb.Id, matchStatsResponse.RugbyMatchStats.gameState);
 
                 await IngestLineUpsForFixtures(cancellationToken, new List<RugbyFixture>(){ fixtureInDb });
 
@@ -997,18 +998,18 @@
             }
         }
 
-        private async Task UpdateFixtureSchedulingTrackingTable(Guid fixtureId, string gameState)
+        private async Task UpdateSchedulerTrackingFixturesTable(Guid FixtureId, string fixtureGameState)
         {
             var schedule = (await _schedulerTrackingRugbyFixtureRepository.AllAsync())
-                                .Where(s => s.FixtureId == fixtureId).FirstOrDefault();
+                                .Where(s => s.FixtureId == FixtureId).FirstOrDefault();
 
-            if (schedule == null)
+            if(schedule == null)
             {
                 return;
             }
             else
             {
-                schedule.RugbyFixtureStatus = GetFixtureStatusFromProviderFixtureState(gameState);
+                schedule.RugbyFixtureStatus = GetFixtureStatusFromProviderFixtureState(fixtureGameState);
                 _schedulerTrackingRugbyFixtureRepository.Update(schedule);
             }
 
@@ -1447,6 +1448,7 @@
 
                 var dbCommentary = commentaries.Where(c =>
                                                 c.GameTimeRawSeconds == commentTimeInSeconds &&
+                                                c.CommentaryText == commentText &&
                                                 c.RugbyFixture.Id == fixture.Id &&
                                                 c.RugbyPlayer == player &&
                                                 c.RugbyTeam == team).FirstOrDefault();
@@ -1466,6 +1468,8 @@
                 if (dbCommentary == null)
                 {
                     _rugbyCommentaryRepository.Add(newCommentary);
+                    // Add the commentary to the local list.
+                    commentaries.Add(newCommentary);
                 }
                 else
                 {
