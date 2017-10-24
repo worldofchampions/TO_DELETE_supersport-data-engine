@@ -317,9 +317,11 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             var events = GetRugbyFixtureEvents(fixture);
 
-            var matchCommentaryAsEvents =  await GetCommentaryAsRugbyMatchEvents(fixture.Id);
+            var matchCommentaryAsEvents = GetCommentaryAsRugbyMatchEvents(fixture.Id);
 
             events.AddRange(matchCommentaryAsEvents);
+
+            events = events.OrderByDescending(e => e.GameTimeInMinutes).ToList();
 
             var teamAScorers =  GetTeamScorersForRugbyFixture(fixture.Id, fixture.TeamA.Id);
 
@@ -409,9 +411,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                  .Where(l => l.RugbyTeam.Id == TeamId).ToList();
         }
 
-        private async Task<List<LegacyRugbyMatchEventEntity>> GetCommentaryAsRugbyMatchEvents(Guid fixtureId)
+        private List<LegacyRugbyMatchEventEntity> GetCommentaryAsRugbyMatchEvents(Guid fixtureId)
         {
-            var matchCommentary =  await GetRugbyMatchCommentary(fixtureId);
+            var matchCommentary = GetRugbyMatchCommentary(fixtureId);
 
             var matchCommentaryAsEvents = new List<LegacyRugbyMatchEventEntity>();
 
@@ -436,9 +438,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             return matchCommentaryAsEvents;
         }
 
-        private async Task<List<RugbyCommentary>> GetRugbyMatchCommentary(Guid fixtureId)
+        private List<RugbyCommentary> GetRugbyMatchCommentary(Guid fixtureId)
         {
-            return (await _rugbyCommentaryRepository.AllAsync())
+            return (_rugbyCommentaryRepository.All())
                  .Where(c => c.RugbyFixture.Id == fixtureId)
                  .ToList();
         }

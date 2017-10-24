@@ -42,7 +42,7 @@
         private static void ApplyRegistrationsForApplicationLogic(IUnityContainer container, ApplicationScope applicationScope)
         {
             container.RegisterType<ITemporaryExampleService, TemporaryExampleService>();
-            container.RegisterType<IRugbyService, RugbyService>();
+            container.RegisterType<IRugbyService, RugbyService>(new HierarchicalLifetimeManager());
 
             if (applicationScope == ApplicationScope.WebApiLegacyFeed ||
                 applicationScope == ApplicationScope.WebApiSystemApi)
@@ -71,7 +71,7 @@
             if (applicationScope == ApplicationScope.ServiceSchedulerClient ||
                 applicationScope == ApplicationScope.ServiceSchedulerIngestServer)
             {
-                container.RegisterType<IStatsProzoneRugbyIngestService, StatsProzoneRugbyIngestService>();
+                container.RegisterType<IStatsProzoneRugbyIngestService, StatsProzoneRugbyIngestService>(new HierarchicalLifetimeManager());
             }
         }
 
