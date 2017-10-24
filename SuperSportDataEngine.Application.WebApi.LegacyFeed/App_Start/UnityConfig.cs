@@ -1,28 +1,21 @@
-namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.App_Start
+using Microsoft.Practices.Unity;
+using System.Web.Http;
+using Unity.WebApi;
+
+namespace SuperSportDataEngine.Application.WebApi.LegacyFeed
 {
-    using Microsoft.Practices.Unity;
-    using SuperSportDataEngine.Application.Container;
-    using SuperSportDataEngine.Application.Container.Enums;
-    using System;
-
-    /// <summary>Specifies the Unity configuration for the main container.</summary>
-    public class UnityConfig
+    public static class UnityConfig
     {
-        private static Lazy<IUnityContainer> container = new Lazy<IUnityContainer>(() =>
+        public static void RegisterComponents()
         {
-            var container = new UnityContainer();
-            RegisterTypes(container);
-            return container;
-        });
-
-        public static IUnityContainer GetConfiguredContainer()
-        {
-            return container.Value;
-        }
-
-        private static void RegisterTypes(IUnityContainer container)
-        {
-            UnityConfigurationManager.RegisterTypes(container, ApplicationScope.WebApiLegacyFeed);
+			var container = new UnityContainer();
+            
+            // register all your components with the container here
+            // it is NOT necessary to register your controllers
+            
+            // e.g. container.RegisterType<ITestService, TestService>();
+            
+            GlobalConfiguration.Configuration.DependencyResolver = new UnityDependencyResolver(container);
         }
     }
 }
