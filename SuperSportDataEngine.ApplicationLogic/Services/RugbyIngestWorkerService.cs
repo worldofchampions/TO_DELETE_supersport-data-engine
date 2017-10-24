@@ -441,7 +441,8 @@
                             fixtureSchedule.EndedDateTime =
                                 fixtureSchedule.StartDateTime
                                     .AddSeconds(
-                                        fixture.gameSeconds);
+                                        fixture.gameSeconds)
+                                    .AddMinutes(30); // This is for half-time break.
                         }
 
                         _schedulerTrackingRugbyFixtureRepository.Update(fixtureSchedule);
@@ -975,6 +976,7 @@
                 await IngestMatchStatisticsData(cancellationToken, matchStatsResponse, providerFixtureId);
                 await IngestScoreData(cancellationToken, matchStatsResponse);
                 await IngestFixtureStatusData(cancellationToken, matchStatsResponse);
+                await UpdateSchedulerTrackingFixturesTable(fixtureInDb.Id, matchStatsResponse.RugbyMatchStats.gameState);
 
                 await IngestLineUpsForFixtures(cancellationToken, new List<RugbyFixture>(){ fixtureInDb });
 
@@ -991,6 +993,24 @@
 
                 Thread.Sleep(5_000);
             }
+        }
+
+        private async Task UpdateSchedulerTrackingFixturesTable(Guid FixtureId, string fixtureGameState)
+        {
+            var schedule = (await _schedulerTrackingRugbyFixtureRepository.AllAsync())
+                                .Where(s => s.FixtureId == FixtureId).FirstOrDefault();
+
+            if(schedule == null)
+            {
+                return;
+            }
+            else
+            {
+                schedule.RugbyFixtureStatus = GetFixtureStatusFromProviderFixtureState(fixtureGameState);
+                _schedulerTrackingRugbyFixtureRepository.Update(schedule);
+            }
+
+            await _schedulerTrackingRugbyFixtureRepository.SaveAsync();
         }
 
         private async Task IngestEvents(CancellationToken cancellationToken, RugbyEventsFlowResponse eventsFlowResponse)
@@ -1528,7 +1548,7 @@
                     var positionName = player.playerPosition;
 
                     var isCaptain = player.isCaptain == null ? false : (bool)player.isCaptain;
-                    var isSubstitute = player.shirtNum == 16;
+                    var isSubstitute = player.shirtNum >= 16;
 
                     var dbEntry =
                             (await _rugbyPlayerLineupsRepository.AllAsync())
