@@ -31,30 +31,30 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'QA|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
     <OutputPath>bin\QA</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Staging|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
     <OutputPath>bin\Staging</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Prod|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
     <OutputPath>bin\Prod</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
@@ -180,6 +180,18 @@
     <Compile Include="Migrations\201710190823257_Rescaffolded_RugbyLogGroup_and_rugby_events_related_tables.Designer.cs">
       <DependentUpon>201710190823257_Rescaffolded_RugbyLogGroup_and_rugby_events_related_tables.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201710250715016_Added_CMS_override_for_RugbyPlayer_DisplayName.cs" />
+    <Compile Include="Migrations\201710250715016_Added_CMS_override_for_RugbyPlayer_DisplayName.Designer.cs">
+      <DependentUpon>201710250715016_Added_CMS_override_for_RugbyPlayer_DisplayName.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201710250717433_Added_CMS_override_for_RugbyTeam_Name.cs" />
+    <Compile Include="Migrations\201710250717433_Added_CMS_override_for_RugbyTeam_Name.Designer.cs">
+      <DependentUpon>201710250717433_Added_CMS_override_for_RugbyTeam_Name.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201710250720000_Added_CMS_override_for_RugbyTournament_Name.cs" />
+    <Compile Include="Migrations\201710250720000_Added_CMS_override_for_RugbyTournament_Name.Designer.cs">
+      <DependentUpon>201710250720000_Added_CMS_override_for_RugbyTournament_Name.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypeProviderMappings.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypes.cs" />
@@ -274,6 +286,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201710190823257_Rescaffolded_RugbyLogGroup_and_rugby_events_related_tables.resx">
       <DependentUpon>201710190823257_Rescaffolded_RugbyLogGroup_and_rugby_events_related_tables.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201710250715016_Added_CMS_override_for_RugbyPlayer_DisplayName.resx">
+      <DependentUpon>201710250715016_Added_CMS_override_for_RugbyPlayer_DisplayName.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201710250717433_Added_CMS_override_for_RugbyTeam_Name.resx">
+      <DependentUpon>201710250717433_Added_CMS_override_for_RugbyTeam_Name.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201710250720000_Added_CMS_override_for_RugbyTournament_Name.resx">
+      <DependentUpon>201710250720000_Added_CMS_override_for_RugbyTournament_Name.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

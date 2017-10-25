@@ -83,7 +83,7 @@
             // 2. We should ideally be using new DbContext's for each repository. Hence the changes below.
             // 3. Ammended, added back the context. The real issue was that multiple threads were using the same context.
             //    Multiple repositories in a Hangfire job using the same context is fine.
-            container.RegisterType<DbContext, PublicSportDataContext>(PublicSportDataRepository, new PerThreadLifetimeManager());
+            container.RegisterType<DbContext, PublicSportDataContext>(PublicSportDataRepository, new HierarchicalLifetimeManager());
 
             container.RegisterType<IBaseEntityFrameworkRepository<RugbyCommentary>, BaseEntityFrameworkRepository<RugbyCommentary>>(
                 new HierarchicalLifetimeManager(),
@@ -154,7 +154,7 @@
             // 2. We should ideally be using new DbContext's for each repository. Hence the changes below.
             // 3. Ammended, added back the context. The real issue was that multiple threads were using the same context.
             //    Multiple repositories in a Hangfire job using the same context is fine.
-            container.RegisterType<DbContext, SystemSportDataContext>(SystemSportDataRepository, new PerThreadLifetimeManager());
+            container.RegisterType<DbContext, SystemSportDataContext>(SystemSportDataRepository, new HierarchicalLifetimeManager());
 
             container.RegisterType<IBaseEntityFrameworkRepository<LegacyAuthFeedConsumer>, BaseEntityFrameworkRepository<LegacyAuthFeedConsumer>>(
                 new HierarchicalLifetimeManager(),
@@ -187,6 +187,7 @@
                 applicationScope == ApplicationScope.ServiceSchedulerIngestServer)
             {
                 container.RegisterType<IRecurringJobManager, RecurringJobManager>(
+                    new HierarchicalLifetimeManager(),
                     new InjectionFactory((x) => new RecurringJobManager(
                         new SqlServerStorage(ConfigurationManager.ConnectionStrings["SqlDatabase_Hangfire"].ConnectionString))));
 
@@ -196,7 +197,7 @@
                         ConfigurationManager.ConnectionStrings["MongoDB"].ConnectionString)));
 
                 container.RegisterType<IMongoDbRugbyRepository, MongoDbRugbyRepository>();
-                container.RegisterType<IRugbyIngestWorkerService, RugbyIngestWorkerService>();
+                container.RegisterType<IRugbyIngestWorkerService, RugbyIngestWorkerService>(new HierarchicalLifetimeManager());
                 container.RegisterType<ITemporaryExampleMongoDbRepository, TemporaryExampleMongoDbRepository>();
                 container.RegisterType<ISchedulerClientService, SchedulerClientService>();
             }

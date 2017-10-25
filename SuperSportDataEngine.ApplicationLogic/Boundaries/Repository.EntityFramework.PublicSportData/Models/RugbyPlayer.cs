@@ -23,6 +23,9 @@
         /// <summary> A provider driven value. </summary>
         public string LastName { get; set; }
 
+        /// <summary> A CMS driven value. </summary>
+        public string DisplayNameCmsOverride { get; set; }
+
         public DataProvider DataProvider { get; set; }
     }
 }

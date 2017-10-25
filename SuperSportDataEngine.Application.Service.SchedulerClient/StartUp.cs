@@ -1,7 +1,6 @@
 ﻿using Microsoft.Owin;
 using Owin;
 using Hangfire;
-using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
 using Microsoft.Practices.Unity;
 using SuperSportDataEngine.Application.Container;
 using SuperSportDataEngine.Application.Container.Enums;
@@ -25,7 +24,8 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
                 Metric = DashboardMetrics.RecurringJobCount
             });
 
-            app.UseHangfireDashboard("/Hangfire", options: new HangfireDashboardConfiguration(container).GetDashboardOptions());
+            var options = new HangfireDashboardConfiguration(container).GetDashboardOptions();
+            app.UseHangfireDashboard("/Hangfire", options);
         }
     }
 }
