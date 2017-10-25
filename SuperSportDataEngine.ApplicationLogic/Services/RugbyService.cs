@@ -122,11 +122,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             DateTimeOffset nowPlus15Minutes = DateTimeOffset.UtcNow.AddMinutes(15);
 
             var liveGames = (await _rugbyFixturesRepository.AllAsync())
-                    .Where(
-                        fixture => (fixture.RugbyTournament != null && fixture.RugbyTournament.Id == tournamentId) &&
-                        ((fixture.RugbyFixtureStatus != RugbyFixtureStatus.PostMatch &&
-                            fixture.StartDateTime <= nowPlus15Minutes && fixture.StartDateTime >= now) ||
-                            (fixture.RugbyFixtureStatus == RugbyFixtureStatus.InProgress)));
+                    .Where(fixture => IsFixtureLive(fixture))
+                    .Where(fixture => fixture.RugbyTournament != null && fixture.RugbyTournament.Id == tournamentId);
 
             // For debugging when there's no live games.
             //return
@@ -136,33 +133,34 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             return liveGames;
         }
 
+        private bool IsFixtureLive(RugbyFixture fixture)
+        {
+            var fixtureSchedule = _schedulerTrackingRugbyFixtureRepository.All().ToList()
+                    .Where(s => s.FixtureId == fixture.Id).FirstOrDefault();
+
+            return fixtureSchedule.SchedulerStateFixtures == SchedulerStateForRugbyFixturePolling.LivePolling;
+        }
+
         public async Task<int> GetLiveFixturesCount(CancellationToken cancellationToken)
         {
-            DateTimeOffset now = DateTimeOffset.UtcNow;
-            DateTimeOffset nowPlus15Minutes = DateTimeOffset.UtcNow.AddMinutes(15);
-
-            int count =
-                (await _rugbyFixturesRepository.AllAsync())
-                    .Where(
-                        fixture =>
-                        ((fixture.RugbyFixtureStatus != RugbyFixtureStatus.PostMatch &&
-                            fixture.StartDateTime <= nowPlus15Minutes && fixture.StartDateTime >= now) ||
-                            (fixture.RugbyFixtureStatus == RugbyFixtureStatus.InProgress))).Count();
+            var liveGames = (await _rugbyFixturesRepository.AllAsync())
+                                .Where(fixture => IsFixtureLive(fixture));
 
             // For debugging when there's no live games.
             //return 2;
 
-            return count;
+            return liveGames.Count();
         }
 
-        public async Task<IEnumerable<RugbyFixture>> GetEndedFixtures()
+        public async Task<IEnumerable<RugbyFixture>> GetCompletedFixtures()
         {
             // For debugging when there's no live games.
             //return new List<RugbyFixture>();
-            return
-                (await _rugbyFixturesRepository.AllAsync()).Where(
-                    f => f.RugbyFixtureStatus == RugbyFixtureStatus.PostMatch ||
-                         f.RugbyFixtureStatus == RugbyFixtureStatus.Result);
+            var completedSchedules = (await _schedulerTrackingRugbyFixtureRepository.AllAsync()).Where(
+                    f => f.SchedulerStateFixtures == SchedulerStateForRugbyFixturePolling.SchedulingCompleted).Select(s => s.FixtureId).ToList();
+            var fixturesCompleted = (await _rugbyFixturesRepository.AllAsync()).Where(f => completedSchedules.Contains(f.Id));
+            
+            return fixturesCompleted;
         }
 
         public async Task<bool> HasFixtureEnded(long providerFixtureId)
@@ -173,7 +171,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                         .FirstOrDefault();
 
             if (fixture != null)
-                return fixture.RugbyFixtureStatus == RugbyFixtureStatus.PostMatch;
+                return fixture.RugbyFixtureStatus == RugbyFixtureStatus.Result;
 
             // We can't find the fixture in the DB? But still running ingest code?
             // This is a bizzare condition but checking it nonetherless.
@@ -225,7 +223,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             var nowMinus6Months = DateTimeOffset.UtcNow - TimeSpan.FromDays(180);
             var itemsToDelete = (await _schedulerTrackingRugbyFixtureRepository.AllAsync())
                 .Where(
-                    f => f.RugbyFixtureStatus == RugbyFixtureStatus.PostMatch && f.StartDateTime < nowMinus6Months);
+                    f => f.SchedulerStateFixtures == SchedulerStateForRugbyFixturePolling.SchedulingCompleted && f.StartDateTime < nowMinus6Months);
 
             foreach (var item in itemsToDelete)
                 _schedulerTrackingRugbyFixtureRepository.Delete(item);
@@ -249,8 +247,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             var fixtures = (await _rugbyFixturesRepository.AllAsync())
                             .ToList()
                             .Where(t => t.RugbyTournament.Id == tournamentId &&
-                            t.RugbyFixtureStatus == RugbyFixtureStatus.PreMatch ||
-                            t.RugbyFixtureStatus == RugbyFixtureStatus.InProgress);
+                            t.RugbyFixtureStatus != RugbyFixtureStatus.Result);
 
             return fixtures;
         }
@@ -265,7 +262,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         public async Task<IEnumerable<RugbyFixture>> GetTournamentResults(string tournamentSlug)
         {
             Guid tournamentId = await GetTournamentId(tournamentSlug);
-            var fixturesInResultsState = await GetTournamentFixtures(tournamentId, RugbyFixtureStatus.PostMatch);
+            var fixturesInResultsState = await GetTournamentFixtures(tournamentId, RugbyFixtureStatus.Result);
 
             return fixturesInResultsState;
         }

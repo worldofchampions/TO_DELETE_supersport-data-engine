@@ -20,6 +20,7 @@
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyMatchStats;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyEventsFlow;
     using SuperSportDataEngine.ApplicationLogic.Constants;
+    using SuperSportDataEngine.ApplicationLogic.Helpers;
 
     public class RugbyIngestWorkerService : IRugbyIngestWorkerService
     {
@@ -432,7 +433,8 @@
                     {
                         // If the schedule already is in the system repo
                         // we need to update the status of the game.
-                        fixtureSchedule.RugbyFixtureStatus = GetFixtureStatusFromProviderFixtureState(fixture.gameStateName);
+                        var gameState = GetFixtureStatusFromProviderFixtureState(fixture.gameStateName);
+                        fixtureSchedule.RugbyFixtureStatus = gameState;
                         fixtureSchedule.StartDateTime = fixtureInDb.StartDateTime;
 
                         if (HasFixtureEnded(fixture.gameStateName) &&
@@ -455,7 +457,8 @@
 
         private bool HasFixtureEnded(string gameStateName)
         {
-            return GetFixtureStatusFromProviderFixtureState(gameStateName) == RugbyFixtureStatus.PostMatch;
+            var state = GetFixtureStatusFromProviderFixtureState(gameStateName);
+            return state == RugbyFixtureStatus.Result;
         }
 
         private async Task PersistRugbyFixturesToPublicSportsRepository(CancellationToken cancellationToken, RugbyFixturesResponse fixtures)
@@ -510,7 +513,7 @@
                         // Only update the scores for games that are completed.
                         // Real-time scores will be updated separately 
                         // in a method that runs more frequently.
-                        if (fixtureInDb.RugbyFixtureStatus == RugbyFixtureStatus.PostMatch)
+                        if (fixtureInDb.RugbyFixtureStatus == RugbyFixtureStatus.Result)
                         {
                             newFixture.TeamAScore = team0.teamFinalScore;
                             newFixture.TeamBScore = team1.teamFinalScore;
@@ -542,18 +545,33 @@
                 return RugbyFixtureStatus.PreMatch;
 
             if (gameStateName == "Final")
-                return RugbyFixtureStatus.PostMatch;
-
-            if (gameStateName == "Game End")
-                return RugbyFixtureStatus.PostMatch;
-
-            if (gameStateName.Equals(ProviderGameStateConstant.FullTime, StringComparison.InvariantCultureIgnoreCase))
-                return RugbyFixtureStatus.PostMatch;
-
-            if (gameStateName.Equals("Final"))
                 return RugbyFixtureStatus.Result;
 
-            return RugbyFixtureStatus.InProgress;
+            if (gameStateName == "Game End")
+                return RugbyFixtureStatus.Result;
+
+            if (gameStateName.Equals(ProviderGameStateConstant.FullTime, StringComparison.InvariantCultureIgnoreCase))
+                return RugbyFixtureStatus.FullTime;
+
+            if (gameStateName == "Pre Match")
+                return RugbyFixtureStatus.PreMatch;
+
+            if (gameStateName == "First Half")
+                return RugbyFixtureStatus.FirstHalf;
+
+            if (gameStateName == "Half Time")
+                return RugbyFixtureStatus.HalfTime;
+
+            if (gameStateName == "Second Half")
+                return RugbyFixtureStatus.SecondHalf;
+
+            if (gameStateName == "Full Time")
+                return RugbyFixtureStatus.FullTime;
+
+            if (gameStateName == "Extra Time")
+                return RugbyFixtureStatus.ExtraTime;
+
+            return RugbyFixtureStatus.PreMatch;
         }
 
         private async Task PersistRugbySeasonDataInSchedulerTrackingRugbySeasonTable(CancellationToken cancellationToken, RugbyFixturesResponse fixtures)
@@ -661,7 +679,6 @@
                     _statsProzoneIngestService.IngestFlatLogsForTournament(
                         tournament.ProviderTournamentId, activeSeasonIdForTournament);
 
-                    // TODO: Also persist in SQL DB.
                     await PersistFlatLogs(cancellationToken, logs);
 
                     _mongoDbRepository.Save(logs);
@@ -672,7 +689,6 @@
                     _statsProzoneIngestService.IngestGroupedLogsForTournament(
                         tournament.ProviderTournamentId, activeSeasonIdForTournament);
 
-                    // TODO: Also persist in SQL DB.
                     await PersistGroupedLogs(cancellationToken, logs);
 
                     _mongoDbRepository.Save(logs);
@@ -936,7 +952,7 @@
             {
                 round.gameFixtures
                     .RemoveAll(
-                        f => GetFixtureStatusFromProviderFixtureState(f.gameStateName) == RugbyFixtureStatus.PostMatch);
+                        f => GetFixtureStatusFromProviderFixtureState(f.gameStateName) == RugbyFixtureStatus.Result);
             }
 
             return fixtures;
@@ -990,8 +1006,11 @@
 
                 //// Check if should stop looping?
                 var matchState = GetFixtureStatusFromProviderFixtureState(matchStatsResponse.RugbyMatchStats.gameState);
-                if (matchState == RugbyFixtureStatus.PostMatch ||
-                    matchState == RugbyFixtureStatus.Result)
+                var schedulerState = FixturesStateHelper.GetSchedulerStateForFixture(DateTime.Now, matchState, fixtureInDb.StartDateTime.DateTime);
+
+                if (schedulerState == SchedulerStateForRugbyFixturePolling.SchedulingCompleted ||
+                    schedulerState == SchedulerStateForRugbyFixturePolling.SchedulingNotYetStarted ||
+                    schedulerState == SchedulerStateForRugbyFixturePolling.ResultOnlyPolling)
                     break;
 
                 Thread.Sleep(5_000);
@@ -1009,7 +1028,10 @@
             }
             else
             {
-                schedule.RugbyFixtureStatus = GetFixtureStatusFromProviderFixtureState(fixtureGameState);
+                var fixtureState = GetFixtureStatusFromProviderFixtureState(fixtureGameState);
+                schedule.RugbyFixtureStatus = fixtureState;
+                schedule.SchedulerStateFixtures = 
+                    FixturesStateHelper.GetSchedulerStateForFixture(DateTime.Now, fixtureState, schedule.StartDateTime.DateTime);
                 _schedulerTrackingRugbyFixtureRepository.Update(schedule);
             }
 
@@ -1629,8 +1651,7 @@
                 RugbyGroupedLogsResponse logs =
                 _statsProzoneIngestService.IngestGroupedLogsForTournament(
                     providerTournamentId, seasonId);
-
-                // TODO: Also persist in SQL DB.
+               
                 await PersistGroupedLogs(cancellationToken, logs);
 
                 _mongoDbRepository.Save(logs);
@@ -1652,8 +1673,7 @@
                                        fixture.RugbyTournament.IsEnabled &&
                                        fixture.StartDateTime < now &&
                                        fixture.StartDateTime >= NowMinus30days &&
-                                       (fixture.RugbyFixtureStatus == RugbyFixtureStatus.PostMatch ||
-                                        fixture.RugbyFixtureStatus == RugbyFixtureStatus.Result));
+                                       (fixture.RugbyFixtureStatus == RugbyFixtureStatus.Result));
 
             await IngestLineUpsForFixtures(cancellationToken, gamesInPastDay);
         }
