@@ -301,7 +301,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             return todayFixtures;
         }
 
-        public async Task<RugbyMatchDetailsEntity> GetMatchDetails(int LegacyMatchId)
+        public async Task<RugbyMatchDetailsEntity> GetMatchDetailsByLegacyMatchId(int LegacyMatchId)
         {
             var fixture = await GetRugbyFixtureByLegacyMatchId(LegacyMatchId);
 
@@ -315,7 +315,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             var statsB = await GetMatchStatsForTeam(fixture.Id, fixture.TeamB.Id);
 
-            var events = await GetRugbyFixtureEvents(fixture);
+            var events = await GetRugbyFixtureEvents(fixture.Id);
 
             var matchCommentaryAsEvents = await GetCommentaryAsRugbyMatchEvents(fixture.Id);
 
@@ -323,9 +323,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             events = events.OrderByDescending(e => e.GameTimeInMinutes).ToList();
 
-            var teamAScorers =  await GetTeamScorersForRugbyFixture(fixture.Id, fixture.TeamA.Id);
+            var teamAScorers =  await GetTeamScorersForFixture(fixture.Id, fixture.TeamA.Id);
 
-            var teamBScorers =  await GetTeamScorersForRugbyFixture(fixture.Id, fixture.TeamB.Id);
+            var teamBScorers =  await GetTeamScorersForFixture(fixture.Id, fixture.TeamB.Id);
 
             var matchDetails = new RugbyMatchDetailsEntity
             {
@@ -343,41 +343,46 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             return matchDetails;
         }
 
-        private async Task<List<LegacyRugbyScorerEntity>> GetTeamScorersForRugbyFixture(Guid fixtureId, Guid TeamId)
+        private async Task<List<LegacyRugbyScorerEntity>> GetTeamScorersForFixture(Guid fixtureId, Guid TeamId)
         {
-            var events = (await _rugbyMatchEventsRepository.AllAsync())
-                .Where(s => s.RugbyFixture.Id == fixtureId && s.RugbyTeamId == TeamId)
-                .ToList()
-                .Where(e => e.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.Try ||
-                e.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.Conversion ||
-                e.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.Penalty ||
-                e.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.PenaltyTryFivePoints ||
-                e.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.PenaltyTrySevenPoints ||
-                e.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.DropGoal ||
-                e.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.DropGoalFromMark)
-                .ToList();
+            List<RugbyMatchEvent> teamScoringEvents = await GetTeamScoringEventsForFixture(fixtureId, TeamId);
 
-            var scorers = new List<LegacyRugbyScorerEntity>();
+            var teamScorers = new List<LegacyRugbyScorerEntity>();
 
-            foreach (var rugbyEvent in events)
+            foreach (var scoringEvent in teamScoringEvents)
             {
                 var scorer = new LegacyRugbyScorerEntity
                 {
-                    CombinedName = rugbyEvent.RugbyPlayer1.FullName,
-                    DisplayName = rugbyEvent.RugbyPlayer1.FullName,
-                    EventId = rugbyEvent.RugbyEventType.EventCode,
-                    Name = rugbyEvent.RugbyPlayer1.FirstName,
+                    CombinedName = scoringEvent.RugbyPlayer1.FullName,
+                    DisplayName = scoringEvent.RugbyPlayer1.FullName,
+                    EventId = scoringEvent.RugbyEventType.EventCode,
+                    Name = scoringEvent.RugbyPlayer1.FirstName,
                     NickName = null,
-                    PersonId = rugbyEvent.RugbyPlayer1.LegacyPlayerId,
-                    Surname = rugbyEvent.RugbyPlayer1.LastName,
-                    Time = rugbyEvent.GameTimeInMinutes.ToString(),
-                    Type = rugbyEvent.RugbyEventType.EventName
+                    PersonId = scoringEvent.RugbyPlayer1.LegacyPlayerId,
+                    Surname = scoringEvent.RugbyPlayer1.LastName,
+                    Time = scoringEvent.GameTimeInMinutes.ToString(),
+                    Type = scoringEvent.RugbyEventType.EventName
                 };
 
-                scorers.Add(scorer);
+                teamScorers.Add(scorer);
             }
 
-            return scorers;
+            return teamScorers;
+        }
+
+        private async Task<List<RugbyMatchEvent>> GetTeamScoringEventsForFixture(Guid fixtureId, Guid TeamId)
+        {
+            return (await _rugbyMatchEventsRepository.AllAsync())
+                .Where(s => s.RugbyFixture.Id == fixtureId && s.RugbyTeamId == TeamId)
+                .ToList().Where(e =>
+                e.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.PenaltyTryFivePoints ||
+                e.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.PenaltyTrySevenPoints ||
+                e.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.DropGoalFromMark ||
+                e.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.Conversion ||
+                e.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.DropGoal ||
+                e.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.Penalty ||
+                e.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.Try)
+                .ToList();
         }
 
         private async Task<RugbyFixture> GetRugbyFixtureByLegacyMatchId(int LegacyMatchId)
@@ -388,10 +393,10 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 .FirstOrDefault();
         }
 
-        private async Task<List<RugbyMatchEvent>> GetRugbyFixtureEvents(RugbyFixture fixture)
+        private async Task<List<RugbyMatchEvent>> GetRugbyFixtureEvents(Guid fixtureId)
         {
             return ( await _rugbyMatchEventsRepository.AllAsync())
-                .Where(s => s.RugbyFixture.Id == fixture.Id)
+                .Where(s => s.RugbyFixture.Id == fixtureId)
                 .ToList();
         }
 
@@ -413,11 +418,11 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         private async Task<List<LegacyRugbyMatchEventEntity>> GetCommentaryAsRugbyMatchEvents(Guid fixtureId)
         {
-            var matchCommentary = await GetRugbyMatchCommentary(fixtureId);
+            var matchCommentaries = await GetRugbyMatchCommentary(fixtureId);
 
-            var matchCommentaryAsEvents = new List<LegacyRugbyMatchEventEntity>();
+            var matchCommentariesAsEvents = new List<LegacyRugbyMatchEventEntity>();
 
-            foreach (var commentary in matchCommentary)
+            foreach (var commentary in matchCommentaries)
             {
                 var matchEvent = new LegacyRugbyMatchEventEntity
                 {
@@ -432,10 +437,10 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                     Comments = commentary.CommentaryText
                 };
 
-                matchCommentaryAsEvents.Add(matchEvent);
+                matchCommentariesAsEvents.Add(matchEvent);
             }
 
-            return matchCommentaryAsEvents;
+            return matchCommentariesAsEvents;
         }
 
         private async Task<List<RugbyCommentary>> GetRugbyMatchCommentary(Guid fixtureId)
