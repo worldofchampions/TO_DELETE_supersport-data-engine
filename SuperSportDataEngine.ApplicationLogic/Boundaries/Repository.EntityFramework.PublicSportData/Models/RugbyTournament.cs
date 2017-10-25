@@ -17,9 +17,6 @@
         /// <summary> A provider driven value. </summary>
         public string Name { get; set; }
 
-        /// <summary> A CMS driven value. </summary>
-        public string NameCmsOverride { get; set; }
-
         /// <summary> A CMS defined value to uniquely identify a tournament for URL purposes. </summary>
         public string Slug { get; set; }
 
