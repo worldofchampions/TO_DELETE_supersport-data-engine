@@ -4,6 +4,7 @@
     using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
     using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
+    using System.Linq;
 
     public class LegacyMatchDetailsMapperProfile : Profile
     {
@@ -28,6 +29,11 @@
 
                 .ForMember(dest => dest.TeamAScorers, exp => exp.MapFrom(src => src.TeamAScorers))
 
+                .ForMember(dest => dest.TeamASubstitutes, src => src.UseValue(Enumerable.Empty<SubstituteModel>().ToList()))
+
+                .ForMember(dest => dest.TeamACards, src => src.UseValue(Enumerable.Empty<CardsModel>().ToList()))
+
+
                 // Team B Details
                 .ForMember(dest => dest.teamBStats, exp => exp.MapFrom(src => src.TeamBMatchStatistics))
 
@@ -44,6 +50,11 @@
                 .ForMember(dest => dest.TeamBTeamsheet, exp => exp.MapFrom(src => src.TeamBLineup))
 
                 .ForMember(dest => dest.TeamBScorers, exp => exp.MapFrom(src => src.TeamBScorers))
+
+                .ForMember(dest => dest.TeamBSubstitutes, src => src.UseValue(Enumerable.Empty<SubstituteModel>().ToList()))
+
+                .ForMember(dest => dest.TeamBCards, src => src.UseValue(Enumerable.Empty<CardsModel>().ToList()))
+
 
                 // Fixture Specific Details
 
@@ -83,7 +94,15 @@
 
                 .ForMember(dest => dest.MatchTime, exp => exp.MapFrom(
                     src => src.RugbyFixture.StartDateTime.UtcDateTime.ToLocalTime().ToString("s")))
-               
+
+                .ForMember(dest => dest.Officials, src => src.UseValue(Enumerable.Empty<OfficialModel>().ToList()))
+
+                .ForMember(dest => dest.Videos, src => src.UseValue(Enumerable.Empty<MatchVideoModel>().ToList()))
+
+                .ForMember(dest => dest.LiveVideos, src => src.UseValue(Enumerable.Empty<MatchLiveVideoModel>().ToList()))
+
+                .ForMember(dest => dest.Attendance, src => src.UseValue(LegacyFeedConstants.DefaultAttendanceValue))
+
                 .ForAllOtherMembers(dest => dest.Ignore());
         }
     }

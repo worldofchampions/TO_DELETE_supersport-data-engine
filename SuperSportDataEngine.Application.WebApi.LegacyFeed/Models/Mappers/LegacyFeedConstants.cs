@@ -17,5 +17,7 @@
         public const string SecondHalfStatusDescription = "Second Half";
 
         public const int CommentaryEventId = 0;
+
+        public const string DefaultAttendanceValue = "0";
     }
 }
