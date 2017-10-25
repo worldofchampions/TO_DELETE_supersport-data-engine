@@ -1,4 +1,8 @@
-﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
 {
     public static class LegacyFeedConstants
     {
@@ -27,5 +31,59 @@
         public const string EmptyEventName = _emptyString;
 
         public const string EmptyEventComment = _emptyString;
+
+        public const string EmptyTeamName = _emptyString;
+
+        public const int DefaultScoreForStartedGame = 0;
+
+        public const int DefaultSortingValue = 0;
+
+        public static List<string> EmptyChannelsList
+        {
+            get
+            {
+                return Enumerable.Empty<string>().ToList();
+            }
+        }
+
+        public static List<MatchVideoModel> EmptyVideosList
+        {
+            get
+            {
+                return Enumerable.Empty<MatchVideoModel>().ToList();
+            }
+        }
+
+        public static List<MatchLiveVideoModel> EmptyLiveVideosList
+        {
+            get
+            {
+                return Enumerable.Empty<MatchLiveVideoModel>().ToList();
+            }
+        }
+
+        public static List<OfficialModel> EmptyMatchOfficialsList
+        {
+            get
+            {
+                return Enumerable.Empty<OfficialModel>().ToList();
+            }
+        }
+
+        public static List<CardsModel> EmptyTeamCardsList
+        {
+            get
+            {
+                return Enumerable.Empty<CardsModel>().ToList();
+            }
+        }
+
+        public static List<SubstituteModel> EmptyTeamSubstitutes
+        {
+            get
+            {
+                return Enumerable.Empty<SubstituteModel>().ToList();
+            }
+        }
     }
 }

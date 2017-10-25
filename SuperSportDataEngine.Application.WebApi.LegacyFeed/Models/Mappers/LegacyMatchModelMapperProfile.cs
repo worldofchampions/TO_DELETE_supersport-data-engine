@@ -12,21 +12,23 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
 
                 // For Away team 
                 .ForMember(dest => dest.AwayTeam, expression => expression.MapFrom(
-                    src => src.TeamAIsHomeTeam ? src.TeamB.Name : src.TeamA.Name))
+                    src => src.TeamAIsHomeTeam ? 
+                    (src.TeamB.NameCmsOverride ?? src.TeamB.Name) : (src.TeamA.NameCmsOverride ?? src.TeamA.Name)))
 
                 .ForMember(dest => dest.AwayTeamId, expression => expression.MapFrom(
                     src => src.TeamAIsHomeTeam ? src.TeamB.LegacyTeamId : src.TeamA.LegacyTeamId))
 
                 // For Home team 
                 .ForMember(dest => dest.HomeTeam, expression => expression.MapFrom(
-                    src => src.TeamAIsHomeTeam ? src.TeamA.Name : src.TeamB.Name))
+                    src => src.TeamAIsHomeTeam ?
+                    (src.TeamA.NameCmsOverride ?? src.TeamA.Name) : (src.TeamB.NameCmsOverride ?? src.TeamB.Name)))
 
                 .ForMember(dest => dest.HomeTeamId, expression => expression.MapFrom(
                     src => src.TeamAIsHomeTeam ? src.TeamA.LegacyTeamId : src.TeamB.LegacyTeamId))
 
                 // For Fixture specific
                 .ForMember(dest => dest.LeagueName, expression => expression.MapFrom(
-                    src => src.RugbyTournament.Name))
+                    src => src.RugbyTournament.NameCmsOverride ?? src.RugbyTournament.Name))
 
                 .ForMember(dest => dest.LeagueId, expression => expression.MapFrom(
                     src => src.RugbyTournament.LegacyTournamentId))
