@@ -13,6 +13,9 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
                 .ForMember(src => src.CarriesCrossedGainLine, exp => exp.MapFrom(
                    dest => dest.CarriesCrossedGainLine))
 
+                .ForMember(src => src.YellowCards, exp => exp.MapFrom(
+                   dest => dest.YellowCards))
+
                .ForMember(src => src.Tries, exp => exp.MapFrom(
                    dest => dest.Tries))
 

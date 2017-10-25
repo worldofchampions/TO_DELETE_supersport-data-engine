@@ -441,7 +441,8 @@
                             fixtureSchedule.EndedDateTime =
                                 fixtureSchedule.StartDateTime
                                     .AddSeconds(
-                                        fixture.gameSeconds);
+                                        fixture.gameSeconds)
+                                    .AddMinutes(30); // This is for half-time break.
                         }
 
                         _schedulerTrackingRugbyFixtureRepository.Update(fixtureSchedule);
@@ -547,6 +548,9 @@
                 return RugbyFixtureStatus.PostMatch;
 
             if (gameStateName.Equals(ProviderGameStateConstant.FullTime, StringComparison.InvariantCultureIgnoreCase))
+                return RugbyFixtureStatus.PostMatch;
+
+            if (gameStateName.Equals("Final"))
                 return RugbyFixtureStatus.Result;
 
             return RugbyFixtureStatus.InProgress;
@@ -958,6 +962,8 @@
 
         public async Task IngestLiveMatchData(CancellationToken cancellationToken, long providerFixtureId)
         {
+            var fixtureInDb = (await _rugbyFixturesRepository.AllAsync()).Where(f => f.ProviderFixtureId == providerFixtureId).FirstOrDefault();
+
             while (true)
             {
                 if (cancellationToken.IsCancellationRequested)
@@ -973,11 +979,9 @@
                 await IngestMatchStatisticsData(cancellationToken, matchStatsResponse, providerFixtureId);
                 await IngestScoreData(cancellationToken, matchStatsResponse);
                 await IngestFixtureStatusData(cancellationToken, matchStatsResponse);
+                await UpdateSchedulerTrackingFixturesTable(fixtureInDb.Id, matchStatsResponse.RugbyMatchStats.gameState);
 
-                // This is too expensive to do during a live match.
-                // Too time consuming to ingest lineups during a live game.
-                //var fixtureInDb = (await _rugbyFixturesRepository.AllAsync()).Where(f => f.ProviderFixtureId == providerFixtureId).FirstOrDefault();
-                //await IngestLineUpsForFixtures(cancellationToken, new List<RugbyFixture>(){ fixtureInDb });
+                await IngestLineUpsForFixtures(cancellationToken, new List<RugbyFixture>(){ fixtureInDb });
 
                 await IngestEvents(cancellationToken, eventsFlowResponse);
 
@@ -985,13 +989,31 @@
                 _mongoDbRepository.Save(eventsFlowResponse);
 
                 //// Check if should stop looping?
-                //var matchState = GetFixtureStatusFromProviderFixtureState(matchStatsResponse.RugbyMatchStats.gameState);
-                //if (matchState == RugbyFixtureStatus.PostMatch ||
-                //    matchState == RugbyFixtureStatus.Result)
-                //    break;
+                var matchState = GetFixtureStatusFromProviderFixtureState(matchStatsResponse.RugbyMatchStats.gameState);
+                if (matchState == RugbyFixtureStatus.PostMatch ||
+                    matchState == RugbyFixtureStatus.Result)
+                    break;
 
                 Thread.Sleep(5_000);
             }
+        }
+
+        private async Task UpdateSchedulerTrackingFixturesTable(Guid FixtureId, string fixtureGameState)
+        {
+            var schedule = (await _schedulerTrackingRugbyFixtureRepository.AllAsync())
+                                .Where(s => s.FixtureId == FixtureId).FirstOrDefault();
+
+            if(schedule == null)
+            {
+                return;
+            }
+            else
+            {
+                schedule.RugbyFixtureStatus = GetFixtureStatusFromProviderFixtureState(fixtureGameState);
+                _schedulerTrackingRugbyFixtureRepository.Update(schedule);
+            }
+
+            await _schedulerTrackingRugbyFixtureRepository.SaveAsync();
         }
 
         private async Task IngestEvents(CancellationToken cancellationToken, RugbyEventsFlowResponse eventsFlowResponse)
@@ -1426,6 +1448,7 @@
 
                 var dbCommentary = commentaries.Where(c =>
                                                 c.GameTimeRawSeconds == commentTimeInSeconds &&
+                                                c.CommentaryText == commentText &&
                                                 c.RugbyFixture.Id == fixture.Id &&
                                                 c.RugbyPlayer == player &&
                                                 c.RugbyTeam == team).FirstOrDefault();
@@ -1445,6 +1468,8 @@
                 if (dbCommentary == null)
                 {
                     _rugbyCommentaryRepository.Add(newCommentary);
+                    // Add the commentary to the local list.
+                    commentaries.Add(newCommentary);
                 }
                 else
                 {
@@ -1509,6 +1534,9 @@
                     var playerId = player.playerId;
                     var dbPlayer = (await _rugbyPlayerRepository.AllAsync()).Where(p => p.ProviderPlayerId == playerId).FirstOrDefault();
 
+                    if (dbPlayer == null)
+                        continue;
+
                     if (dbPlayer.FirstName == null && dbPlayer.LastName == null)
                     {
                         dbPlayer.FirstName = player.playerFirstName;
@@ -1526,7 +1554,7 @@
                     var positionName = player.playerPosition;
 
                     var isCaptain = player.isCaptain == null ? false : (bool)player.isCaptain;
-                    var isSubstitute = player.shirtNum == 16;
+                    var isSubstitute = player.shirtNum >= 16;
 
                     var dbEntry =
                             (await _rugbyPlayerLineupsRepository.AllAsync())

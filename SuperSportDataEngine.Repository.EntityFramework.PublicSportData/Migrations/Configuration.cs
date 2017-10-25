@@ -6,8 +6,6 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
 
     internal sealed class Configuration : DbMigrationsConfiguration<PublicSportDataContext>
     {
-        public const string DataProviderCodeStatsProzone = "stats_prozone";
-
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;

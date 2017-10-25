@@ -18,8 +18,8 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby
 
         public RugbyMatchStatisticsModel MatchStatisticsTeamB { get; set; }
 
-        public RugbyMatchStatisticsModel TeamAStats { get; set; }
+        public RugbyMatchStatisticsModel teamAStats { get; set; }
 
-        public RugbyMatchStatisticsModel TeamBStats { get; set; }
+        public RugbyMatchStatisticsModel teamBStats { get; set; }
     }
 }
