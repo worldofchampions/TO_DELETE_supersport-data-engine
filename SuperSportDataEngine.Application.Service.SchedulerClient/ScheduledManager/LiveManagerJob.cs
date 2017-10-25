@@ -39,10 +39,10 @@
             var _schedulerTrackingRugbyFixtureRepository =
                 _childContainer.Resolve<IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture>>();
 
-            var endedGames =
-                    await _childContainer.Resolve<IRugbyService>().GetEndedFixtures();
+            var completedFixtures =
+                    await _childContainer.Resolve<IRugbyService>().GetCompletedFixtures();
 
-            foreach (var fixture in endedGames)
+            foreach (var fixture in completedFixtures)
             {
                 var matchName = fixture.TeamA.Name + " vs " + fixture.TeamB.Name;
                 var jobId = ConfigurationManager.AppSettings["LiveManagerJob_LiveMatch_JobIdPrefix"] + matchName;
@@ -55,7 +55,7 @@
 
                 if (fixtureInDb != null)
                 {
-                    fixtureInDb.SchedulerStateFixtures = SchedulerStateForRugbyFixturePolling.PostLivePolling;
+                    fixtureInDb.SchedulerStateFixtures = SchedulerStateForRugbyFixturePolling.SchedulingCompleted;
                     _schedulerTrackingRugbyFixtureRepository.Update(fixtureInDb);
                 }
             }

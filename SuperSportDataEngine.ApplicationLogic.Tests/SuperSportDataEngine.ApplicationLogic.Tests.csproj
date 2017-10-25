@@ -89,6 +89,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helper_Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RugbyService_Test.cs" />
   </ItemGroup>

@@ -66,17 +66,14 @@
                 .ForMember(dest => dest.Location, exp => exp.MapFrom(src => src.RugbyFixture.RugbyVenue.Name))
 
                 .ForMember(dest => dest.MatchCompleted, exp => exp.MapFrom(
-                    src => src.RugbyFixture.RugbyFixtureStatus == RugbyFixtureStatus.Result ||
-                           src.RugbyFixture.RugbyFixtureStatus == RugbyFixtureStatus.PostMatch ? true : false))
+                    src => src.RugbyFixture.RugbyFixtureStatus == RugbyFixtureStatus.Result ? true : false))
 
                 .ForMember(dest => dest.Status, exp => exp.MapFrom(
-                    src => src.RugbyFixture.RugbyFixtureStatus == RugbyFixtureStatus.Result ||
-                           src.RugbyFixture.RugbyFixtureStatus == RugbyFixtureStatus.PostMatch ? 
+                    src => src.RugbyFixture.RugbyFixtureStatus == RugbyFixtureStatus.FirstHalf ? 
                            LegacyFeedConstants.SecondHalfStatusDescription : LegacyFeedConstants.FirstHalfStatusDescription))
 
                 .ForMember(dest => dest.StatusId, exp => exp.MapFrom(
-                    src => src.RugbyFixture.RugbyFixtureStatus == RugbyFixtureStatus.Result ||
-                           src.RugbyFixture.RugbyFixtureStatus == RugbyFixtureStatus.PostMatch ?
+                    src => src.RugbyFixture.RugbyFixtureStatus == RugbyFixtureStatus.SecondHalf ?
                            LegacyFeedConstants.SecondHalfStatusId : LegacyFeedConstants.FirstHalfStatusId))
 
                 .ForMember(dest => dest.MatchID, exp => exp.MapFrom(src => src.RugbyFixture.LegacyFixtureId))
