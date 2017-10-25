@@ -188,6 +188,10 @@
     <Compile Include="Migrations\201710250717433_Added_CMS_override_for_RugbyTeam_Name.Designer.cs">
       <DependentUpon>201710250717433_Added_CMS_override_for_RugbyTeam_Name.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201710250720000_Added_CMS_override_for_RugbyTournament_Name.cs" />
+    <Compile Include="Migrations\201710250720000_Added_CMS_override_for_RugbyTournament_Name.Designer.cs">
+      <DependentUpon>201710250720000_Added_CMS_override_for_RugbyTournament_Name.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypeProviderMappings.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypes.cs" />
@@ -288,6 +292,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201710250717433_Added_CMS_override_for_RugbyTeam_Name.resx">
       <DependentUpon>201710250717433_Added_CMS_override_for_RugbyTeam_Name.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201710250720000_Added_CMS_override_for_RugbyTournament_Name.resx">
+      <DependentUpon>201710250720000_Added_CMS_override_for_RugbyTournament_Name.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
