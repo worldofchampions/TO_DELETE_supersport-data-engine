@@ -4,8 +4,11 @@
     public enum RugbyFixtureStatus
     {
         PreMatch = 0,
-        InProgress = 1,
-        PostMatch = 2,
-        Result = 3
+        FirstHalf = 1,
+        HalfTime = 2,
+        SecondHalf = 3,
+        FullTime = 4,
+        ExtraTime = 5,
+        Result = 6
     }
 }
