@@ -192,6 +192,10 @@
     <Compile Include="Migrations\201710250720000_Added_CMS_override_for_RugbyTournament_Name.Designer.cs">
       <DependentUpon>201710250720000_Added_CMS_override_for_RugbyTournament_Name.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201710261035297_Added_timestamps_for_created_and_updated_record_states.cs" />
+    <Compile Include="Migrations\201710261035297_Added_timestamps_for_created_and_updated_record_states.Designer.cs">
+      <DependentUpon>201710261035297_Added_timestamps_for_created_and_updated_record_states.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypeProviderMappings.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypes.cs" />
@@ -295,6 +299,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201710250720000_Added_CMS_override_for_RugbyTournament_Name.resx">
       <DependentUpon>201710250720000_Added_CMS_override_for_RugbyTournament_Name.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201710261035297_Added_timestamps_for_created_and_updated_record_states.resx">
+      <DependentUpon>201710261035297_Added_timestamps_for_created_and_updated_record_states.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
