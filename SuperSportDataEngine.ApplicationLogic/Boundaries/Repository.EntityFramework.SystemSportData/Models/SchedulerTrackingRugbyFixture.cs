@@ -1,10 +1,11 @@
 ﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models
 {
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Base;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
     using System;
 
-    public class SchedulerTrackingRugbyFixture
+    public class SchedulerTrackingRugbyFixture : BaseModel
     {
         public Guid FixtureId { get; set; }
 
