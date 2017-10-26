@@ -242,6 +242,11 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<IEnumerable<RugbyFixture>> GetTournamentFixtures(string tournamentSlug)
         {
+            if (IsNationalTeamSlug(tournamentSlug))
+            {
+                return await GetNationalTeamFixtures();
+            }
+
             var tournament = await GetTournamentBySlug(tournamentSlug);
 
             var fixtures = Enumerable.Empty<RugbyFixture>();
@@ -275,6 +280,11 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<IEnumerable<RugbyFixture>> GetTournamentResults(string tournamentSlug)
         {
+            if (IsNationalTeamSlug(tournamentSlug))
+            {
+                return await GetNationalTeamResults();
+            }
+
             var tournament = await GetTournamentBySlug(tournamentSlug);
 
             var fixturesInResultsState = Enumerable.Empty<RugbyFixture>();
@@ -286,6 +296,41 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             }
 
             return fixturesInResultsState;
+        }
+
+        private bool IsNationalTeamSlug(string slug)
+        {
+            bool result = slug.Equals("springboks", StringComparison.CurrentCultureIgnoreCase);
+
+            return result;
+        }
+
+        public async Task<IEnumerable<RugbyFixture>> GetNationalTeamResults()
+        {
+            var nationalTeamName = "South Africa";
+
+            var fixtures = (await _rugbyFixturesRepository.AllAsync())
+                    .Where(t => 
+                    (t.TeamA.Name.Equals(nationalTeamName, StringComparison.InvariantCultureIgnoreCase) ||
+                    t.TeamB.Name.Equals(nationalTeamName, StringComparison.InvariantCultureIgnoreCase)) &&
+                    t.RugbyFixtureStatus == RugbyFixtureStatus.Result)
+                    .OrderBy(f => f.StartDateTime);
+
+            return fixtures;
+        }
+
+        private async Task<IEnumerable<RugbyFixture>> GetNationalTeamFixtures()
+        {
+            var nationalTeamName = "South Africa";
+
+            var fixtures = (await _rugbyFixturesRepository.AllAsync())
+                    .Where(t =>
+                    (t.TeamA.Name.Equals(nationalTeamName, StringComparison.InvariantCultureIgnoreCase) ||
+                    t.TeamB.Name.Equals(nationalTeamName, StringComparison.InvariantCultureIgnoreCase)) &&
+                    t.RugbyFixtureStatus != RugbyFixtureStatus.Result)
+                    .OrderBy(f => f.StartDateTime);
+
+            return fixtures;
         }
 
         public async Task<IEnumerable<RugbyGroupedLog>> GetGroupedLogs(string tournamentSlug)
