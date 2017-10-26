@@ -2,7 +2,6 @@
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers;
 using System.Net.Http.Formatting;
 using System.Web.Http;
-using System;
 using Microsoft.Practices.Unity;
 using SuperSportDataEngine.Application.Container;
 
@@ -34,7 +33,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed
 
             UnityConfigurationManager.RegisterTypes(container, Container.Enums.ApplicationScope.WebApiLegacyFeed);
 
-            httpConfig.DependencyResolver = new UnityResolver(container);
+            httpConfig.DependencyResolver = new Unity.WebApi.UnityDependencyResolver(container);
         }
 
         private static void RegisterLegacyExceptionFilter()

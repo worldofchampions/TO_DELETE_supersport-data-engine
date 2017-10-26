@@ -21,6 +21,9 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.App_Start
                 cfg.AddProfile<LegacyMatchDetailsMapperProfile>();
                 cfg.AddProfile<LegacyCommentaryMapperProfile>();
                 cfg.AddProfile<LegacyMatchEventsMapperProfile>();
+                cfg.AddProfile<LegacyCommentaryAsEventMapperProfile>();
+                cfg.AddProfile<LegacyTeamsheetMapperProfile>();
+                cfg.AddProfile<LegacyScorerModelMapperProfile>();
             });
 #if DEBUG
             Mapper.AssertConfigurationIsValid();

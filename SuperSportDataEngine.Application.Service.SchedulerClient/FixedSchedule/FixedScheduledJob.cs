@@ -30,6 +30,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
             UpdateRecurringJobDefinition_AllFixtures();
             UpdateRecurringJobDefinition_ResultsForCurrentDayFixtures();
             UpdateRecurringJobDefinition_ResultsForFixturesInResultsState();
+            UpdateRecurringJobDefinition_LineUpsForPastGames();
             UpdateRecurringJobDefinition_LineUpsForUpcomingGames();
             UpdateRecurringJobDefinition_CleanupSchedulerTrackingTables();
         }
@@ -40,6 +41,19 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
                 ConfigurationManager.AppSettings["FixedScheduledJob_Lineups_Hourly_JobId"],
                 Job.FromExpression(() => (_container.Resolve<IRugbyIngestWorkerService>()).IngestLineupsForUpcomingGames(CancellationToken.None)),
                 ConfigurationManager.AppSettings["FixedScheduledJob_Lineups_Hourly_JobCronExpression"],
+                new RecurringJobOptions()
+                {
+                    TimeZone = TimeZoneInfo.Utc,
+                    QueueName = HangfireQueueConfiguration.HighPriority
+                });
+        }
+
+        private void UpdateRecurringJobDefinition_LineUpsForPastGames()
+        {
+            _recurringJobManager.AddOrUpdate(
+                ConfigurationManager.AppSettings["FixedScheduledJob_Lineups_PastGames_Hourly_JobId"],
+                Job.FromExpression(() => (_container.Resolve<IRugbyIngestWorkerService>()).IngestLineupsForPastGames(CancellationToken.None)),
+                ConfigurationManager.AppSettings["FixedScheduledJob_Lineups_PastGames_Hourly_JobCronExpression"],
                 new RecurringJobOptions()
                 {
                     TimeZone = TimeZoneInfo.Utc,

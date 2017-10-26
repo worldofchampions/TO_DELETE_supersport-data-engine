@@ -58,17 +58,17 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
 
                 // rank here
                 .ForMember(dest => dest.rank, expression => expression.MapFrom(
-                    src => src.RugbyLogGroup.GroupHierarchyLevel == Constants.GroupHiearachyLevelZero ?
+                    src => src.RugbyLogGroup.GroupHierarchyLevel == LegacyFeedConstants.GroupHiearachyLevelZero ?
                     src.LogPosition: 0))
 
                 // Combined rank here
                 .ForMember(dest => dest.CombinedRank, expression => expression.MapFrom(
-                    src => src.RugbyLogGroup.GroupHierarchyLevel == Constants.GroupHiearachyLevelOne ?
+                    src => src.RugbyLogGroup.GroupHierarchyLevel == LegacyFeedConstants.GroupHiearachyLevelOne ?
                     src.LogPosition : 0 ))
 
                  // ConferenceRank rank here
                  .ForMember(dest => dest.ConferenceRank, expression => expression.MapFrom(
-                    src => src.RugbyLogGroup.GroupHierarchyLevel == Constants.GroupHiearachyLevelTwo ?
+                    src => src.RugbyLogGroup.GroupHierarchyLevel == LegacyFeedConstants.GroupHiearachyLevelTwo ?
                     src.LogPosition : 0))
 
                 // Home group here
