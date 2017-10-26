@@ -53,7 +53,27 @@ namespace SuperSportDataEngine.Application.Service.Common.Hangfire.Filters
             {
                 TransitionToDeleted(context, failedState);
             }
+
+            PlaceJobInTheQueueItWasIn(context);
         }
+
+        private void PlaceJobInTheQueueItWasIn(ElectStateContext context)
+        {
+            var enqueuedState = context.CandidateState as EnqueuedState;
+            if (enqueuedState != null)
+            {
+                var qn = context.GetJobParameter<string>("QueueName");
+                if (!String.IsNullOrWhiteSpace(qn))
+                {
+                    enqueuedState.Queue = qn;
+                }
+                else
+                {
+                    context.SetJobParameter("QueueName", enqueuedState.Queue);
+                }
+            }
+        }
+
         /// <summary>
         /// Schedules the job to run again later. See <see cref="SecondsToDelay"/>.
         /// </summary>
