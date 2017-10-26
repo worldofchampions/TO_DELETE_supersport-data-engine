@@ -40,7 +40,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         [ResponseType(typeof(RugbyMatchDetails))]
         public async Task<IHttpActionResult> GetMatchDetails(int id)
         {
-            var matchDetails = await _rugbyService.GetMatchDetails(id);
+            var matchDetails = await _rugbyService.GetMatchDetailsByLegacyMatchId(id);
 
             var response = Mapper.Map<RugbyMatchDetails>(matchDetails);
 
