@@ -8,7 +8,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Entities.Legacy.Mappers
     {
         public LegacyAuthMappingProfile()
         {
-            CreateMap<LegacyZoneSiteEntity, LegacyZoneSite>();
+            CreateMap<LegacyZoneSiteEntity, LegacyZoneSite>()
+                .ForAllOtherMembers(dest => dest.Ignore());
         }
     }
 }
