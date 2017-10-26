@@ -30,6 +30,9 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
                 .ForMember(dest => dest.LeagueName, expression => expression.MapFrom(
                     src => src.RugbyTournament.NameCmsOverride ?? src.RugbyTournament.Name))
 
+                .ForMember(dest => dest.LeagueUrlName, expression => expression.MapFrom(
+                    src => src.RugbyTournament.Slug))
+
                 .ForMember(dest => dest.LeagueId, expression => expression.MapFrom(
                     src => src.RugbyTournament.LegacyTournamentId))
 
