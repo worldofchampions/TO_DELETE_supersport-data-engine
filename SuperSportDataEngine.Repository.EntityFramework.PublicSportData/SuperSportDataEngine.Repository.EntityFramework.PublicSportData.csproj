@@ -29,6 +29,36 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'QA|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\QA</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Staging|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Staging</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Prod|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Prod</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
@@ -48,6 +78,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Context\ModelConfiguration.cs" />
+    <Compile Include="Context\PublicSportDatabaseInitializer.cs" />
     <Compile Include="Context\PublicSportDataContext.cs" />
     <Compile Include="Migrations\201708171158341_Initial_migration.cs" />
     <Compile Include="Migrations\201708171158341_Initial_migration.Designer.cs">
@@ -145,21 +176,21 @@
     <Compile Include="Migrations\201710030512071_Added_RugbyMatchStatistics_table.Designer.cs">
       <DependentUpon>201710030512071_Added_RugbyMatchStatistics_table.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201710041025536_Add_GroupShortName_and_IsConference_Into_RugbyLogGroup.cs" />
-    <Compile Include="Migrations\201710041025536_Add_GroupShortName_and_IsConference_Into_RugbyLogGroup.Designer.cs">
-      <DependentUpon>201710041025536_Add_GroupShortName_and_IsConference_Into_RugbyLogGroup.cs</DependentUpon>
+    <Compile Include="Migrations\201710190823257_Rescaffolded_RugbyLogGroup_and_rugby_events_related_tables.cs" />
+    <Compile Include="Migrations\201710190823257_Rescaffolded_RugbyLogGroup_and_rugby_events_related_tables.Designer.cs">
+      <DependentUpon>201710190823257_Rescaffolded_RugbyLogGroup_and_rugby_events_related_tables.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201710091422082_Added_rugby_events_related_tables.cs" />
-    <Compile Include="Migrations\201710091422082_Added_rugby_events_related_tables.Designer.cs">
-      <DependentUpon>201710091422082_Added_rugby_events_related_tables.cs</DependentUpon>
+    <Compile Include="Migrations\201710250715016_Added_CMS_override_for_RugbyPlayer_DisplayName.cs" />
+    <Compile Include="Migrations\201710250715016_Added_CMS_override_for_RugbyPlayer_DisplayName.Designer.cs">
+      <DependentUpon>201710250715016_Added_CMS_override_for_RugbyPlayer_DisplayName.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201710111141271_update-models.cs" />
-    <Compile Include="Migrations\201710111141271_update-models.Designer.cs">
-      <DependentUpon>201710111141271_update-models.cs</DependentUpon>
+    <Compile Include="Migrations\201710250717433_Added_CMS_override_for_RugbyTeam_Name.cs" />
+    <Compile Include="Migrations\201710250717433_Added_CMS_override_for_RugbyTeam_Name.Designer.cs">
+      <DependentUpon>201710250717433_Added_CMS_override_for_RugbyTeam_Name.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201710120705379_dummy-migration.cs" />
-    <Compile Include="Migrations\201710120705379_dummy-migration.Designer.cs">
-      <DependentUpon>201710120705379_dummy-migration.cs</DependentUpon>
+    <Compile Include="Migrations\201710250720000_Added_CMS_override_for_RugbyTournament_Name.cs" />
+    <Compile Include="Migrations\201710250720000_Added_CMS_override_for_RugbyTournament_Name.Designer.cs">
+      <DependentUpon>201710250720000_Added_CMS_override_for_RugbyTournament_Name.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypeProviderMappings.cs" />
@@ -253,17 +284,17 @@
     <EmbeddedResource Include="Migrations\201710030512071_Added_RugbyMatchStatistics_table.resx">
       <DependentUpon>201710030512071_Added_RugbyMatchStatistics_table.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201710041025536_Add_GroupShortName_and_IsConference_Into_RugbyLogGroup.resx">
-      <DependentUpon>201710041025536_Add_GroupShortName_and_IsConference_Into_RugbyLogGroup.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201710190823257_Rescaffolded_RugbyLogGroup_and_rugby_events_related_tables.resx">
+      <DependentUpon>201710190823257_Rescaffolded_RugbyLogGroup_and_rugby_events_related_tables.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201710091422082_Added_rugby_events_related_tables.resx">
-      <DependentUpon>201710091422082_Added_rugby_events_related_tables.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201710250715016_Added_CMS_override_for_RugbyPlayer_DisplayName.resx">
+      <DependentUpon>201710250715016_Added_CMS_override_for_RugbyPlayer_DisplayName.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201710111141271_update-models.resx">
-      <DependentUpon>201710111141271_update-models.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201710250717433_Added_CMS_override_for_RugbyTeam_Name.resx">
+      <DependentUpon>201710250717433_Added_CMS_override_for_RugbyTeam_Name.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201710120705379_dummy-migration.resx">
-      <DependentUpon>201710120705379_dummy-migration.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201710250720000_Added_CMS_override_for_RugbyTournament_Name.resx">
+      <DependentUpon>201710250720000_Added_CMS_override_for_RugbyTournament_Name.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

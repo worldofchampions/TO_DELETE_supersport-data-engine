@@ -44,6 +44,8 @@
         public const int EventCode_111_Substitution_Concussion = 111;
         public const int EventCode_114_Penalty_Try_7pt = 114;
         public const int EventCode_121_Substitution_Concussion_Returning = 121;
+        public const int EventCode_200_Substitution_In = 200;
+        public const int EventCode_201_Substitution_Out = 201;
 
         public static void Seed(PublicSportDataContext context)
         {
@@ -88,7 +90,9 @@
                 new RugbyEventType { EventCode = EventCode_101_White_Card, EventName = "White Card" },
                 new RugbyEventType { EventCode = EventCode_111_Substitution_Concussion, EventName = "Substitution (Concussion)" },
                 new RugbyEventType { EventCode = EventCode_114_Penalty_Try_7pt, EventName = "Penalty Try (7pt)" },
-                new RugbyEventType { EventCode = EventCode_121_Substitution_Concussion_Returning, EventName = "Substitution (Concussion returning)" }
+                new RugbyEventType { EventCode = EventCode_121_Substitution_Concussion_Returning, EventName = "Substitution (Concussion returning)" },
+                new RugbyEventType { EventCode = EventCode_200_Substitution_In, EventName = "Substitution In" },
+                new RugbyEventType { EventCode = EventCode_201_Substitution_Out, EventName = "Substitution Out" }
             );
 
             context.SaveChanges();

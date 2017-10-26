@@ -22,6 +22,8 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
                 .ForMember(dest => dest.MatchId, exp => exp.MapFrom(
                     src => src.RugbyFixture.LegacyFixtureId))
 
+                .ForMember(dest => dest.EventId, src => src.UseValue(LegacyFeedConstants.CommentaryEventId))
+
                 .ForAllOtherMembers(dest => dest.Ignore());
         }
     }

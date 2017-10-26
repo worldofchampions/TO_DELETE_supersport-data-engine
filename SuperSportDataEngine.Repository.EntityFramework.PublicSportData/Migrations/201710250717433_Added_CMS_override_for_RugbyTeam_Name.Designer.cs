@@ -7,13 +7,13 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class updatemodels : IMigrationMetadata
+    public sealed partial class Added_CMS_override_for_RugbyTeam_Name : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(updatemodels));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(Added_CMS_override_for_RugbyTeam_Name));
         
         string IMigrationMetadata.Id
         {
-            get { return "201710111141271_update-models"; }
+            get { return "201710250717433_Added_CMS_override_for_RugbyTeam_Name"; }
         }
         
         string IMigrationMetadata.Source

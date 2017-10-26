@@ -3,7 +3,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class Added_rugby_events_related_tables : DbMigration
+    public partial class Rescaffolded_RugbyLogGroup_and_rugby_events_related_tables : DbMigration
     {
         public override void Up()
         {
@@ -58,6 +58,8 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                 .Index(t => t.RugbyPlayer2_Id);
             
             AddColumn("dbo.RugbyCommentaries", "RugbyEventType_Id", c => c.Guid());
+            AddColumn("dbo.RugbyLogGroups", "GroupShortName", c => c.String());
+            AddColumn("dbo.RugbyLogGroups", "IsConference", c => c.Boolean(nullable: false));
             CreateIndex("dbo.RugbyCommentaries", "RugbyEventType_Id");
             AddForeignKey("dbo.RugbyCommentaries", "RugbyEventType_Id", "dbo.RugbyEventTypes", "Id");
             DropColumn("dbo.RugbyCommentaries", "ProviderEventTypeId");
@@ -83,6 +85,8 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
             DropIndex("dbo.RugbyEventTypeProviderMappings", new[] { "RugbyEventTypeId" });
             DropIndex("dbo.RugbyEventTypes", "Unique_EventCode");
             DropIndex("dbo.RugbyCommentaries", new[] { "RugbyEventType_Id" });
+            DropColumn("dbo.RugbyLogGroups", "IsConference");
+            DropColumn("dbo.RugbyLogGroups", "GroupShortName");
             DropColumn("dbo.RugbyCommentaries", "RugbyEventType_Id");
             DropTable("dbo.RugbyMatchEvents");
             DropTable("dbo.RugbyEventTypeProviderMappings");

@@ -20,7 +20,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Inte
         Task<int> GetCurrentProviderSeasonIdForTournament(CancellationToken cancellationToken, Guid tournamentId);
         Task<IEnumerable<RugbyFixture>> GetLiveFixturesForCurrentTournament(CancellationToken cancellationToken, Guid tournamentId);
         Task<int> GetLiveFixturesCount(CancellationToken cancellationToken);
-        Task<IEnumerable<RugbyFixture>> GetEndedFixtures();
+        Task<IEnumerable<RugbyFixture>> GetCompletedFixtures();
         Task<bool> HasFixtureEnded(long providerFixtureId);
         Task<IEnumerable<RugbyTournament>> GetActiveTournamentsForMatchesInResultsState();
         Task<RugbyMatchDetailsEntity> GetMatchDetails(int matchId);

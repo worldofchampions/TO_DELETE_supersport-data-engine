@@ -12,6 +12,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
     {
         private readonly UnityContainer _unityContainer;
         private static DashboardOptions _dashboardOptions;
+        
         public HangfireDashboardConfiguration(UnityContainer container)
         {
             _unityContainer = container;
@@ -21,7 +22,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
         {
             if (_dashboardOptions is null)
             {
-
                 var filter = new BasicAuthAuthorizationFilter(new BasicAuthAuthorizationFilterOptions
                 {
                     // Require secure connection for dashboard
@@ -43,7 +43,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
 
         private IEnumerable<BasicAuthAuthorizationUser> GetHangfireDashboardUsers()
         {
-#if DEBUG
+//#if DEBUG
             return new[]
             {
                 new BasicAuthAuthorizationUser
@@ -52,19 +52,19 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
                     PasswordClear = ConfigurationManager.AppSettings["SchedulerDashboardPassword"]
                 }
             };
-#else
-            var schedulerClientService = _unityContainer.Resolve<ISchedulerClientService>();
+//#else
+//            var schedulerClientService = _unityContainer.Resolve<ISchedulerClientService>();
 
-            var usersFromService = schedulerClientService.GetSchedulerDashboardUsers();
+//            var usersFromService = schedulerClientService.GetSchedulerDashboardUsers();
 
-            //TODO: Refactor: Use Collection Mapper?
-            var dashboardUser = new List<BasicAuthAuthorizationUser>();
-            foreach (var user in usersFromService)
-            {
-                dashboardUser.Add(new BasicAuthAuthorizationUser { Login = user.Username, PasswordClear = user.PasswordPlain });
-            }
-            return dashboardUser;
-#endif
+//            //TODO: Refactor: Use Collection Mapper?
+//            var dashboardUser = new List<BasicAuthAuthorizationUser>();
+//            foreach (var user in usersFromService)
+//            {
+//                dashboardUser.Add(new BasicAuthAuthorizationUser { Login = user.Username, PasswordClear = user.PasswordPlain });
+//            }
+//            return dashboardUser;
+//#endif
         }
     }
 }

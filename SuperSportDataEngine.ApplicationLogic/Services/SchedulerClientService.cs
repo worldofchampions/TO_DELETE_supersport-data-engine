@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
 using System.Diagnostics;
+using System.Linq;
 
 namespace SuperSportDataEngine.ApplicationLogic.Services
 {
@@ -20,11 +21,11 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         {
             try
             {
-                return _schedulerClientRepository.All();
+                return _schedulerClientRepository.All().ToList();
             }
             catch (Exception exception)
             {
-                Debug.WriteLine(exception);
+                Console.WriteLine("Cannot get scheduler dashboard users.");
                 throw;
             }
         }

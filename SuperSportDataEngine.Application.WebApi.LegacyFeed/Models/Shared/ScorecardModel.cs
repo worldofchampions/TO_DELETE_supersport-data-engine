@@ -73,8 +73,8 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models
     [Serializable]
     public class Partnership
     {
-        public PlayerModel Batter1 { get; set; }
-        public PlayerModel Batter2 { get; set; }
+        public Player Batter1 { get; set; }
+        public Player Batter2 { get; set; }
         public int Order { get; set; }
         public int Runs { get; set; }
         public int Batter1Runs { get; set; }

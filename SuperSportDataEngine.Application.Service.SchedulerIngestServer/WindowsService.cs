@@ -25,7 +25,6 @@
 
         public void StopService()
         {
-            // TODO: Implement resource disposal/clean-up here.
             _jobServer.Dispose();
         }
     }
