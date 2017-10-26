@@ -159,7 +159,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             var completedSchedules = (await _schedulerTrackingRugbyFixtureRepository.AllAsync()).Where(
                     f => f.SchedulerStateFixtures == SchedulerStateForRugbyFixturePolling.SchedulingCompleted).Select(s => s.FixtureId).ToList();
             var fixturesCompleted = (await _rugbyFixturesRepository.AllAsync()).Where(f => completedSchedules.Contains(f.Id));
-            
+
             return fixturesCompleted;
         }
 
@@ -242,14 +242,18 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<IEnumerable<RugbyFixture>> GetTournamentFixtures(string tournamentSlug)
         {
-            Guid tournamentId = await GetTournamentId(tournamentSlug);
+            var tournament = await GetTournamentBySlug(tournamentSlug);
 
-            var fixtures = (await _rugbyFixturesRepository.AllAsync())
-                            .ToList()
-                            .Where(t => t.RugbyTournament.Id == tournamentId &&
-                            t.RugbyFixtureStatus != RugbyFixtureStatus.Result);
+            var fixtures = Enumerable.Empty<RugbyFixture>();
 
-            fixtures = fixtures.OrderBy(f => f.StartDateTime);
+            if (tournament != null)
+            {
+                fixtures = (await _rugbyFixturesRepository.AllAsync())
+                    .Where(t => t.RugbyTournament.Id == tournament.Id && t.RugbyFixtureStatus != RugbyFixtureStatus.Result)
+                    .OrderBy(f => f.StartDateTime);
+
+                return fixtures;
+            }
 
             return fixtures;
         }
@@ -261,35 +265,60 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 .FirstOrDefault().Id;
         }
 
+        public async Task<RugbyTournament> GetTournamentBySlug(string tournamentSlug)
+        {
+            return (await _rugbyTournamentRepository.AllAsync())
+                .Where(f => f.Slug.Equals(tournamentSlug, StringComparison.InvariantCultureIgnoreCase))
+                .FirstOrDefault();
+        }
+
+
         public async Task<IEnumerable<RugbyFixture>> GetTournamentResults(string tournamentSlug)
         {
-            Guid tournamentId = await GetTournamentId(tournamentSlug);
+            var tournament = await GetTournamentBySlug(tournamentSlug);
 
-            var fixturesInResultsState = await GetTournamentFixtures(tournamentId, RugbyFixtureStatus.Result);
+            var fixturesInResultsState = Enumerable.Empty<RugbyFixture>();
 
-            fixturesInResultsState = fixturesInResultsState.OrderByDescending(f => f.StartDateTime);
+            if (tournament != null)
+            {
+                fixturesInResultsState = (await GetTournamentFixtures(tournament.Id, RugbyFixtureStatus.Result))
+                    .OrderByDescending(f => f.StartDateTime);
+            }
 
             return fixturesInResultsState;
         }
 
         public async Task<IEnumerable<RugbyGroupedLog>> GetGroupedLogs(string tournamentSlug)
         {
-            var tournamentId = await GetTournamentId(tournamentSlug);
+            var tournament = await GetTournamentBySlug(tournamentSlug);
 
-            var logs = (await _rugbyGroupedLogsRepository.AllAsync())
-                .Where(t => t.RugbyTournament.IsEnabled && t.RugbyTournamentId == tournamentId)
-                .ToList();
+            var logs = Enumerable.Empty<RugbyGroupedLog>();
+
+            if (tournament != null)
+            {
+                logs = (await _rugbyGroupedLogsRepository.AllAsync())
+                    .Where(t => t.RugbyTournament.IsEnabled && t.RugbyTournamentId == tournament.Id)
+                    .OrderBy(g => g.RugbyLogGroup.Id)
+                    .ThenBy(t => t.LogPosition);
+
+                return logs;
+            }
 
             return logs;
         }
 
         public async Task<IEnumerable<RugbyFlatLog>> GetFlatLogs(string tournamentSlug)
         {
-            var tournamentId = await GetTournamentId(tournamentSlug);
+            var tournament = await GetTournamentBySlug(tournamentSlug);
 
-            var flatLogs = (await _rugbyFlatLogsRepository.AllAsync())
-                .Where(t => t.RugbyTournament.IsEnabled && t.RugbyTournamentId == tournamentId)
-                .ToList();
+            var flatLogs = Enumerable.Empty<RugbyFlatLog>();
+
+            if (tournament != null)
+            {
+                flatLogs = (await _rugbyFlatLogsRepository.AllAsync())
+                    .Where(t => t.RugbyTournament.IsEnabled && t.RugbyTournamentId == tournament.Id && t.RugbySeason.IsCurrent)
+                    .OrderBy(t => t.LogPosition);
+            }
 
             return flatLogs;
         }
@@ -306,6 +335,11 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         public async Task<RugbyMatchDetailsEntity> GetMatchDetailsByLegacyMatchId(int LegacyMatchId)
         {
             var fixture = await GetRugbyFixtureByLegacyMatchId(LegacyMatchId);
+
+            if (fixture is null)
+            {
+                return null;
+            }
 
             var teamAlineup = await GetTeamLineupForFixture(fixture.Id, fixture.TeamA.Id);
 
@@ -325,9 +359,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             events = events.OrderByDescending(e => e.GameTimeInMinutes).ToList();
 
-            var teamAScorers =  await GetTeamScorersForFixture(fixture.Id, fixture.TeamA.Id);
+            var teamAScorers = await GetTeamScorersForFixture(fixture.Id, fixture.TeamA.Id);
 
-            var teamBScorers =  await GetTeamScorersForFixture(fixture.Id, fixture.TeamB.Id);
+            var teamBScorers = await GetTeamScorersForFixture(fixture.Id, fixture.TeamB.Id);
 
             var matchDetails = new RugbyMatchDetailsEntity
             {
@@ -397,14 +431,14 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         private async Task<List<RugbyMatchEvent>> GetRugbyFixtureEvents(Guid fixtureId)
         {
-            return ( await _rugbyMatchEventsRepository.AllAsync())
+            return (await _rugbyMatchEventsRepository.AllAsync())
                 .Where(s => s.RugbyFixture.Id == fixtureId)
                 .ToList();
         }
 
         private async Task<RugbyMatchStatistics> GetMatchStatsForTeam(Guid fixtureId, Guid TeamId)
         {
-            return ( await _rugbyMatchStatisticsRepository.AllAsync())
+            return (await _rugbyMatchStatisticsRepository.AllAsync())
                     .Where(s => s.RugbyFixture.Id == fixtureId)
                     .ToList()
                     .Where(f => f.RugbyTeamId == TeamId).FirstOrDefault();

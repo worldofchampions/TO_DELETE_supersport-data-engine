@@ -37,7 +37,7 @@
         {
             RemoveDefaultRetryFilterAttribute();
             var retryPeriodInSeconds = Convert.ToInt32(ConfigurationManager.AppSettings["RetryPeriodInSeconds"]);
-            GlobalJobFilters.Filters.Add(new HangFireCustomAutoRetryJobFilterAttribute(retryPeriodInSeconds));
+            GlobalJobFilters.Filters.Add(new CustomRetryFilterAttribute(retryPeriodInSeconds));
         }
 
         private void RemoveDefaultRetryFilterAttribute()

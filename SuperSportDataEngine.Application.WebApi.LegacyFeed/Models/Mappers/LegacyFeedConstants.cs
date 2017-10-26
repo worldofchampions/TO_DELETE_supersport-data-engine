@@ -62,6 +62,8 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
 
         public const int DefaultSortingValue = 0;
 
+        public const string GeneralResponseMessage = "No items available";
+
         public static List<string> EmptyChannelsList
         {
             get

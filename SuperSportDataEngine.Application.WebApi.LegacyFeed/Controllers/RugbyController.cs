@@ -2,6 +2,7 @@
 using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models;
+using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.News;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
@@ -42,7 +43,26 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         {
             var matchDetails = await _rugbyService.GetMatchDetailsByLegacyMatchId(id);
 
+            if (matchDetails is null)
+            {
+                return ReplyWithGeneralResponseModel();
+            }
+
             var response = Mapper.Map<RugbyMatchDetails>(matchDetails);
+
+            return Ok(response);
+        }
+
+        /// <summary>
+        /// Return GeneralResponse model if service return null for match details to mimic legacy feed behaviour.
+        /// </summary>
+        /// <returns></returns>
+        private IHttpActionResult ReplyWithGeneralResponseModel()
+        {
+            var response = new GeneralResponse
+            {
+                Message = LegacyFeedConstants.GeneralResponseMessage
+            };
 
             return Ok(response);
         }
