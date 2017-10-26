@@ -32,8 +32,9 @@
         void Update(T item);
 
         IEnumerable<T> Where(Expression<Func<T, bool>> predicate);
-        IEnumerable<T> WhereIncludeLocal(Expression<Func<T, bool>> predicate);
 
         Task<IEnumerable<T>> WhereAsync(Expression<Func<T, bool>> predicate);
+
+        IEnumerable<T> WhereIncludeLocal(Expression<Func<T, bool>> predicate);
     }
 }
