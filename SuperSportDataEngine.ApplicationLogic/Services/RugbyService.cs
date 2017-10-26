@@ -249,6 +249,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                             .Where(t => t.RugbyTournament.Id == tournamentId &&
                             t.RugbyFixtureStatus != RugbyFixtureStatus.Result);
 
+            fixtures = fixtures.OrderBy(f => f.StartDateTime);
+
             return fixtures;
         }
 
@@ -262,7 +264,10 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         public async Task<IEnumerable<RugbyFixture>> GetTournamentResults(string tournamentSlug)
         {
             Guid tournamentId = await GetTournamentId(tournamentSlug);
+
             var fixturesInResultsState = await GetTournamentFixtures(tournamentId, RugbyFixtureStatus.Result);
+
+            fixturesInResultsState = fixturesInResultsState.OrderByDescending(f => f.StartDateTime);
 
             return fixturesInResultsState;
         }
