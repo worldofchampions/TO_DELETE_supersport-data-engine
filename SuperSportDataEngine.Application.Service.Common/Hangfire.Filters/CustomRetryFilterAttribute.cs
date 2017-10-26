@@ -5,13 +5,13 @@ using System;
 
 namespace SuperSportDataEngine.Application.Service.Common.Hangfire.Filters
 {
-    public class HangFireCustomAutoRetryJobFilterAttribute : JobFilterAttribute, IElectStateFilter
+    public class CustomRetryFilterAttribute : JobFilterAttribute, IElectStateFilter
     {
         private const int DefaultRetryAttempts = 10;
         private int _attempts;
         private static int _defaultRetryPeriod = 5;
 
-        public HangFireCustomAutoRetryJobFilterAttribute(int defaultRetryPeriod = 5)
+        public CustomRetryFilterAttribute(int defaultRetryPeriod = 5)
         {
             Attempts = DefaultRetryAttempts;
             LogEvents = true;
@@ -36,31 +36,7 @@ namespace SuperSportDataEngine.Application.Service.Common.Hangfire.Filters
         public bool LogEvents { get; set; }
         public void OnStateElection(ElectStateContext context)
         {
-            var failedState = context.CandidateState as FailedState;
-            if (failedState == null)
-            {
-                return;
-            }
-
-            var retryAttempt = context.GetJobParameter<int>("RetryCount") + 1;
-
-
-            if (retryAttempt <= Attempts)
-            {
-                ScheduleAgainLater(context, retryAttempt, failedState);
-            }
-            else if (retryAttempt > Attempts && OnAttemptsExceeded == AttemptsExceededAction.Delete)
-            {
-                TransitionToDeleted(context, failedState);
-            }
-
-            PlaceJobInTheQueueItWasIn(context);
-        }
-
-        private void PlaceJobInTheQueueItWasIn(ElectStateContext context)
-        {
-            var enqueuedState = context.CandidateState as EnqueuedState;
-            if (enqueuedState != null)
+            if (context.CandidateState is EnqueuedState enqueuedState)
             {
                 var qn = context.GetJobParameter<string>("QueueName");
                 if (!String.IsNullOrWhiteSpace(qn))
@@ -70,6 +46,20 @@ namespace SuperSportDataEngine.Application.Service.Common.Hangfire.Filters
                 else
                 {
                     context.SetJobParameter("QueueName", enqueuedState.Queue);
+                }
+            }
+
+            if (context.CandidateState is FailedState failedState)
+            {
+                var retryAttempt = context.GetJobParameter<int>("RetryCount") + 1;
+
+                if (retryAttempt <= Attempts)
+                {
+                    ScheduleAgainLater(context, retryAttempt, failedState);
+                }
+                else if (retryAttempt > Attempts && OnAttemptsExceeded == AttemptsExceededAction.Delete)
+                {
+                    TransitionToDeleted(context, failedState);
                 }
             }
         }
