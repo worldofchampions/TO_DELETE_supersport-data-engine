@@ -61,6 +61,11 @@
             AsSet().RemoveRange(items);
         }
 
+        public void Dispose()
+        {
+            _dbContext.Dispose();
+        }
+
         public async Task<T> FindAsync(dynamic id)
         {
             return await AsSet().FindAsync(id);
@@ -112,16 +117,16 @@
             return AsSet().Where(predicate);
         }
 
+        public virtual async Task<IEnumerable<T>> WhereAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await AsSet().Where(predicate).ToListAsync();
+        }
+
         public virtual IEnumerable<T> WhereIncludeLocal(Expression<Func<T, bool>> predicate)
         {
             var dbResult = AsSet().Where(predicate).ToList();
             var offlineResult = AsSet().Local.AsQueryable().Where(predicate).ToList();
             return offlineResult.Union(dbResult);
-        }
-
-        public virtual async Task<IEnumerable<T>> WhereAsync(Expression<Func<T, bool>> predicate)
-        {
-            return await AsSet().Where(predicate).ToListAsync();
         }
 
         protected DbSet<T> AsSet()

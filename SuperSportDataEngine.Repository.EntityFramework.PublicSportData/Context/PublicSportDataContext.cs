@@ -1,7 +1,10 @@
 ﻿namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context
 {
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+    using SuperSportDataEngine.Repository.EntityFramework.Common.Database;
     using System.Data.Entity;
+    using System.Threading;
+    using System.Threading.Tasks;
 
     public class PublicSportDataContext : DbContext
     {
@@ -29,6 +32,24 @@
         {
             base.OnModelCreating(modelBuilder);
             ModelConfiguration.ApplyFluentApiConfigurations(modelBuilder);
+        }
+
+        public override int SaveChanges()
+        {
+            TimestampHelper.ApplyTimestamps(this);
+            return base.SaveChanges();
+        }
+
+        public override Task<int> SaveChangesAsync()
+        {
+            TimestampHelper.ApplyTimestamps(this);
+            return base.SaveChangesAsync();
+        }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken)
+        {
+            TimestampHelper.ApplyTimestamps(this);
+            return base.SaveChangesAsync(cancellationToken);
         }
     }
 }

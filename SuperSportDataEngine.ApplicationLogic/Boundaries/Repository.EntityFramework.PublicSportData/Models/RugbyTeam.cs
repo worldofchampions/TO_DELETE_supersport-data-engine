@@ -1,9 +1,10 @@
 ﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models
 {
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Base;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
     using System;
 
-    public class RugbyTeam
+    public class RugbyTeam : BaseModel
     {
         /// <summary> The primary internal record identifier. </summary>
         public Guid Id { get; set; }

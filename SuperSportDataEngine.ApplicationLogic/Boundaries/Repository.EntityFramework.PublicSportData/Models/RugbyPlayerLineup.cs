@@ -1,8 +1,9 @@
 ﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models
 {
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Base;
     using System;
 
-    public class RugbyPlayerLineup
+    public class RugbyPlayerLineup : BaseModel
     {
         /// <summary> A clustered-key record identifier. </summary>
         public Guid RugbyFixtureId { get; set; }

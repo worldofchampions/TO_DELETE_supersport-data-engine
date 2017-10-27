@@ -17,10 +17,10 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
                     src => src.RugbyTournament.Slug))
 
                 .ForMember(dest => dest.HomeTeamScore, expression => expression.MapFrom(
-                    src => (src.TeamAIsHomeTeam ? src.TeamAScore : src.TeamBScore) ?? 0))
+                    src => (src.TeamAIsHomeTeam ? src.TeamAScore : src.TeamBScore) ?? LegacyFeedConstants.DefaultScoreForStartedGame))
 
                 .ForMember(dest => dest.AwayTeamScore, expression => expression.MapFrom(
-                   (src => (src.TeamAIsHomeTeam ? src.TeamBScore : src.TeamAScore) ?? 0)))
+                   src => (src.TeamAIsHomeTeam ? src.TeamBScore : src.TeamAScore) ?? LegacyFeedConstants.DefaultScoreForStartedGame))
 
                 .ForMember(dest => dest.AwayTeamShortName, expression => expression.MapFrom(
                     src => src.TeamAIsHomeTeam ? src.TeamB.Name : src.TeamA.Name))
@@ -33,7 +33,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
 
                 .ForMember(dest => dest.Result, expression => expression.UseValue(true))
 
-                .ForMember(dest => dest.Sorting, expression => expression.UseValue(0))
+                .ForMember(dest => dest.Sorting, expression => expression.UseValue(LegacyFeedConstants.DefaultSortingValue))
 
                 .ForMember(dest => dest.Channels, src => src.Ignore())
 

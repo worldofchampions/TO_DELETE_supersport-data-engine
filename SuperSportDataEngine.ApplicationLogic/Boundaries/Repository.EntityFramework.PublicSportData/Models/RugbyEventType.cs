@@ -1,8 +1,9 @@
 ﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models
 {
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Base;
     using System;
 
-    public class RugbyEventType
+    public class RugbyEventType : BaseModel
     {
         /// <summary> The primary internal record identifier. </summary>
         public Guid Id { get; set; }
