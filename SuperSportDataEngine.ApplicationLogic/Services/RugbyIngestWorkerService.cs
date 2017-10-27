@@ -263,8 +263,10 @@
 
             var isSeasonCurrentlyActive = season.RugbySeasons.season.First().currentSeason;
 
+            var seasonsInDb = _rugbySeasonRepository.All().ToList();
+
             var seasonEntry =
-                    _rugbySeasonRepository
+                    seasonsInDb
                     .Where(s => s.RugbyTournament.ProviderTournamentId == providerTournamentId && s.ProviderSeasonId == providerSeasonId)
                     .FirstOrDefault();
 
@@ -283,6 +285,7 @@
             if (seasonEntry == null)
             {
                 _rugbySeasonRepository.Add(newEntry);
+                seasonsInDb.Add(seasonEntry);
             }
             else
             {
