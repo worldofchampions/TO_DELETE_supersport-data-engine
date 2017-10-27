@@ -5,7 +5,7 @@
     using System.Linq.Expressions;
     using System.Threading.Tasks;
 
-    public interface IBaseEntityFrameworkRepository<T> where T : class
+    public interface IBaseEntityFrameworkRepository<T> : IDisposable where T : class
     {
         T Add(T item);
 
@@ -32,8 +32,9 @@
         void Update(T item);
 
         IEnumerable<T> Where(Expression<Func<T, bool>> predicate);
-        IEnumerable<T> WhereIncludeLocal(Expression<Func<T, bool>> predicate);
 
         Task<IEnumerable<T>> WhereAsync(Expression<Func<T, bool>> predicate);
+
+        IEnumerable<T> WhereIncludeLocal(Expression<Func<T, bool>> predicate);
     }
 }

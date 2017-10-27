@@ -59,6 +59,11 @@ namespace SuperSportDataEngine.Tests.Common.Repositories.Test
                 _items.Remove(i);
         }
 
+        public void Dispose()
+        {
+            //throw new NotImplementedException();
+        }
+
         public Task<T> FindAsync(dynamic id)
         {
             // TODO
