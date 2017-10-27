@@ -25,13 +25,16 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
                 .ForMember(dest => dest.Player2Id, exp => exp.MapFrom(src => src.RugbyPlayer2.LegacyPlayerId))
 
                 .ForMember(dest => dest.Player2DisplayName, exp => exp.MapFrom(
-                    src => src.RugbyPlayer2.FirstName ?? src.RugbyPlayer2.FullName ?? LegacyFeedConstants.EmptyPlayerName))
+                    src => src.RugbyPlayer2 == null ? LegacyFeedConstants.EmptyPlayerName : 
+                    (src.RugbyPlayer1.DisplayNameCmsOverride ?? LegacyFeedConstants.EmptyPlayerName)))
 
                 .ForMember(dest => dest.Player2Surname, exp => exp.MapFrom(
-                    src => src.RugbyPlayer2.LastName ?? LegacyFeedConstants.EmptyPlayerName))
+                    src => src.RugbyPlayer2 == null ? LegacyFeedConstants.EmptyPlayerName :
+                    (src.RugbyPlayer2.LastName ?? LegacyFeedConstants.EmptyPlayerName)))
 
                 .ForMember(dest => dest.Player2FullName, exp => exp.MapFrom(
-                    src => src.RugbyPlayer2.FullName ?? LegacyFeedConstants.EmptyPlayerName))
+                    src => src.RugbyPlayer2 == null ? LegacyFeedConstants.EmptyPlayerName :
+                    (src.RugbyPlayer2.FullName ?? LegacyFeedConstants.EmptyPlayerName)))
 
                 // Match Related Details
                 .ForMember(dest => dest.MatchId, exp => exp.MapFrom(src => src.RugbyFixture.LegacyFixtureId))
@@ -43,7 +46,8 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
                 .ForMember(dest => dest.TeamId, exp => exp.MapFrom(src => src.RugbyTeam.LegacyTeamId))
 
                 .ForMember(dest => dest.EventName, exp => exp.MapFrom(
-                    src => src.RugbyEventType.EventName ?? LegacyFeedConstants.EmptyEventName))
+                    src => src.RugbyEventType == null ? LegacyFeedConstants.EmptyEventName :
+                    (src.RugbyEventType.EventName ?? LegacyFeedConstants.EmptyEventName)))
                 
                 .ForMember(dest => dest.Comments, exp => exp.UseValue(LegacyFeedConstants.EmptyEventComment))
 

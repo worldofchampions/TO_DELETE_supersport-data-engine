@@ -5,7 +5,7 @@
     using System.Linq.Expressions;
     using System.Threading.Tasks;
 
-    public interface IBaseEntityFrameworkRepository<T> where T : class
+    public interface IBaseEntityFrameworkRepository<T> : IDisposable where T : class
     {
         T Add(T item);
 

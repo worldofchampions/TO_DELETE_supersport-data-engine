@@ -3,6 +3,7 @@
     using Hangfire;
     using Hangfire.Common;
     using Microsoft.Practices.Unity;
+    using SuperSportDataEngine.Application.Container;
     using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
@@ -41,9 +42,8 @@
 
         private void CreateNewContainer()
         {
-            var parent = _childContainer.Parent;
-            _childContainer.Dispose();
-            _childContainer = parent.CreateChildContainer();
+            _childContainer = _childContainer.CreateChildContainer();
+            UnityConfigurationManager.RegisterTypes(_childContainer, Container.Enums.ApplicationScope.ServiceSchedulerClient);
         }
 
         private async Task<int> CreateChildJobsForFetchingOneMonthsFixturesForActiveTournaments()

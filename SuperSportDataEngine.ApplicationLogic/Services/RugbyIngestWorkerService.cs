@@ -436,6 +436,8 @@
                         var gameState = GetFixtureStatusFromProviderFixtureState(fixture.gameStateName);
                         fixtureSchedule.RugbyFixtureStatus = gameState;
                         fixtureSchedule.StartDateTime = fixtureInDb.StartDateTime;
+                        fixtureSchedule.SchedulerStateFixtures = 
+                            FixturesStateHelper.GetSchedulerStateForFixture(DateTime.UtcNow, gameState, fixtureInDb.StartDateTime.DateTime);
 
                         if (HasFixtureEnded(fixture.gameStateName) &&
                            fixtureSchedule.EndedDateTime == DateTimeOffset.MinValue)
