@@ -42,7 +42,8 @@
 
         private void CreateNewContainer()
         {
-            _childContainer = _childContainer.CreateChildContainer();
+            _childContainer.Dispose();
+            _childContainer = new UnityContainer();
             UnityConfigurationManager.RegisterTypes(_childContainer, Container.Enums.ApplicationScope.ServiceSchedulerClient);
         }
 
