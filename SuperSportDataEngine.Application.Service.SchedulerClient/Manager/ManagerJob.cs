@@ -5,6 +5,7 @@
     using System.Timers;
     using SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledManager;
     using Hangfire;
+    using SuperSportDataEngine.Application.Container;
 
     internal class ManagerJob
     {
@@ -25,20 +26,23 @@
         {
             _recurringJobManager = container.Resolve<IRecurringJobManager>();
 
+            var childContainer = container.CreateChildContainer();
+            UnityConfigurationManager.RegisterTypes(childContainer, Container.Enums.ApplicationScope.ServiceSchedulerClient);
+
             _fixturesManagerJob =
                 new FixturesManagerJob(
                     _recurringJobManager,
-                    container.CreateChildContainer());
+                    childContainer);
 
             _liveManagerJob =
                 new LiveManagerJob(
                     _recurringJobManager,
-                    container.CreateChildContainer());
+                    childContainer);
 
             _logsManagerJob =
                 new LogsManagerJob(
                     _recurringJobManager,
-                    container.CreateChildContainer());
+                    childContainer);
         }
 
         private void ConfigureTimer()
