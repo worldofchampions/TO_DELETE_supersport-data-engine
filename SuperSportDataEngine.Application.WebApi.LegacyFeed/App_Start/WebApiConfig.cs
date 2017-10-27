@@ -33,7 +33,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed
 
             UnityConfigurationManager.RegisterTypes(container, Container.Enums.ApplicationScope.WebApiLegacyFeed);
 
-            httpConfig.DependencyResolver = new Unity.WebApi.UnityDependencyResolver(container);
+            httpConfig.DependencyResolver = new UnityDependencyResolver(container);
         }
 
         private static void RegisterLegacyExceptionFilter()

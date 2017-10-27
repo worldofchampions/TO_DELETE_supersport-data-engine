@@ -25,9 +25,9 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
 
                 .ForMember(dest => dest.Preview, src => src.Ignore())
 
-                .ForMember(dest => dest.Sorting, expression => expression.UseValue(0))
+                .ForMember(dest => dest.Sorting, expression => expression.UseValue(LegacyFeedConstants.DefaultSortingValue))
 
-                .ForMember(dest => dest.Channels, expression => expression.UseValue(new List<string>()))
+                .ForMember(dest => dest.Channels, expression => expression.UseValue(LegacyFeedConstants.EmptyChannelsList))
 
                 .ForMember(dest => dest.Status, src => src.Ignore())
 
