@@ -120,7 +120,6 @@
                     LastName = null,
                     FullName = player.name,
                     ProviderPlayerId = player.id,
-                    LegacyPlayerId = player.id,
                     DataProvider = DataProvider.StatsProzone
                 };
 
