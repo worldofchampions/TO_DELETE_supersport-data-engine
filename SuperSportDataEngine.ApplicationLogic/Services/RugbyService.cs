@@ -402,7 +402,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             events.AddRange(matchCommentaryAsEvents);
 
-            events = events.OrderByDescending(e => e.GameTimeInMinutes).ToList();
+            events = events.OrderByDescending(e => e.GameTimeInSeconds).ThenByDescending(e => e.TimestampCreated).ToList();
 
             var teamAScorers = await GetTeamScorersForFixture(fixture.Id, fixture.TeamA.Id);
 
