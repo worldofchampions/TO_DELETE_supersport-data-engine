@@ -245,49 +245,58 @@
             var activeTournaments = (await _rugbyTournamentRepository.AllAsync()).Where(t => t.IsEnabled);
             foreach (var tournament in activeTournaments)
             {
-                var season = _statsProzoneIngestService.IngestSeasonData(cancellationToken, tournament.ProviderTournamentId, DateTime.Now.Year);
-
-                var providerTournamentId = season.RugbySeasons.competitionId;
-
-                if (season.RugbySeasons.season.Count == 0)
-                    return;
-
-                var providerSeasonId = season.RugbySeasons.season.First().id;
-
-                var isSeasonCurrentlyActive = season.RugbySeasons.season.First().currentSeason;
-
-                var seasonEntry =
-                        _rugbySeasonRepository
-                        .Where(s => s.RugbyTournament.ProviderTournamentId == providerTournamentId && s.ProviderSeasonId == providerSeasonId)
-                        .FirstOrDefault();
-
-                var tournamentInDb = _rugbyTournamentRepository.Where(t => t.ProviderTournamentId == providerTournamentId).FirstOrDefault();
-
-                var newEntry = new RugbySeason()
-                {
-                    ProviderSeasonId = providerSeasonId,
-                    RugbyTournament = tournamentInDb,
-                    IsCurrent = isSeasonCurrentlyActive,
-                    Name = season.RugbySeasons.season.First().name,
-                    DataProvider = DataProvider.StatsProzone
-                };
-
-                // Not in repo?
-                if (seasonEntry == null)
-                {
-                    _rugbySeasonRepository.Add(newEntry);
-                }
-                else
-                {
-                    seasonEntry.StartDateTime = newEntry.StartDateTime;
-                    seasonEntry.Name = newEntry.Name;
-                    seasonEntry.IsCurrent = newEntry.IsCurrent;
-
-                    _rugbySeasonRepository.Update(seasonEntry);
-                }
-
-                await _rugbySeasonRepository.SaveAsync();
+                await IngestSeason(cancellationToken, tournament, DateTime.Now.Year);
+                await IngestSeason(cancellationToken, tournament, DateTime.Now.Year + 1);
             }
+        }
+
+        private async Task IngestSeason(CancellationToken cancellationToken, RugbyTournament tournament, int year)
+        {
+            var season = _statsProzoneIngestService.IngestSeasonData(cancellationToken, tournament.ProviderTournamentId, year);
+
+            var providerTournamentId = season.RugbySeasons.competitionId;
+
+            if (season.RugbySeasons.season.Count == 0)
+                return;
+
+            var providerSeasonId = season.RugbySeasons.season.First().id;
+
+            var isSeasonCurrentlyActive = season.RugbySeasons.season.First().currentSeason;
+
+            var seasonsInDb = _rugbySeasonRepository.All().ToList();
+
+            var seasonEntry =
+                    seasonsInDb
+                    .Where(s => s.RugbyTournament.ProviderTournamentId == providerTournamentId && s.ProviderSeasonId == providerSeasonId)
+                    .FirstOrDefault();
+
+            var tournamentInDb = _rugbyTournamentRepository.Where(t => t.ProviderTournamentId == providerTournamentId).FirstOrDefault();
+
+            var newEntry = new RugbySeason()
+            {
+                ProviderSeasonId = providerSeasonId,
+                RugbyTournament = tournamentInDb,
+                IsCurrent = isSeasonCurrentlyActive,
+                Name = season.RugbySeasons.season.First().name,
+                DataProvider = DataProvider.StatsProzone
+            };
+
+            // Not in repo?
+            if (seasonEntry == null)
+            {
+                _rugbySeasonRepository.Add(newEntry);
+                seasonsInDb.Add(seasonEntry);
+            }
+            else
+            {
+                seasonEntry.StartDateTime = newEntry.StartDateTime;
+                seasonEntry.Name = newEntry.Name;
+                seasonEntry.IsCurrent = newEntry.IsCurrent;
+
+                _rugbySeasonRepository.Update(seasonEntry);
+            }
+
+            await _rugbySeasonRepository.SaveAsync();
         }
 
         public async Task IngestFixturesForActiveTournaments(CancellationToken cancellationToken)
@@ -1008,7 +1017,7 @@
 
                 //// Check if should stop looping?
                 var matchState = GetFixtureStatusFromProviderFixtureState(matchStatsResponse.RugbyMatchStats.gameState);
-                var schedulerState = FixturesStateHelper.GetSchedulerStateForFixture(DateTime.Now, matchState, fixtureInDb.StartDateTime.DateTime);
+                var schedulerState = FixturesStateHelper.GetSchedulerStateForFixture(DateTime.UtcNow, matchState, fixtureInDb.StartDateTime.DateTime);
 
                 if (schedulerState == SchedulerStateForRugbyFixturePolling.SchedulingCompleted ||
                     schedulerState == SchedulerStateForRugbyFixturePolling.SchedulingNotYetStarted ||
@@ -1033,7 +1042,7 @@
                 var fixtureState = GetFixtureStatusFromProviderFixtureState(fixtureGameState);
                 schedule.RugbyFixtureStatus = fixtureState;
                 schedule.SchedulerStateFixtures = 
-                    FixturesStateHelper.GetSchedulerStateForFixture(DateTime.Now, fixtureState, schedule.StartDateTime.DateTime);
+                    FixturesStateHelper.GetSchedulerStateForFixture(DateTime.UtcNow, fixtureState, schedule.StartDateTime.DateTime);
                 _schedulerTrackingRugbyFixtureRepository.Update(schedule);
             }
 
