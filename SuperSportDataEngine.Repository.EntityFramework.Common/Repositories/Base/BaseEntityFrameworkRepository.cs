@@ -61,6 +61,11 @@
             AsSet().RemoveRange(items);
         }
 
+        public void Dispose()
+        {
+            _dbContext.Dispose();
+        }
+
         public async Task<T> FindAsync(dynamic id)
         {
             return await AsSet().FindAsync(id);

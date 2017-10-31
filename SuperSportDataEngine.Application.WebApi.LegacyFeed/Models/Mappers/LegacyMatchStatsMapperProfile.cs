@@ -16,6 +16,9 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
                 .ForMember(src => src.YellowCards, exp => exp.MapFrom(
                    dest => dest.YellowCards))
 
+                .ForMember(src => src.RedCards, exp => exp.MapFrom(
+                   dest => dest.RedCards))
+
                .ForMember(src => src.Tries, exp => exp.MapFrom(
                    dest => dest.Tries))
 
