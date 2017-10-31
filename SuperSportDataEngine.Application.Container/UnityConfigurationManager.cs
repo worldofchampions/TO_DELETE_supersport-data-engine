@@ -23,6 +23,8 @@
     using System.Configuration;
     using System.Data.Entity;
     using System.Web.Configuration;
+    using SuperSportDataEngine.Common.Logging;
+    using SuperSportDataEngine.Logging.NLog.Logging;
 
     public static class UnityConfigurationManager
     {
@@ -31,12 +33,18 @@
 
         public static void RegisterTypes(IUnityContainer container, ApplicationScope applicationScope)
         {
+            ApplyregistrationsForLogging(container);
             ApplyRegistrationsForApplicationLogic(container, applicationScope);
             ApplyRegistrationsForGatewayHttpCommon(container, applicationScope);
             ApplyRegistrationsForGatewayHttpStatsProzone(container, applicationScope);
             ApplyRegistrationsForRepositoryEntityFrameworkPublicSportData(container);
             ApplyRegistrationsForRepositoryEntityFrameworkSystemSportData(container);
             ApplyRegistrationsForRepositoryMongoDbPayloadData(container, applicationScope);
+        }
+
+        private static void ApplyregistrationsForLogging(IUnityContainer container)
+        {
+            container.RegisterType<ILoggingService>(new InjectionFactory(l => LoggingService.GetLoggingService()));
         }
 
         private static void ApplyRegistrationsForApplicationLogic(IUnityContainer container, ApplicationScope applicationScope)

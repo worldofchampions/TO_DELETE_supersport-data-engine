@@ -6,10 +6,12 @@
     using SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledManager;
     using Hangfire;
     using SuperSportDataEngine.Application.Container;
+    using SuperSportDataEngine.Common.Logging;
 
     internal class ManagerJob
     {
         private Timer _timer;
+        private ILoggingService _logger;
         private IRecurringJobManager _recurringJobManager;
 
         private FixturesManagerJob _fixturesManagerJob;
@@ -24,6 +26,8 @@
 
         private void ConfigureDepenencies(UnityContainer container)
         {
+            _logger = container.Resolve<ILoggingService>();
+
             _recurringJobManager = container.Resolve<IRecurringJobManager>();
 
             var childContainer = container.CreateChildContainer();
@@ -59,6 +63,8 @@
 
         private async void UpdateManagerJobs(object sender, ElapsedEventArgs e)
         {
+            _logger.Info("Do work for ManagerJob's.");
+
             await _liveManagerJob.DoWorkAsync();
             await _fixturesManagerJob.DoWorkAsync();
             await _logsManagerJob.DoWorkAsync();

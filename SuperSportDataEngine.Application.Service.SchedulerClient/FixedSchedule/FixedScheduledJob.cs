@@ -8,6 +8,7 @@ using System;
 using Hangfire.Common;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
 using SuperSportDataEngine.Application.Container;
+using SuperSportDataEngine.Common.Logging;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
 {
@@ -15,17 +16,21 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
     {
         private readonly IRecurringJobManager _recurringJobManager;
         private readonly IUnityContainer _container;
+        private readonly ILoggingService _logger;
 
         public FixedScheduledJob(IUnityContainer container)
         {
             _container = container.CreateChildContainer();
             UnityConfigurationManager.RegisterTypes(_container, Container.Enums.ApplicationScope.ServiceSchedulerClient);
 
+            _logger = _container.Resolve<ILoggingService>();
             _recurringJobManager = _container.Resolve<IRecurringJobManager>();
         }
 
         public void UpdateRecurringJobDefinitions()
         {
+            _logger.Debug("Updating fixed recurring job definitions.");
+
             UpdateRecurringJobDefinition_ReferenceData();
             UpdateRecurringJobDefinition_Fixtures();
             UpdateRecurringJobDefinition_LogsForActiveTournaments();
