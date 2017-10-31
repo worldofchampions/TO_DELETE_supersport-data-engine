@@ -36,17 +36,20 @@
             _fixturesManagerJob =
                 new FixturesManagerJob(
                     _recurringJobManager,
-                    childContainer);
+                    childContainer,
+                    _logger);
 
             _liveManagerJob =
                 new LiveManagerJob(
                     _recurringJobManager,
-                    childContainer);
+                    childContainer,
+                    _logger);
 
             _logsManagerJob =
                 new LogsManagerJob(
                     _recurringJobManager,
-                    childContainer);
+                    childContainer,
+                    _logger);
         }
 
         private void ConfigureTimer()
@@ -63,7 +66,7 @@
 
         private async void UpdateManagerJobs(object sender, ElapsedEventArgs e)
         {
-            _logger.Info("Do work for ManagerJob's.");
+            _logger.Debug("Do work for ManagerJob's.");
 
             await _liveManagerJob.DoWorkAsync();
             await _fixturesManagerJob.DoWorkAsync();

@@ -145,6 +145,10 @@
       <Project>{F420939C-B6A6-4C3A-975E-E30E654C4A90}</Project>
       <Name>SuperSportDataEngine.ApplicationLogic</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SuperSportDataEngine.Common\SuperSportDataEngine.Common.csproj">
+      <Project>{BBE845AF-8B84-4B61-ABD7-724ACA22AB69}</Project>
+      <Name>SuperSportDataEngine.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SuperSportDataEngine.Tests.Common\SuperSportDataEngine.Tests.Common.csproj">
       <Project>{65e69b64-f50a-477a-a355-f2b681ed6314}</Project>
       <Name>SuperSportDataEngine.Tests.Common</Name>

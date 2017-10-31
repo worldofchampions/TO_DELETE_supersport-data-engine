@@ -33,7 +33,7 @@
 
         public static void RegisterTypes(IUnityContainer container, ApplicationScope applicationScope)
         {
-            ApplyregistrationsForLogging(container);
+            ApplyRegistrationsForLogging(container);
             ApplyRegistrationsForApplicationLogic(container, applicationScope);
             ApplyRegistrationsForGatewayHttpCommon(container, applicationScope);
             ApplyRegistrationsForGatewayHttpStatsProzone(container, applicationScope);
@@ -42,7 +42,7 @@
             ApplyRegistrationsForRepositoryMongoDbPayloadData(container, applicationScope);
         }
 
-        private static void ApplyregistrationsForLogging(IUnityContainer container)
+        private static void ApplyRegistrationsForLogging(IUnityContainer container)
         {
             container.RegisterType<ILoggingService>(new InjectionFactory(l => LoggingService.GetLoggingService()));
         }
@@ -65,17 +65,12 @@
                 applicationScope == ApplicationScope.WebApiPublicApi)
             {
                 container.RegisterInstance<ICache>(new Cache(ConnectionMultiplexer.Connect(WebConfigurationManager.ConnectionStrings["Redis"].ConnectionString)));
+                var cache = container.Resolve<ICache>();
             }
         }
 
         private static void ApplyRegistrationsForGatewayHttpStatsProzone(IUnityContainer container, ApplicationScope applicationScope)
         {
-            // TODO: [Davide] Conceptually this scope should be restricted to execution on ServiceSchedulerIngestServer only. Finalize this condition after determining what the Hangfire dependencies are for job definition creation etc.
-            //if (applicationScope == ApplicationScope.ServiceSchedulerIngestServer)
-            //{
-            //    container.RegisterType<IStatsProzoneRugbyIngestService, StatsProzoneRugbyIngestService>();
-            //}
-
             if (applicationScope == ApplicationScope.ServiceSchedulerClient ||
                 applicationScope == ApplicationScope.ServiceSchedulerIngestServer)
             {
@@ -205,8 +200,11 @@
                         ConfigurationManager.ConnectionStrings["MongoDB"].ConnectionString)));
 
                 container.RegisterType<IMongoDbRugbyRepository, MongoDbRugbyRepository>();
+
                 container.RegisterType<IRugbyIngestWorkerService, RugbyIngestWorkerService>(new HierarchicalLifetimeManager());
+
                 container.RegisterType<ITemporaryExampleMongoDbRepository, TemporaryExampleMongoDbRepository>();
+
                 container.RegisterType<ISchedulerClientService, SchedulerClientService>();
             }
         }

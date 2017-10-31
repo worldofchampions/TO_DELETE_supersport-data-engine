@@ -9,6 +9,7 @@
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
     using SuperSportDataEngine.ApplicationLogic.Services;
+    using SuperSportDataEngine.Common.Logging;
     using System;
     using System.Configuration;
     using System.Linq;
@@ -19,13 +20,16 @@
     {
         private readonly IRecurringJobManager _recurringJobManager;
         private readonly IUnityContainer _childContainer;
+        private readonly ILoggingService _logger;
 
         public LiveManagerJob(
             IRecurringJobManager recurringJobManager,
-            IUnityContainer childContainer)
+            IUnityContainer childContainer,
+            ILoggingService logger)
         {
             _childContainer = childContainer;
             _recurringJobManager = recurringJobManager;
+            _logger = logger;
         }
 
         public async Task DoWorkAsync()
@@ -53,8 +57,10 @@
                         (await _schedulerTrackingRugbyFixtureRepository.AllAsync()).Where(
                             f => f.FixtureId == fixture.Id).FirstOrDefault();
 
-                if (fixtureInDb != null)
+                if (fixtureInDb != null && 
+                    fixtureInDb.SchedulerStateFixtures != SchedulerStateForRugbyFixturePolling.SchedulingCompleted)
                 {
+                    _logger.Info("Setting SchedulerStateFixtures for " + matchName + " to SchedulingCompleted.");
                     fixtureInDb.SchedulerStateFixtures = SchedulerStateForRugbyFixturePolling.SchedulingCompleted;
                     _schedulerTrackingRugbyFixtureRepository.Update(fixtureInDb);
                 }
@@ -75,6 +81,8 @@
             {
                 var liveFixtures =
                     await _childContainer.Resolve<IRugbyService>().GetLiveFixturesForCurrentTournament(CancellationToken.None, tournament.Id);
+
+                _logger.Info("There are " + liveFixtures.Count() + " live fixtures for tournament " + tournament.Name);
 
                 foreach (var fixture in liveFixtures)
                 {
@@ -98,6 +106,7 @@
                     if (fixtureInDb != null && 
                         fixtureInDb.SchedulerStateFixtures != SchedulerStateForRugbyFixturePolling.LivePolling)
                     {
+                        _logger.Info("Setting SchedulerStateFixtures for " + matchName + " to LivePolling.");
                         _recurringJobManager.Trigger(jobId);
                         fixtureInDb.SchedulerStateFixtures = SchedulerStateForRugbyFixturePolling.LivePolling;
                         _schedulerTrackingRugbyFixtureRepository.Update(fixtureInDb);

@@ -29,8 +29,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
 
         public void UpdateRecurringJobDefinitions()
         {
-            _logger.Debug("Updating fixed recurring job definitions.");
-
             UpdateRecurringJobDefinition_ReferenceData();
             UpdateRecurringJobDefinition_Fixtures();
             UpdateRecurringJobDefinition_LogsForActiveTournaments();
