@@ -180,6 +180,8 @@
     <Compile Include="App_Start\AutoMapperConfig.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\UnityDependencyResolver.cs" />
+    <Compile Include="App_Start\UnityDependencyScope.cs" />
     <Compile Include="Filters\LegacyExceptionFilterAttribute.cs" />
     <Compile Include="Models\Mappers\LegacyFeedConstants.cs" />
     <Compile Include="Models\Mappers\LegacyCommentaryAsEventMapperProfile.cs" />
@@ -230,6 +232,7 @@
     <Compile Include="Models\Mappers\LegacyResultMapperProfile.cs" />
     <Compile Include="Models\Mappers\LegacyScorerModelMapperProfile.cs" />
     <Compile Include="Models\Mappers\LegacyTeamsheetMapperProfile.cs" />
+    <Compile Include="Models\Rugby\GeneralResponse.cs" />
     <Compile Include="Models\Shared\AlternateCommentsModel.cs" />
     <Compile Include="Models\Shared\AuthModel.cs" />
     <Compile Include="Models\Shared\CardsModel.cs" />
