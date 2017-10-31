@@ -14,7 +14,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters
         {
             context.Response = new HttpResponseMessage(HttpStatusCode.OK)
             {
-                Content = new StringContent("error")
+                Content = new StringContent(context.Exception.StackTrace)
             };
         }
     }

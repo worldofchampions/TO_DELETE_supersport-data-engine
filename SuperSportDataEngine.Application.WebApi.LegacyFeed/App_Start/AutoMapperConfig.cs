@@ -8,7 +8,6 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.App_Start
     {
         public static void InitializeMappings()
         {
-
             Mapper.Initialize(cfg =>
             {
                 cfg.AddProfile<LegacyLogMapperProfile>();
