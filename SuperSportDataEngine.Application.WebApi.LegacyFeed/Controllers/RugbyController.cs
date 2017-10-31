@@ -24,15 +24,11 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
     {
         private readonly IRugbyService _rugbyService;
         private readonly ICache _cache;
-        private ILoggingService _logger;
 
         public RugbyController(IRugbyService rugbyService,
-            ICache cache,
-            ILoggingService logger)
+            ICache cache)
         {
             _cache = cache;
-            _logger = logger;
-            _logger.Info(_cache == null ? "NULL" : "Not NULL");
             _rugbyService = rugbyService;
         }
 
@@ -139,12 +135,9 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         [ResponseType(typeof(List<Result>))]
         public async Task<IHttpActionResult> GetResults(string category)
         {
-            _logger.Info("Querying results.");
-            _logger.Info("Category = " + category);
             var cacheKey = $"rugby/{category}/results";
-            _logger.Info("cache key = " + cacheKey);
             var results = await _cache.GetAsync<IEnumerable<Result>>(cacheKey);
-            _logger.Info("results = " + results);
+            //_logger.Info("results = " + results);
             if (results == null)
             {
                 results = (await _rugbyService.GetTournamentResults(category)).Select(res => Mapper.Map<Result>(res));

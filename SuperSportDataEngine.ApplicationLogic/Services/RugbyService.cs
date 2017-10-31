@@ -28,10 +28,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> _schedulerTrackingRugbySeasonRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyFixture> _rugbyFixturesRepository;
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> _schedulerTrackingRugbyFixtureRepository;
-        private readonly ILoggingService _logger;
 
         public RugbyService(
-            ILoggingService logger,
             IBaseEntityFrameworkRepository<RugbyMatchEvent> rugbyMatchEventsRepository,
             IBaseEntityFrameworkRepository<RugbyMatchStatistics> rugbyMatchStatisticsRepository,
             IBaseEntityFrameworkRepository<RugbyPlayerLineup> rugbyPlayerLineupsRepository,
@@ -45,7 +43,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> schedulerTrackingRugbyTournamentRepository,
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> schedulerTrackingRugbyFixtureRepository)
         {
-            _logger = logger;
             _rugbyMatchEventsRepository = rugbyMatchEventsRepository;
             _rugbyMatchStatisticsRepository = rugbyMatchStatisticsRepository;
             _rugbyPlayerLineupsRepository = rugbyPlayerLineupsRepository;
@@ -268,15 +265,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         }
 
         public async Task<Guid> GetTournamentId(string tournamentSlug)
-        {
-            _logger.Info("Tournament Slug = " + tournamentSlug);
-            _logger.Info("Tournament count = " + await _rugbyTournamentRepository.CountAsync());
-
-            var test = (await _rugbyTournamentRepository.AllAsync())
-                .Where(f => f.Slug == tournamentSlug)
-                .FirstOrDefault();
-
-            _logger.Info(test == null ? "No Tournament with that slug found " + tournamentSlug : "tournament slug found " + tournamentSlug);
+        {            
             return (await _rugbyTournamentRepository.AllAsync())
                 .Where(f => f.Slug == tournamentSlug)
                 .FirstOrDefault().Id;

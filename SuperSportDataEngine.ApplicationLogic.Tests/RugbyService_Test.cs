@@ -78,7 +78,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
                     new Mock<ILoggingService>();
 
             RugbyService = new RugbyService(
-                MockLogger.Object,
                 MockMatchEventsRepository.Object,
                 MockMatchStatisticsRepository.Object,
                 MockLineupRepository.Object,
