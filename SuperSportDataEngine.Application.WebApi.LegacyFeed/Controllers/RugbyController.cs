@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters;
+using SuperSportDataEngine.Application.WebApi.LegacyFeed.Helpers;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.News;
@@ -49,6 +50,8 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             }
 
             var response = Mapper.Map<RugbyMatchDetails>(matchDetails);
+
+            response.Events.AssignOrderingIds();
 
             return Ok(response);
         }
