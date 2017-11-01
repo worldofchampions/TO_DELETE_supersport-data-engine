@@ -21,9 +21,11 @@
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyEventsFlow;
     using SuperSportDataEngine.ApplicationLogic.Constants;
     using SuperSportDataEngine.ApplicationLogic.Helpers;
+    using SuperSportDataEngine.Common.Logging;
 
     public class RugbyIngestWorkerService : IRugbyIngestWorkerService
     {
+        private readonly ILoggingService _logger;
         private readonly IStatsProzoneRugbyIngestService _statsProzoneIngestService;
         private readonly IMongoDbRugbyRepository _mongoDbRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyTournament> _rugbyTournamentRepository;
@@ -46,6 +48,7 @@
         private readonly IRugbyService _rugbyService;
 
         public RugbyIngestWorkerService(
+            ILoggingService logger,
             IStatsProzoneRugbyIngestService statsProzoneIngestService,
             IMongoDbRugbyRepository mongoDbRepository,
             IBaseEntityFrameworkRepository<RugbyTournament> rugbyTournamentRepository,
@@ -67,6 +70,7 @@
             IBaseEntityFrameworkRepository<RugbyEventTypeProviderMapping> rugbyEventTypeMappingRepository,
             IRugbyService rugbyService)
         {
+            _logger = logger;
             _statsProzoneIngestService = statsProzoneIngestService;
             _mongoDbRepository = mongoDbRepository;
             _rugbyTournamentRepository = rugbyTournamentRepository;
@@ -109,6 +113,8 @@
         private async Task PersistPlayerDataInRepository(CancellationToken cancellationToken, RugbyEntitiesResponse entitiesResponse)
         {
             var playersAlreadyInDb = await _rugbyPlayerRepository.AllAsync();
+
+            _logger.Debug("Got " + entitiesResponse.Entities.players.Count + " players from the Provider.");
 
             foreach (var player in entitiesResponse.Entities.players)
             {
@@ -176,6 +182,7 @@
 
             var teamsAlreadyInDb = await _rugbyTeamRepository.AllAsync();
 
+            _logger.Debug("Got " + entitiesResponse.Entities.teams.Count + " teams from the Provider.");
             foreach (var team in entitiesResponse.Entities.teams)
             {
                 var teamInDb = teamsAlreadyInDb.Where(t => t.ProviderTeamId == team.id).FirstOrDefault();
@@ -213,6 +220,7 @@
 
             var venuesAlreadyInDb = await _rugbyVenueRepository.AllAsync();
 
+            _logger.Debug("Got " + entitiesResponse.Entities.venues.Count + " venues from the Provider.");
             foreach (var venue in entitiesResponse.Entities.venues)
             {
                 // Lookup in db
@@ -517,6 +525,7 @@
 
                     if (fixtureInDb == null)
                     {
+                        _logger.Debug("Adding new fixture to DB: " + newFixture.TeamA.Name + " vs " + newFixture.TeamB.Name + ". Game date is " + newFixture.StartDateTime.ToLocalTime() + ".");
                         _rugbyFixturesRepository.Add(newFixture);
                     }
                     else
@@ -542,6 +551,7 @@
                         fixtureInDb.TeamBIsHomeTeam = newFixture.TeamBIsHomeTeam;
                         fixtureInDb.RugbyTournament = newFixture.RugbyTournament;
 
+                        _logger.Debug("Updating exising fixture in DB: " + fixtureInDb.TeamA.Name + " vs " + fixtureInDb.TeamB.Name + ". Game date is " + fixtureInDb.StartDateTime.ToLocalTime());
                         _rugbyFixturesRepository.Update(fixtureInDb);
                     }
                 }

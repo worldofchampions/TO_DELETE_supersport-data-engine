@@ -61,6 +61,8 @@
 
             foreach (var tournament in activeTournaments)
             {
+                _logger.Debug("Tournament " + tournament.Name + " is active.");
+
                 {
                     var jobId = ConfigurationManager.AppSettings["ScheduleManagerJob_Fixtures_ActiveTournaments_JobIdPrefix"] + tournament.Name;
                     var jobCronExpression = ConfigurationManager.AppSettings["ScheduleManagerJob_Fixtures_ActiveTournaments_JobCronExpression"];
