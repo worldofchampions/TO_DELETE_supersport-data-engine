@@ -524,7 +524,10 @@
 
                     if (fixtureInDb == null)
                     {
-                        _logger.Debug("Adding new fixture to DB: " + newFixture.TeamA.Name + " vs " + newFixture.TeamB.Name + ". Game date is " + newFixture.StartDateTime.ToLocalTime() + ".");
+                        //_logger.Debug("Adding new fixture to DB: " +
+                        //    (newFixture.TeamA == null ? newFixture.TeamA.Name : "TBD") + " vs " +
+                        //    (newFixture.TeamB == null ? newFixture.TeamB.Name : "TBD") + ". Game date is " + newFixture.StartDateTime.ToLocalTime() + ".");
+
                         _rugbyFixturesRepository.Add(newFixture);
                     }
                     else
@@ -550,7 +553,10 @@
                         fixtureInDb.TeamBIsHomeTeam = newFixture.TeamBIsHomeTeam;
                         fixtureInDb.RugbyTournament = newFixture.RugbyTournament;
 
-                        _logger.Debug("Updating exising fixture in DB: " + fixtureInDb.TeamA.Name + " vs " + fixtureInDb.TeamB.Name + ". Game date is " + fixtureInDb.StartDateTime.ToLocalTime());
+                        //_logger.Debug("Updating existing fixture in DB: " +
+                        //   (newFixture.TeamA == null ? newFixture.TeamA.Name : "TBD") + " vs " +
+                        //   (newFixture.TeamB == null ? newFixture.TeamB.Name : "TBD") + ". Game date is " + newFixture.StartDateTime.ToLocalTime() + ".");
+
                         _rugbyFixturesRepository.Update(fixtureInDb);
                     }
                 }
@@ -1475,6 +1481,9 @@
             var players = (await _rugbyPlayerRepository.AllAsync()).ToList();
             var commentaries = (await _rugbyCommentaryRepository.AllAsync()).ToList();
 
+            var commentariesThatShouldBeRemovedFromDb = 
+                    commentaries.Where(c => c.RugbyFixture.ProviderFixtureId == providerFixtureId).ToList();
+
             foreach(var comment in commentary.commentaryEvent)
             {
                 var commentText = comment.commentary;
@@ -1510,12 +1519,19 @@
                 {
                     _rugbyCommentaryRepository.Add(newCommentary);
                     // Add the commentary to the local list.
-                    commentaries.Add(newCommentary);
                 }
                 else
                 {
-                    // There isnt something which uniquely identifies 
+                    commentariesThatShouldBeRemovedFromDb.Remove(dbCommentary);
                 }
+            }
+
+            _logger.Debug("Going to remove " + commentariesThatShouldBeRemovedFromDb.Count + " commentary items from the DB for fixture " + 
+               providerFixtureId + ". They are not in the provider response.");
+
+            if(commentariesThatShouldBeRemovedFromDb.Count > 0)
+            {
+                _rugbyCommentaryRepository.DeleteRange(commentariesThatShouldBeRemovedFromDb);
             }
 
             await _rugbyCommentaryRepository.SaveAsync();

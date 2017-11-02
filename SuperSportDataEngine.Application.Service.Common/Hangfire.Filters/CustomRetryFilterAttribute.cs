@@ -1,6 +1,7 @@
 ﻿using Hangfire;
 using Hangfire.Common;
 using Hangfire.States;
+using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
 using System;
 
 namespace SuperSportDataEngine.Application.Service.Common.Hangfire.Filters
@@ -45,7 +46,7 @@ namespace SuperSportDataEngine.Application.Service.Common.Hangfire.Filters
                 }
                 else
                 {
-                    context.SetJobParameter("QueueName", enqueuedState.Queue);
+                    context.SetJobParameter("QueueName", HangfireQueueConfiguration.HighPriority);
                 }
             }
 
