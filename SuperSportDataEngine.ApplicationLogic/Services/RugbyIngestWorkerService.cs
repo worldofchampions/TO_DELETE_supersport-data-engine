@@ -524,9 +524,9 @@
 
                     if (fixtureInDb == null)
                     {
-                        _logger.Debug("Adding new fixture to DB: " +
-                            (newFixture.TeamA == null ? newFixture.TeamA.Name : "TBD") + " vs " +
-                            (newFixture.TeamB == null ? newFixture.TeamB.Name : "TBD") + ". Game date is " + newFixture.StartDateTime.ToLocalTime() + ".");
+                        //_logger.Debug("Adding new fixture to DB: " +
+                        //    (newFixture.TeamA == null ? newFixture.TeamA.Name : "TBD") + " vs " +
+                        //    (newFixture.TeamB == null ? newFixture.TeamB.Name : "TBD") + ". Game date is " + newFixture.StartDateTime.ToLocalTime() + ".");
 
                         _rugbyFixturesRepository.Add(newFixture);
                     }
@@ -553,9 +553,9 @@
                         fixtureInDb.TeamBIsHomeTeam = newFixture.TeamBIsHomeTeam;
                         fixtureInDb.RugbyTournament = newFixture.RugbyTournament;
 
-                        _logger.Debug("Updating existing fixture in DB: " +
-                           (newFixture.TeamA == null ? newFixture.TeamA.Name : "TBD") + " vs " +
-                           (newFixture.TeamB == null ? newFixture.TeamB.Name : "TBD") + ". Game date is " + newFixture.StartDateTime.ToLocalTime() + ".");
+                        //_logger.Debug("Updating existing fixture in DB: " +
+                        //   (newFixture.TeamA == null ? newFixture.TeamA.Name : "TBD") + " vs " +
+                        //   (newFixture.TeamB == null ? newFixture.TeamB.Name : "TBD") + ". Game date is " + newFixture.StartDateTime.ToLocalTime() + ".");
 
                         _rugbyFixturesRepository.Update(fixtureInDb);
                     }
