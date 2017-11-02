@@ -7,7 +7,6 @@ using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.News;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-using SuperSportDataEngine.Common.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -99,6 +98,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             if (fixtures == null)
             {
                  fixtures = (await _rugbyService.GetCurrentDayFixturesForActiveTournaments()).Select(res => Mapper.Map<Match>(res));
+
                 _cache.Add(cacheKey, fixtures);
             }
 
@@ -117,11 +117,13 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         public async Task<IHttpActionResult> GetFixtures(string category)
         {
             var cacheKey = $"rugby/{category}/fixtures";
+
             var fixtures = await _cache.GetAsync<IEnumerable<Fixture>>(cacheKey);
 
             if (fixtures == null)
             {
                 fixtures = (await _rugbyService.GetTournamentFixtures(category)).Select(res => Mapper.Map<Fixture>(res));
+
                 _cache.Add(cacheKey, fixtures);
             }
 
@@ -139,16 +141,17 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         public async Task<IHttpActionResult> GetResults(string category)
         {
             var cacheKey = $"rugby/{category}/results";
+
             var results = await _cache.GetAsync<IEnumerable<Result>>(cacheKey);
-            //_logger.Info("results = " + results);
+
             if (results == null)
             {
                 results = (await _rugbyService.GetTournamentResults(category)).Select(res => Mapper.Map<Result>(res));
+
                 _cache.Add(cacheKey, results);
             }
 
             return Ok(results);
-
         }
 
         /// <summary>
