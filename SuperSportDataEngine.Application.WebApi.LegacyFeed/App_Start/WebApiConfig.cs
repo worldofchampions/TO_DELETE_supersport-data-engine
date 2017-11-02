@@ -38,7 +38,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed
 
         private static void RegisterLegacyExceptionFilter()
         {
-            GlobalConfiguration.Configuration.Filters.Add(new Filters.LegacyExceptionFilterAttribute());
+            GlobalConfiguration.Configuration.Filters.Add(new Filters.LegacyExceptionFilter());
         }
 
         private static void ConfigureResponseFormatters()

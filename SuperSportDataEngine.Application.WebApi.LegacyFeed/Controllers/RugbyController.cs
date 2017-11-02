@@ -19,7 +19,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
     /// <summary>
     /// SuperSport Rugby Endpoints
     /// </summary>
-    [LegacyExceptionFilterAttribute]
+    [LegacyExceptionFilter]
     [RoutePrefix("rugby")]
     public class RugbyController : ApiController
     {
