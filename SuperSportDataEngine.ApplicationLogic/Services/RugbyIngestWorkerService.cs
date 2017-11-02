@@ -194,7 +194,6 @@
                         ProviderTeamId = team.id,
                         Name = team.name,
                         LogoUrl = team.TeamLogoURL,
-                        LegacyTeamId = team.id,
                         Abbreviation = team.TeamAbbrev,
                         DataProvider = DataProvider.StatsProzone
                     };
@@ -830,7 +829,6 @@
                     LogoUrl = competition.CompetitionLogoURL,
                     Abbreviation = competition.CompetitionAbbrev,
                     Slug = GetSlug(competition.name),
-                    LegacyTournamentId = competition.id,
                     DataProvider = DataProvider.StatsProzone
                 };
 
