@@ -12,9 +12,11 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters
         /// <param name="context"></param>
         public override void OnException(HttpActionExecutedContext context)
         {
+            string messageReturnedByOldFeed = "error";
+
             context.Response = new HttpResponseMessage(HttpStatusCode.OK)
             {
-                Content = new StringContent(context.Exception.StackTrace)
+                Content = new StringContent(messageReturnedByOldFeed)
             };
         }
     }
