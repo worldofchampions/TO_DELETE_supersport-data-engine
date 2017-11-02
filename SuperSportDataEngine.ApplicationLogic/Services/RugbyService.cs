@@ -139,8 +139,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             var fixtureSchedule = _schedulerTrackingRugbyFixtureRepository.All().ToList()
                     .Where(s => s.FixtureId == fixture.Id).FirstOrDefault();
 
-            return fixtureSchedule.SchedulerStateFixtures == SchedulerStateForRugbyFixturePolling.LivePolling ||
-                   fixtureSchedule.SchedulerStateFixtures == SchedulerStateForRugbyFixturePolling.PreLivePolling;
+            return fixtureSchedule.SchedulerStateFixtures == SchedulerStateForRugbyFixturePolling.LivePolling;
         }
 
         public async Task<int> GetLiveFixturesCount(CancellationToken cancellationToken)
