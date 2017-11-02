@@ -194,7 +194,6 @@
                         ProviderTeamId = team.id,
                         Name = team.name,
                         LogoUrl = team.TeamLogoURL,
-                        LegacyTeamId = team.id,
                         Abbreviation = team.TeamAbbrev,
                         DataProvider = DataProvider.StatsProzone
                     };
@@ -830,7 +829,6 @@
                     LogoUrl = competition.CompetitionLogoURL,
                     Abbreviation = competition.CompetitionAbbrev,
                     Slug = GetSlug(competition.name),
-                    LegacyTournamentId = competition.id,
                     DataProvider = DataProvider.StatsProzone
                 };
 
@@ -1477,6 +1475,9 @@
             var players = (await _rugbyPlayerRepository.AllAsync()).ToList();
             var commentaries = (await _rugbyCommentaryRepository.AllAsync()).ToList();
 
+            var commentariesThatShouldBeRemovedFromDb = 
+                    commentaries.Where(c => c.RugbyFixture.ProviderFixtureId == providerFixtureId).ToList();
+
             foreach(var comment in commentary.commentaryEvent)
             {
                 var commentText = comment.commentary;
@@ -1512,12 +1513,19 @@
                 {
                     _rugbyCommentaryRepository.Add(newCommentary);
                     // Add the commentary to the local list.
-                    commentaries.Add(newCommentary);
                 }
                 else
                 {
-                    // There isnt something which uniquely identifies 
+                    commentariesThatShouldBeRemovedFromDb.Remove(dbCommentary);
                 }
+            }
+
+            _logger.Debug("Going to remove " + commentariesThatShouldBeRemovedFromDb.Count + " commentary items from the DB for fixture " + 
+               providerFixtureId + ". They are not in the provider response.");
+
+            if(commentariesThatShouldBeRemovedFromDb.Count > 0)
+            {
+                _rugbyCommentaryRepository.DeleteRange(commentariesThatShouldBeRemovedFromDb);
             }
 
             await _rugbyCommentaryRepository.SaveAsync();
