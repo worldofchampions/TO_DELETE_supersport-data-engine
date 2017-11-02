@@ -72,17 +72,17 @@
         private bool IsRugbyRequest(HttpRequestMessage message)
         {
             var requestUrl = message.RequestUri.ToString();
+
             var testUrl = requestUrl.Remove(requestUrl.IndexOf('?'));
-            if (testUrl.Contains("/matchdetails") || testUrl.Contains("/rugby/"))
-            {
-                return true;
-            }
 
             var matchFixtures = Regex.Match(testUrl, @"\/rugby\/((?:\w+-)+\w+)\/fixtures");
             var matchLogs = Regex.Match(testUrl, @"\/rugby\/((?:\w+-)+\w+)\/logs");
             var matchResults = Regex.Match(testUrl, @"\/rugby\/((?:\w+-)+\w+)\/results");
+            var matchDetails = Regex.Match(testUrl, @"\/rugby\/matchdetails\/");
 
-            return matchFixtures.Success | matchLogs.Success | matchResults.Success;
+            bool isNewFeedRequest = matchFixtures.Success | matchLogs.Success | matchResults.Success | matchDetails.Success;
+
+            return isNewFeedRequest;
         }
 
         private bool IsAuthRequest(HttpRequestMessage message)
