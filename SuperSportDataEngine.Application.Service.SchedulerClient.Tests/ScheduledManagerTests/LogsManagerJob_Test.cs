@@ -40,6 +40,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
             MockRugbyIngestWorkerService = new Mock<IRugbyIngestWorkerService>();
             MockRecurringJobManager = new Mock<IRecurringJobManager>();
             MockUnityContainer = new Mock<IUnityContainer>();
+            MockLogger = new Mock<ILoggingService>();
 
             LogsManagerJob =
                 new LogsManagerJob(
