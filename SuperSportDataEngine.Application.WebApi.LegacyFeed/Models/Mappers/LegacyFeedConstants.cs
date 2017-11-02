@@ -26,7 +26,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
 
         public const string FirstHalfDescription = "First Half";
 
-        public static int HalfTimeStatusId = FirstHalfStatusId;
+        public static int HalfTimeStatusId = 6;
 
         public const string HalfTimeDescription = "Half Time";
 
