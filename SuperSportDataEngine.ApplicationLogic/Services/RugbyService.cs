@@ -10,6 +10,7 @@ using System;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
 using System.Threading;
 using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
+using SuperSportDataEngine.Common.Logging;
 
 namespace SuperSportDataEngine.ApplicationLogic.Services
 {
@@ -264,7 +265,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         }
 
         public async Task<Guid> GetTournamentId(string tournamentSlug)
-        {
+        {            
             return (await _rugbyTournamentRepository.AllAsync())
                 .Where(f => f.Slug == tournamentSlug)
                 .FirstOrDefault().Id;

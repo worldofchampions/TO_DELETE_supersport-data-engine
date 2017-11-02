@@ -9,6 +9,7 @@
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
     using SuperSportDataEngine.ApplicationLogic.Services;
+    using SuperSportDataEngine.Common.Logging;
     using System;
     using System.Configuration;
     using System.Linq;
@@ -18,15 +19,17 @@
     public class LogsManagerJob
     {
         IRecurringJobManager _recurringJobManager;
-
         IUnityContainer _childContainer;
+        ILoggingService _logger;
 
         public LogsManagerJob(
             IRecurringJobManager recurringJobManager,
-            IUnityContainer childContainer)
+            IUnityContainer childContainer,
+            ILoggingService logger)
         {
             _recurringJobManager = recurringJobManager;
             _childContainer = childContainer;
+            _logger = logger;
         }
 
         public async Task DoWorkAsync()
@@ -62,8 +65,10 @@
                                         s.TournamentId == tournament.Id &&
                                         s.SchedulerStateForManagerJobPolling == SchedulerStateForManagerJobPolling.NotRunning)
                                 .FirstOrDefault();
+
                     if (season != null)
                     {
+                        _logger.Info("Setting SchedulerStateForManagerJobPolling for season " + seasonId + " of tourrnament " + tournament.Name + " to Running.");
                         season.SchedulerStateForManagerJobPolling = SchedulerStateForManagerJobPolling.Running;
                         _schedulerTrackingRugbySeasonRepository.Update(season);
                     }

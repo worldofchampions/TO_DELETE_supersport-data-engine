@@ -7,6 +7,7 @@ using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.News;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+using SuperSportDataEngine.Common.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -138,9 +139,8 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         public async Task<IHttpActionResult> GetResults(string category)
         {
             var cacheKey = $"rugby/{category}/results";
-
             var results = await _cache.GetAsync<IEnumerable<Result>>(cacheKey);
-
+            //_logger.Info("results = " + results);
             if (results == null)
             {
                 results = (await _rugbyService.GetTournamentResults(category)).Select(res => Mapper.Map<Result>(res));

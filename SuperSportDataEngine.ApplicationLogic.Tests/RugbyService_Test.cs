@@ -10,7 +10,7 @@ using System;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
 using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
-
+using SuperSportDataEngine.Common.Logging;
 
 namespace SuperSportDataEngine.ApplicationLogic.Tests
 {
@@ -30,7 +30,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
         Mock<TestEntityFrameworkRepository<RugbyPlayerLineup>> MockLineupRepository;
         Mock<TestEntityFrameworkRepository<RugbyMatchStatistics>> MockMatchStatisticsRepository;
         Mock<TestEntityFrameworkRepository<RugbyMatchEvent>> MockMatchEventsRepository;
-
+        Mock<ILoggingService> MockLogger;
 
         [SetUp]
         public void SetUp()
@@ -74,8 +74,10 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
             MockMatchEventsRepository =
                     new Mock<TestEntityFrameworkRepository<RugbyMatchEvent>>(new List<RugbyMatchEvent>());
 
+            MockLogger =
+                    new Mock<ILoggingService>();
 
-        RugbyService = new RugbyService(
+            RugbyService = new RugbyService(
                 MockMatchEventsRepository.Object,
                 MockMatchStatisticsRepository.Object,
                 MockLineupRepository.Object,

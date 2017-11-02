@@ -23,6 +23,8 @@
     using System.Configuration;
     using System.Data.Entity;
     using System.Web.Configuration;
+    using SuperSportDataEngine.Common.Logging;
+    using SuperSportDataEngine.Logging.NLog.Logging;
 
     public static class UnityConfigurationManager
     {
@@ -31,12 +33,18 @@
 
         public static void RegisterTypes(IUnityContainer container, ApplicationScope applicationScope)
         {
+            ApplyRegistrationsForLogging(container);
             ApplyRegistrationsForApplicationLogic(container, applicationScope);
             ApplyRegistrationsForGatewayHttpCommon(container, applicationScope);
             ApplyRegistrationsForGatewayHttpStatsProzone(container, applicationScope);
             ApplyRegistrationsForRepositoryEntityFrameworkPublicSportData(container);
             ApplyRegistrationsForRepositoryEntityFrameworkSystemSportData(container);
             ApplyRegistrationsForRepositoryMongoDbPayloadData(container, applicationScope);
+        }
+
+        private static void ApplyRegistrationsForLogging(IUnityContainer container)
+        {
+            container.RegisterType<ILoggingService>(new InjectionFactory(l => LoggingService.GetLoggingService()));
         }
 
         private static void ApplyRegistrationsForApplicationLogic(IUnityContainer container, ApplicationScope applicationScope)
@@ -57,17 +65,12 @@
                 applicationScope == ApplicationScope.WebApiPublicApi)
             {
                 container.RegisterInstance<ICache>(new Cache(ConnectionMultiplexer.Connect(WebConfigurationManager.ConnectionStrings["Redis"].ConnectionString)));
+                var cache = container.Resolve<ICache>();
             }
         }
 
         private static void ApplyRegistrationsForGatewayHttpStatsProzone(IUnityContainer container, ApplicationScope applicationScope)
         {
-            // TODO: [Davide] Conceptually this scope should be restricted to execution on ServiceSchedulerIngestServer only. Finalize this condition after determining what the Hangfire dependencies are for job definition creation etc.
-            //if (applicationScope == ApplicationScope.ServiceSchedulerIngestServer)
-            //{
-            //    container.RegisterType<IStatsProzoneRugbyIngestService, StatsProzoneRugbyIngestService>();
-            //}
-
             if (applicationScope == ApplicationScope.ServiceSchedulerClient ||
                 applicationScope == ApplicationScope.ServiceSchedulerIngestServer)
             {
@@ -197,8 +200,11 @@
                         ConfigurationManager.ConnectionStrings["MongoDB"].ConnectionString)));
 
                 container.RegisterType<IMongoDbRugbyRepository, MongoDbRugbyRepository>();
+
                 container.RegisterType<IRugbyIngestWorkerService, RugbyIngestWorkerService>(new HierarchicalLifetimeManager());
+
                 container.RegisterType<ITemporaryExampleMongoDbRepository, TemporaryExampleMongoDbRepository>();
+
                 container.RegisterType<ISchedulerClientService, SchedulerClientService>();
             }
         }
