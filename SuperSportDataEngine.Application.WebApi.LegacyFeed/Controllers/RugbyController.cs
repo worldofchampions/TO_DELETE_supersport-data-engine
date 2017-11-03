@@ -72,6 +72,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 
         /// <summary>
         /// Get News for Rugby
+        /// DO NOT REMOVE. THIS HAS BE HERE SO WE CAN REDIRECT REQUESTS TO OLD FEED.
         /// </summary>
         /// <returns></returns>
         [HttpGet]
