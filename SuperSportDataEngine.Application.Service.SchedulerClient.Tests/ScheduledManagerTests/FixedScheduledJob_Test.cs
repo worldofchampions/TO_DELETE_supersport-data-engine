@@ -6,6 +6,8 @@ using SuperSportDataEngine.ApplicationLogic.Services;
 using NUnit.Framework;
 using Hangfire.Common;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+using SuperSportDataEngine.Common.Logging;
+using SuperSportDataEngine.Logging.NLog.Logging;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.ScheduledManagerTests
 {
@@ -28,6 +30,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
             var mockRugbyService = new Mock<IRugbyService>();
             var mockIngestWorkerService = new Mock<IRugbyIngestWorkerService>();
             var mockRecurringJobManager = new Mock<IRecurringJobManager>();
+            var mockLogger = new Mock<ILoggingService>();
 
             // Mock and set the job storage.
             var mockStorage = new Mock<JobStorage>();
@@ -35,6 +38,9 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
 
             // Mock the Unity container and set the dependencies to the mocked objects.
             var container = new UnityContainer();
+
+            container.RegisterType<ILoggingService, LoggingService>(
+                new InjectionFactory((x) => mockLogger.Object));
 
             container.RegisterType<IRugbyIngestWorkerService, RugbyIngestWorkerService>(
                 new InjectionFactory((x) => mockIngestWorkerService.Object));

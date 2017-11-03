@@ -202,5 +202,20 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
 
         //    Assert.AreEqual(0, await MockSchedulerTrackingTournamentsRepository.Object.CountAsync());
         //}
+
+        //[Test]
+        //public void LiveGame_Getter()
+        //{
+        //    Guid fixtureGuid = Guid.NewGuid();
+        //    DateTime fixtureStartDate = new DateTime(2000, 01, 01, 12, 0, 0);
+
+        //    MockFixtureRepository.Object.Add(
+        //        new RugbyFixture()
+        //        {
+        //            Id = fixtureGuid,
+        //            RugbyFixtureStatus = RugbyFixtureStatus.PreMatch,
+        //            StartDateTime = 
+        //        });
+        //}
     }
 }

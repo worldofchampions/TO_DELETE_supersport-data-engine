@@ -119,9 +119,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<IEnumerable<RugbyFixture>> GetLiveFixturesForCurrentTournament(CancellationToken cancellationToken, Guid tournamentId)
         {
-            DateTimeOffset now = DateTimeOffset.UtcNow;
-            DateTimeOffset nowPlus15Minutes = DateTimeOffset.UtcNow.AddMinutes(15);
-
             var liveGames = (await _rugbyFixturesRepository.AllAsync())
                     .Where(fixture => IsFixtureLive(fixture))
                     .Where(fixture => fixture.RugbyTournament != null && fixture.RugbyTournament.Id == tournamentId);
@@ -139,7 +136,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             var fixtureSchedule = _schedulerTrackingRugbyFixtureRepository.All().ToList()
                     .Where(s => s.FixtureId == fixture.Id).FirstOrDefault();
 
-            return fixtureSchedule.SchedulerStateFixtures == SchedulerStateForRugbyFixturePolling.LivePolling;
+            return fixtureSchedule.SchedulerStateFixtures == SchedulerStateForRugbyFixturePolling.LivePolling ||
+                   fixtureSchedule.SchedulerStateFixtures == SchedulerStateForRugbyFixturePolling.PreLivePolling;
         }
 
         public async Task<int> GetLiveFixturesCount(CancellationToken cancellationToken)

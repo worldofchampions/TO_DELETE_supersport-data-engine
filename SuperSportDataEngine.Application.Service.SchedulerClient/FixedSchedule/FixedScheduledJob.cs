@@ -20,8 +20,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
 
         public FixedScheduledJob(IUnityContainer container)
         {
-            _container = container.CreateChildContainer();
-            UnityConfigurationManager.RegisterTypes(_container, Container.Enums.ApplicationScope.ServiceSchedulerClient);
+            _container = container;
 
             _logger = _container.Resolve<ILoggingService>();
             _recurringJobManager = _container.Resolve<IRecurringJobManager>();

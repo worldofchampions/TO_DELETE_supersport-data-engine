@@ -453,7 +453,7 @@
                         fixtureSchedule.RugbyFixtureStatus = gameState;
                         fixtureSchedule.StartDateTime = fixtureInDb.StartDateTime;
                         fixtureSchedule.SchedulerStateFixtures = 
-                            FixturesStateHelper.GetSchedulerStateForFixture(DateTime.UtcNow, gameState, fixtureInDb.StartDateTime.DateTime);
+                            FixturesStateHelper.GetSchedulerStateForFixture(DateTime.Now, gameState, fixtureInDb.StartDateTime.DateTime);
 
                         if (HasFixtureEnded(fixture.gameStateName) &&
                            fixtureSchedule.EndedDateTime == DateTimeOffset.MinValue)
@@ -524,9 +524,9 @@
 
                     if (fixtureInDb == null)
                     {
-                        _logger.Debug("Adding new fixture to DB: " +
-                            (newFixture.TeamA == null ? newFixture.TeamA.Name : "TBD") + " vs " +
-                            (newFixture.TeamB == null ? newFixture.TeamB.Name : "TBD") + ". Game date is " + newFixture.StartDateTime.ToLocalTime() + ".");
+                        //_logger.Debug("Adding new fixture to DB: " +
+                        //    (newFixture.TeamA == null ? newFixture.TeamA.Name : "TBD") + " vs " +
+                        //    (newFixture.TeamB == null ? newFixture.TeamB.Name : "TBD") + ". Game date is " + newFixture.StartDateTime.ToLocalTime() + ".");
 
                         _rugbyFixturesRepository.Add(newFixture);
                     }
@@ -553,9 +553,9 @@
                         fixtureInDb.TeamBIsHomeTeam = newFixture.TeamBIsHomeTeam;
                         fixtureInDb.RugbyTournament = newFixture.RugbyTournament;
 
-                        _logger.Debug("Updating existing fixture in DB: " +
-                           (newFixture.TeamA == null ? newFixture.TeamA.Name : "TBD") + " vs " +
-                           (newFixture.TeamB == null ? newFixture.TeamB.Name : "TBD") + ". Game date is " + newFixture.StartDateTime.ToLocalTime() + ".");
+                        //_logger.Debug("Updating existing fixture in DB: " +
+                        //   (newFixture.TeamA == null ? newFixture.TeamA.Name : "TBD") + " vs " +
+                        //   (newFixture.TeamB == null ? newFixture.TeamB.Name : "TBD") + ". Game date is " + newFixture.StartDateTime.ToLocalTime() + ".");
 
                         _rugbyFixturesRepository.Update(fixtureInDb);
                     }
@@ -1031,7 +1031,7 @@
 
                 //// Check if should stop looping?
                 var matchState = GetFixtureStatusFromProviderFixtureState(matchStatsResponse.RugbyMatchStats.gameState);
-                var schedulerState = FixturesStateHelper.GetSchedulerStateForFixture(DateTime.UtcNow, matchState, fixtureInDb.StartDateTime.DateTime);
+                var schedulerState = FixturesStateHelper.GetSchedulerStateForFixture(DateTime.Now, matchState, fixtureInDb.StartDateTime.DateTime);
 
                 if (schedulerState == SchedulerStateForRugbyFixturePolling.SchedulingCompleted ||
                     schedulerState == SchedulerStateForRugbyFixturePolling.SchedulingNotYetStarted ||
@@ -1056,7 +1056,7 @@
                 var fixtureState = GetFixtureStatusFromProviderFixtureState(fixtureGameState);
                 schedule.RugbyFixtureStatus = fixtureState;
                 schedule.SchedulerStateFixtures = 
-                    FixturesStateHelper.GetSchedulerStateForFixture(DateTime.UtcNow, fixtureState, schedule.StartDateTime.DateTime);
+                    FixturesStateHelper.GetSchedulerStateForFixture(DateTime.Now, fixtureState, schedule.StartDateTime.DateTime);
                 _schedulerTrackingRugbyFixtureRepository.Update(schedule);
             }
 
