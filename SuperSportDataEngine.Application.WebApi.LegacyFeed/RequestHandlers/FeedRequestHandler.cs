@@ -92,9 +92,11 @@
 
         private bool IsAuthRequest(HttpRequestMessage message)
         {
-            var requestUrl = message.RequestUri.ToString();
+            var searchTextLowercase = "/auth/";
 
-            return (requestUrl.Contains("/Auth/") | requestUrl.Contains("/auth/"));
+            var requestUrlLowercase = (message.RequestUri.ToString()).ToLower();
+
+            return (requestUrlLowercase.Contains(searchTextLowercase));
         }
 
         private HttpRequestMessage ChangeHostRequest(HttpRequestMessage req, Uri newUri)
