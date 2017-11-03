@@ -96,7 +96,7 @@
                         jobCronExpression,
                         new RecurringJobOptions()
                         {
-                            TimeZone = TimeZoneInfo.Utc,
+                            TimeZone = TimeZoneInfo.Local,
                             QueueName = HangfireQueueConfiguration.HighPriority
                         });
 
