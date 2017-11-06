@@ -3,6 +3,7 @@
     using Hangfire;
     using Hangfire.Common;
     using Microsoft.Practices.Unity;
+    using SuperSportDataEngine.Application.Container;
     using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
@@ -18,34 +19,46 @@
 
     public class LiveManagerJob
     {
-        private readonly IRecurringJobManager _recurringJobManager;
-        private readonly IUnityContainer _childContainer;
-        private readonly ILoggingService _logger;
+        private IRecurringJobManager _recurringJobManager;
+        private IUnityContainer _container;
+        private ILoggingService _logger;
 
-        public LiveManagerJob(
-            IRecurringJobManager recurringJobManager,
-            IUnityContainer childContainer,
-            ILoggingService logger)
+        public LiveManagerJob()
         {
-            _childContainer = childContainer;
-            _recurringJobManager = recurringJobManager;
-            _logger = logger;
         }
 
         public async Task DoWorkAsync()
         {
+            ConfigureContainer();
+            ConfigureDependencies();
+
             await CreateChildJobsForFetchingLiveMatchDataForCurrentFixtures();
             await DeleteChildJobsForFetchingMatchDataForFixturesEnded();
             await DeleteChildJobsForFetchingMatchDataForFixturesTooFarInThePast();
         }
 
+        private void ConfigureDependencies()
+        {
+            _logger = _container.Resolve<ILoggingService>();
+            _recurringJobManager = _container.Resolve<IRecurringJobManager>();
+        }
+
+        private void ConfigureContainer()
+        {
+            if (_container != null)
+                _container.Dispose();
+
+            _container = new UnityContainer();
+            UnityConfigurationManager.RegisterTypes(_container, Container.Enums.ApplicationScope.ServiceSchedulerClient);
+        }
+
         private async Task<int> DeleteChildJobsForFetchingMatchDataForFixturesTooFarInThePast()
         {
             var _schedulerTrackingRugbyFixtureRepository =
-                            _childContainer.Resolve<IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture>>();
+                            _container.Resolve<IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture>>();
 
             var postponedFixtures =
-                    await _childContainer.Resolve<IRugbyService>().GetPostponedFixtures();
+                    await _container.Resolve<IRugbyService>().GetPostponedFixtures();
 
             var p = postponedFixtures.ToList();
 
@@ -75,10 +88,10 @@
         private async Task<int> DeleteChildJobsForFetchingMatchDataForFixturesEnded()
         {
             var _schedulerTrackingRugbyFixtureRepository =
-                _childContainer.Resolve<IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture>>();
+                _container.Resolve<IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture>>();
 
             var completedFixtures =
-                    await _childContainer.Resolve<IRugbyService>().GetCompletedFixtures();
+                    await _container.Resolve<IRugbyService>().GetCompletedFixtures();
 
             foreach (var fixture in completedFixtures)
             {
@@ -106,15 +119,15 @@
         private async Task<int> CreateChildJobsForFetchingLiveMatchDataForCurrentFixtures()
         {
             var _schedulerTrackingRugbyFixtureRepository =
-                _childContainer.Resolve<IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture>>();
+                _container.Resolve<IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture>>();
 
             var currentTournaments =
-                    await _childContainer.Resolve<IRugbyService>().GetCurrentTournaments();
+                    await _container.Resolve<IRugbyService>().GetCurrentTournaments();
 
             foreach (var tournament in currentTournaments)
             {
                 var liveFixtures =
-                    await _childContainer.Resolve<IRugbyService>().GetLiveFixturesForCurrentTournament(CancellationToken.None, tournament.Id);
+                    await _container.Resolve<IRugbyService>().GetLiveFixturesForCurrentTournament(CancellationToken.None, tournament.Id);
 
                 _logger.Info("There are " + liveFixtures.Count() + " live fixtures for tournament " + tournament.Name);
 
@@ -126,7 +139,7 @@
 
                     _recurringJobManager.AddOrUpdate(
                         jobId,
-                        Job.FromExpression(() => _childContainer.Resolve<IRugbyIngestWorkerService>().IngestLiveMatchData(CancellationToken.None, fixture.ProviderFixtureId)),
+                        Job.FromExpression(() => _container.Resolve<IRugbyIngestWorkerService>().IngestLiveMatchData(CancellationToken.None, fixture.ProviderFixtureId)),
                         jobCronExpression,
                         new RecurringJobOptions()
                         {

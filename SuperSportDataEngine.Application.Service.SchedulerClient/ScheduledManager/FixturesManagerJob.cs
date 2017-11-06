@@ -31,22 +31,31 @@
             ILoggingService logger)
         {
             _recurringJobManager = recurringJobManager;
-            _childContainer = childContainer;
+            _childContainer = childContainer.CreateChildContainer();
             _logger = logger;
         }
 
         public async Task DoWorkAsync()
         {
             CreateNewContainer();
+            ConfigureDependencies();
 
             await CreateChildJobsForFetchingOneMonthsFixturesForActiveTournaments();
             await CreateChildJobsForFetchingFixturesForTournamentSeason();
             await DeleteChildJobsForInactiveAndEndedTournaments();
         }
 
+        private void ConfigureDependencies()
+        {
+            _logger = _childContainer.Resolve<ILoggingService>();
+            _recurringJobManager = _childContainer.Resolve<IRecurringJobManager>();
+        }
+
         private void CreateNewContainer()
         {
-            _childContainer.Dispose();
+            if(_childContainer != null)
+                _childContainer.Dispose();
+
             _childContainer = new UnityContainer();
             UnityConfigurationManager.RegisterTypes(_childContainer, Container.Enums.ApplicationScope.ServiceSchedulerClient);
         }

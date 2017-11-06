@@ -44,10 +44,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
             MockLogger = new Mock<ILoggingService>();
 
             LiveManagerJob =
-                new LiveManagerJob(
-                        MockRecurringJobManager.Object,
-                        MockUnityContainer.Object,
-                        MockLogger.Object);
+                new LiveManagerJob();
         }
 
         //[Test]

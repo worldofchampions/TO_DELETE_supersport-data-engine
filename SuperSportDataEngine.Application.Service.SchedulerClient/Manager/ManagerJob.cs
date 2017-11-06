@@ -18,20 +18,19 @@
         private LiveManagerJob _liveManagerJob;
         private LogsManagerJob _logsManagerJob;
 
-        public ManagerJob(UnityContainer container)
+        public ManagerJob(IUnityContainer container)
         {
             ConfigureTimer();
             ConfigureDepenencies(container);
         }
 
-        private void ConfigureDepenencies(UnityContainer container)
+        private void ConfigureDepenencies(IUnityContainer container)
         {
-            _logger = container.Resolve<ILoggingService>();
-
-            _recurringJobManager = container.Resolve<IRecurringJobManager>();
-
             var childContainer = container.CreateChildContainer();
             UnityConfigurationManager.RegisterTypes(childContainer, Container.Enums.ApplicationScope.ServiceSchedulerClient);
+
+            _logger = container.Resolve<ILoggingService>();
+            _recurringJobManager = container.Resolve<IRecurringJobManager>();
 
             _fixturesManagerJob =
                 new FixturesManagerJob(
@@ -40,10 +39,7 @@
                     _logger);
 
             _liveManagerJob =
-                new LiveManagerJob(
-                    _recurringJobManager,
-                    childContainer,
-                    _logger);
+                new LiveManagerJob();
 
             _logsManagerJob =
                 new LogsManagerJob(
