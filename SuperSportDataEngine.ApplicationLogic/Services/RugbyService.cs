@@ -529,5 +529,13 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                  .Where(c => c.RugbyFixture.Id == fixtureId)
                  .ToList();
         }
+
+        public async Task<IEnumerable<RugbyFixture>> GetPostponedFixtures()
+        {
+            return (await _rugbyFixturesRepository.AllAsync())
+                .Where(f =>
+                    f.RugbyFixtureStatus == RugbyFixtureStatus.PreMatch &&
+                    f.StartDateTime < (DateTimeOffset.UtcNow - TimeSpan.FromHours(3)));
+        }
     }
 }
