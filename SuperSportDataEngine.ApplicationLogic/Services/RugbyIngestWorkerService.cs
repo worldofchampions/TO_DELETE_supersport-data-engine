@@ -1240,7 +1240,7 @@
             var eventTypeProviderMappings = (await _rugbyEventTypeMappingRepository.AllAsync());
 
             var fixture = fixtures.Where(f => f.ProviderFixtureId == providerFixtureId).FirstOrDefault();
-
+            
             foreach (var team in teams.team)
             {
                 if (cancellationToken.IsCancellationRequested)

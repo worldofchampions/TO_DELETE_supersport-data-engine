@@ -36,6 +36,40 @@
         {
             await CreateChildJobsForFetchingLiveMatchDataForCurrentFixtures();
             await DeleteChildJobsForFetchingMatchDataForFixturesEnded();
+            await DeleteChildJobsForFetchingMatchDataForFixturesTooFarInThePast();
+        }
+
+        private async Task<int> DeleteChildJobsForFetchingMatchDataForFixturesTooFarInThePast()
+        {
+            var _schedulerTrackingRugbyFixtureRepository =
+                            _childContainer.Resolve<IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture>>();
+
+            var postponedFixtures =
+                    await _childContainer.Resolve<IRugbyService>().GetPostponedFixtures();
+
+            var p = postponedFixtures.ToList();
+
+            foreach (var fixture in postponedFixtures)
+            {
+                var matchName = fixture.TeamA.Name + " vs " + fixture.TeamB.Name;
+                var jobId = ConfigurationManager.AppSettings["LiveManagerJob_LiveMatch_JobIdPrefix"] + matchName;
+
+                _recurringJobManager.RemoveIfExists(jobId);
+
+                var fixtureInDb =
+                        (await _schedulerTrackingRugbyFixtureRepository.AllAsync()).Where(
+                            f => f.FixtureId == fixture.Id).FirstOrDefault();
+
+                if (fixtureInDb != null &&
+                    fixtureInDb.SchedulerStateFixtures != SchedulerStateForRugbyFixturePolling.SchedulingNotYetStarted)
+                {
+                    _logger.Info("Setting SchedulerStateFixtures for " + matchName + " to SchedulingNotYetStarted.");
+                    fixtureInDb.SchedulerStateFixtures = SchedulerStateForRugbyFixturePolling.SchedulingNotYetStarted;
+                    _schedulerTrackingRugbyFixtureRepository.Update(fixtureInDb);
+                }
+            }
+
+            return await _schedulerTrackingRugbyFixtureRepository.SaveAsync();
         }
 
         private async Task<int> DeleteChildJobsForFetchingMatchDataForFixturesEnded()
