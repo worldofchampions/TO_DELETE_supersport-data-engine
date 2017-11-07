@@ -7,44 +7,63 @@
     using Hangfire;
     using SuperSportDataEngine.Application.Container;
     using SuperSportDataEngine.Common.Logging;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+    using SuperSportDataEngine.ApplicationLogic.Services;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
 
     internal class ManagerJob
     {
         private Timer _timer;
         private ILoggingService _logger;
         private IRecurringJobManager _recurringJobManager;
-
+        private IUnityContainer _container;
+        private IRugbyService _rugbyService;
+        private IRugbyIngestWorkerService _rugbyIngestWorkerService;
+        private IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> _schedulerTrackingRugbyFixtures;
         private FixturesManagerJob _fixturesManagerJob;
         private LiveManagerJob _liveManagerJob;
         private LogsManagerJob _logsManagerJob;
 
-        public ManagerJob(IUnityContainer container)
+        public ManagerJob()
         {
+
             ConfigureTimer();
-            ConfigureDepenencies(container);
+            ConfigureDepenencies();
         }
 
-        private void ConfigureDepenencies(IUnityContainer container)
+        private void ConfigureDepenencies()
         {
-            var childContainer = container.CreateChildContainer();
-            UnityConfigurationManager.RegisterTypes(childContainer, Container.Enums.ApplicationScope.ServiceSchedulerClient);
+            if (_container != null)
+                _container.Dispose();
 
-            _logger = container.Resolve<ILoggingService>();
-            _recurringJobManager = container.Resolve<IRecurringJobManager>();
+            _container = new UnityContainer();
+
+            UnityConfigurationManager.RegisterTypes(_container, Container.Enums.ApplicationScope.ServiceSchedulerClient);
+
+            _logger = _container.Resolve<ILoggingService>();
+            _recurringJobManager = _container.Resolve<IRecurringJobManager>();
+            _rugbyService = _container.Resolve<IRugbyService>();
+            _rugbyIngestWorkerService = _container.Resolve<IRugbyIngestWorkerService>();
+            _schedulerTrackingRugbyFixtures = _container.Resolve<IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture>>();
 
             _fixturesManagerJob =
                 new FixturesManagerJob(
                     _recurringJobManager,
-                    childContainer,
+                    _container,
                     _logger);
 
-            _liveManagerJob =
-                new LiveManagerJob();
+            _liveManagerJob = new LiveManagerJob(
+                _logger,
+                _recurringJobManager,
+                _rugbyService,
+                _rugbyIngestWorkerService,
+                _schedulerTrackingRugbyFixtures);
 
             _logsManagerJob =
                 new LogsManagerJob(
                     _recurringJobManager,
-                    childContainer,
+                    new UnityContainer(),
                     _logger);
         }
 
@@ -63,6 +82,8 @@
         private async void UpdateManagerJobs(object sender, ElapsedEventArgs e)
         {
             _logger.Debug("Do work for ManagerJob's.");
+
+            ConfigureDepenencies();
 
             await _liveManagerJob.DoWorkAsync();
             await _fixturesManagerJob.DoWorkAsync();

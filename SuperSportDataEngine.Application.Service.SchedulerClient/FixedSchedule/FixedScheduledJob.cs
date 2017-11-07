@@ -7,7 +7,6 @@ using System.Threading;
 using System;
 using Hangfire.Common;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-using SuperSportDataEngine.Application.Container;
 using SuperSportDataEngine.Common.Logging;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
