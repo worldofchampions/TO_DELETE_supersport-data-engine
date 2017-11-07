@@ -170,6 +170,10 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
                         It.IsAny<RecurringJobOptions>()),
                         Times.Once());
 
+            MockRecurringJobManager.Verify(m => m.Trigger(
+                        "LiveManagerJob→LiveMatch→TeamA vs TeamB"),
+                        Times.Once());
+
             var f = MockSchedulerTrackingFixtureRepository.Object.All().FirstOrDefault();
 
             Assert.AreEqual(SchedulerStateForRugbyFixturePolling.LivePolling, f.SchedulerStateFixtures);
