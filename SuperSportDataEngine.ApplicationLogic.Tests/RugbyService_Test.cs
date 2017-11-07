@@ -509,7 +509,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
                 TestTournament);
 
             Guid fixtureGuid = Guid.NewGuid();
-            DateTime fixtureStartDate = DateTime.Now - TimeSpan.FromHours(3);
+            DateTime fixtureStartDate = DateTime.Now - TimeSpan.FromHours(4);
 
             MockFixtureRepository.Object.Add(
                 new RugbyFixture()
