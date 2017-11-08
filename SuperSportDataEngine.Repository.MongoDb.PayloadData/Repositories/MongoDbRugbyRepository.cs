@@ -12,6 +12,8 @@ using SuperSportDataEngine.Repository.MongoDb.PayloadData.Models.MongoRugbyMatch
 using System.Configuration;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyEventsFlow;
 using SuperSportDataEngine.Repository.MongoDb.PayloadData.Models.MongoRugbyEventsFlow;
+using MongoDB.Bson;
+using SuperSportDataEngine.Common.Logging;
 
 namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 {
@@ -19,11 +21,16 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
     public class MongoDbRugbyRepository : IMongoDbRugbyRepository
     {
         private IMongoClient _mongoClient;
+        private ILoggingService _logger;
+
         private string _mongoDatabaseName;
 
-        public MongoDbRugbyRepository(IMongoClient mongoClient)
+        public MongoDbRugbyRepository(
+            IMongoClient mongoClient,
+            ILoggingService logger)
         {
             _mongoClient = mongoClient;
+            _logger = logger;
             _mongoDatabaseName = ConfigurationManager.AppSettings["MongoDbName"];
         }
 
@@ -41,6 +48,13 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 
             // Get the Mongo DB.
             var db = _mongoClient.GetDatabase(_mongoDatabaseName);
+            bool isMongoLive = db.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
+
+            if (!isMongoLive)
+            {
+                _logger.Error("Unable to connect to MongoDB.");
+                return;
+            }
 
             // Add to the collection.
             var collection = db.GetCollection<MongoRugbyEntities>("entities");
@@ -61,6 +75,13 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 
             // Get the Mongo DB.
             var db = _mongoClient.GetDatabase(_mongoDatabaseName);
+            bool isMongoLive = db.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
+
+            if (!isMongoLive)
+            {
+                _logger.Error("Unable to connect to MongoDB.");
+                return;
+            }
 
             // Add to the collection.
             var collection = db.GetCollection<MongoRugbyFixtures>("fixtures");
@@ -81,6 +102,13 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 
             // Get the Mongo DB.
             var db = _mongoClient.GetDatabase(_mongoDatabaseName);
+            bool isMongoLive = db.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
+
+            if (!isMongoLive)
+            {
+                _logger.Error("Unable to connect to MongoDB.");
+                return;
+            }
 
             // Add to the collection.
             var collection = db.GetCollection<MongoRugbyFlatLogs>("logs");
@@ -101,6 +129,13 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 
             // Get the Mongo DB.
             var db = _mongoClient.GetDatabase(_mongoDatabaseName);
+            bool isMongoLive = db.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
+
+            if (!isMongoLive)
+            {
+                _logger.Error("Unable to connect to MongoDB.");
+                return;
+            }
 
             // Add to the collection.
             var collection = db.GetCollection<MongoRugbyGroupedLogs>("logs");
@@ -121,6 +156,13 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 
             // Get the Mongo DB.
             var db = _mongoClient.GetDatabase(_mongoDatabaseName);
+            bool isMongoLive = db.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
+
+            if (!isMongoLive)
+            {
+                _logger.Error("Unable to connect to MongoDB.");
+                return;
+            }
 
             // Add to the collection.
             var collection = db.GetCollection<MongoRugbyMatchStats>("matchStats");
@@ -141,6 +183,13 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 
             // Get the Mongo DB.
             var db = _mongoClient.GetDatabase(_mongoDatabaseName);
+            bool isMongoLive = db.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
+
+            if (!isMongoLive)
+            {
+                _logger.Error("Unable to connect to MongoDB.");
+                return;
+            }
 
             // Add to the collection.
             var collection = db.GetCollection<MongoRugbyEventsFlow>("eventsFlow");

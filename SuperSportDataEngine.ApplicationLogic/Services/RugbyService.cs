@@ -136,6 +136,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             var fixtureSchedule = _schedulerTrackingRugbyFixtureRepository.All().ToList()
                     .Where(s => s.FixtureId == fixture.Id).FirstOrDefault();
 
+            if (fixtureSchedule == null)
+                return false;
+
             return fixtureSchedule.SchedulerStateFixtures == SchedulerStateForRugbyFixturePolling.LivePolling ||
                    fixtureSchedule.SchedulerStateFixtures == SchedulerStateForRugbyFixturePolling.PreLivePolling;
         }
@@ -197,10 +200,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         public async Task CleanupSchedulerTrackingRugbyTournamentsTable()
         {
             var disabledTournamentsIds = (await _rugbyTournamentRepository.AllAsync()).Where(t => t.IsEnabled == false).Select(t => t.Id);
-            var itemsToDelete = (await _schedulerTrackingRugbyTournamentRepository.AllAsync()).Where(t => disabledTournamentsIds.Contains(t.TournamentId));
+            var itemsToDelete = (await _schedulerTrackingRugbyTournamentRepository.AllAsync()).Where(t => disabledTournamentsIds.Contains(t.TournamentId)).ToList();
 
-            foreach (var item in itemsToDelete)
-                _schedulerTrackingRugbyTournamentRepository.Delete(item);
+            _schedulerTrackingRugbyTournamentRepository.DeleteRange(itemsToDelete);
 
             await _schedulerTrackingRugbyTournamentRepository.SaveAsync();
         }
@@ -209,10 +211,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         {
             var endedSeasons = (await _schedulerTrackingRugbySeasonRepository.AllAsync())
                 .Where(
-                    s => s.RugbySeasonStatus == RugbySeasonStatus.Ended);
+                    s => s.RugbySeasonStatus == RugbySeasonStatus.Ended).ToList();
 
-            foreach (var item in endedSeasons)
-                _schedulerTrackingRugbySeasonRepository.Delete(item);
+            _schedulerTrackingRugbySeasonRepository.DeleteRange(endedSeasons);
 
             await _schedulerTrackingRugbySeasonRepository.SaveAsync();
         }
@@ -222,10 +223,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             var nowMinus6Months = DateTimeOffset.UtcNow - TimeSpan.FromDays(180);
             var itemsToDelete = (await _schedulerTrackingRugbyFixtureRepository.AllAsync())
                 .Where(
-                    f => f.SchedulerStateFixtures == SchedulerStateForRugbyFixturePolling.SchedulingCompleted && f.StartDateTime < nowMinus6Months);
+                    f => (f.RugbyFixtureStatus == RugbyFixtureStatus.Result || f.SchedulerStateFixtures == SchedulerStateForRugbyFixturePolling.SchedulingCompleted) && f.StartDateTime < nowMinus6Months).ToList();
 
-            foreach (var item in itemsToDelete)
-                _schedulerTrackingRugbyFixtureRepository.Delete(item);
+            _schedulerTrackingRugbyFixtureRepository.DeleteRange(itemsToDelete);
 
             await _schedulerTrackingRugbyFixtureRepository.SaveAsync();
         }
@@ -536,6 +536,17 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 .Where(f =>
                     f.RugbyFixtureStatus == RugbyFixtureStatus.PreMatch &&
                     f.StartDateTime < (DateTimeOffset.UtcNow - TimeSpan.FromHours(3)));
+        }
+
+        public async Task<IEnumerable<RugbyFixture>> GetFixturesNotIngestedYet()
+        {
+            var pastFixturesIdsNotScheduledYet =
+                            (await _schedulerTrackingRugbyFixtureRepository.AllAsync()).Where(s => s.SchedulerStateFixtures != SchedulerStateForRugbyFixturePolling.SchedulingCompleted &&
+                            s.StartDateTime < DateTime.UtcNow - TimeSpan.FromHours(6)).Select(s => s.FixtureId).ToList();
+
+            var fixtures = (_rugbyFixturesRepository.Where(f => pastFixturesIdsNotScheduledYet.Contains(f.Id))).ToList();
+
+            return fixtures;
         }
     }
 }

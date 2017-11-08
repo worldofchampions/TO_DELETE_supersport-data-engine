@@ -2,7 +2,6 @@
 {
     using Hangfire;
     using Hangfire.Common;
-    using Microsoft.Practices.Unity;
     using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
@@ -19,17 +18,23 @@
     public class LiveManagerJob
     {
         private readonly IRecurringJobManager _recurringJobManager;
-        private readonly IUnityContainer _childContainer;
+        private readonly IRugbyService _rugbyService;
+        private readonly IRugbyIngestWorkerService _rugbyIngestWorkerService;
         private readonly ILoggingService _logger;
+        private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> _schedulerTrackingRugbyFixtureRepository;
 
         public LiveManagerJob(
+            ILoggingService logger,
             IRecurringJobManager recurringJobManager,
-            IUnityContainer childContainer,
-            ILoggingService logger)
+            IRugbyService rugbyService,
+            IRugbyIngestWorkerService rugbyIngestWorkerService,
+            IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> schedulerTrackingRugbyFixtureRepository)
         {
-            _childContainer = childContainer;
-            _recurringJobManager = recurringJobManager;
             _logger = logger;
+            _recurringJobManager = recurringJobManager;
+            _rugbyService = rugbyService;
+            _rugbyIngestWorkerService = rugbyIngestWorkerService;
+            _schedulerTrackingRugbyFixtureRepository = schedulerTrackingRugbyFixtureRepository;
         }
 
         public async Task DoWorkAsync()
@@ -41,11 +46,8 @@
 
         private async Task<int> DeleteChildJobsForFetchingMatchDataForFixturesTooFarInThePast()
         {
-            var _schedulerTrackingRugbyFixtureRepository =
-                            _childContainer.Resolve<IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture>>();
-
             var postponedFixtures =
-                    await _childContainer.Resolve<IRugbyService>().GetPostponedFixtures();
+                    await _rugbyService.GetPostponedFixtures();
 
             var p = postponedFixtures.ToList();
 
@@ -74,11 +76,8 @@
 
         private async Task<int> DeleteChildJobsForFetchingMatchDataForFixturesEnded()
         {
-            var _schedulerTrackingRugbyFixtureRepository =
-                _childContainer.Resolve<IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture>>();
-
             var completedFixtures =
-                    await _childContainer.Resolve<IRugbyService>().GetCompletedFixtures();
+                    await _rugbyService.GetCompletedFixtures();
 
             foreach (var fixture in completedFixtures)
             {
@@ -105,16 +104,13 @@
 
         private async Task<int> CreateChildJobsForFetchingLiveMatchDataForCurrentFixtures()
         {
-            var _schedulerTrackingRugbyFixtureRepository =
-                _childContainer.Resolve<IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture>>();
-
             var currentTournaments =
-                    await _childContainer.Resolve<IRugbyService>().GetCurrentTournaments();
+                    await _rugbyService.GetCurrentTournaments();
 
             foreach (var tournament in currentTournaments)
             {
                 var liveFixtures =
-                    await _childContainer.Resolve<IRugbyService>().GetLiveFixturesForCurrentTournament(CancellationToken.None, tournament.Id);
+                    await _rugbyService.GetLiveFixturesForCurrentTournament(CancellationToken.None, tournament.Id);
 
                 _logger.Info("There are " + liveFixtures.Count() + " live fixtures for tournament " + tournament.Name);
 
@@ -126,7 +122,7 @@
 
                     _recurringJobManager.AddOrUpdate(
                         jobId,
-                        Job.FromExpression(() => _childContainer.Resolve<IRugbyIngestWorkerService>().IngestLiveMatchData(CancellationToken.None, fixture.ProviderFixtureId)),
+                        Job.FromExpression(() => _rugbyIngestWorkerService.IngestLiveMatchData(CancellationToken.None, fixture.ProviderFixtureId)),
                         jobCronExpression,
                         new RecurringJobOptions()
                         {

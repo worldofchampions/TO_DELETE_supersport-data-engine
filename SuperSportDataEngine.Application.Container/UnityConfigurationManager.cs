@@ -25,6 +25,9 @@
     using System.Web.Configuration;
     using SuperSportDataEngine.Common.Logging;
     using SuperSportDataEngine.Logging.NLog.Logging;
+    using System;
+    using SuperSportDataEngine.Application.Service.Common.Interfaces;
+    using SuperSportDataEngine.Application.Service.Common.Services;
 
     public static class UnityConfigurationManager
     {
@@ -51,6 +54,7 @@
         {
             container.RegisterType<ITemporaryExampleService, TemporaryExampleService>();
             container.RegisterType<IRugbyService, RugbyService>(new HierarchicalLifetimeManager());
+            container.RegisterType<IHangfireJobService, HangfireJobService>();
 
             if (applicationScope == ApplicationScope.WebApiLegacyFeed ||
                 applicationScope == ApplicationScope.WebApiSystemApi)
