@@ -94,15 +94,22 @@
     <Compile Include="Hangfire.Configuration\HangfireQueueConfiguration.cs" />
     <Compile Include="Hangfire.Filters\CustomRetryFilterAttribute.cs" />
     <Compile Include="Hangfire.Filters\ExpirationTimeAttribute.cs" />
+    <Compile Include="Interfaces\IHangfireJobService.cs" />
     <Compile Include="Interfaces\ISystemTimeService.cs" />
     <Compile Include="Interfaces\IWindowsServiceContract.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\HangfireJobService.cs" />
     <Compile Include="Services\SystemTimeService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\SuperSportDataEngine.ApplicationLogic\SuperSportDataEngine.ApplicationLogic.csproj">
+      <Project>{F420939C-B6A6-4C3A-975E-E30E654C4A90}</Project>
+      <Name>SuperSportDataEngine.ApplicationLogic</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

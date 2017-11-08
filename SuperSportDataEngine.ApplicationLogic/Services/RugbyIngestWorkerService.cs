@@ -452,8 +452,12 @@
                         var gameState = GetFixtureStatusFromProviderFixtureState(fixture.gameStateName);
                         fixtureSchedule.RugbyFixtureStatus = gameState;
                         fixtureSchedule.StartDateTime = fixtureInDb.StartDateTime;
-                        fixtureSchedule.SchedulerStateFixtures = 
-                            FixturesStateHelper.GetSchedulerStateForFixture(DateTime.Now, gameState, fixtureInDb.StartDateTime.DateTime);
+
+                        if(fixtureSchedule.SchedulerStateFixtures != SchedulerStateForRugbyFixturePolling.SchedulingCompleted)
+                        {
+                            fixtureSchedule.SchedulerStateFixtures =
+                                FixturesStateHelper.GetSchedulerStateForFixture(DateTime.Now, gameState, fixtureInDb.StartDateTime.DateTime);
+                        }
 
                         if (HasFixtureEnded(fixture.gameStateName) &&
                            fixtureSchedule.EndedDateTime == DateTimeOffset.MinValue)
@@ -1481,8 +1485,10 @@
             var players = (await _rugbyPlayerRepository.AllAsync()).ToList();
             var commentaries = (await _rugbyCommentaryRepository.AllAsync()).ToList();
 
-            var commentariesThatShouldBeRemovedFromDb = 
-                    commentaries.Where(c => c.RugbyFixture.ProviderFixtureId == providerFixtureId).ToList();
+            var commentaryForThisfixture =
+                _rugbyCommentaryRepository.Where(c => c.RugbyFixture.ProviderFixtureId == providerFixtureId).ToList();
+
+            var commentariesThatShouldBeRemovedFromDb = commentaryForThisfixture;
 
             foreach(var comment in commentary.commentaryEvent)
             {
@@ -1496,7 +1502,7 @@
                 var team = teams.Where(t => t.ProviderTeamId == comment.teamId).FirstOrDefault();
                 var player = players.Where(p => p.ProviderPlayerId == comment.playerId).FirstOrDefault();
 
-                var dbCommentary = commentaries.Where(c =>
+                var dbCommentary = commentaryForThisfixture.Where(c =>
                                                 c.GameTimeRawSeconds == commentTimeInSeconds &&
                                                 c.CommentaryText == commentText &&
                                                 c.RugbyFixture.Id == fixture.Id &&
@@ -1711,6 +1717,52 @@
                                        (fixture.RugbyFixtureStatus == RugbyFixtureStatus.Result));
 
             await IngestLineUpsForFixtures(cancellationToken, gamesInPastDay);
+        }
+
+        public async Task IngestLiveMatchDataForFixture(CancellationToken cancellationToken, Guid fixtureId)
+        {
+            var fixturesInDb = (await _rugbyFixturesRepository.AllAsync()).ToList();
+            var fixtureInDb = fixturesInDb.Where(f => f.Id == fixtureId).FirstOrDefault();
+            var providerFixtureId = fixtureInDb.ProviderFixtureId;
+
+            var matchStatsResponse =
+                await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, providerFixtureId);
+
+            var eventsFlowResponse =
+                await _statsProzoneIngestService.IngestEventsFlow(cancellationToken, providerFixtureId);
+
+            await IngestCommentary(cancellationToken, eventsFlowResponse.RugbyEventsFlow.commentaryFlow, providerFixtureId);
+            await IngestMatchStatisticsData(cancellationToken, matchStatsResponse, providerFixtureId);
+            await IngestScoreData(cancellationToken, matchStatsResponse);
+            await IngestFixtureStatusData(cancellationToken, matchStatsResponse);
+            await UpdateSchedulerTrackingFixtureToSchedulingCompleted(cancellationToken, fixtureInDb.Id, matchStatsResponse.RugbyMatchStats.gameState);
+
+            await IngestLineUpsForFixtures(cancellationToken, new List<RugbyFixture>() { fixtureInDb });
+
+            await IngestEvents(cancellationToken, eventsFlowResponse);
+
+            _mongoDbRepository.Save(matchStatsResponse);
+            _mongoDbRepository.Save(eventsFlowResponse);
+        }
+
+        private async Task UpdateSchedulerTrackingFixtureToSchedulingCompleted(CancellationToken cancellationToken, Guid fixtureId, string gameState)
+        {
+            var schedule = (await _schedulerTrackingRugbyFixtureRepository.AllAsync())
+                                            .Where(s => s.FixtureId == fixtureId).FirstOrDefault();
+
+            if (schedule == null)
+            {
+                return;
+            }
+            else
+            {
+                var fixtureState = GetFixtureStatusFromProviderFixtureState(gameState);
+                schedule.RugbyFixtureStatus = fixtureState;
+                schedule.SchedulerStateFixtures = SchedulerStateForRugbyFixturePolling.SchedulingCompleted;
+                _schedulerTrackingRugbyFixtureRepository.Update(schedule);
+            }
+
+            await _schedulerTrackingRugbyFixtureRepository.SaveAsync();
         }
     }
 }
