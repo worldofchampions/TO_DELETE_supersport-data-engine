@@ -1719,30 +1719,34 @@
             await IngestLineUpsForFixtures(cancellationToken, gamesInPastDay);
         }
 
-        public async Task IngestLiveMatchDataForFixture(CancellationToken cancellationToken, Guid fixtureId)
+        public async Task IngestLiveMatchDataForPastFixtures(CancellationToken cancellationToken)
         {
-            var fixturesInDb = (await _rugbyFixturesRepository.AllAsync()).ToList();
-            var fixtureInDb = fixturesInDb.Where(f => f.Id == fixtureId).FirstOrDefault();
-            var providerFixtureId = fixtureInDb.ProviderFixtureId;
+            var pastFixtures = await _rugbyService.GetFixturesNotIngestedYet();
+            foreach (var fixture in pastFixtures)
+            {
+                var fixturesInDb = (await _rugbyFixturesRepository.AllAsync()).ToList();
+                var fixtureInDb = fixturesInDb.Where(f => f.Id == fixture.Id).FirstOrDefault();
+                var providerFixtureId = fixtureInDb.ProviderFixtureId;
 
-            var matchStatsResponse =
-                await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, providerFixtureId);
+                var matchStatsResponse =
+                    await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, providerFixtureId);
 
-            var eventsFlowResponse =
-                await _statsProzoneIngestService.IngestEventsFlow(cancellationToken, providerFixtureId);
+                var eventsFlowResponse =
+                    await _statsProzoneIngestService.IngestEventsFlow(cancellationToken, providerFixtureId);
 
-            await IngestCommentary(cancellationToken, eventsFlowResponse.RugbyEventsFlow.commentaryFlow, providerFixtureId);
-            await IngestMatchStatisticsData(cancellationToken, matchStatsResponse, providerFixtureId);
-            await IngestScoreData(cancellationToken, matchStatsResponse);
-            await IngestFixtureStatusData(cancellationToken, matchStatsResponse);
-            await UpdateSchedulerTrackingFixtureToSchedulingCompleted(cancellationToken, fixtureInDb.Id, matchStatsResponse.RugbyMatchStats.gameState);
+                await IngestCommentary(cancellationToken, eventsFlowResponse.RugbyEventsFlow.commentaryFlow, providerFixtureId);
+                await IngestMatchStatisticsData(cancellationToken, matchStatsResponse, providerFixtureId);
+                await IngestScoreData(cancellationToken, matchStatsResponse);
+                await IngestFixtureStatusData(cancellationToken, matchStatsResponse);
+                await UpdateSchedulerTrackingFixtureToSchedulingCompleted(cancellationToken, fixtureInDb.Id, matchStatsResponse.RugbyMatchStats.gameState);
 
-            await IngestLineUpsForFixtures(cancellationToken, new List<RugbyFixture>() { fixtureInDb });
+                await IngestLineUpsForFixtures(cancellationToken, new List<RugbyFixture>() { fixtureInDb });
 
-            await IngestEvents(cancellationToken, eventsFlowResponse);
+                await IngestEvents(cancellationToken, eventsFlowResponse);
 
-            _mongoDbRepository.Save(matchStatsResponse);
-            _mongoDbRepository.Save(eventsFlowResponse);
+                _mongoDbRepository.Save(matchStatsResponse);
+                _mongoDbRepository.Save(eventsFlowResponse);
+            }
         }
 
         private async Task UpdateSchedulerTrackingFixtureToSchedulingCompleted(CancellationToken cancellationToken, Guid fixtureId, string gameState)

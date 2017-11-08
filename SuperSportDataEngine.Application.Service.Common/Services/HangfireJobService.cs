@@ -26,11 +26,6 @@ namespace SuperSportDataEngine.Application.Service.Common.Services
 
         public async Task IngestPastFixturesNotIngestedYet(CancellationToken cancellationToken)
         {
-            var pastFixtures = await _rugbyService.GetFixturesNotIngestedYet();
-            foreach(var fixture in pastFixtures)
-            {
-                BackgroundJob.Enqueue(() => _rugbyIngestWorkerService.IngestLiveMatchDataForFixture(CancellationToken.None, fixture.Id));
-            }
         }
     }
 }

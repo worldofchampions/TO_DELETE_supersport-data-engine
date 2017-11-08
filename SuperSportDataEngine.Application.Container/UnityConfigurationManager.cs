@@ -209,7 +209,6 @@
                 container.RegisterType<ITemporaryExampleMongoDbRepository, TemporaryExampleMongoDbRepository>();
 
                 container.RegisterType<ISchedulerClientService, SchedulerClientService>();
-                container.RegisterType<IHangfireJobService, HangfireJobService>();
             }
         }
     }
