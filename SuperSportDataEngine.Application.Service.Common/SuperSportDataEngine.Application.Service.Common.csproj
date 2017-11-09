@@ -110,6 +110,10 @@
       <Project>{F420939C-B6A6-4C3A-975E-E30E654C4A90}</Project>
       <Name>SuperSportDataEngine.ApplicationLogic</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SuperSportDataEngine.Common\SuperSportDataEngine.Common.csproj">
+      <Project>{bbe845af-8b84-4b61-abd7-724aca22ab69}</Project>
+      <Name>SuperSportDataEngine.Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

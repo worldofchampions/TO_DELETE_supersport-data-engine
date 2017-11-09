@@ -45,7 +45,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
         {
             _recurringJobManager.AddOrUpdate(
                 ConfigurationManager.AppSettings["FixedScheduledJob_LiveData_PastFixtures_JobIdPrefix"],
-                Job.FromExpression(() => (_container.Resolve<IHangfireJobService>()).IngestPastFixturesNotIngestedYet(CancellationToken.None)),
+                Job.FromExpression(() => (_container.Resolve<IRugbyIngestWorkerService>()).IngestLiveMatchDataForPastFixtures(CancellationToken.None)),
                 ConfigurationManager.AppSettings["FixedScheduledJob_LiveData_PastFixtures_JobCronExpression"],
                 new RecurringJobOptions()
                 {

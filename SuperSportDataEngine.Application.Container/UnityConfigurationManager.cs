@@ -54,7 +54,6 @@
         {
             container.RegisterType<ITemporaryExampleService, TemporaryExampleService>();
             container.RegisterType<IRugbyService, RugbyService>(new HierarchicalLifetimeManager());
-            container.RegisterType<IHangfireJobService, HangfireJobService>();
 
             if (applicationScope == ApplicationScope.WebApiLegacyFeed ||
                 applicationScope == ApplicationScope.WebApiSystemApi)
