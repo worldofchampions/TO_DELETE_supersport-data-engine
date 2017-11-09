@@ -258,6 +258,32 @@
             }
         }
 
+        private async Task PersistPastTournamentSeasonsInRepository(CancellationToken cancellationToken)
+        {
+            var activeTournaments = (await _rugbyTournamentRepository.AllAsync()).Where(t => t.IsEnabled);
+            foreach (var tournament in activeTournaments)
+            {
+                await IngestPastSeason(cancellationToken, tournament, DateTime.Now.Year - 1);
+                await IngestPastSeason(cancellationToken, tournament, DateTime.Now.Year - 2);
+            }
+        }
+
+        private async Task IngestPastSeason(CancellationToken cancellationToken, RugbyTournament tournament, int seasonId)
+        {
+            await IngestSeason(cancellationToken, tournament, seasonId);
+
+            var fixtures =
+                    _statsProzoneIngestService.IngestFixturesForTournament(
+                        tournament, seasonId, cancellationToken);
+
+            await PersistFixturesData(cancellationToken, fixtures);
+
+            await PersistRugbySeasonDataInSchedulerTrackingRugbySeasonTable(cancellationToken, fixtures);
+            await PersistRugbyTournamentsInSchedulerTrackingRugbyTournamentTable(cancellationToken);
+
+            _mongoDbRepository.Save(fixtures);
+        }
+
         private async Task IngestSeason(CancellationToken cancellationToken, RugbyTournament tournament, int year)
         {
             var season = _statsProzoneIngestService.IngestSeasonData(cancellationToken, tournament.ProviderTournamentId, year);
@@ -902,6 +928,16 @@
                     tournamentId, seasonId, cancellationToken);
 
             await PersistFixturesData(cancellationToken, fixtures);
+        }
+
+        public async Task IngestPastSeasonsForActiveTournaments(CancellationToken cancellationToken)
+        {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return;
+            }
+
+            await PersistPastTournamentSeasonsInRepository(cancellationToken);
         }
 
         public async Task IngestResultsForCurrentDayFixtures(CancellationToken cancellationToken)

@@ -39,6 +39,20 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
             UpdateRecurringJobDefinition_LineUpsForUpcomingGames();
             UpdateRecurringJobDefinition_CleanupSchedulerTrackingTables();
             UpdateRecurringJobDefinition_LiveDataForPastFixtures();
+            UpdateRecurringJobDefinition_PastSeasonsForActiveTournaments();
+        }
+
+        private void UpdateRecurringJobDefinition_PastSeasonsForActiveTournaments()
+        {
+            _recurringJobManager.AddOrUpdate(
+                ConfigurationManager.AppSettings["FixedScheduledJob_PastSeasonsFixtures_ActiveTournaments_JobIdPrefix"],
+                Job.FromExpression(() => (_container.Resolve<IRugbyIngestWorkerService>()).IngestPastSeasonsForActiveTournaments(CancellationToken.None)),
+                ConfigurationManager.AppSettings["FixedScheduledJob_PastSeasonsFixtures_ActiveTournaments_JobCronExpression"],
+                new RecurringJobOptions()
+                {
+                    TimeZone = TimeZoneInfo.Local,
+                    QueueName = HangfireQueueConfiguration.HighPriority
+                });
         }
 
         private void UpdateRecurringJobDefinition_LiveDataForPastFixtures()
