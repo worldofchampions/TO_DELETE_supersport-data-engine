@@ -182,6 +182,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\UnityDependencyResolver.cs" />
     <Compile Include="App_Start\UnityDependencyScope.cs" />
+    <Compile Include="Config\LegacyFeedConfig.cs" />
     <Compile Include="Filters\LegacyExceptionFilter.cs" />
     <Compile Include="Helpers\Extensions\ResponseModelsExtensions.cs" />
     <Compile Include="Models\Mappers\LegacyFeedConstants.cs" />
