@@ -544,7 +544,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                             (await _schedulerTrackingRugbyFixtureRepository.AllAsync()).Where(s => s.SchedulerStateFixtures != SchedulerStateForRugbyFixturePolling.SchedulingCompleted &&
                             s.StartDateTime < DateTime.UtcNow - TimeSpan.FromHours(6)).Select(s => s.FixtureId).ToList();
 
-            var fixtures = (_rugbyFixturesRepository.Where(f => pastFixturesIdsNotScheduledYet.Contains(f.Id))).ToList();
+            var fixtures = (_rugbyFixturesRepository.Where(f => pastFixturesIdsNotScheduledYet.Contains(f.Id)))
+                                .ToList()
+                                .OrderByDescending(f => f.StartDateTime);
 
             return fixtures;
         }
