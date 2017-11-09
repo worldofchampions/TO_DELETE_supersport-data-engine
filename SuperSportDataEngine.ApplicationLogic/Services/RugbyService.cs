@@ -71,11 +71,10 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         {
             var season =
                 (await _schedulerTrackingRugbySeasonRepository.AllAsync())
-                    .Where(
+                    .FirstOrDefault(
                         s => s.TournamentId == tournamentId &&
                         (s.RugbySeasonStatus == RugbySeasonStatus.InProgress ||
-                          s.RugbySeasonStatus == RugbySeasonStatus.NotActive))
-                   .FirstOrDefault();
+                          s.RugbySeasonStatus == RugbySeasonStatus.NotActive));
 
             return season != null ? season.SchedulerStateForManagerJobPolling : SchedulerStateForManagerJobPolling.Undefined;
         }
@@ -106,8 +105,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         {
             var currentSeason =
                     (await _rugbySeasonRepository.AllAsync())
-                        .Where(season => season.RugbyTournament.Id == tournamentId && season.IsCurrent)
-                        .FirstOrDefault();
+                        .FirstOrDefault(season => season.RugbyTournament.Id == tournamentId && season.IsCurrent);
 
             if (currentSeason != null)
             {
@@ -134,7 +132,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         private bool IsFixtureLive(RugbyFixture fixture)
         {
             var fixtureSchedule = _schedulerTrackingRugbyFixtureRepository.All().ToList()
-                    .Where(s => s.FixtureId == fixture.Id).FirstOrDefault();
+                    .FirstOrDefault(s => s.FixtureId == fixture.Id);
 
             if (fixtureSchedule == null)
                 return false;
@@ -169,8 +167,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         {
             var fixture =
                     (await _rugbyFixturesRepository.AllAsync())
-                        .Where(f => f.ProviderFixtureId == providerFixtureId)
-                        .FirstOrDefault();
+                        .FirstOrDefault(f => f.ProviderFixtureId == providerFixtureId);
 
             if (fixture != null)
                 return fixture.RugbyFixtureStatus == RugbyFixtureStatus.Result;
@@ -265,15 +262,13 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         public async Task<Guid> GetTournamentId(string tournamentSlug)
         {            
             return (await _rugbyTournamentRepository.AllAsync())
-                .Where(f => f.Slug == tournamentSlug)
-                .FirstOrDefault().Id;
+                .FirstOrDefault(f => f.Slug == tournamentSlug).Id;
         }
 
         public async Task<RugbyTournament> GetTournamentBySlug(string tournamentSlug)
         {
             return (await _rugbyTournamentRepository.AllAsync())
-                .Where(f => f.Slug.Equals(tournamentSlug, StringComparison.InvariantCultureIgnoreCase))
-                .FirstOrDefault();
+                .FirstOrDefault(f => f.Slug.Equals(tournamentSlug, StringComparison.InvariantCultureIgnoreCase));
         }
 
 
@@ -468,9 +463,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         private async Task<RugbyFixture> GetRugbyFixtureByLegacyMatchId(int LegacyMatchId)
         {
             return (await _rugbyFixturesRepository.AllAsync())
-                .Where(f => f.LegacyFixtureId == LegacyMatchId)
-                .ToList()
-                .FirstOrDefault();
+                .FirstOrDefault(f => f.LegacyFixtureId == LegacyMatchId);
         }
 
         private async Task<List<RugbyMatchEvent>> GetRugbyFixtureEvents(Guid fixtureId)
@@ -483,17 +476,13 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         private async Task<RugbyMatchStatistics> GetMatchStatsForTeam(Guid fixtureId, Guid TeamId)
         {
             return (await _rugbyMatchStatisticsRepository.AllAsync())
-                    .Where(s => s.RugbyFixture.Id == fixtureId)
-                    .ToList()
-                    .Where(f => f.RugbyTeamId == TeamId).FirstOrDefault();
+                    .FirstOrDefault(s => s.RugbyFixture.Id == fixtureId && s.RugbyTeamId == TeamId);
         }
 
         private async Task<List<RugbyPlayerLineup>> GetTeamLineupForFixture(Guid fixtureId, Guid TeamId)
         {
             return (await _rugbyPlayerLineupsRepository.AllAsync())
-                 .Where(l => l.RugbyFixture.Id == fixtureId)
-                 .ToList()
-                 .Where(l => l.RugbyTeam.Id == TeamId).ToList();
+                 .Where(l => l.RugbyFixture.Id == fixtureId && l.RugbyTeam.Id == TeamId).ToList();
         }
 
         private async Task<List<LegacyRugbyMatchEventEntity>> GetCommentaryAsRugbyMatchEvents(Guid fixtureId)
@@ -544,7 +533,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                             (await _schedulerTrackingRugbyFixtureRepository.AllAsync()).Where(s => s.SchedulerStateFixtures != SchedulerStateForRugbyFixturePolling.SchedulingCompleted &&
                             s.StartDateTime < DateTime.UtcNow - TimeSpan.FromHours(6)).Select(s => s.FixtureId).ToList();
 
-            var fixtures = (_rugbyFixturesRepository.Where(f => pastFixturesIdsNotScheduledYet.Contains(f.Id))).ToList();
+            var fixtures = (_rugbyFixturesRepository.Where(f => pastFixturesIdsNotScheduledYet.Contains(f.Id)))
+                                .OrderByDescending(f => f.StartDateTime);
 
             return fixtures;
         }
