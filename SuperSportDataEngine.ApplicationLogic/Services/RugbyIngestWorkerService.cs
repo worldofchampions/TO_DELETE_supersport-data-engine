@@ -564,15 +564,12 @@
                         TeamAIsHomeTeam = team0.isHomeTeam,
                         TeamBIsHomeTeam = team1.isHomeTeam,
                         RugbyFixtureStatus = GetFixtureStatusFromProviderFixtureState(fixture.gameStateName),
-                        DataProvider = DataProvider.StatsProzone
+                        DataProvider = DataProvider.StatsProzone,
+                        IsLiveScored = tournament != null && tournament.IsLiveScored
                     };
 
                     if (fixtureInDb == null)
                     {
-                        //_logger.Debug("Adding new fixture to DB: " +
-                        //    (newFixture.TeamA == null ? newFixture.TeamA.Name : "TBD") + " vs " +
-                        //    (newFixture.TeamB == null ? newFixture.TeamB.Name : "TBD") + ". Game date is " + newFixture.StartDateTime.ToLocalTime() + ".");
-
                         _rugbyFixturesRepository.Add(newFixture);
                     }
                     else
@@ -597,7 +594,9 @@
                         fixtureInDb.TeamAIsHomeTeam = newFixture.TeamAIsHomeTeam;
                         fixtureInDb.TeamBIsHomeTeam = newFixture.TeamBIsHomeTeam;
                         fixtureInDb.RugbyTournament = newFixture.RugbyTournament;
-                        
+                        // Do not update the isLiveScored property here.
+                        // It will be updated by the CMS.
+
                         _rugbyFixturesRepository.Update(fixtureInDb);
                     }
                 }
@@ -606,7 +605,7 @@
             await _rugbyFixturesRepository.SaveAsync();
         }
 
-        private RugbyFixtureStatus GetFixtureStatusFromProviderFixtureState(string gameStateName)
+        private static RugbyFixtureStatus GetFixtureStatusFromProviderFixtureState(string gameStateName)
         {
             if (gameStateName.Equals(ProviderGameStateConstant.PreGame, StringComparison.InvariantCultureIgnoreCase))
                 return RugbyFixtureStatus.PreMatch;
@@ -877,7 +876,8 @@
                     LogoUrl = competition.CompetitionLogoURL,
                     Abbreviation = competition.CompetitionAbbrev,
                     Slug = GetSlug(competition.name),
-                    DataProvider = DataProvider.StatsProzone
+                    DataProvider = DataProvider.StatsProzone,
+                    IsLiveScored = false
                 };
 
                 if (entry == null)
@@ -890,6 +890,8 @@
                     entry.Name = newEntry.Name;
                     entry.LogoUrl = newEntry.LogoUrl;
                     entry.Abbreviation = newEntry.Abbreviation;
+                    // Do not update the IsLiveScored property here.
+                    // It will be updated by the CMS.
 
                     _rugbyTournamentRepository.Update(entry);
                 }
