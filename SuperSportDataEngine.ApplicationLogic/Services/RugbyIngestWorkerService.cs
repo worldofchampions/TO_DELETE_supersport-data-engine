@@ -1578,7 +1578,14 @@
                     matchStatsResponse = 
                         await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, fixtureId);
 
-                await IngestPlayerLineups(cancellationToken, matchStatsResponse, fixture);
+                try
+                {
+                    await IngestPlayerLineups(cancellationToken, matchStatsResponse, fixture);
+                }
+                catch (Exception e)
+                {
+                    _logger.Error(e.StackTrace);
+                }
             }
         }
 
