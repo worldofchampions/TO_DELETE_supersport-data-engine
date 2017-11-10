@@ -136,7 +136,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             if (fixtureSchedule == null)
                 return false;
 
-            return fixtureSchedule.SchedulerStateFixtures == SchedulerStateForRugbyFixturePolling.LivePolling;
+            return fixtureSchedule.SchedulerStateFixtures == SchedulerStateForRugbyFixturePolling.LivePolling ||
+                   fixtureSchedule.SchedulerStateFixtures == SchedulerStateForRugbyFixturePolling.PreLivePolling;
         }
 
         public async Task<int> GetLiveFixturesCount(CancellationToken cancellationToken)
