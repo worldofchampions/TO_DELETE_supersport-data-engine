@@ -103,6 +103,9 @@
             var entitiesResponse =
                 _statsProzoneIngestService.IngestRugbyReferenceData(cancellationToken);
 
+            if (entitiesResponse == null)
+                return;
+
             await PersistVenuesInRepository(cancellationToken, entitiesResponse);
             await PersistTeamsInRepository(cancellationToken, entitiesResponse);
             await PersistTournamentsInRepository(cancellationToken, entitiesResponse);
@@ -222,7 +225,6 @@
         {
             if (cancellationToken.IsCancellationRequested)
                 return;
-
 
             var venuesAlreadyInDb = (await _rugbyVenueRepository.AllAsync()).ToList();
 
@@ -1738,31 +1740,19 @@
                     await _statsProzoneIngestService.IngestEventsFlow(cancellationToken, providerFixtureId);
 
                 provider.Stop();
-                _logger.Info("Provider responded in " + provider.ElapsedMilliseconds + "ms.");
 
                 Stopwatch s = Stopwatch.StartNew();
 
                 await IngestLineUpsForFixtures(cancellationToken, new List<RugbyFixture>() { fixture }, matchStatsResponse);
-                _logger.Info("Ingested line-ups for fixture " + fixture.ProviderFixtureId + ".");
 
                 var playersForFixture = _rugbyPlayerLineupsRepository.Where(l => l.RugbyFixture.ProviderFixtureId == fixture.ProviderFixtureId).Select(l => l.RugbyPlayer).ToList();
 
                 await IngestCommentary(cancellationToken, eventsFlowResponse.RugbyEventsFlow.commentaryFlow, fixture, playersForFixture);
-                _logger.Info("Ingested commentary for fixture " + fixture.ProviderFixtureId + ".");
-                
                 await IngestMatchStatisticsData(cancellationToken, matchStatsResponse, providerFixtureId);
-                _logger.Info("Ingested match stats for fixture " + fixture.ProviderFixtureId + ".");
-
                 await IngestScoreData(cancellationToken, matchStatsResponse);
-                _logger.Info("Ingested scores for fixture " + fixture.ProviderFixtureId + ".");
-
                 await IngestFixtureStatusData(cancellationToken, matchStatsResponse, fixture);
-                _logger.Info("Ingested fixture status for fixture " + fixture.ProviderFixtureId + ".");
-
                 await UpdateSchedulerTrackingFixtureToSchedulingCompleted(cancellationToken, fixture.Id, matchStatsResponse.RugbyMatchStats.gameState);
-
                 await IngestEvents(cancellationToken, eventsFlowResponse, fixture);
-                _logger.Info("Ingested events for fixture " + fixture.ProviderFixtureId + ".");
 
                 _mongoDbRepository.Save(matchStatsResponse);
                 _mongoDbRepository.Save(eventsFlowResponse);
