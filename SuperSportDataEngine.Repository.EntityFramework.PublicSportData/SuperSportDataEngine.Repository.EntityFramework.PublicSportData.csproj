@@ -204,6 +204,10 @@
     <Compile Include="Migrations\201711011249017_Fixes_for_legacyId_fields.Designer.cs">
       <DependentUpon>201711011249017_Fixes_for_legacyId_fields.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201711091515293_Added_tournament_level_IsLiveScored_flag.cs" />
+    <Compile Include="Migrations\201711091515293_Added_tournament_level_IsLiveScored_flag.Designer.cs">
+      <DependentUpon>201711091515293_Added_tournament_level_IsLiveScored_flag.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypeProviderMappings.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypes.cs" />
@@ -316,6 +320,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201711011249017_Fixes_for_legacyId_fields.resx">
       <DependentUpon>201711011249017_Fixes_for_legacyId_fields.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201711091515293_Added_tournament_level_IsLiveScored_flag.resx">
+      <DependentUpon>201711091515293_Added_tournament_level_IsLiveScored_flag.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

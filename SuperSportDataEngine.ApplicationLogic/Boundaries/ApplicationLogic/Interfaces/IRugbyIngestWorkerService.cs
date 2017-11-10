@@ -1,5 +1,6 @@
 ﻿namespace SuperSportDataEngine.ApplicationLogic.Services
 {
+    using System;
     using System.Threading;
     using System.Threading.Tasks;
 
@@ -18,5 +19,7 @@
         Task IngestLogsForTournamentSeason(CancellationToken cancellationToken, int providerTournamentId, int seasonId);
         Task IngestLineupsForUpcomingGames(CancellationToken cancellationToken);
         Task IngestLineupsForPastGames(CancellationToken cancellationToken);
+        Task IngestLiveMatchDataForPastFixtures(CancellationToken none);
+        Task IngestPastSeasonsForActiveTournaments(CancellationToken none);
     }
 }

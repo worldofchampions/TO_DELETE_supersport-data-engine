@@ -34,7 +34,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Helpers
                 return SchedulerStateForRugbyFixturePolling.ResultOnlyPolling;
 
             if (gameStatus == RugbyFixtureStatus.Result &&
-               now > (startDateTime + TimeSpan.FromMinutes(185)))
+               now > (startDateTime + TimeSpan.FromMinutes(185)) &&
+               now < (startDateTime + TimeSpan.FromHours(6)))
                 return SchedulerStateForRugbyFixturePolling.SchedulingCompleted;
 
             return SchedulerStateForRugbyFixturePolling.SchedulingNotYetStarted;

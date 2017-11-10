@@ -17,9 +17,19 @@
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyGroupedLogs;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyMatchStats;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyEventsFlow;
+    using System.Diagnostics;
+    using SuperSportDataEngine.Common.Logging;
 
     public class StatsProzoneRugbyIngestService : IStatsProzoneRugbyIngestService
     {
+        ILoggingService _logger;
+
+        public StatsProzoneRugbyIngestService(
+            ILoggingService logger)
+        {
+            _logger = logger;
+        }
+
         public RugbyEntitiesResponse IngestRugbyReferenceData(CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
@@ -293,19 +303,24 @@
                     RequestTime = DateTime.Now
                 };
 
-            using (WebResponse response = await request.GetResponseAsync())
+            Stopwatch responseTime = Stopwatch.StartNew(); 
+            using (WebResponse response = request.GetResponse())
             {
+                responseTime.Stop();
+                _logger.Info("Response time is " + responseTime.ElapsedMilliseconds + "ms.");
                 using (Stream responseStream = response.GetResponseStream())
                 {
+                    Stopwatch mappingTime = Stopwatch.StartNew();
                     StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
-                    string stats = reader.ReadToEnd();
                     matchStatsResponse.RugbyMatchStats =
-                        JsonConvert.DeserializeObject<RugbyMatchStats>(stats);
+                        JsonConvert.DeserializeObject<RugbyMatchStats>(reader.ReadToEnd());
 
                     // Not to be confused with the DateTime.Now call more above.
                     // This might be delayed due to provider being slow to process request,
                     // and is intended.
                     matchStatsResponse.ResponseTime = DateTime.Now;
+                    mappingTime.Stop();
+                    _logger.Info("Mapping time is " + mappingTime.ElapsedMilliseconds + "ms.");
                     return matchStatsResponse;
                 }
             }
