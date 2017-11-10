@@ -32,7 +32,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed
         {
             var container = new UnityContainer();
 
-            UnityConfigurationManager.RegisterTypes(container, Container.Enums.ApplicationScope.WebApiLegacyFeed);
+            UnityConfigurationManager.RegisterApiGlobalTypes(container, Container.Enums.ApplicationScope.WebApiLegacyFeed);
 
             httpConfig.DependencyResolver = new UnityDependencyResolver(container);
         }
