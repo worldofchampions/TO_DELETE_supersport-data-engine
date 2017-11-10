@@ -1625,6 +1625,9 @@
                     var teamId = squad.teamId;
                     var dbTeam = fixture.TeamA.ProviderTeamId == teamId ? fixture.TeamA : fixture.TeamB;
 
+                    if (dbTeam == null)
+                        continue;
+
                     var shirtNumber = player.shirtNum;
                     var positionName = player.playerPosition;
 
