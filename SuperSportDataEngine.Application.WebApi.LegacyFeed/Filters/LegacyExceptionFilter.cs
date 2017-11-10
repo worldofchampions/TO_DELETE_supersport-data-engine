@@ -32,7 +32,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters
         {
             var loggerService = context.ActionContext.Request.GetDependencyScope().GetService(typeof(ILoggingService)) as ILoggingService;
 
-            loggerService.Fatal(context.Exception);
+            loggerService.Fatal(context.Exception.StackTrace);
         }
     }
 }
