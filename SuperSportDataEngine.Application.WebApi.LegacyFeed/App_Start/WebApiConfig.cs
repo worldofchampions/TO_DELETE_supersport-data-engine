@@ -4,6 +4,7 @@ using System.Net.Http.Formatting;
 using System.Web.Http;
 using Microsoft.Practices.Unity;
 using SuperSportDataEngine.Application.Container;
+using SuperSportDataEngine.Application.WebApi.LegacyFeed.Config;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed
 {
@@ -31,22 +32,20 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed
         {
             var container = new UnityContainer();
 
-            UnityConfigurationManager.RegisterTypes(container, Container.Enums.ApplicationScope.WebApiLegacyFeed);
+            UnityConfigurationManager.RegisterApiGlobalTypes(container, Container.Enums.ApplicationScope.WebApiLegacyFeed);
 
             httpConfig.DependencyResolver = new UnityDependencyResolver(container);
         }
 
         private static void RegisterLegacyExceptionFilter()
         {
-            GlobalConfiguration.Configuration.Filters.Add(new Filters.LegacyExceptionFilterAttribute());
+            GlobalConfiguration.Configuration.Filters.Add(new Filters.LegacyExceptionFilter());
         }
 
         private static void ConfigureResponseFormatters()
         {
             // For All Media Types
             httpConfig.Formatters.Clear();
-
-            //httpConfig.Formatters.Add(new FormUrlEncodedMediaTypeFormatter());
 
             // For XML
             httpConfig.Formatters.Add(new XmlMediaTypeFormatter());
@@ -67,7 +66,12 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed
 
         private static void ConfigureFeedRequestHandler()
         {
-            httpConfig.MessageHandlers.Add(new FeedRequestHandler());
+            var requestHandlerEnabled = LegacyFeedConfig.IsRequestHandlerEnabled;
+
+            if (requestHandlerEnabled)
+            {
+                httpConfig.MessageHandlers.Add(new FeedRequestHandler());
+            }
         }
 
         private static void ConfigureApiRoutes()

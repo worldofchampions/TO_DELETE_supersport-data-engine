@@ -7,7 +7,8 @@ using System.Threading;
 using System;
 using Hangfire.Common;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-using SuperSportDataEngine.Application.Container;
+using SuperSportDataEngine.Common.Logging;
+using SuperSportDataEngine.Application.Service.Common.Interfaces;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
 {
@@ -15,12 +16,13 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
     {
         private readonly IRecurringJobManager _recurringJobManager;
         private readonly IUnityContainer _container;
+        private readonly ILoggingService _logger;
 
         public FixedScheduledJob(IUnityContainer container)
         {
-            _container = container.CreateChildContainer();
-            UnityConfigurationManager.RegisterTypes(_container, Container.Enums.ApplicationScope.ServiceSchedulerClient);
+            _container = container;
 
+            _logger = _container.Resolve<ILoggingService>();
             _recurringJobManager = _container.Resolve<IRecurringJobManager>();
         }
 
@@ -36,6 +38,34 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
             UpdateRecurringJobDefinition_LineUpsForPastGames();
             UpdateRecurringJobDefinition_LineUpsForUpcomingGames();
             UpdateRecurringJobDefinition_CleanupSchedulerTrackingTables();
+            UpdateRecurringJobDefinition_LiveDataForPastFixtures();
+            UpdateRecurringJobDefinition_PastSeasonsForActiveTournaments();
+        }
+
+        private void UpdateRecurringJobDefinition_PastSeasonsForActiveTournaments()
+        {
+            _recurringJobManager.AddOrUpdate(
+                ConfigurationManager.AppSettings["FixedScheduledJob_PastSeasonsFixtures_ActiveTournaments_JobIdPrefix"],
+                Job.FromExpression(() => (_container.Resolve<IRugbyIngestWorkerService>()).IngestPastSeasonsForActiveTournaments(CancellationToken.None)),
+                ConfigurationManager.AppSettings["FixedScheduledJob_PastSeasonsFixtures_ActiveTournaments_JobCronExpression"],
+                new RecurringJobOptions()
+                {
+                    TimeZone = TimeZoneInfo.Local,
+                    QueueName = HangfireQueueConfiguration.HighPriority
+                });
+        }
+
+        private void UpdateRecurringJobDefinition_LiveDataForPastFixtures()
+        {
+            _recurringJobManager.AddOrUpdate(
+                ConfigurationManager.AppSettings["FixedScheduledJob_LiveData_PastFixtures_JobIdPrefix"],
+                Job.FromExpression(() => (_container.Resolve<IRugbyIngestWorkerService>()).IngestLiveMatchDataForPastFixtures(CancellationToken.None)),
+                ConfigurationManager.AppSettings["FixedScheduledJob_LiveData_PastFixtures_JobCronExpression"],
+                new RecurringJobOptions()
+                {
+                    TimeZone = TimeZoneInfo.Local,
+                    QueueName = HangfireQueueConfiguration.HighPriority
+                });
         }
 
         private void UpdateRecurringJobDefinition_LineUpsForUpcomingGames()
@@ -46,7 +76,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
                 ConfigurationManager.AppSettings["FixedScheduledJob_Lineups_Hourly_JobCronExpression"],
                 new RecurringJobOptions()
                 {
-                    TimeZone = TimeZoneInfo.Utc,
+                    TimeZone = TimeZoneInfo.Local,
                     QueueName = HangfireQueueConfiguration.HighPriority
                 });
         }
@@ -59,7 +89,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
                 ConfigurationManager.AppSettings["FixedScheduledJob_Lineups_PastGames_Hourly_JobCronExpression"],
                 new RecurringJobOptions()
                 {
-                    TimeZone = TimeZoneInfo.Utc,
+                    TimeZone = TimeZoneInfo.Local,
                     QueueName = HangfireQueueConfiguration.HighPriority
                 });
         }
@@ -72,7 +102,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
                 ConfigurationManager.AppSettings["FixedScheduledJob_Cleanup_Monthly_JobCronExpression"],
                 new RecurringJobOptions()
                 {
-                    TimeZone = TimeZoneInfo.Utc,
+                    TimeZone = TimeZoneInfo.Local,
                     QueueName = HangfireQueueConfiguration.NormalPriority
                 });
         }
@@ -87,7 +117,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
                 Job.FromExpression(() => (_container.Resolve<IRugbyIngestWorkerService>()).IngestResultsForFixturesInResultsState(CancellationToken.None)),
                 ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_Hourly_PollingExpression"],
                 new RecurringJobOptions() {
-                    TimeZone = TimeZoneInfo.Utc,
+                    TimeZone = TimeZoneInfo.Local,
                     QueueName = HangfireQueueConfiguration.NormalPriority
                 });
         }
@@ -102,7 +132,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
                 ConfigurationManager.AppSettings["FixedScheduledJob_ReferenceData_JobCronExpression"],
                 new RecurringJobOptions()
                 {
-                    TimeZone = TimeZoneInfo.Utc,
+                    TimeZone = TimeZoneInfo.Local,
                     QueueName = HangfireQueueConfiguration.NormalPriority
                 });
         }
@@ -117,7 +147,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
                 ConfigurationManager.AppSettings["FixedScheduledJob_FixturesData_JobCronExpression"],
                 new RecurringJobOptions()
                 {
-                    TimeZone = TimeZoneInfo.Utc,
+                    TimeZone = TimeZoneInfo.Local,
                     QueueName = HangfireQueueConfiguration.NormalPriority
                 });
 
@@ -134,7 +164,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
                 ConfigurationManager.AppSettings["FixedScheduledJob_LogsData_ActiveTournaments_JobCronExpression"],
                 new RecurringJobOptions()
                 {
-                    TimeZone = TimeZoneInfo.Utc,
+                    TimeZone = TimeZoneInfo.Local,
                     QueueName = HangfireQueueConfiguration.NormalPriority
                 });
         }
@@ -147,7 +177,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
                 ConfigurationManager.AppSettings["FixedScheduledJob_LogsData_CurrentTournaments_JobId"],
                 Job.FromExpression(() => (_container.Resolve<IRugbyIngestWorkerService>()).IngestLogsForCurrentTournaments(CancellationToken.None)),
                 ConfigurationManager.AppSettings["FixedScheduledJob_LogsData_CurrentTournaments_JobCronExpression"],
-                TimeZoneInfo.Utc,
+                TimeZoneInfo.Local,
                 HangfireQueueConfiguration.NormalPriority);
         }
 
@@ -162,7 +192,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
                 ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_Daily_PollingExpression"],
                 new RecurringJobOptions()
                 {
-                    TimeZone = TimeZoneInfo.Utc,
+                    TimeZone = TimeZoneInfo.Local,
                     QueueName = HangfireQueueConfiguration.NormalPriority
                 });
         }
@@ -178,7 +208,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
                 ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_OnFixtureDay_PollingExpression"],
                 new RecurringJobOptions()
                 {
-                    TimeZone = TimeZoneInfo.Utc,
+                    TimeZone = TimeZoneInfo.Local,
                     QueueName = HangfireQueueConfiguration.HighPriority
                 });
         }

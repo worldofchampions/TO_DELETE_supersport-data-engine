@@ -22,8 +22,9 @@
         public WindowsService(UnityContainer container)
         {
             _container = container;
-            _fixedManagerJob = new FixedScheduledJob(_container);
-            _jobManager = new ManagerJob(_container);
+            _fixedManagerJob = new FixedScheduledJob(_container.CreateChildContainer());
+            _jobManager = 
+                new ManagerJob();
         }
 
         public void StartService()

@@ -33,6 +33,26 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
         }
 
         [Test]
+        public void GetFixtureState_PreGameFixture_NotScheduledYet()
+        {
+            var now = new DateTime(2000, 01, 01, 12, 0, 0);
+            var gameStartTime = new DateTime(2000, 01, 01, 12, 15, 01);
+
+            var status = FixturesStateHelper.GetSchedulerStateForFixture(now, RugbyFixtureStatus.PreMatch, gameStartTime);
+            Assert.AreEqual(SchedulerStateForRugbyFixturePolling.SchedulingNotYetStarted, status);
+        }
+
+        [Test]
+        public void GetFixtureState_PreGameFixture_NotScheduledYet_GameIsPostponed()
+        {
+            var now = new DateTime(2000, 01, 01, 18, 0, 0);
+            var gameStartTime = new DateTime(2000, 01, 01, 12, 0, 0);
+
+            var status = FixturesStateHelper.GetSchedulerStateForFixture(now, RugbyFixtureStatus.PreMatch, gameStartTime);
+            Assert.AreEqual(SchedulerStateForRugbyFixturePolling.SchedulingNotYetStarted, status);
+        }
+
+        [Test]
         public void GetFixtureState_LiveFixture_LivePolling_FirstHalf()
         {
             var now = new DateTime(2000, 01, 01, 12, 0, 0);

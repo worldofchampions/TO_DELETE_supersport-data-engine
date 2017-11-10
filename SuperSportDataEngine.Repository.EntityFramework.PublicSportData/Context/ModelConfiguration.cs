@@ -22,8 +22,7 @@
             modelBuilder.Entity<RugbyEventTypeProviderMapping>().Property(x => x.ProviderEventName).IsRequired();
 
             modelBuilder.Entity<RugbyFixture>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
-            modelBuilder.Entity<RugbyFixture>().Property(x => x.LegacyFixtureId).HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Unique_LegacyFixtureId") { IsUnique = true }))
-                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+            modelBuilder.Entity<RugbyFixture>().Property(x => x.LegacyFixtureId).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
             modelBuilder.Entity<RugbyFixture>().Property(x => x.ProviderFixtureId).HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Seek_ProviderFixtureId")));
 
             modelBuilder.Entity<RugbyFlatLog>().HasKey(x => new { x.RugbyTournamentId, x.RugbySeasonId, x.RoundNumber, x.RugbyTeamId });
@@ -38,6 +37,7 @@
             modelBuilder.Entity<RugbyMatchStatistics>().HasKey(x => new { x.RugbyFixtureId, x.RugbyTeamId });
 
             modelBuilder.Entity<RugbyPlayer>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+            modelBuilder.Entity<RugbyPlayer>().Property(x => x.LegacyPlayerId).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
             modelBuilder.Entity<RugbyPlayer>().Property(x => x.ProviderPlayerId).HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Seek_ProviderPlayerId")));
             modelBuilder.Entity<RugbyPlayer>().Property(x => x.FullName).IsRequired();
 
@@ -48,14 +48,14 @@
             modelBuilder.Entity<RugbySeason>().Property(x => x.RugbyLogType).IsOptional();
 
             modelBuilder.Entity<RugbyTeam>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
-            modelBuilder.Entity<RugbyTeam>().Property(x => x.LegacyTeamId).HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Unique_LegacyTeamId") { IsUnique = true }));
+            modelBuilder.Entity<RugbyTeam>().Property(x => x.LegacyTeamId).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
             modelBuilder.Entity<RugbyTeam>().Property(x => x.ProviderTeamId).HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Seek_ProviderTeamId")));
             modelBuilder.Entity<RugbyTeam>().Property(x => x.Name).IsRequired();
 
             modelBuilder.Entity<RugbyTournament>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
-            modelBuilder.Entity<RugbyTournament>().Property(x => x.Name).IsRequired();
-            modelBuilder.Entity<RugbyTournament>().Property(x => x.LegacyTournamentId).HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Unique_LegacyTournamentId") { IsUnique = true }));
+            modelBuilder.Entity<RugbyTournament>().Property(x => x.LegacyTournamentId).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
             modelBuilder.Entity<RugbyTournament>().Property(x => x.ProviderTournamentId).HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Seek_ProviderTournamentId")));
+            modelBuilder.Entity<RugbyTournament>().Property(x => x.Name).IsRequired();
             modelBuilder.Entity<RugbyTournament>().Property(x => x.Slug).IsRequired();
             modelBuilder.Entity<RugbyTournament>().Property(x => x.Slug).HasMaxLength(450);
             modelBuilder.Entity<RugbyTournament>().Property(x => x.Slug).HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Unique_Slug") { IsUnique = true }));

@@ -1,10 +1,6 @@
 ﻿using Microsoft.Practices.Unity;
 using SuperSportDataEngine.Application.Container;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Hangfire
 {
@@ -41,7 +37,7 @@ namespace Hangfire
             // This is so that Services that are registered with Hierachical lifetime,
             // Are registered with the correct container.
             var childContainer = container.CreateChildContainer();
-            UnityConfigurationManager.RegisterTypes(childContainer, SuperSportDataEngine.Application.Container.Enums.ApplicationScope.ServiceInboundIngestServer);
+            UnityConfigurationManager.RegisterTypes(childContainer, SuperSportDataEngine.Application.Container.Enums.ApplicationScope.ServiceSchedulerIngestServer);
 
             return new UnityScope(childContainer);
         }
@@ -49,7 +45,14 @@ namespace Hangfire
         public override JobActivatorScope BeginScope(JobActivatorContext context)
         {
 #pragma warning disable 618
-            return BeginScope();
+            // The types in the container should be registered 
+            // in the child container and not globally.
+            // This is so that Services that are registered with Hierachical lifetime,
+            // Are registered with the correct container.
+            var childContainer = container.CreateChildContainer();
+            UnityConfigurationManager.RegisterTypes(childContainer, SuperSportDataEngine.Application.Container.Enums.ApplicationScope.ServiceSchedulerIngestServer);
+
+            return new UnityScope(childContainer);
 #pragma warning restore 618
         }
 
