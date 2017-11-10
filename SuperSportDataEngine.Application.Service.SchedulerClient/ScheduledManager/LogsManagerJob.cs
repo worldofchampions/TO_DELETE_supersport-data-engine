@@ -78,12 +78,10 @@
 
                     var season =
                             (await _schedulerTrackingRugbySeasonRepository.AllAsync())
-                                .Where(
-                                    s =>
+                                .FirstOrDefault(s => 
                                         s.RugbySeasonStatus == RugbySeasonStatus.InProgress &&
                                         s.TournamentId == tournament.Id &&
-                                        s.SchedulerStateForManagerJobPolling == SchedulerStateForManagerJobPolling.NotRunning)
-                                .FirstOrDefault();
+                                        s.SchedulerStateForManagerJobPolling == SchedulerStateForManagerJobPolling.NotRunning);
 
                     if (season != null)
                     {

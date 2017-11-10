@@ -59,8 +59,7 @@
                 _recurringJobManager.RemoveIfExists(jobId);
 
                 var fixtureInDb =
-                        (await _schedulerTrackingRugbyFixtureRepository.AllAsync()).Where(
-                            f => f.FixtureId == fixture.Id).FirstOrDefault();
+                        (await _schedulerTrackingRugbyFixtureRepository.AllAsync()).FirstOrDefault(f => f.FixtureId == fixture.Id);
 
                 if (fixtureInDb != null &&
                     fixtureInDb.SchedulerStateFixtures != SchedulerStateForRugbyFixturePolling.SchedulingNotYetStarted)
@@ -87,8 +86,7 @@
                 _recurringJobManager.RemoveIfExists(jobId);
 
                 var fixtureInDb =
-                        (await _schedulerTrackingRugbyFixtureRepository.AllAsync()).Where(
-                            f => f.FixtureId == fixture.Id).FirstOrDefault();
+                        (await _schedulerTrackingRugbyFixtureRepository.AllAsync()).FirstOrDefault(f => f.FixtureId == fixture.Id);
 
                 if (fixtureInDb != null && 
                     fixtureInDb.SchedulerStateFixtures != SchedulerStateForRugbyFixturePolling.SchedulingCompleted)
@@ -131,7 +129,7 @@
                         });
 
                     var fixtureInDb =
-                            (await _schedulerTrackingRugbyFixtureRepository.AllAsync()).Where(f => f.FixtureId == fixture.Id).FirstOrDefault();
+                            (await _schedulerTrackingRugbyFixtureRepository.AllAsync()).FirstOrDefault(f => f.FixtureId == fixture.Id);
 
                     if (fixtureInDb != null && 
                         fixtureInDb.SchedulerStateFixtures != SchedulerStateForRugbyFixturePolling.LivePolling)

@@ -33,6 +33,9 @@
         /// <summary> A CMS driven value to indicate if a tournament is enabled for ingest. </summary>
         public bool IsEnabled { get; set; }
 
+        /// <summary> A CMS driven value to indicate if a tournament is live scored. </summary>
+        public bool IsLiveScored { get; set; }
+
         public DataProvider DataProvider { get; set; }
     }
 }

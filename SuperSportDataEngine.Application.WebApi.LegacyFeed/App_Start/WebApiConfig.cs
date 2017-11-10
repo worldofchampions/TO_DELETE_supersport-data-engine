@@ -4,6 +4,7 @@ using System.Net.Http.Formatting;
 using System.Web.Http;
 using Microsoft.Practices.Unity;
 using SuperSportDataEngine.Application.Container;
+using SuperSportDataEngine.Application.WebApi.LegacyFeed.Config;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed
 {
@@ -46,8 +47,6 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed
             // For All Media Types
             httpConfig.Formatters.Clear();
 
-            //httpConfig.Formatters.Add(new FormUrlEncodedMediaTypeFormatter());
-
             // For XML
             httpConfig.Formatters.Add(new XmlMediaTypeFormatter());
 
@@ -67,7 +66,12 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed
 
         private static void ConfigureFeedRequestHandler()
         {
-            httpConfig.MessageHandlers.Add(new FeedRequestHandler());
+            var requestHandlerEnabled = LegacyFeedConfig.IsRequestHandlerEnabled;
+
+            if (requestHandlerEnabled)
+            {
+                httpConfig.MessageHandlers.Add(new FeedRequestHandler());
+            }
         }
 
         private static void ConfigureApiRoutes()
