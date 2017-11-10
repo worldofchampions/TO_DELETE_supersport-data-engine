@@ -17,6 +17,9 @@ BEGIN TRY
 		UPDATE RugbyTournaments SET Slug = 'six-nations'		WHERE ProviderTournamentId = 301
 		UPDATE RugbyTournaments SET Slug = 'super-rugby'		WHERE ProviderTournamentId = 181
 		UPDATE RugbyTournaments SET Slug = 'top14'				WHERE ProviderTournamentId = 241
+		UPDATE RugbyTournaments SET Slug = 'england'			WHERE ProviderTournamentId = 201 -- Aviva Premiership
+		UPDATE RugbyTournaments SET Slug = 'new-zealand'		WHERE ProviderTournamentId = 101 -- Mitre 10 Cup
+
 	COMMIT
 	PRINT 'Tournaments slugs updated.'
 END TRY
