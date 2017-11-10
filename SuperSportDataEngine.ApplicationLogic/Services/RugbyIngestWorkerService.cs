@@ -1583,6 +1583,9 @@
 
         private async Task IngestPlayerLineups(CancellationToken cancellationToken, RugbyMatchStatsResponse matchStatsResponse, RugbyFixture fixture)
         {
+            if (matchStatsResponse?.RugbyMatchStats?.teams?.teamsMatch == null)
+                return;
+
             // Do we have provider info?
             if (matchStatsResponse.RugbyMatchStats.teams.teamsMatch.Count == 0)
                 return;
