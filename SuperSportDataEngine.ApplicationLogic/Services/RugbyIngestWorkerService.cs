@@ -482,7 +482,8 @@
                                 StartDateTime = fixtureInDb.StartDateTime,
                                 EndedDateTime = DateTimeOffset.MinValue,
                                 RugbyFixtureStatus = GetFixtureStatusFromProviderFixtureState(fixture.gameStateName),
-                                SchedulerStateFixtures = SchedulerStateForRugbyFixturePolling.SchedulingNotYetStarted
+                                SchedulerStateFixtures = SchedulerStateForRugbyFixturePolling.SchedulingNotYetStarted,
+                                IsJobRunning = false
                             };
 
                             _schedulerTrackingRugbyFixtureRepository.Add(newFixtureSchedule);
