@@ -40,14 +40,22 @@
         public async Task DoWorkAsync()
         {
             await CreateChildJobsForFetchingLiveMatchDataForCurrentFixtures();
-            await DeleteChildJobsForFetchingMatchDataForFixturesEnded();
-            await DeleteChildJobsForFetchingMatchDataForFixturesTooFarInThePast();
+            try
+            {
+                await DeleteChildJobsForFetchingMatchDataForFixturesEnded();
+                await DeleteChildJobsForFetchingMatchDataForFixturesTooFarInThePast();
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e.StackTrace);
+            }
+ 
         }
 
         private async Task<int> DeleteChildJobsForFetchingMatchDataForFixturesTooFarInThePast()
         {
             var postponedFixtures =
-                    await _rugbyService.GetPostponedFixtures();
+                    (await _rugbyService.GetPostponedFixtures()).ToList();
 
             var p = postponedFixtures.ToList();
 
