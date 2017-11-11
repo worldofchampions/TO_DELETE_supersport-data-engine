@@ -499,7 +499,7 @@
                             if(fixtureSchedule.SchedulerStateFixtures != SchedulerStateForRugbyFixturePolling.SchedulingCompleted)
                             {
                                 fixtureSchedule.SchedulerStateFixtures =
-                                    FixturesStateHelper.GetSchedulerStateForFixture(DateTime.Now, gameState, fixtureInDb.StartDateTime.DateTime);
+                                    FixturesStateHelper.GetSchedulerStateForFixture(DateTime.UtcNow, gameState, fixtureInDb.StartDateTime.DateTime);
                             }
 
                             if (HasFixtureEnded(fixture.gameStateName) &&
@@ -1093,7 +1093,7 @@
 
                 //// Check if should stop looping?
                 var matchState = GetFixtureStatusFromProviderFixtureState(matchStatsResponse.RugbyMatchStats.gameState);
-                var schedulerState = FixturesStateHelper.GetSchedulerStateForFixture(DateTime.Now, matchState, fixtureInDb.StartDateTime.DateTime);
+                var schedulerState = FixturesStateHelper.GetSchedulerStateForFixture(DateTime.UtcNow, matchState, fixtureInDb.StartDateTime.DateTime);
 
                 if (schedulerState == SchedulerStateForRugbyFixturePolling.SchedulingCompleted ||
                     schedulerState == SchedulerStateForRugbyFixturePolling.SchedulingNotYetStarted ||
@@ -1117,7 +1117,7 @@
             var fixtureState = GetFixtureStatusFromProviderFixtureState(fixtureGameState);
             schedule.RugbyFixtureStatus = fixtureState;
             schedule.SchedulerStateFixtures = 
-                FixturesStateHelper.GetSchedulerStateForFixture(DateTime.Now, fixtureState, schedule.StartDateTime.DateTime);
+                FixturesStateHelper.GetSchedulerStateForFixture(DateTime.UtcNow, fixtureState, schedule.StartDateTime.DateTime);
             _schedulerTrackingRugbyFixtureRepository.Update(schedule);
 
             await _schedulerTrackingRugbyFixtureRepository.SaveAsync();
