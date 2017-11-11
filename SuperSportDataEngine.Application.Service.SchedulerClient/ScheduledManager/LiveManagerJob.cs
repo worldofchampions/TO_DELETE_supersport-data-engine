@@ -131,13 +131,11 @@
                     var fixtureInDb =
                             (await _schedulerTrackingRugbyFixtureRepository.AllAsync()).FirstOrDefault(f => f.FixtureId == fixture.Id);
 
-                    if (fixtureInDb != null && 
-                        fixtureInDb.SchedulerStateFixtures != SchedulerStateForRugbyFixturePolling.LivePolling)
+                    if (fixtureInDb != null && fixtureInDb.IsJobRunning != true)
                     {
-                        _logger.Info("Setting SchedulerStateFixtures for " + matchName + " to LivePolling.");
-                        _recurringJobManager.Trigger(jobId);
-                        fixtureInDb.SchedulerStateFixtures = SchedulerStateForRugbyFixturePolling.LivePolling;
+                        fixtureInDb.IsJobRunning = true;
                         _schedulerTrackingRugbyFixtureRepository.Update(fixtureInDb);
+                        _recurringJobManager.Trigger(jobId);
                     }
                 }
             }

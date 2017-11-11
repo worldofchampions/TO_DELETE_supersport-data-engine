@@ -482,7 +482,8 @@
                                 StartDateTime = fixtureInDb.StartDateTime,
                                 EndedDateTime = DateTimeOffset.MinValue,
                                 RugbyFixtureStatus = GetFixtureStatusFromProviderFixtureState(fixture.gameStateName),
-                                SchedulerStateFixtures = SchedulerStateForRugbyFixturePolling.SchedulingNotYetStarted
+                                SchedulerStateFixtures = SchedulerStateForRugbyFixturePolling.SchedulingNotYetStarted,
+                                IsJobRunning = false
                             };
 
                             _schedulerTrackingRugbyFixtureRepository.Add(newFixtureSchedule);
@@ -1577,12 +1578,22 @@
                     matchStatsResponse = 
                         await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, fixtureId);
 
-                await IngestPlayerLineups(cancellationToken, matchStatsResponse, fixture);
+                try
+                {
+                    await IngestPlayerLineups(cancellationToken, matchStatsResponse, fixture);
+                }
+                catch (Exception e)
+                {
+                    _logger.Error(e.StackTrace);
+                }
             }
         }
 
         private async Task IngestPlayerLineups(CancellationToken cancellationToken, RugbyMatchStatsResponse matchStatsResponse, RugbyFixture fixture)
         {
+            if (matchStatsResponse?.RugbyMatchStats?.teams?.teamsMatch == null)
+                return;
+
             // Do we have provider info?
             if (matchStatsResponse.RugbyMatchStats.teams.teamsMatch.Count == 0)
                 return;
@@ -1620,6 +1631,9 @@
                     
                     var teamId = squad.teamId;
                     var dbTeam = fixture.TeamA.ProviderTeamId == teamId ? fixture.TeamA : fixture.TeamB;
+
+                    if (dbTeam == null)
+                        continue;
 
                     var shirtNumber = player.shirtNum;
                     var positionName = player.playerPosition;
