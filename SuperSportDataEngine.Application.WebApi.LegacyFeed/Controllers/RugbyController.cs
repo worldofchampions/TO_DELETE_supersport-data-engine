@@ -7,8 +7,10 @@ using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.News;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+using SuperSportDataEngine.Common.Logging;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
@@ -262,7 +264,16 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         {
             if (_cache != null)
             {
-                _cache.Add(cacheKey, cacheData);
+                try
+                {
+                    _cache.Add(cacheKey, cacheData);
+                }
+                catch (System.Exception exception)
+                {
+                    var loggerService = ActionContext.Request.GetDependencyScope().GetService(typeof(ILoggingService)) as ILoggingService;
+
+                    loggerService.Error(exception.Message + exception.StackTrace);
+                }
             }
         }
 
@@ -270,7 +281,18 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         {
             if (_cache != null)
             {
-                return await _cache.GetAsync<T>(key);
+                try
+                {
+                    return await _cache.GetAsync<T>(key);
+                }
+                catch (System.Exception exception)
+                {
+                    var loggerService = ActionContext.Request.GetDependencyScope().GetService(typeof(ILoggingService)) as ILoggingService;
+
+                    loggerService.Error(exception.Message + exception.StackTrace);
+
+                    return null;
+                }
             }
 
             return null;
