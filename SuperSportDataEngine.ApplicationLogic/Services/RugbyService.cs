@@ -249,10 +249,10 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             if (tournament != null)
             {
                 fixtures = (await _rugbyFixturesRepository.AllAsync())
-                    .Where(t => t.RugbyTournament.Id == tournament.Id && t.RugbyFixtureStatus != RugbyFixtureStatus.Result)
-                    .OrderBy(f => f.StartDateTime);
+                    .Where(t => t.RugbyTournament.Id == tournament.Id && t.RugbyFixtureStatus != RugbyFixtureStatus.Result);
+                   
 
-                return fixtures;
+                return fixtures.OrderByDescending(f => f.StartDateTime); 
             }
 
             return fixtures;
