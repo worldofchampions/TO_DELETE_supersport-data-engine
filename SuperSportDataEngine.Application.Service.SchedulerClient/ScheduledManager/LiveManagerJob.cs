@@ -108,35 +108,45 @@
             foreach (var tournament in currentTournaments)
             {
                 var liveFixtures =
-                    await _rugbyService.GetLiveFixturesForCurrentTournament(CancellationToken.None, tournament.Id);
+                    (await _rugbyService.GetLiveFixturesForCurrentTournament(CancellationToken.None, tournament.Id)).ToList();
 
                 _logger.Info("There are " + liveFixtures.Count() + " live fixtures for tournament " + tournament.Name);
 
                 foreach (var fixture in liveFixtures)
                 {
-                    var matchName = fixture.TeamA.Name + " vs " + fixture.TeamB.Name;
-                    var jobId = ConfigurationManager.AppSettings["LiveManagerJob_LiveMatch_JobIdPrefix"] + matchName;
-                    var jobCronExpression = ConfigurationManager.AppSettings["LiveManagerJob_LiveMatch_JobCronExpression"];
+                    try
+                    {
+                        var matchName = fixture.TeamA.Name + " vs " + fixture.TeamB.Name;
 
-                    _recurringJobManager.AddOrUpdate(
-                        jobId,
-                        Job.FromExpression(() => _rugbyIngestWorkerService.IngestLiveMatchData(CancellationToken.None, fixture.ProviderFixtureId)),
-                        jobCronExpression,
-                        new RecurringJobOptions()
-                        {
-                            TimeZone = TimeZoneInfo.Local,
-                            QueueName = HangfireQueueConfiguration.HighPriority
-                        });
+                        var jobId = ConfigurationManager.AppSettings["LiveManagerJob_LiveMatch_JobIdPrefix"] + matchName;
+                        var jobCronExpression = ConfigurationManager.AppSettings["LiveManagerJob_LiveMatch_JobCronExpression"];
+                        _logger.Info(jobId + " " + jobCronExpression);
 
-                    var fixtureInDb =
+                        _recurringJobManager.AddOrUpdate(
+                            jobId,
+                            Job.FromExpression(() => _rugbyIngestWorkerService.IngestLiveMatchData(CancellationToken.None, fixture.ProviderFixtureId)),
+                            jobCronExpression,
+                            new RecurringJobOptions()
+                            {
+                                TimeZone = TimeZoneInfo.Local,
+                                QueueName = HangfireQueueConfiguration.HighPriority
+                            });
+
+                        var fixtureInDb =
                             (await _schedulerTrackingRugbyFixtureRepository.AllAsync()).FirstOrDefault(f => f.FixtureId == fixture.Id);
 
-                    if (fixtureInDb != null && fixtureInDb.IsJobRunning != true)
-                    {
-                        fixtureInDb.IsJobRunning = true;
-                        _schedulerTrackingRugbyFixtureRepository.Update(fixtureInDb);
-                        _recurringJobManager.Trigger(jobId);
+                        if (fixtureInDb != null && fixtureInDb.IsJobRunning != true)
+                        {
+                            fixtureInDb.IsJobRunning = true;
+                            _schedulerTrackingRugbyFixtureRepository.Update(fixtureInDb);
+                            _recurringJobManager.Trigger(jobId);
+                        }
                     }
+                    catch (Exception e)
+                    {
+                        _logger.Error(e.StackTrace);
+                    }
+                    
                 }
             }
 
