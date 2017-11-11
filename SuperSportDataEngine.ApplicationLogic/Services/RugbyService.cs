@@ -371,7 +371,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                  .Where(f => f.StartDateTime.UtcDateTime.Date == DateTime.UtcNow.Date && f.RugbyTournament.IsEnabled)
                  .ToList();
 
-            return todayFixtures;
+            return todayFixtures.OrderByDescending(f => f.StartDateTime);
         }
 
         public async Task<RugbyMatchDetailsEntity> GetMatchDetailsByLegacyMatchId(int legacyMatchId)
