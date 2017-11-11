@@ -81,15 +81,22 @@
 
         private async void UpdateManagerJobs(object sender, ElapsedEventArgs e)
         {
-            _logger.Debug("Do work for ManagerJob's.");
+            try
+            {
+                _logger.Debug("Do work for ManagerJob's.");
 
-            ConfigureDepenencies();
+                ConfigureDepenencies();
 
-            await _liveManagerJob.DoWorkAsync();
-            await _fixturesManagerJob.DoWorkAsync();
-            await _logsManagerJob.DoWorkAsync();
+                await _liveManagerJob.DoWorkAsync();
+                await _fixturesManagerJob.DoWorkAsync();
+                await _logsManagerJob.DoWorkAsync();
 
-            _timer.Start();
+                _timer.Start();
+            }
+            catch (Exception exception)
+            {
+                _logger.Error(exception.StackTrace);
+            }
         }
     }
 }
