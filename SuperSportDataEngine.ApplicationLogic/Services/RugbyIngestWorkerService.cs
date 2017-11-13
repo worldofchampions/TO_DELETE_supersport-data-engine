@@ -284,6 +284,9 @@
                     _statsProzoneIngestService.IngestFixturesForTournament(
                         tournament, seasonId, cancellationToken);
 
+            if (fixtures == null)
+                return;
+
             await PersistFixturesData(cancellationToken, fixtures);
 
             await PersistRugbySeasonDataInSchedulerTrackingRugbySeasonTable(cancellationToken, fixtures);
@@ -295,6 +298,8 @@
         private async Task IngestSeason(CancellationToken cancellationToken, RugbyTournament tournament, int year)
         {
             var season = _statsProzoneIngestService.IngestSeasonData(cancellationToken, tournament.ProviderTournamentId, year);
+            if (season == null)
+                return;
 
             var providerTournamentId = season.RugbySeasons.competitionId;
 
@@ -356,6 +361,9 @@
                 var fixtures =
                     _statsProzoneIngestService.IngestFixturesForTournament(
                         tournament, activeSeasonId, cancellationToken);
+
+                if(fixtures == null)
+                    continue;
 
                 await PersistFixturesData(cancellationToken, fixtures);
 
@@ -744,6 +752,9 @@
                         _statsProzoneIngestService.IngestFlatLogsForTournament(
                             tournament.ProviderTournamentId, activeSeasonIdForTournament);
 
+                    if(logs == null)
+                        continue;
+
                     await PersistFlatLogs(cancellationToken, logs);
 
                     _mongoDbRepository.Save(logs);
@@ -753,6 +764,9 @@
                     var logs =
                         _statsProzoneIngestService.IngestGroupedLogsForTournament(
                             tournament.ProviderTournamentId, activeSeasonIdForTournament);
+
+                    if (logs == null)
+                        continue;
 
                     await PersistGroupedLogs(cancellationToken, logs);
 
@@ -926,6 +940,9 @@
             {
                 var seasonId = await _rugbyService.GetCurrentProviderSeasonIdForTournament(cancellationToken, tournament.Id);
                 var results = _statsProzoneIngestService.IngestFixturesForTournament(tournament, seasonId, cancellationToken);
+                if (results == null)
+                    continue;
+
                 await PersistRugbyFixturesToPublicSportsRepository(cancellationToken, results);
             }
         }
@@ -942,6 +959,9 @@
             var fixtures =
                 _statsProzoneIngestService.IngestFixturesForTournamentSeason(
                     tournamentId, seasonId, cancellationToken);
+
+            if (fixtures == null)
+                return;
 
             await PersistFixturesData(cancellationToken, fixtures);
         }
@@ -973,6 +993,8 @@
                 var seasonId = await _rugbyService.GetCurrentProviderSeasonIdForTournament(cancellationToken, fixture.RugbyTournament.Id);
 
                 var results = _statsProzoneIngestService.IngestFixturesForTournamentSeason(tournamentId, seasonId, cancellationToken);
+                if (results == null)
+                    continue;
 
                  await PersistRugbyFixturesToPublicSportsRepository(cancellationToken,results);
             }
@@ -992,6 +1014,8 @@
                 var seasonId = await _rugbyService.GetCurrentProviderSeasonIdForTournament(cancellationToken, fixture.RugbyTournament.Id);
 
                 var results = _statsProzoneIngestService.IngestFixturesForTournamentSeason(tournamentId, seasonId, cancellationToken);
+                if (results == null)
+                    continue;
 
                 await PersistRugbyFixturesToPublicSportsRepository(cancellationToken, results);
             }
@@ -1011,6 +1035,9 @@
                             tournament.ProviderTournamentId,
                             await _rugbyService.GetCurrentProviderSeasonIdForTournament(cancellationToken, tournament.Id),
                             cancellationToken);
+
+                if (fixtures == null)
+                    return;
 
                 var upcomingFixtures = RemoveFixturesThatHaveBeenCompleted(fixtures);
                 RugbyFixturesResponse oneMonthsfixtures = RemoveFixturesMoreThanAMonthFromNow(upcomingFixtures);
@@ -1073,8 +1100,14 @@
                 var matchStatsResponse =
                     await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, providerFixtureId);
 
+                if(matchStatsResponse == null)
+                    continue;
+
                 var eventsFlowResponse =
                     await _statsProzoneIngestService.IngestEventsFlow(cancellationToken, providerFixtureId);
+
+                if (eventsFlowResponse == null)
+                    continue;
 
                 await IngestLineUpsForFixtures(cancellationToken, new List<RugbyFixture>() { fixtureInDb });
 
@@ -1153,7 +1186,8 @@
                 if (eventTypeMapping?.RugbyEventType == null)
                     return;
 
-                var teamInDb = rugbyFixture.TeamA.ProviderTeamId == error.teamId ? rugbyFixture.TeamA : rugbyFixture.TeamB;
+                var teamInDb = rugbyFixture.TeamA != null && rugbyFixture.TeamA.ProviderTeamId == error.teamId ? rugbyFixture.TeamA : rugbyFixture.TeamB;
+                if (teamInDb == null) continue;
 
                 var newEvent = new RugbyMatchEvent()
                 {
@@ -1174,10 +1208,10 @@
                 // One with the correct event data and the other with incorrect data.
                 // This is because there isn't a unique id provided for the event by the provider.
                 var eventInDb = events.FirstOrDefault(e =>
-                                    e.RugbyFixtureId == newEvent.RugbyFixtureId &&
-                                    e.RugbyTeamId == newEvent.RugbyTeamId &&
-                                    e.RugbyEventTypeId == newEvent.RugbyEventTypeId &&
-                                    e.GameTimeInSeconds == newEvent.GameTimeInSeconds);
+                    e.RugbyFixtureId == newEvent.RugbyFixtureId &&
+                    e.RugbyTeamId == newEvent.RugbyTeamId &&
+                    e.RugbyEventTypeId == newEvent.RugbyEventTypeId &&
+                    e.GameTimeInSeconds == newEvent.GameTimeInSeconds);
 
                 if (eventInDb == null)
                 {
@@ -1213,7 +1247,8 @@
                 if (eventTypeMapping?.RugbyEventType == null)
                     return;
 
-                var teamInDb = rugbyFixture.TeamA.ProviderTeamId == penaltyEvent.teamId ? rugbyFixture.TeamA : rugbyFixture.TeamB;
+                var teamInDb = rugbyFixture.TeamA != null && rugbyFixture.TeamA.ProviderTeamId == penaltyEvent.teamId ? rugbyFixture.TeamA : rugbyFixture.TeamB;
+                if (teamInDb == null) continue;
 
                 var newEvent = new RugbyMatchEvent()
                 {
@@ -1234,10 +1269,10 @@
                 // One with the correct event data and the other with incorrect data.
                 // This is because there isn't a unique id provided for the event by the provider.
                 var eventInDb = events.FirstOrDefault(e =>
-                                    e.RugbyFixtureId == newEvent.RugbyFixtureId &&
-                                    e.RugbyTeamId == newEvent.RugbyTeamId &&
-                                    e.RugbyEventTypeId == newEvent.RugbyEventTypeId &&
-                                    e.GameTimeInSeconds == newEvent.GameTimeInSeconds);
+                    e.RugbyFixtureId == newEvent.RugbyFixtureId &&
+                    e.RugbyTeamId == newEvent.RugbyTeamId &&
+                    e.RugbyEventTypeId == newEvent.RugbyEventTypeId &&
+                    e.GameTimeInSeconds == newEvent.GameTimeInSeconds);
 
                 if (eventInDb == null)
                 {
@@ -1268,7 +1303,8 @@
                 if (cancellationToken.IsCancellationRequested)
                     return;
 
-                var teamInDb = rugbyFixture.TeamA.ProviderTeamId == team.teamId ? rugbyFixture.TeamA : rugbyFixture.TeamB;
+                var teamInDb = rugbyFixture.TeamA != null && rugbyFixture.TeamA.ProviderTeamId == team.teamId ? rugbyFixture.TeamA : rugbyFixture.TeamB;
+                if (teamInDb == null) continue;
 
                 var scoreEvents = team.statScoringEvent;
                 if (scoreEvents == null)
@@ -1303,10 +1339,10 @@
                     // One with the correct event data and the other with incorrect data.
                     // This is because there isn't a unique id provided for the event by the provider.
                     var eventInDb = events.FirstOrDefault(e =>
-                                        e.RugbyFixtureId == newEvent.RugbyFixtureId &&
-                                        e.RugbyTeamId == newEvent.RugbyTeamId &&
-                                        e.RugbyEventTypeId == newEvent.RugbyEventTypeId &&
-                                        e.GameTimeInSeconds == newEvent.GameTimeInSeconds);
+                        e.RugbyFixtureId == newEvent.RugbyFixtureId &&
+                        e.RugbyTeamId == newEvent.RugbyTeamId &&
+                        e.RugbyEventTypeId == newEvent.RugbyEventTypeId &&
+                        e.GameTimeInSeconds == newEvent.GameTimeInSeconds);
 
                     if (eventInDb == null)
                     {
@@ -1393,6 +1429,7 @@
             foreach(var teamMatch in teamsFromProvider.teamsMatch)
             {
                 var team = teamsInRepo.FirstOrDefault(t => t.ProviderTeamId == teamMatch.teamId);
+                if (team == null) continue;
 
                 var stats = teamMatch.teamStats.matchStats.matchStat;
                 var statsInDb = matchStatistics.FirstOrDefault(s => team != null && (fixture != null && (s.RugbyFixtureId == fixture.Id && s.RugbyTeamId == team.Id)));
@@ -1400,7 +1437,6 @@
                 var statsMap = MakeStatisticsMap(stats);
                 if (fixture == null) continue;
 
-                if (team == null) continue;
                 var newStats = new RugbyMatchStatistics()
                 {
                     RugbyFixture = fixture,
@@ -1504,7 +1540,7 @@
                 var gameTimeDisplayHoursMinutesSeconds = comment.gameTime;
                 var gameTimeDisplayMinutesSeconds = comment.GameMinutes;
 
-                var team = fixture.TeamA.ProviderTeamId == comment.teamId ? fixture.TeamA : fixture.TeamB;
+                var team = fixture.TeamA != null && fixture.TeamA.ProviderTeamId == comment.teamId ? fixture.TeamA : fixture.TeamB;
 
                 var player = players.FirstOrDefault(p => p.ProviderPlayerId == comment.playerId);
 
@@ -1574,9 +1610,11 @@
             {
                 var fixtureId = fixture.ProviderFixtureId;
 
+                matchStatsResponse = 
+                    await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, fixtureId);
+
                 if (matchStatsResponse == null)
-                    matchStatsResponse = 
-                        await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, fixtureId);
+                    continue;
 
                 try
                 {
@@ -1599,6 +1637,8 @@
                 return;
 
             var lineupsInDb = _rugbyPlayerLineupsRepository.Where(l => l.RugbyFixture.ProviderFixtureId == fixture.ProviderFixtureId).ToList();
+          
+            var lineupsToRemoveFromDb = lineupsInDb;
 
             foreach (var squad in matchStatsResponse.RugbyMatchStats.teams.teamsMatch)
             {
@@ -1630,7 +1670,7 @@
                     }
                     
                     var teamId = squad.teamId;
-                    var dbTeam = fixture.TeamA.ProviderTeamId == teamId ? fixture.TeamA : fixture.TeamB;
+                    var dbTeam = fixture.TeamA != null && fixture.TeamA.ProviderTeamId == teamId ? fixture.TeamA : fixture.TeamB;
 
                     if (dbTeam == null)
                         continue;
@@ -1673,8 +1713,17 @@
                         dbEntry.JerseyNumber = shirtNumber;
 
                         _rugbyPlayerLineupsRepository.Update(dbEntry);
+
+                        // Should this lineup entry remain in the db?
+                        lineupsToRemoveFromDb.Remove(dbEntry);
                     }
                 }
+            }
+
+            if (lineupsToRemoveFromDb.Count > 0)
+            {
+                _logger.Info("Going to remove " + lineupsToRemoveFromDb.Count + " lineup entries from the db. They have been changed and new entries have been added.");
+                _rugbyPlayerLineupsRepository.DeleteRange(lineupsToRemoveFromDb);
             }
 
             await _rugbyPlayerLineupsRepository.SaveAsync();
@@ -1702,6 +1751,8 @@
             if (logType == RugbyLogType.FlatLogs)
             {
                 var logs = _statsProzoneIngestService.IngestFlatLogsForTournament(providerTournamentId, seasonId);
+                if (logs == null)
+                    return;
 
                 await PersistFlatLogs(cancellationToken, logs);
 
@@ -1710,7 +1761,9 @@
             else
             {
                 var logs = _statsProzoneIngestService.IngestGroupedLogsForTournament(providerTournamentId, seasonId);
-               
+                if (logs == null)
+                    return;
+
                 await PersistGroupedLogs(cancellationToken, logs);
 
                 _mongoDbRepository.Save(logs);
@@ -1723,7 +1776,7 @@
                 return;
 
             var now = DateTime.UtcNow;
-            var nowMinus30Days = DateTime.UtcNow - TimeSpan.FromDays(1);
+            var nowMinus30Days = DateTime.UtcNow - TimeSpan.FromDays(5);
 
             var gamesInPastDay =
                     (await _rugbyFixturesRepository.AllAsync())
@@ -1750,8 +1803,14 @@
                 var matchStatsResponse =
                     await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, providerFixtureId);
 
+                if (matchStatsResponse == null)
+                    continue;
+
                 var eventsFlowResponse =
                     await _statsProzoneIngestService.IngestEventsFlow(cancellationToken, providerFixtureId);
+
+                if (eventsFlowResponse == null)
+                    continue;
 
                 provider.Stop();
 

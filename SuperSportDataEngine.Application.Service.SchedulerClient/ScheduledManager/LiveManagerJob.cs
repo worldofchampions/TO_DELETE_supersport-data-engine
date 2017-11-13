@@ -47,19 +47,22 @@
         private async Task<int> DeleteChildJobsForFetchingMatchDataForFixturesTooFarInThePast()
         {
             var postponedFixtures =
-                    await _rugbyService.GetPostponedFixtures();
+                    (await _rugbyService.GetPostponedFixtures()).ToList();
 
-            var p = postponedFixtures.ToList();
+            var postponedGames = postponedFixtures.ToList();
 
             foreach (var fixture in postponedFixtures)
             {
+                if (fixture.TeamA == null) continue;
+                if (fixture.TeamB == null) continue;
+
                 var matchName = fixture.TeamA.Name + " vs " + fixture.TeamB.Name;
                 var jobId = ConfigurationManager.AppSettings["LiveManagerJob_LiveMatch_JobIdPrefix"] + matchName;
 
                 _recurringJobManager.RemoveIfExists(jobId);
 
                 var fixtureInDb =
-                        (await _schedulerTrackingRugbyFixtureRepository.AllAsync()).FirstOrDefault(f => f.FixtureId == fixture.Id);
+                    (await _schedulerTrackingRugbyFixtureRepository.AllAsync()).FirstOrDefault(f => f.FixtureId == fixture.Id);
 
                 if (fixtureInDb != null &&
                     fixtureInDb.SchedulerStateFixtures != SchedulerStateForRugbyFixturePolling.SchedulingNotYetStarted)
@@ -80,13 +83,16 @@
 
             foreach (var fixture in completedFixtures)
             {
+                if (fixture.TeamA == null) continue;
+                if (fixture.TeamB == null) continue;
+
                 var matchName = fixture.TeamA.Name + " vs " + fixture.TeamB.Name;
                 var jobId = ConfigurationManager.AppSettings["LiveManagerJob_LiveMatch_JobIdPrefix"] + matchName;
 
                 _recurringJobManager.RemoveIfExists(jobId);
 
                 var fixtureInDb =
-                        (await _schedulerTrackingRugbyFixtureRepository.AllAsync()).FirstOrDefault(f => f.FixtureId == fixture.Id);
+                    (await _schedulerTrackingRugbyFixtureRepository.AllAsync()).FirstOrDefault(f => f.FixtureId == fixture.Id);
 
                 if (fixtureInDb != null && 
                     fixtureInDb.SchedulerStateFixtures != SchedulerStateForRugbyFixturePolling.SchedulingCompleted)
@@ -103,59 +109,46 @@
         private async Task<int> CreateChildJobsForFetchingLiveMatchDataForCurrentFixtures()
         {
             var currentTournaments =
-                    await _rugbyService.GetCurrentTournaments();
+                    (await _rugbyService.GetCurrentTournaments()).ToList();
 
             foreach (var tournament in currentTournaments)
             {
-                try
-                {
-                    var liveFixtures =
+                var liveFixtures =
                     (await _rugbyService.GetLiveFixturesForCurrentTournament(CancellationToken.None, tournament.Id)).ToList();
 
-                    _logger.Info("There are " + liveFixtures.Count() + " live fixtures for tournament " + tournament.Name);
+                _logger.Info("There are " + liveFixtures.Count() + " live fixtures for tournament " + tournament.Name);
 
-                    foreach (var fixture in liveFixtures)
+                foreach (var fixture in liveFixtures)
+                {
+                    if (fixture.TeamA == null) continue;
+                    if (fixture.TeamB == null) continue;
+
+                    var matchName = fixture.TeamA.Name + " vs " + fixture.TeamB.Name;
+
+                    var jobId = ConfigurationManager.AppSettings["LiveManagerJob_LiveMatch_JobIdPrefix"] + matchName;
+                    var jobCronExpression = ConfigurationManager.AppSettings["LiveManagerJob_LiveMatch_JobCronExpression"];
+                    _logger.Info(jobId + " " + jobCronExpression);
+
+                    _recurringJobManager.AddOrUpdate(
+                        jobId,
+                        Job.FromExpression(() => _rugbyIngestWorkerService.IngestLiveMatchData(CancellationToken.None, fixture.ProviderFixtureId)),
+                        jobCronExpression,
+                        new RecurringJobOptions()
+                        {
+                            TimeZone = TimeZoneInfo.Local,
+                            QueueName = HangfireQueueConfiguration.HighPriority
+                        });
+
+                    var fixtureInDb =
+                        (await _schedulerTrackingRugbyFixtureRepository.AllAsync()).FirstOrDefault(f => f.FixtureId == fixture.Id);
+
+                    if (fixtureInDb != null && fixtureInDb.IsJobRunning != true)
                     {
-                        try
-                        {
-                            var matchName = fixture.TeamA.Name + " vs " + fixture.TeamB.Name;
-
-                            var jobId = ConfigurationManager.AppSettings["LiveManagerJob_LiveMatch_JobIdPrefix"] + matchName;
-                            var jobCronExpression = ConfigurationManager.AppSettings["LiveManagerJob_LiveMatch_JobCronExpression"];
-                            _logger.Info(jobId + " " + jobCronExpression);
-
-                            _recurringJobManager.AddOrUpdate(
-                                jobId,
-                                Job.FromExpression(() => _rugbyIngestWorkerService.IngestLiveMatchData(CancellationToken.None, fixture.ProviderFixtureId)),
-                                jobCronExpression,
-                                new RecurringJobOptions()
-                                {
-                                    TimeZone = TimeZoneInfo.Local,
-                                    QueueName = HangfireQueueConfiguration.HighPriority
-                                });
-
-                            var fixtureInDb =
-                                (await _schedulerTrackingRugbyFixtureRepository.AllAsync()).FirstOrDefault(f => f.FixtureId == fixture.Id);
-
-                            if (fixtureInDb != null && fixtureInDb.IsJobRunning != true)
-                            {
-                                fixtureInDb.IsJobRunning = true;
-                                _schedulerTrackingRugbyFixtureRepository.Update(fixtureInDb);
-                                _recurringJobManager.Trigger(jobId);
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            _logger.Error(e.StackTrace);
-                        }
-
+                        fixtureInDb.IsJobRunning = true;
+                        _schedulerTrackingRugbyFixtureRepository.Update(fixtureInDb);
+                        _recurringJobManager.Trigger(jobId);
                     }
                 }
-                catch (Exception e)
-                {
-                    _logger.Error(e.StackTrace);
-                }
-                
             }
 
             return await _schedulerTrackingRugbyFixtureRepository.SaveAsync();
