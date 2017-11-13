@@ -89,7 +89,7 @@
             catch (Exception e)
             {
                 _logger.Fatal(e);   
-                return new RugbyFixturesResponse();
+                return null;
             }
         }
 
@@ -141,7 +141,7 @@
             catch (Exception e)
             {
                 _logger.Fatal(e);
-                return new RugbySeasonResponse();
+                return null;
             }
         }
 
@@ -188,7 +188,7 @@
             catch (Exception e)
             {
                 _logger.Fatal(e);
-                return new RugbyFixturesResponse();
+                return null;
             }
         }
 
@@ -225,7 +225,7 @@
             catch (Exception e)
             {
                 _logger.Fatal(e);
-                return new RugbyFlatLogsResponse();
+                return null;
             }
         }
 
@@ -300,7 +300,7 @@
             catch (Exception e)
             {
                 _logger.Fatal(e);
-                return new RugbyMatchStatsResponse();
+                return null;
             }
         }
 
@@ -355,7 +355,7 @@
             catch (Exception e)
             {
                 _logger.Fatal(e);
-                return new RugbyEventsFlowResponse();
+                return null;
             }
         }
 

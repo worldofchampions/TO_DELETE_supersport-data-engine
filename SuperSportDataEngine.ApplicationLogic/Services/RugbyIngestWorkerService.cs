@@ -284,6 +284,9 @@
                     _statsProzoneIngestService.IngestFixturesForTournament(
                         tournament, seasonId, cancellationToken);
 
+            if (fixtures == null)
+                return;
+
             await PersistFixturesData(cancellationToken, fixtures);
 
             await PersistRugbySeasonDataInSchedulerTrackingRugbySeasonTable(cancellationToken, fixtures);
@@ -295,6 +298,8 @@
         private async Task IngestSeason(CancellationToken cancellationToken, RugbyTournament tournament, int year)
         {
             var season = _statsProzoneIngestService.IngestSeasonData(cancellationToken, tournament.ProviderTournamentId, year);
+            if (season == null)
+                return;
 
             var providerTournamentId = season.RugbySeasons.competitionId;
 
@@ -356,6 +361,9 @@
                 var fixtures =
                     _statsProzoneIngestService.IngestFixturesForTournament(
                         tournament, activeSeasonId, cancellationToken);
+
+                if(fixtures == null)
+                    continue;
 
                 await PersistFixturesData(cancellationToken, fixtures);
 
@@ -744,6 +752,9 @@
                         _statsProzoneIngestService.IngestFlatLogsForTournament(
                             tournament.ProviderTournamentId, activeSeasonIdForTournament);
 
+                    if(logs == null)
+                        continue;
+
                     await PersistFlatLogs(cancellationToken, logs);
 
                     _mongoDbRepository.Save(logs);
@@ -753,6 +764,9 @@
                     var logs =
                         _statsProzoneIngestService.IngestGroupedLogsForTournament(
                             tournament.ProviderTournamentId, activeSeasonIdForTournament);
+
+                    if (logs == null)
+                        continue;
 
                     await PersistGroupedLogs(cancellationToken, logs);
 
@@ -926,6 +940,9 @@
             {
                 var seasonId = await _rugbyService.GetCurrentProviderSeasonIdForTournament(cancellationToken, tournament.Id);
                 var results = _statsProzoneIngestService.IngestFixturesForTournament(tournament, seasonId, cancellationToken);
+                if (results == null)
+                    continue;
+
                 await PersistRugbyFixturesToPublicSportsRepository(cancellationToken, results);
             }
         }
@@ -942,6 +959,9 @@
             var fixtures =
                 _statsProzoneIngestService.IngestFixturesForTournamentSeason(
                     tournamentId, seasonId, cancellationToken);
+
+            if (fixtures == null)
+                return;
 
             await PersistFixturesData(cancellationToken, fixtures);
         }
@@ -973,6 +993,8 @@
                 var seasonId = await _rugbyService.GetCurrentProviderSeasonIdForTournament(cancellationToken, fixture.RugbyTournament.Id);
 
                 var results = _statsProzoneIngestService.IngestFixturesForTournamentSeason(tournamentId, seasonId, cancellationToken);
+                if (results == null)
+                    continue;
 
                  await PersistRugbyFixturesToPublicSportsRepository(cancellationToken,results);
             }
@@ -992,6 +1014,8 @@
                 var seasonId = await _rugbyService.GetCurrentProviderSeasonIdForTournament(cancellationToken, fixture.RugbyTournament.Id);
 
                 var results = _statsProzoneIngestService.IngestFixturesForTournamentSeason(tournamentId, seasonId, cancellationToken);
+                if (results == null)
+                    continue;
 
                 await PersistRugbyFixturesToPublicSportsRepository(cancellationToken, results);
             }
@@ -1011,6 +1035,9 @@
                             tournament.ProviderTournamentId,
                             await _rugbyService.GetCurrentProviderSeasonIdForTournament(cancellationToken, tournament.Id),
                             cancellationToken);
+
+                if (fixtures == null)
+                    return;
 
                 var upcomingFixtures = RemoveFixturesThatHaveBeenCompleted(fixtures);
                 RugbyFixturesResponse oneMonthsfixtures = RemoveFixturesMoreThanAMonthFromNow(upcomingFixtures);
@@ -1073,8 +1100,14 @@
                 var matchStatsResponse =
                     await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, providerFixtureId);
 
+                if(matchStatsResponse == null)
+                    continue;
+
                 var eventsFlowResponse =
                     await _statsProzoneIngestService.IngestEventsFlow(cancellationToken, providerFixtureId);
+
+                if (eventsFlowResponse == null)
+                    continue;
 
                 await IngestLineUpsForFixtures(cancellationToken, new List<RugbyFixture>() { fixtureInDb });
 
@@ -1577,9 +1610,11 @@
             {
                 var fixtureId = fixture.ProviderFixtureId;
 
+                matchStatsResponse = 
+                    await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, fixtureId);
+
                 if (matchStatsResponse == null)
-                    matchStatsResponse = 
-                        await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, fixtureId);
+                    continue;
 
                 try
                 {
@@ -1705,6 +1740,8 @@
             if (logType == RugbyLogType.FlatLogs)
             {
                 var logs = _statsProzoneIngestService.IngestFlatLogsForTournament(providerTournamentId, seasonId);
+                if (logs == null)
+                    return;
 
                 await PersistFlatLogs(cancellationToken, logs);
 
@@ -1713,7 +1750,9 @@
             else
             {
                 var logs = _statsProzoneIngestService.IngestGroupedLogsForTournament(providerTournamentId, seasonId);
-               
+                if (logs == null)
+                    return;
+
                 await PersistGroupedLogs(cancellationToken, logs);
 
                 _mongoDbRepository.Save(logs);
@@ -1753,8 +1792,14 @@
                 var matchStatsResponse =
                     await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, providerFixtureId);
 
+                if (matchStatsResponse == null)
+                    continue;
+
                 var eventsFlowResponse =
                     await _statsProzoneIngestService.IngestEventsFlow(cancellationToken, providerFixtureId);
+
+                if (eventsFlowResponse == null)
+                    continue;
 
                 provider.Stop();
 
