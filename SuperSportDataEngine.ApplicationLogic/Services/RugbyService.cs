@@ -383,15 +383,15 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 return null;
             }
 
-            var teamAlineup = await GetTeamLineupForFixture(fixture.Id, fixture.TeamA.Id);
+            var teamAlineup = await GetTeamLineupForFixture(fixture.Id, fixture.TeamA?.Id ?? Guid.Empty);
 
-            var teamBlineup = await GetTeamLineupForFixture(fixture.Id, fixture.TeamB.Id);
+            var teamBlineup = await GetTeamLineupForFixture(fixture.Id, fixture.TeamB?.Id ?? Guid.Empty);
 
             var bothTeamsLineups = teamAlineup.Concat(teamBlineup).OrderBy(p => p.JerseyNumber).ToList();
 
-            var statsA = await GetMatchStatsForTeam(fixture.Id, fixture.TeamA.Id);
+            var statsA = await GetMatchStatsForTeam(fixture.Id, fixture.TeamA?.Id ?? Guid.Empty);
 
-            var statsB = await GetMatchStatsForTeam(fixture.Id, fixture.TeamB.Id);
+            var statsB = await GetMatchStatsForTeam(fixture.Id, fixture.TeamB?.Id ?? Guid.Empty);
 
             var events = await GetRugbyFixtureEvents(fixture.Id);
 
@@ -401,9 +401,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             events = events.OrderByDescending(e => e.GameTimeInSeconds).ThenByDescending(e => e.TimestampCreated).ToList();
 
-            var teamAScorers = await GetTeamScorersForFixture(fixture.Id, fixture.TeamA.Id);
+            var teamAScorers = await GetTeamScorersForFixture(fixture.Id, fixture.TeamA?.Id ?? Guid.Empty);
 
-            var teamBScorers = await GetTeamScorersForFixture(fixture.Id, fixture.TeamB.Id);
+            var teamBScorers = await GetTeamScorersForFixture(fixture.Id, fixture.TeamB?.Id ?? Guid.Empty);
 
             var matchDetails = new RugbyMatchDetailsEntity
             {

@@ -54,14 +54,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
 
                 while (true)
                 {
-                    try
-                    {
-                        _fixedManagerJob.UpdateRecurringJobDefinitions();
-                    }
-                    catch (Exception exception)
-                    {
-                        _logger.Error(exception.StackTrace);
-                    }
+                    _fixedManagerJob.UpdateRecurringJobDefinitions();
 
                     Thread.Sleep(2000);
                 }
