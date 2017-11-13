@@ -1637,6 +1637,8 @@
                 return;
 
             var lineupsInDb = _rugbyPlayerLineupsRepository.Where(l => l.RugbyFixture.ProviderFixtureId == fixture.ProviderFixtureId).ToList();
+          
+            var lineupsToRemoveFromDb = lineupsInDb;
 
             foreach (var squad in matchStatsResponse.RugbyMatchStats.teams.teamsMatch)
             {
@@ -1711,8 +1713,17 @@
                         dbEntry.JerseyNumber = shirtNumber;
 
                         _rugbyPlayerLineupsRepository.Update(dbEntry);
+
+                        // Should this lineup entry remain in the db?
+                        lineupsToRemoveFromDb.Remove(dbEntry);
                     }
                 }
+            }
+
+            if (lineupsToRemoveFromDb.Count > 0)
+            {
+                _logger.Info("Going to remove " + lineupsToRemoveFromDb.Count + " lineup entries from the db. They have been changed and new entries have been added.");
+                _rugbyPlayerLineupsRepository.DeleteRange(lineupsToRemoveFromDb);
             }
 
             await _rugbyPlayerLineupsRepository.SaveAsync();
@@ -1765,7 +1776,7 @@
                 return;
 
             var now = DateTime.UtcNow;
-            var nowMinus30Days = DateTime.UtcNow - TimeSpan.FromDays(1);
+            var nowMinus30Days = DateTime.UtcNow - TimeSpan.FromDays(5);
 
             var gamesInPastDay =
                     (await _rugbyFixturesRepository.AllAsync())
