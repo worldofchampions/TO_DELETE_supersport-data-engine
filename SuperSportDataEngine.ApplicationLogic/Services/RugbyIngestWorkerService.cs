@@ -1792,8 +1792,20 @@
 
         public async Task IngestLiveMatchDataForPastFixtures(CancellationToken cancellationToken)
         {
-            var pastFixtures = await _rugbyService.GetFixturesNotIngestedYet();
+            var pastFixtures = (await _rugbyService.GetFixturesNotIngestedYet()).ToList();
 
+            await IngestPastLiveData(cancellationToken, pastFixtures);
+        }
+
+        public async Task IngestLiveMatchDataForPastFewDaysFixtures(CancellationToken cancellationToken)
+        {
+            var pastFixtures = (await _rugbyService.GetPastDaysFixtures(4)).ToList();
+
+            await IngestPastLiveData(cancellationToken, pastFixtures);
+        }
+
+        private async Task IngestPastLiveData(CancellationToken cancellationToken, List<RugbyFixture> pastFixtures)
+        {
             foreach (var fixture in pastFixtures)
             {
                 Stopwatch provider = Stopwatch.StartNew();
