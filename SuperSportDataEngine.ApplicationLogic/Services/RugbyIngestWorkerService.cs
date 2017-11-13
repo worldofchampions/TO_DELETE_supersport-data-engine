@@ -1153,7 +1153,8 @@
                 if (eventTypeMapping?.RugbyEventType == null)
                     return;
 
-                var teamInDb = rugbyFixture.TeamA.ProviderTeamId == error.teamId ? rugbyFixture.TeamA : rugbyFixture.TeamB;
+                var teamInDb = rugbyFixture.TeamA != null && rugbyFixture.TeamA.ProviderTeamId == error.teamId ? rugbyFixture.TeamA : rugbyFixture.TeamB;
+                if (teamInDb == null) continue;
 
                 var newEvent = new RugbyMatchEvent()
                 {
@@ -1174,10 +1175,10 @@
                 // One with the correct event data and the other with incorrect data.
                 // This is because there isn't a unique id provided for the event by the provider.
                 var eventInDb = events.FirstOrDefault(e =>
-                                    e.RugbyFixtureId == newEvent.RugbyFixtureId &&
-                                    e.RugbyTeamId == newEvent.RugbyTeamId &&
-                                    e.RugbyEventTypeId == newEvent.RugbyEventTypeId &&
-                                    e.GameTimeInSeconds == newEvent.GameTimeInSeconds);
+                    e.RugbyFixtureId == newEvent.RugbyFixtureId &&
+                    e.RugbyTeamId == newEvent.RugbyTeamId &&
+                    e.RugbyEventTypeId == newEvent.RugbyEventTypeId &&
+                    e.GameTimeInSeconds == newEvent.GameTimeInSeconds);
 
                 if (eventInDb == null)
                 {
@@ -1213,7 +1214,8 @@
                 if (eventTypeMapping?.RugbyEventType == null)
                     return;
 
-                var teamInDb = rugbyFixture.TeamA.ProviderTeamId == penaltyEvent.teamId ? rugbyFixture.TeamA : rugbyFixture.TeamB;
+                var teamInDb = rugbyFixture.TeamA != null && rugbyFixture.TeamA.ProviderTeamId == penaltyEvent.teamId ? rugbyFixture.TeamA : rugbyFixture.TeamB;
+                if (teamInDb == null) continue;
 
                 var newEvent = new RugbyMatchEvent()
                 {
@@ -1234,10 +1236,10 @@
                 // One with the correct event data and the other with incorrect data.
                 // This is because there isn't a unique id provided for the event by the provider.
                 var eventInDb = events.FirstOrDefault(e =>
-                                    e.RugbyFixtureId == newEvent.RugbyFixtureId &&
-                                    e.RugbyTeamId == newEvent.RugbyTeamId &&
-                                    e.RugbyEventTypeId == newEvent.RugbyEventTypeId &&
-                                    e.GameTimeInSeconds == newEvent.GameTimeInSeconds);
+                    e.RugbyFixtureId == newEvent.RugbyFixtureId &&
+                    e.RugbyTeamId == newEvent.RugbyTeamId &&
+                    e.RugbyEventTypeId == newEvent.RugbyEventTypeId &&
+                    e.GameTimeInSeconds == newEvent.GameTimeInSeconds);
 
                 if (eventInDb == null)
                 {
@@ -1268,7 +1270,8 @@
                 if (cancellationToken.IsCancellationRequested)
                     return;
 
-                var teamInDb = rugbyFixture.TeamA.ProviderTeamId == team.teamId ? rugbyFixture.TeamA : rugbyFixture.TeamB;
+                var teamInDb = rugbyFixture.TeamA != null && rugbyFixture.TeamA.ProviderTeamId == team.teamId ? rugbyFixture.TeamA : rugbyFixture.TeamB;
+                if (teamInDb == null) continue;
 
                 var scoreEvents = team.statScoringEvent;
                 if (scoreEvents == null)
@@ -1303,10 +1306,10 @@
                     // One with the correct event data and the other with incorrect data.
                     // This is because there isn't a unique id provided for the event by the provider.
                     var eventInDb = events.FirstOrDefault(e =>
-                                        e.RugbyFixtureId == newEvent.RugbyFixtureId &&
-                                        e.RugbyTeamId == newEvent.RugbyTeamId &&
-                                        e.RugbyEventTypeId == newEvent.RugbyEventTypeId &&
-                                        e.GameTimeInSeconds == newEvent.GameTimeInSeconds);
+                        e.RugbyFixtureId == newEvent.RugbyFixtureId &&
+                        e.RugbyTeamId == newEvent.RugbyTeamId &&
+                        e.RugbyEventTypeId == newEvent.RugbyEventTypeId &&
+                        e.GameTimeInSeconds == newEvent.GameTimeInSeconds);
 
                     if (eventInDb == null)
                     {
@@ -1393,6 +1396,7 @@
             foreach(var teamMatch in teamsFromProvider.teamsMatch)
             {
                 var team = teamsInRepo.FirstOrDefault(t => t.ProviderTeamId == teamMatch.teamId);
+                if (team == null) continue;
 
                 var stats = teamMatch.teamStats.matchStats.matchStat;
                 var statsInDb = matchStatistics.FirstOrDefault(s => team != null && (fixture != null && (s.RugbyFixtureId == fixture.Id && s.RugbyTeamId == team.Id)));
@@ -1400,7 +1404,6 @@
                 var statsMap = MakeStatisticsMap(stats);
                 if (fixture == null) continue;
 
-                if (team == null) continue;
                 var newStats = new RugbyMatchStatistics()
                 {
                     RugbyFixture = fixture,
@@ -1504,7 +1507,7 @@
                 var gameTimeDisplayHoursMinutesSeconds = comment.gameTime;
                 var gameTimeDisplayMinutesSeconds = comment.GameMinutes;
 
-                var team = fixture.TeamA.ProviderTeamId == comment.teamId ? fixture.TeamA : fixture.TeamB;
+                var team = fixture.TeamA != null && fixture.TeamA.ProviderTeamId == comment.teamId ? fixture.TeamA : fixture.TeamB;
 
                 var player = players.FirstOrDefault(p => p.ProviderPlayerId == comment.playerId);
 
@@ -1630,7 +1633,7 @@
                     }
                     
                     var teamId = squad.teamId;
-                    var dbTeam = fixture.TeamA.ProviderTeamId == teamId ? fixture.TeamA : fixture.TeamB;
+                    var dbTeam = fixture.TeamA != null && fixture.TeamA.ProviderTeamId == teamId ? fixture.TeamA : fixture.TeamB;
 
                     if (dbTeam == null)
                         continue;
