@@ -1776,7 +1776,7 @@
                 return;
 
             var now = DateTime.UtcNow;
-            var nowMinus30Days = DateTime.UtcNow - TimeSpan.FromDays(1);
+            var nowMinus30Days = DateTime.UtcNow - TimeSpan.FromDays(5);
 
             var gamesInPastDay =
                     (await _rugbyFixturesRepository.AllAsync())
