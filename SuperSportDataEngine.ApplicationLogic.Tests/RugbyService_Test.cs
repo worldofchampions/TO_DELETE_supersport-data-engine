@@ -371,6 +371,47 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
         }
 
         [Test]
+        public async Task LiveGame_Getter_Count_1_Live()
+        {
+            Guid tournamentGuid = Guid.NewGuid();
+
+            var TestTournament = new RugbyTournament()
+            {
+                Id = tournamentGuid,
+                Name = "testTournament",
+                IsEnabled = true
+            };
+
+            MockTournamentRepository.Object.Add(
+                TestTournament);
+
+            Guid fixtureGuid = Guid.NewGuid();
+            DateTime fixtureStartDate = DateTime.Now + TimeSpan.FromMinutes(14);
+
+            MockFixtureRepository.Object.Add(
+                new RugbyFixture()
+                {
+                    Id = fixtureGuid,
+                    RugbyTournament = TestTournament,
+                    RugbyFixtureStatus = RugbyFixtureStatus.PreMatch,
+                    StartDateTime = fixtureStartDate,
+                });
+
+            MockSchedulerTrackingFixtureRepository.Object.Add(
+                new SchedulerTrackingRugbyFixture()
+                {
+                    FixtureId = fixtureGuid,
+                    TournamentId = tournamentGuid,
+                    RugbyFixtureStatus = RugbyFixtureStatus.PreMatch,
+                    SchedulerStateFixtures = SchedulerStateForRugbyFixturePolling.PreLivePolling
+                });
+
+            var liveGames = await RugbyService.GetLiveFixturesForCurrentTournament(CancellationToken.None, tournamentGuid);
+
+            Assert.AreEqual(1, liveGames.Count());
+        }
+
+        [Test]
         public async Task CompletedFixture_Getter_Count_0_NotLive()
         {
             Guid tournamentGuid = Guid.NewGuid();
@@ -532,6 +573,87 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
             var postponedFixture = await RugbyService.GetPostponedFixtures();
 
             Assert.AreEqual(1, postponedFixture.Count());
+        }
+
+        [Test]
+        public async Task GetPastDaysFixtures_Return_0()
+        {
+            Assert.AreEqual(0, (await RugbyService.GetPastDaysFixtures(4)).Count());
+        }
+
+        [Test]
+        public async Task GetPastDaysFixtures_Return_1()
+        {
+            MockFixtureRepository.Object.Add(
+                new RugbyFixture()
+                {
+                    Id = Guid.NewGuid(),
+                    StartDateTime = DateTime.UtcNow
+                });
+            Assert.AreEqual(1, (await RugbyService.GetPastDaysFixtures(4)).Count());
+        }
+
+        [Test]
+        public async Task GetPastDaysFixtures_Return_1_With_1_Fixture_TooFarInThePast()
+        {
+            MockFixtureRepository.Object.AddRange(
+                new List<RugbyFixture>()
+                {
+                    new RugbyFixture()
+                    {
+                        Id = Guid.NewGuid(),
+                        StartDateTime = DateTime.UtcNow
+                    },
+                    new RugbyFixture()
+                    {
+                        Id = Guid.NewGuid(),
+                        StartDateTime = DateTime.UtcNow - TimeSpan.FromDays(5)
+                    }
+                });
+
+            Assert.AreEqual(1, (await RugbyService.GetPastDaysFixtures(4)).Count());
+        }
+
+        [Test]
+        public async Task GetPastDaysFixtures_Return_2_With_0_Fixture_TooFarInThePast()
+        {
+            MockFixtureRepository.Object.AddRange(
+                new List<RugbyFixture>()
+                {
+                    new RugbyFixture()
+                    {
+                        Id = Guid.NewGuid(),
+                        StartDateTime = DateTime.UtcNow
+                    },
+                    new RugbyFixture()
+                    {
+                        Id = Guid.NewGuid(),
+                        StartDateTime = DateTime.UtcNow - TimeSpan.FromDays(1)
+                    }
+                });
+
+            Assert.AreEqual(2, (await RugbyService.GetPastDaysFixtures(4)).Count());
+        }
+
+        [Test]
+        public async Task GetPastDaysFixtures_Return_0_With_2_Fixture_TooFarInThePast()
+        {
+            MockFixtureRepository.Object.AddRange(
+                new List<RugbyFixture>()
+                {
+                    new RugbyFixture()
+                    {
+                        Id = Guid.NewGuid(),
+                        StartDateTime = DateTime.UtcNow - TimeSpan.FromDays(9)
+                    },
+                    new RugbyFixture()
+                    {
+                        Id = Guid.NewGuid(),
+                        StartDateTime = DateTime.UtcNow - TimeSpan.FromDays(5)
+                    }
+                });
+
+            Assert.AreEqual(0, (await RugbyService.GetPastDaysFixtures(4)).Count());
         }
     }
 }

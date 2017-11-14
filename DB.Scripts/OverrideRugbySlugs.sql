@@ -9,7 +9,7 @@ BEGIN TRY
 		UPDATE RugbyTournaments SET Slug = 'champions-cup'		WHERE ProviderTournamentId = 291
 		UPDATE RugbyTournaments SET Slug = 'craven-week'		WHERE ProviderTournamentId = 129
 		UPDATE RugbyTournaments SET Slug = 'currie-cup'			WHERE ProviderTournamentId = 121
-		UPDATE RugbyTournaments SET Slug = 'international-rugby'WHERE ProviderTournamentId = 810
+		UPDATE RugbyTournaments SET Slug = 'international'		WHERE ProviderTournamentId = 810
 		UPDATE RugbyTournaments SET Slug = 'pro14'				WHERE ProviderTournamentId = 293
 		UPDATE RugbyTournaments SET Slug = 'pro-d2'				WHERE ProviderTournamentId = 242
 		UPDATE RugbyTournaments SET Slug = 'rugby-championship' WHERE ProviderTournamentId = 117
