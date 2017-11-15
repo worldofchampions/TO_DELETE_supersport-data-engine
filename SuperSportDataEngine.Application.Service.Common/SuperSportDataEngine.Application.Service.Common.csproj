@@ -106,6 +106,7 @@
     <Compile Include="Hangfire.Configuration\HangfireQueueConfiguration.cs" />
     <Compile Include="Hangfire.Filters\CustomRetryFilterAttribute.cs" />
     <Compile Include="Hangfire.Filters\ExpirationTimeAttribute.cs" />
+    <Compile Include="Hangfire.Filters\LogExceptionFilterAttribute.cs" />
     <Compile Include="Interfaces\ISystemTimeService.cs" />
     <Compile Include="Interfaces\IWindowsServiceContract.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
