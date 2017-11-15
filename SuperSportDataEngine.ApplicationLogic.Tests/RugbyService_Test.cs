@@ -574,5 +574,86 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
 
             Assert.AreEqual(1, postponedFixture.Count());
         }
+
+        [Test]
+        public async Task GetPastDaysFixtures_Return_0()
+        {
+            Assert.AreEqual(0, (await RugbyService.GetPastDaysFixtures(4)).Count());
+        }
+
+        [Test]
+        public async Task GetPastDaysFixtures_Return_1()
+        {
+            MockFixtureRepository.Object.Add(
+                new RugbyFixture()
+                {
+                    Id = Guid.NewGuid(),
+                    StartDateTime = DateTime.UtcNow
+                });
+            Assert.AreEqual(1, (await RugbyService.GetPastDaysFixtures(4)).Count());
+        }
+
+        [Test]
+        public async Task GetPastDaysFixtures_Return_1_With_1_Fixture_TooFarInThePast()
+        {
+            MockFixtureRepository.Object.AddRange(
+                new List<RugbyFixture>()
+                {
+                    new RugbyFixture()
+                    {
+                        Id = Guid.NewGuid(),
+                        StartDateTime = DateTime.UtcNow
+                    },
+                    new RugbyFixture()
+                    {
+                        Id = Guid.NewGuid(),
+                        StartDateTime = DateTime.UtcNow - TimeSpan.FromDays(5)
+                    }
+                });
+
+            Assert.AreEqual(1, (await RugbyService.GetPastDaysFixtures(4)).Count());
+        }
+
+        [Test]
+        public async Task GetPastDaysFixtures_Return_2_With_0_Fixture_TooFarInThePast()
+        {
+            MockFixtureRepository.Object.AddRange(
+                new List<RugbyFixture>()
+                {
+                    new RugbyFixture()
+                    {
+                        Id = Guid.NewGuid(),
+                        StartDateTime = DateTime.UtcNow
+                    },
+                    new RugbyFixture()
+                    {
+                        Id = Guid.NewGuid(),
+                        StartDateTime = DateTime.UtcNow - TimeSpan.FromDays(1)
+                    }
+                });
+
+            Assert.AreEqual(2, (await RugbyService.GetPastDaysFixtures(4)).Count());
+        }
+
+        [Test]
+        public async Task GetPastDaysFixtures_Return_0_With_2_Fixture_TooFarInThePast()
+        {
+            MockFixtureRepository.Object.AddRange(
+                new List<RugbyFixture>()
+                {
+                    new RugbyFixture()
+                    {
+                        Id = Guid.NewGuid(),
+                        StartDateTime = DateTime.UtcNow - TimeSpan.FromDays(9)
+                    },
+                    new RugbyFixture()
+                    {
+                        Id = Guid.NewGuid(),
+                        StartDateTime = DateTime.UtcNow - TimeSpan.FromDays(5)
+                    }
+                });
+
+            Assert.AreEqual(0, (await RugbyService.GetPastDaysFixtures(4)).Count());
+        }
     }
 }
