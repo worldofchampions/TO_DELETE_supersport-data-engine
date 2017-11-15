@@ -47,7 +47,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
             _recurringJobManager.AddOrUpdate(
                 ConfigurationManager.AppSettings["FixedScheduledJob_LiveData_PastfewDaysFixtures_JobIdPrefix"],
                 Job.FromExpression(() => (_container.Resolve<IRugbyIngestWorkerService>()).IngestLiveMatchDataForPastFewDaysFixtures(CancellationToken.None)),
-                ConfigurationManager.AppSettings["FixedScheduledJob_LiveData_PastfewDaysFixtures__JobCronExpression"],
+                ConfigurationManager.AppSettings["FixedScheduledJob_LiveData_PastfewDaysFixtures_JobCronExpression"],
                 new RecurringJobOptions()
                 {
                     TimeZone = TimeZoneInfo.Local,
