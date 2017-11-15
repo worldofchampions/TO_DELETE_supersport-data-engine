@@ -152,6 +152,15 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             return Ok(cacheData);
         }
 
+
+        [HttpGet]
+        [Route("{category}/fixtures/excludeinactive")]
+        [ResponseType(typeof(List<Fixture>))]
+        public async Task<IHttpActionResult> GetFixturesByStatus(string category)
+        {
+            return await GetFixtures(category);
+        }
+
         /// <summary>
         /// Get Results for Tournament
         /// </summary>
@@ -179,6 +188,15 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 
             return Ok(cacheData);
         }
+
+        [HttpGet]
+        [Route("{category}/results/excludeinactive")]
+        [ResponseType(typeof(List<Result>))]
+        public async Task<IHttpActionResult> GetResultsByStatus(string category)
+        {
+            return await GetResults(category);
+        }
+
 
         /// <summary>
         /// Get Logs for Tournament
