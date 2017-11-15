@@ -41,7 +41,7 @@
             }
             catch (Exception e)
             {
-                _logger.Fatal(e.StackTrace);
+                _logger.Debug(e.StackTrace);
                 return null;
             }
         }
@@ -88,7 +88,7 @@
             }
             catch (Exception e)
             {
-                _logger.Fatal(e.StackTrace);   
+                _logger.Debug(e.StackTrace);   
                 return null;
             }
         }
@@ -140,7 +140,7 @@
             }
             catch (Exception e)
             {
-                _logger.Fatal(e.StackTrace);
+                _logger.Debug(e.StackTrace);
                 return null;
             }
         }
@@ -187,7 +187,7 @@
             }
             catch (Exception e)
             {
-                _logger.Fatal(e.StackTrace);
+                _logger.Debug(e.StackTrace);
                 return null;
             }
         }
@@ -224,7 +224,7 @@
             }
             catch (Exception e)
             {
-                _logger.Fatal(e.StackTrace);
+                _logger.Debug(e.StackTrace);
                 return null;
             }
         }
@@ -299,7 +299,7 @@
             }
             catch (Exception e)
             {
-                _logger.Fatal(e.StackTrace);
+                _logger.Debug(e.StackTrace);
                 return null;
             }
         }
@@ -354,7 +354,7 @@
             }
             catch (Exception e)
             {
-                _logger.Fatal(e.StackTrace);
+                _logger.Debug(e.StackTrace);
                 return null;
             }
         }
