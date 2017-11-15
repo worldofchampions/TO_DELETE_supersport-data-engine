@@ -7,6 +7,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters
 {
     public class LegacyExceptionFilter : ExceptionFilterAttribute
     {
+        /// <inheritdoc />
         /// <summary>
         /// Return response code 200 with message "error" to simulate the feed behavior on exception.
         /// </summary>
@@ -20,7 +21,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters
 
         private static void CreateResponseSimilarToOldFeed(HttpActionExecutedContext context)
         {
-            string messageReturnedByOldFeedOnException = "error";
+            const string messageReturnedByOldFeedOnException = "error";
 
             context.Response = new HttpResponseMessage(HttpStatusCode.OK)
             {
@@ -32,7 +33,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters
         {
             var loggerService = context.ActionContext.Request.GetDependencyScope().GetService(typeof(ILoggingService)) as ILoggingService;
 
-            loggerService.Fatal(context.Exception.Message + context.Exception.StackTrace);
+            loggerService?.Fatal(context.Exception.Message + context.Exception.StackTrace);
         }
     }
 }
