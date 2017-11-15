@@ -8,7 +8,6 @@ using System;
 using Hangfire.Common;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
 using SuperSportDataEngine.Common.Logging;
-using SuperSportDataEngine.Application.Service.Common.Interfaces;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
 {
@@ -39,7 +38,21 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
             UpdateRecurringJobDefinition_LineUpsForUpcomingGames();
             UpdateRecurringJobDefinition_CleanupSchedulerTrackingTables();
             UpdateRecurringJobDefinition_LiveDataForPastFixtures();
+            UpdateRecurringJobDefinition_PastFewDaysFixtures();
             UpdateRecurringJobDefinition_PastSeasonsForActiveTournaments();
+        }
+
+        private void UpdateRecurringJobDefinition_PastFewDaysFixtures()
+        {
+            _recurringJobManager.AddOrUpdate(
+                ConfigurationManager.AppSettings["FixedScheduledJob_LiveData_PastfewDaysFixtures_JobIdPrefix"],
+                Job.FromExpression(() => (_container.Resolve<IRugbyIngestWorkerService>()).IngestLiveMatchDataForPastFewDaysFixtures(CancellationToken.None)),
+                ConfigurationManager.AppSettings["FixedScheduledJob_LiveData_PastfewDaysFixtures_JobCronExpression"],
+                new RecurringJobOptions()
+                {
+                    TimeZone = TimeZoneInfo.Local,
+                    QueueName = HangfireQueueConfiguration.HighPriority
+                });
         }
 
         private void UpdateRecurringJobDefinition_PastSeasonsForActiveTournaments()

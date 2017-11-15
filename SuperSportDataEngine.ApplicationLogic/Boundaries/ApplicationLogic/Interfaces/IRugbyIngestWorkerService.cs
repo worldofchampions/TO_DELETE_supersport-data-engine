@@ -21,5 +21,6 @@
         Task IngestLineupsForPastGames(CancellationToken cancellationToken);
         Task IngestLiveMatchDataForPastFixtures(CancellationToken none);
         Task IngestPastSeasonsForActiveTournaments(CancellationToken none);
+        Task IngestLiveMatchDataForPastFewDaysFixtures(CancellationToken none);
     }
 }

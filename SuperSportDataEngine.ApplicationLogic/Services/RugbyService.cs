@@ -533,5 +533,15 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             return fixtures;
         }
+
+        public async Task<IEnumerable<RugbyFixture>> GetPastDaysFixtures(int numberOfDays)
+        {
+            var now = DateTime.UtcNow;
+
+            var fixtures = (await _rugbyFixturesRepository.AllAsync())
+                .Where(f => now - f.StartDateTime < TimeSpan.FromDays(numberOfDays)).ToList();
+
+            return fixtures;
+        }
     }
 }
