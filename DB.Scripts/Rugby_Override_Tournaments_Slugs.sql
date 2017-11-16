@@ -24,7 +24,7 @@ BEGIN TRY
 	PRINT 'Tournaments slugs updated.'
 END TRY
 BEGIN CATCH
-    PRINT 'Unable to update tournaments slugs.'
+    PRINT 'ERROR: Unable to update tournaments slugs.'
     IF(@@TRANCOUNT > 0)
         ROLLBACK TRAN
 END CATCH
