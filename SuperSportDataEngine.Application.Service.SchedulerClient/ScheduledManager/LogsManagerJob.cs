@@ -3,12 +3,14 @@
     using Hangfire;
     using Hangfire.Common;
     using Microsoft.Practices.Unity;
+    using SuperSportDataEngine.Application.Container;
     using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
     using SuperSportDataEngine.ApplicationLogic.Services;
+    using SuperSportDataEngine.Common.Logging;
     using System;
     using System.Configuration;
     using System.Linq;
@@ -18,20 +20,40 @@
     public class LogsManagerJob
     {
         IRecurringJobManager _recurringJobManager;
-
         IUnityContainer _childContainer;
+        ILoggingService _logger;
 
         public LogsManagerJob(
             IRecurringJobManager recurringJobManager,
-            IUnityContainer childContainer)
+            IUnityContainer childContainer,
+            ILoggingService logger)
         {
             _recurringJobManager = recurringJobManager;
             _childContainer = childContainer;
+            _logger = logger;
         }
 
         public async Task DoWorkAsync()
         {
+            CreateContainer();
+            ConfigureDependencies();
+
             await CreateChildJobsForFetchingLogs();
+        }
+
+        private void ConfigureDependencies()
+        {
+            _recurringJobManager = _childContainer.Resolve<IRecurringJobManager>();
+            _logger = _childContainer.Resolve<ILoggingService>();
+        }
+
+        private void CreateContainer()
+        {
+            if (_childContainer != null)
+                _childContainer.Dispose();
+
+            _childContainer = new UnityContainer();
+            UnityConfigurationManager.RegisterTypes(_childContainer, Container.Enums.ApplicationScope.ServiceSchedulerClient);
         }
 
         private async Task<int> CreateChildJobsForFetchingLogs()
@@ -56,14 +78,14 @@
 
                     var season =
                             (await _schedulerTrackingRugbySeasonRepository.AllAsync())
-                                .Where(
-                                    s =>
+                                .FirstOrDefault(s => 
                                         s.RugbySeasonStatus == RugbySeasonStatus.InProgress &&
                                         s.TournamentId == tournament.Id &&
-                                        s.SchedulerStateForManagerJobPolling == SchedulerStateForManagerJobPolling.NotRunning)
-                                .FirstOrDefault();
+                                        s.SchedulerStateForManagerJobPolling == SchedulerStateForManagerJobPolling.NotRunning);
+
                     if (season != null)
                     {
+                        _logger.Info("Setting SchedulerStateForManagerJobPolling for season " + seasonId + " of tourrnament " + tournament.Name + " to Running.");
                         season.SchedulerStateForManagerJobPolling = SchedulerStateForManagerJobPolling.Running;
                         _schedulerTrackingRugbySeasonRepository.Update(season);
                     }
@@ -81,7 +103,7 @@
                 jobCronExpression,
                 new RecurringJobOptions()
                 {
-                    TimeZone = TimeZoneInfo.Utc,
+                    TimeZone = TimeZoneInfo.Local,
                     QueueName = HangfireQueueConfiguration.HighPriority
                 });
         }

@@ -17,14 +17,37 @@
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyGroupedLogs;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyMatchStats;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyEventsFlow;
+    using System.Diagnostics;
+    using SuperSportDataEngine.Common.Logging;
 
     public class StatsProzoneRugbyIngestService : IStatsProzoneRugbyIngestService
     {
+        ILoggingService _logger;
+
+        public StatsProzoneRugbyIngestService(
+            ILoggingService logger)
+        {
+            _logger = logger;
+        }
+
         public RugbyEntitiesResponse IngestRugbyReferenceData(CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
                 return null;
 
+            try
+            {
+                return RugbyEntitiesResponse();
+            }
+            catch (Exception e)
+            {
+                _logger.Debug(e.StackTrace);
+                return null;
+            }
+        }
+
+        private static RugbyEntitiesResponse RugbyEntitiesResponse()
+        {
             WebRequest request = WebRequest.Create("http://rugbyunion-api.stats.com/api/ru/configuration/entities");
             request.Method = "GET";
 
@@ -59,10 +82,24 @@
             if (cancellationToken.IsCancellationRequested)
                 return null;
 
+            try
+            {
+                return RugbyFixturesResponse(tournament, seasonId);
+            }
+            catch (Exception e)
+            {
+                _logger.Debug(e.StackTrace);   
+                return null;
+            }
+        }
+
+        private static RugbyFixturesResponse RugbyFixturesResponse(RugbyTournament tournament, int seasonId)
+        {
             var tournamentId = tournament.ProviderTournamentId;
 
             WebRequest request =
-                WebRequest.Create("http://rugbyunion-api.stats.com/api/ru/competitions/fixtures/" + tournamentId + "/" + seasonId);
+                WebRequest.Create("http://rugbyunion-api.stats.com/api/ru/competitions/fixtures/" + tournamentId + "/" +
+                                  seasonId);
 
             request.Method = "GET";
 
@@ -92,51 +129,26 @@
             }
         }
 
-        public RugbyFlatLogsResponse IngestFlatLogsForTournament(RugbyTournament tournament, CancellationToken cancellationToken)
-        {
-            if (cancellationToken.IsCancellationRequested)
-                return null;
-
-            var tournamentId = tournament.ProviderTournamentId;
-            var tournamentYear = 2017;
-
-            WebRequest request =
-                WebRequest.Create("http://rugbyunion-api.stats.com/api/ru/competitions/ladder/" + tournamentId + "/" + tournamentYear);
-
-            request.Method = "GET";
-
-            request.Headers["Authorization"] = "Basic U3VwZXJTcG9ydF9NZWRpYTpTdTkzUjdyMFA1";
-            request.ContentType = "application/json; charset=UTF-8";
-
-            var logsResponse =
-                new RugbyFlatLogsResponse()
-                {
-                    RequestTime = DateTime.Now
-                };
-
-            using (WebResponse response = request.GetResponse())
-            {
-                using (Stream responseStream = response.GetResponseStream())
-                {
-                    StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
-                    logsResponse.RugbyFlatLogs =
-                        JsonConvert.DeserializeObject<RugbyFlatLogs>(reader.ReadToEnd());
-
-                    // Not to be confused with the DateTime.Now call more above.
-                    // This might be delayed due to provider being slow to process request,
-                    // and is intended.
-                    logsResponse.ResponseTime = DateTime.Now;
-                    return logsResponse;
-                }
-            }
-        }
-
         public RugbySeasonResponse IngestSeasonData(CancellationToken cancellationToken, int tournamentId, int tournamentYear)
         {
             if (cancellationToken.IsCancellationRequested)
                 return null;
 
-            WebRequest request = WebRequest.Create("http://rugbyunion-api.stats.com/api/ru/competitions/seasons/" + tournamentId + "/" + tournamentYear);
+            try
+            {
+                return RugbySeasonResponse(tournamentId, tournamentYear);
+            }
+            catch (Exception e)
+            {
+                _logger.Debug(e.StackTrace);
+                return null;
+            }
+        }
+
+        private static RugbySeasonResponse RugbySeasonResponse(int tournamentId, int tournamentYear)
+        {
+            WebRequest request = WebRequest.Create("http://rugbyunion-api.stats.com/api/ru/competitions/seasons/" +
+                                                   tournamentId + "/" + tournamentYear);
 
             request.Method = "GET";
 
@@ -169,9 +181,22 @@
 
         public RugbyFixturesResponse IngestFixturesForTournamentSeason(int tournamentId, int seasonId, CancellationToken cancellationToken)
         {
+            try
+            {
+                return ResponseData(tournamentId, seasonId);
+            }
+            catch (Exception e)
+            {
+                _logger.Debug(e.StackTrace);
+                return null;
+            }
+        }
+
+        private static RugbyFixturesResponse ResponseData(int tournamentId, int seasonId)
+        {
             WebRequest request = GetWebRequestForFixturesEndpoint(tournamentId, seasonId, null);
 
-            var responseData = new RugbyFixturesResponse() { RequestTime = DateTime.Now };
+            var responseData = new RugbyFixturesResponse() {RequestTime = DateTime.Now};
 
             using (WebResponse response = request.GetResponse())
             {
@@ -181,33 +206,8 @@
 
                     string responseDataFromServer = reader.ReadToEnd();
 
-                    responseData.Fixtures = 
+                    responseData.Fixtures =
                         JsonConvert.DeserializeObject<RugbyFixtures>(responseDataFromServer);
-
-                    responseData.ResponseTime = DateTime.Now;
-
-                    return responseData;
-                }
-            }
-        }
-
-        public async Task<RugbyFixturesResponse> IngestFixtureResults(int competitionId, int seasonId, int roundId)
-        {
-            WebRequest request = GetWebRequestForFixturesEndpoint(competitionId, seasonId, roundId);
-
-            var responseData = new RugbyFixturesResponse() { RequestTime = DateTime.Now };
-
-            using (WebResponse response = await request.GetResponseAsync())
-            {
-                using (Stream responseStream = response.GetResponseStream())
-                {
-                    var reader = new StreamReader(responseStream, Encoding.UTF8);
-
-                    string responseDataFromServer = reader.ReadToEnd();
-
-                    //TODO: Return Response in a Correct DataModel
-
-                    var responseDataToReturn = JsonConvert.DeserializeObject<RoundFixtureResultsResponse>(responseDataFromServer);
 
                     responseData.ResponseTime = DateTime.Now;
 
@@ -218,9 +218,22 @@
 
         public RugbyFlatLogsResponse IngestFlatLogsForTournament(int competitionId, int seasonId)
         {
+            try
+            {
+                return RugbyFlatLogsResponse(competitionId, seasonId);
+            }
+            catch (Exception e)
+            {
+                _logger.Debug(e.StackTrace);
+                return null;
+            }
+        }
+
+        private static RugbyFlatLogsResponse RugbyFlatLogsResponse(int competitionId, int seasonId)
+        {
             WebRequest request = GetWebRequestForLogsEndpoint(competitionId, seasonId);
 
-            var logsResponse = new RugbyFlatLogsResponse() { RequestTime = DateTime.Now };
+            var logsResponse = new RugbyFlatLogsResponse() {RequestTime = DateTime.Now};
 
             using (WebResponse response = request.GetResponse())
             {
@@ -280,7 +293,21 @@
             if (cancellationToken.IsCancellationRequested)
                 return null;
 
-            WebRequest request = WebRequest.Create("http://rugbyunion-api.stats.com/api/ru/matchStats/" + providerFixtureId + "/");
+            try
+            {
+                return await MatchStatsResponse(providerFixtureId);
+            }
+            catch (Exception e)
+            {
+                _logger.Debug(e.StackTrace);
+                return null;
+            }
+        }
+
+        private async Task<RugbyMatchStatsResponse> MatchStatsResponse(long providerFixtureId)
+        {
+            WebRequest request =
+                WebRequest.Create("http://rugbyunion-api.stats.com/api/ru/matchStats/" + providerFixtureId + "/");
 
             request.Method = "GET";
 
@@ -293,19 +320,24 @@
                     RequestTime = DateTime.Now
                 };
 
+            Stopwatch responseTime = Stopwatch.StartNew();
             using (WebResponse response = await request.GetResponseAsync())
             {
+                responseTime.Stop();
+                _logger.Info("Response time is " + responseTime.ElapsedMilliseconds + "ms.");
                 using (Stream responseStream = response.GetResponseStream())
                 {
+                    Stopwatch mappingTime = Stopwatch.StartNew();
                     StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
-                    string stats = reader.ReadToEnd();
                     matchStatsResponse.RugbyMatchStats =
-                        JsonConvert.DeserializeObject<RugbyMatchStats>(stats);
+                        JsonConvert.DeserializeObject<RugbyMatchStats>(reader.ReadToEnd());
 
                     // Not to be confused with the DateTime.Now call more above.
                     // This might be delayed due to provider being slow to process request,
                     // and is intended.
                     matchStatsResponse.ResponseTime = DateTime.Now;
+                    mappingTime.Stop();
+                    _logger.Info("Mapping time is " + mappingTime.ElapsedMilliseconds + "ms.");
                     return matchStatsResponse;
                 }
             }
@@ -316,7 +348,21 @@
             if (cancellationToken.IsCancellationRequested)
                 return null;
 
-            WebRequest request = WebRequest.Create("http://rugbyunion-api.stats.com/api/ru/matchStats/eventsflow/" + providerFixtureId + "/");
+            try
+            {
+                return await EventsFlowResponse(providerFixtureId);
+            }
+            catch (Exception e)
+            {
+                _logger.Debug(e.StackTrace);
+                return null;
+            }
+        }
+
+        private static async Task<RugbyEventsFlowResponse> EventsFlowResponse(long providerFixtureId)
+        {
+            WebRequest request =
+                WebRequest.Create("http://rugbyunion-api.stats.com/api/ru/matchStats/eventsflow/" + providerFixtureId + "/");
 
             request.Method = "GET";
 

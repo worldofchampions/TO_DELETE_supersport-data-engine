@@ -116,6 +116,10 @@
     <Compile Include="Migrations\201710261041340_Added_timestamps_for_created_and_updated_record_states.Designer.cs">
       <DependentUpon>201710261041340_Added_timestamps_for_created_and_updated_record_states.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201711102015027_IsJobRunning_For_Scheduler_Tracking_Rugby_Fixtures.cs" />
+    <Compile Include="Migrations\201711102015027_IsJobRunning_For_Scheduler_Tracking_Rugby_Fixtures.Designer.cs">
+      <DependentUpon>201711102015027_IsJobRunning_For_Scheduler_Tracking_Rugby_Fixtures.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -160,6 +164,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201710261041340_Added_timestamps_for_created_and_updated_record_states.resx">
       <DependentUpon>201710261041340_Added_timestamps_for_created_and_updated_record_states.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201711102015027_IsJobRunning_For_Scheduler_Tracking_Rugby_Fixtures.resx">
+      <DependentUpon>201711102015027_IsJobRunning_For_Scheduler_Tracking_Rugby_Fixtures.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

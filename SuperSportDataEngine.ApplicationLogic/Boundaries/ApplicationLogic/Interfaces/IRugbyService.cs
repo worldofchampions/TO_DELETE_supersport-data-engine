@@ -30,7 +30,10 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Inte
         Task<IEnumerable<RugbyFixture>> GetTournamentResults(string tournamentSlug);
         Task<Guid> GetTournamentId(string tournamentSlug);
         Task<RugbyTournament> GetTournamentBySlug(string tournamentSlug);
+        Task<IEnumerable<RugbyFixture>> GetPostponedFixtures();
         Task<IEnumerable<RugbyGroupedLog>> GetGroupedLogs(string tournamentSlug);
         Task<IEnumerable<RugbyFixture>> GetCurrentDayFixturesForActiveTournaments();
+        Task<IEnumerable<RugbyFixture>> GetFixturesNotIngestedYet();
+        Task<IEnumerable<RugbyFixture>> GetPastDaysFixtures(int numberOfDays);
     }
 }

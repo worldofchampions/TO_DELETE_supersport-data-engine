@@ -1,6 +1,9 @@
 ﻿using Hangfire;
 using Hangfire.Common;
 using Hangfire.States;
+using Microsoft.Practices.Unity;
+using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
+using SuperSportDataEngine.Common.Logging;
 using System;
 
 namespace SuperSportDataEngine.Application.Service.Common.Hangfire.Filters
@@ -10,9 +13,14 @@ namespace SuperSportDataEngine.Application.Service.Common.Hangfire.Filters
         private const int DefaultRetryAttempts = 10;
         private int _attempts;
         private static int _defaultRetryPeriod = 5;
+        private IUnityContainer _container;
+        private ILoggingService _logger;
 
-        public CustomRetryFilterAttribute(int defaultRetryPeriod = 5)
+        public CustomRetryFilterAttribute(IUnityContainer container, int defaultRetryPeriod = 5)
         {
+            _container = container;
+            _logger = _container.Resolve<ILoggingService>();
+
             Attempts = DefaultRetryAttempts;
             LogEvents = true;
             OnAttemptsExceeded = AttemptsExceededAction.Fail;
@@ -45,7 +53,7 @@ namespace SuperSportDataEngine.Application.Service.Common.Hangfire.Filters
                 }
                 else
                 {
-                    context.SetJobParameter("QueueName", enqueuedState.Queue);
+                    context.SetJobParameter("QueueName", HangfireQueueConfiguration.HighPriority);
                 }
             }
 
@@ -59,7 +67,12 @@ namespace SuperSportDataEngine.Application.Service.Common.Hangfire.Filters
                 }
                 else if (retryAttempt > Attempts && OnAttemptsExceeded == AttemptsExceededAction.Delete)
                 {
+                    //_logger.Error("Hangfire job has failed. It is being deleted. Job name = {0}", context.BackgroundJob.Job.Method.Name);
                     TransitionToDeleted(context, failedState);
+                }
+                else if(retryAttempt > Attempts)
+                {
+                    _logger.Error("Hangfire job has failed. Job name = {0}", context.BackgroundJob.Job.Method.Name);
                 }
             }
         }

@@ -9,6 +9,7 @@ using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramewor
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
 using SuperSportDataEngine.ApplicationLogic.Services;
+using SuperSportDataEngine.Common.Logging;
 using SuperSportDataEngine.Tests.Common.Repositories.Test;
 using System;
 using System.Collections.Generic;
@@ -27,6 +28,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
         Mock<IRecurringJobManager> MockRecurringJobManager;
         Mock<IUnityContainer> MockUnityContainer;
         LogsManagerJob LogsManagerJob;
+        Mock<ILoggingService> MockLogger;
 
         [SetUp]
         public void SetUp()
@@ -38,11 +40,13 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
             MockRugbyIngestWorkerService = new Mock<IRugbyIngestWorkerService>();
             MockRecurringJobManager = new Mock<IRecurringJobManager>();
             MockUnityContainer = new Mock<IUnityContainer>();
+            MockLogger = new Mock<ILoggingService>();
 
             LogsManagerJob =
                 new LogsManagerJob(
                         MockRecurringJobManager.Object,
-                        MockUnityContainer.Object);
+                        MockUnityContainer.Object,
+                        MockLogger.Object);
         }
 
         //[Test]

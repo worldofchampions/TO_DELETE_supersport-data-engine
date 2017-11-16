@@ -19,5 +19,7 @@
         public RugbyFixtureStatus RugbyFixtureStatus { get; set; }
 
         public SchedulerStateForRugbyFixturePolling SchedulerStateFixtures { get; set; }
+
+        public bool IsJobRunning { get; set; }
     }
 }

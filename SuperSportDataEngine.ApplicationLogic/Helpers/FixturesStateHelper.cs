@@ -13,7 +13,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Helpers
                 return SchedulerStateForRugbyFixturePolling.SchedulingNotYetStarted;
 
             if (gameStatus == RugbyFixtureStatus.PreMatch &&
-                (now + TimeSpan.FromMinutes(15)) > startDateTime)
+                (now + TimeSpan.FromMinutes(15)) > startDateTime &&
+                (now + TimeSpan.FromMinutes(15)) < (startDateTime + TimeSpan.FromHours(3)))
                 return SchedulerStateForRugbyFixturePolling.PreLivePolling;
 
             if (gameStatus == RugbyFixtureStatus.FirstHalf ||
@@ -33,7 +34,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Helpers
                 return SchedulerStateForRugbyFixturePolling.ResultOnlyPolling;
 
             if (gameStatus == RugbyFixtureStatus.Result &&
-               now > (startDateTime + TimeSpan.FromMinutes(185)))
+               now > (startDateTime + TimeSpan.FromMinutes(185)) &&
+               now < (startDateTime + TimeSpan.FromHours(6)))
                 return SchedulerStateForRugbyFixturePolling.SchedulingCompleted;
 
             return SchedulerStateForRugbyFixturePolling.SchedulingNotYetStarted;

@@ -115,6 +115,7 @@
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c" />
     <Reference Include="nunit.framework, Version=3.8.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
       <HintPath>..\packages\NUnit.3.8.1\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
@@ -144,6 +145,14 @@
     <ProjectReference Include="..\SuperSportDataEngine.ApplicationLogic\SuperSportDataEngine.ApplicationLogic.csproj">
       <Project>{F420939C-B6A6-4C3A-975E-E30E654C4A90}</Project>
       <Name>SuperSportDataEngine.ApplicationLogic</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SuperSportDataEngine.Common\SuperSportDataEngine.Common.csproj">
+      <Project>{BBE845AF-8B84-4B61-ABD7-724ACA22AB69}</Project>
+      <Name>SuperSportDataEngine.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SuperSportDataEngine.Logging.NLog\SuperSportDataEngine.Logging.NLog.csproj">
+      <Project>{B07C451E-7B8B-406F-92CC-03B68F54E3AC}</Project>
+      <Name>SuperSportDataEngine.Logging.NLog</Name>
     </ProjectReference>
     <ProjectReference Include="..\SuperSportDataEngine.Tests.Common\SuperSportDataEngine.Tests.Common.csproj">
       <Project>{65e69b64-f50a-477a-a355-f2b681ed6314}</Project>

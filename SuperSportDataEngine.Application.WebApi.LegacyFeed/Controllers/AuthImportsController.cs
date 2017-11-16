@@ -3,10 +3,12 @@ using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
+using SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 {
     [RoutePrefix("Auth")]
+    [LegacyExceptionFilter]
     public class AuthImportsController : ApiController
     {
         private readonly ILegacyAuthService _authService;

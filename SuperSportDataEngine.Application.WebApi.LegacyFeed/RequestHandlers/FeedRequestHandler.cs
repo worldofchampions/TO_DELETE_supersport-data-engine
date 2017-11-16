@@ -72,23 +72,31 @@
         private bool IsRugbyRequest(HttpRequestMessage message)
         {
             var requestUrl = message.RequestUri.ToString();
+
             var testUrl = requestUrl.Remove(requestUrl.IndexOf('?'));
-            if (testUrl.Contains("/matchdetails") || testUrl.Contains("/rugby/"))
-            {
-                return true;
-            }
 
             var matchFixtures = Regex.Match(testUrl, @"\/rugby\/((?:\w+-)+\w+)\/fixtures");
+
             var matchLogs = Regex.Match(testUrl, @"\/rugby\/((?:\w+-)+\w+)\/logs");
+
             var matchResults = Regex.Match(testUrl, @"\/rugby\/((?:\w+-)+\w+)\/results");
 
-            return matchFixtures.Success | matchLogs.Success | matchResults.Success;
+            var matchDetails = Regex.Match(testUrl, @"\/rugby\/matchdetails\/");
+
+            var liveMatches = Regex.Match(testUrl, @"\/rugby\/live");
+
+            bool isNewFeedRequest = matchFixtures.Success | matchLogs.Success | matchResults.Success | matchDetails.Success | liveMatches.Success;
+
+            return isNewFeedRequest;
         }
 
         private bool IsAuthRequest(HttpRequestMessage message)
         {
-            var requestUrl = message.RequestUri.ToString();
-            return (requestUrl.Contains("/Auth/") | requestUrl.Contains("/auth/"));
+            var searchTextLowercase = "/auth/";
+
+            var requestUrlLowercase = (message.RequestUri.ToString()).ToLower();
+
+            return (requestUrlLowercase.Contains(searchTextLowercase));
         }
 
         private HttpRequestMessage ChangeHostRequest(HttpRequestMessage req, Uri newUri)

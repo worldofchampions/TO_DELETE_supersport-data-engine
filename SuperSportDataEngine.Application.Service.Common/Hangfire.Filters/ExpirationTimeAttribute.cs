@@ -17,12 +17,20 @@ namespace SuperSportDataEngine.Application.Service.Common.Hangfire.Filters
 
         public void OnStateApplied(ApplyStateContext context, IWriteOnlyTransaction transaction)
         {
-            context.JobExpirationTimeout = TimeSpan.FromDays(_jobExpirationTimeoutInDays);
+            SetRetentionPeriod(context);
         }
 
         public void OnStateUnapplied(ApplyStateContext context, IWriteOnlyTransaction transaction)
         {
-            context.JobExpirationTimeout = TimeSpan.FromDays(_jobExpirationTimeoutInDays);
+            SetRetentionPeriod(context);
+        }
+
+        private void SetRetentionPeriod(ApplyStateContext context)
+        {
+            if (context.NewState.Name == "Succeeded")
+            {
+                context.JobExpirationTimeout = TimeSpan.FromDays(_jobExpirationTimeoutInDays);
+            }
         }
     }
 }

@@ -196,6 +196,18 @@
     <Compile Include="Migrations\201710261035297_Added_timestamps_for_created_and_updated_record_states.Designer.cs">
       <DependentUpon>201710261035297_Added_timestamps_for_created_and_updated_record_states.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201711011236546_Temporary_removal_of_legacyId_fields_for_rescaffolding.cs" />
+    <Compile Include="Migrations\201711011236546_Temporary_removal_of_legacyId_fields_for_rescaffolding.Designer.cs">
+      <DependentUpon>201711011236546_Temporary_removal_of_legacyId_fields_for_rescaffolding.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201711011249017_Fixes_for_legacyId_fields.cs" />
+    <Compile Include="Migrations\201711011249017_Fixes_for_legacyId_fields.Designer.cs">
+      <DependentUpon>201711011249017_Fixes_for_legacyId_fields.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201711091515293_Added_tournament_level_IsLiveScored_flag.cs" />
+    <Compile Include="Migrations\201711091515293_Added_tournament_level_IsLiveScored_flag.Designer.cs">
+      <DependentUpon>201711091515293_Added_tournament_level_IsLiveScored_flag.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypeProviderMappings.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypes.cs" />
@@ -302,6 +314,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201710261035297_Added_timestamps_for_created_and_updated_record_states.resx">
       <DependentUpon>201710261035297_Added_timestamps_for_created_and_updated_record_states.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201711011236546_Temporary_removal_of_legacyId_fields_for_rescaffolding.resx">
+      <DependentUpon>201711011236546_Temporary_removal_of_legacyId_fields_for_rescaffolding.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201711011249017_Fixes_for_legacyId_fields.resx">
+      <DependentUpon>201711011249017_Fixes_for_legacyId_fields.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201711091515293_Added_tournament_level_IsLiveScored_flag.resx">
+      <DependentUpon>201711091515293_Added_tournament_level_IsLiveScored_flag.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

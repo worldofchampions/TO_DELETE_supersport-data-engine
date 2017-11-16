@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.Application.Service.SchedulerClient
+﻿using SuperSportDataEngine.Common.Logging;
+
+namespace SuperSportDataEngine.Application.Service.SchedulerClient
 {
     using Hangfire;
     using Microsoft.Owin.Hosting;
@@ -18,12 +20,16 @@
         private readonly UnityContainer _container;
         private readonly FixedScheduledJob _fixedManagerJob;
         private readonly ManagerJob _jobManager;
+        private ILoggingService _logger;
 
         public WindowsService(UnityContainer container)
         {
             _container = container;
-            _fixedManagerJob = new FixedScheduledJob(_container);
-            _jobManager = new ManagerJob(_container);
+            _logger = container.Resolve<ILoggingService>();
+
+            _fixedManagerJob = new FixedScheduledJob(_container.CreateChildContainer());
+            _jobManager = 
+                new ManagerJob();
         }
 
         public void StartService()

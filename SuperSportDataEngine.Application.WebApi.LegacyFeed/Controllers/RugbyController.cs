@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters;
+using SuperSportDataEngine.Application.WebApi.LegacyFeed.Helpers;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.News;
@@ -8,16 +9,19 @@ using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+using SuperSportDataEngine.Common.Logging;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 {
     /// <summary>
     /// SuperSport Rugby Endpoints
     /// </summary>
-    [LegacyExceptionFilterAttribute]
+    [LegacyExceptionFilter]
     [RoutePrefix("rugby")]
     public class RugbyController : ApiController
     {
@@ -41,14 +45,28 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         [ResponseType(typeof(RugbyMatchDetails))]
         public async Task<IHttpActionResult> GetMatchDetails(int id)
         {
-            var matchDetails = await _rugbyService.GetMatchDetailsByLegacyMatchId(id);
+            var cacheKey = $"rugby/matchdetails/{id}";
 
-            if (matchDetails is null)
+            var matchDetailsFromCache = await GetFromCacheAsync<RugbyMatchDetails>(cacheKey);
+
+            var response = matchDetailsFromCache;
+
+            if ((response != null)) return Ok(response);
+
+            var matchDetailsFromService = await _rugbyService.GetMatchDetailsByLegacyMatchId(id);
+
+            response = Mapper.Map<RugbyMatchDetails>(matchDetailsFromService);
+
+            if (response != null)
+            {
+                response.Events.AssignOrderingIds();
+
+                PersistToCache(cacheKey, response);
+            }
+            else
             {
                 return ReplyWithGeneralResponseModel();
             }
-
-            var response = Mapper.Map<RugbyMatchDetails>(matchDetails);
 
             return Ok(response);
         }
@@ -69,6 +87,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 
         /// <summary>
         /// Get News for Rugby
+        /// DO NOT REMOVE. THIS HAS BE HERE SO WE CAN REDIRECT REQUESTS TO OLD FEED.
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -89,16 +108,19 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         [ResponseType(typeof(Match))]
         public async Task<IHttpActionResult> GetTodayFixtures()
         {
-            var cacheKey = $"rugby/live/today";
-            var fixtures = await _cache.GetAsync<IEnumerable<Match>>(cacheKey);
+            const string cacheKey = "rugby/live/today";
 
-            if (fixtures == null)
-            {
-                 fixtures = (await _rugbyService.GetCurrentDayFixturesForActiveTournaments()).Select(res => Mapper.Map<Match>(res));
-                _cache.Add(cacheKey, fixtures);
-            }
+            var fixtures = await GetFromCacheAsync<IEnumerable<Match>>(cacheKey);
 
-            return Ok(fixtures.ToList());
+            if (fixtures != null) return Ok(fixtures.ToList());
+
+            fixtures = (await _rugbyService.GetCurrentDayFixturesForActiveTournaments()).Select(Mapper.Map<Match>);
+
+            var cacheData = fixtures as IList<Match> ?? fixtures.ToList();
+
+            PersistToCache(cacheKey, cacheData);
+
+            return Ok(cacheData.ToList());
         }
 
 
@@ -113,15 +135,30 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         public async Task<IHttpActionResult> GetFixtures(string category)
         {
             var cacheKey = $"rugby/{category}/fixtures";
-            var fixtures = await _cache.GetAsync<IEnumerable<Fixture>>(cacheKey);
 
-            if (fixtures == null)
+            var fixtures = await GetFromCacheAsync<IEnumerable<Fixture>>(cacheKey);
+
+            if (fixtures != null)
             {
-                fixtures = (await _rugbyService.GetTournamentFixtures(category)).Select(res => Mapper.Map<Fixture>(res));
-                _cache.Add(cacheKey, fixtures);
+                return Ok(fixtures.ToList());
             }
 
-            return Ok(fixtures.ToList());
+            fixtures = (await _rugbyService.GetTournamentFixtures(category)).Select(Mapper.Map<Fixture>);
+
+            var cacheData = fixtures as IList<Fixture> ?? fixtures.ToList();
+
+            PersistToCache(cacheKey, cacheData);
+
+            return Ok(cacheData);
+        }
+
+
+        [HttpGet]
+        [Route("{category}/fixtures/excludeinactive")]
+        [ResponseType(typeof(List<Fixture>))]
+        public async Task<IHttpActionResult> GetFixturesByStatus(string category)
+        {
+            return await GetFixtures(category);
         }
 
         /// <summary>
@@ -136,17 +173,30 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         {
             var cacheKey = $"rugby/{category}/results";
 
-            var results = await _cache.GetAsync<IEnumerable<Result>>(cacheKey);
+            var results = await GetFromCacheAsync<IEnumerable<Result>>(cacheKey);
 
-            if (results == null)
+            if (results != null)
             {
-                results = (await _rugbyService.GetTournamentResults(category)).Select(res => Mapper.Map<Result>(res));
-                _cache.Add(cacheKey, results);
+                return Ok(results);
             }
 
-            return Ok(results);
+            results = (await _rugbyService.GetTournamentResults(category)).Select(Mapper.Map<Result>);
 
+            var cacheData = results as IList<Result> ?? results.ToList();
+
+            PersistToCache(cacheKey, cacheData);
+
+            return Ok(cacheData);
         }
+
+        [HttpGet]
+        [Route("{category}/results/excludeinactive")]
+        [ResponseType(typeof(List<Result>))]
+        public async Task<IHttpActionResult> GetResultsByStatus(string category)
+        {
+            return await GetResults(category);
+        }
+
 
         /// <summary>
         /// Get Logs for Tournament
@@ -160,7 +210,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         {
             var flatLogsCacheKey = $"rugby/flatLogs/{category}";
 
-            var flatLogsCache = await _cache.GetAsync<IEnumerable<Log>>(flatLogsCacheKey);
+            var flatLogsCache = await GetFromCacheAsync<IEnumerable<Log>>(flatLogsCacheKey);
 
             if (flatLogsCache != null)
             {
@@ -169,7 +219,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 
             var groupedLogsCacheKey = $"rugby/groupedLogs/{category}";
 
-            var groupedLogsCache = await _cache.GetAsync<IEnumerable<Log>>(groupedLogsCacheKey);
+            var groupedLogsCache = await GetFromCacheAsync<IEnumerable<Log>>(groupedLogsCacheKey);
 
             if (groupedLogsCache != null)
             {
@@ -208,33 +258,74 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         {
             var flatLogsFromService = await _rugbyService.GetFlatLogs(category);
 
-            const int EmptyCollectionCount = 0;
+            const int emptyCollectionCount = 0;
 
-            if (flatLogsFromService.Count() > EmptyCollectionCount)
+            var logsFromService = flatLogsFromService as IList<RugbyFlatLog> ?? flatLogsFromService.ToList();
+
+            if (logsFromService.Count() > emptyCollectionCount)
             {
                 var flatLogsCacheKey = $"rugby/flatLogs/{category}";
 
-                var flatLogsCache = flatLogsFromService.Select(logItem => Mapper.Map<Log>(logItem));
+                var flatLogsCache = logsFromService.Select(Mapper.Map<Log>);
 
-                _cache.Add(flatLogsCacheKey, flatLogsCache);
+                var logsCache = flatLogsCache as IList<Log> ?? flatLogsCache.ToList();
 
-                return Ok(flatLogsCache);
+                PersistToCache(flatLogsCacheKey, logsCache);
+
+                return Ok(logsCache);
             }
 
             var groupedLogsFromService = await _rugbyService.GetGroupedLogs(category);
 
-            if (groupedLogsFromService.Count() > EmptyCollectionCount)
+            var rugbyGroupedLogs = groupedLogsFromService as IList<RugbyGroupedLog> ?? groupedLogsFromService.ToList();
+
+            if (rugbyGroupedLogs.Count() <= emptyCollectionCount)
             {
-                var groupedLogsCacheKey = $"rugby/groupedLogs/{category}";
-
-                var groupedLogsCache = groupedLogsFromService.Select(logItem => Mapper.Map<Log>(logItem)).ToList();
-
-                _cache.Add(groupedLogsCacheKey, groupedLogsCache);
-
-                return Ok(groupedLogsCache);
+                return Ok(Enumerable.Empty<Log>());
             }
 
-            return Ok(Enumerable.Empty<Log>());
+            var groupedLogsCacheKey = $"rugby/groupedLogs/{category}";
+
+            var groupedLogsCache = rugbyGroupedLogs.Select(Mapper.Map<Log>).ToList();
+
+            PersistToCache(groupedLogsCacheKey, groupedLogsCache);
+
+            return Ok(groupedLogsCache);
+        }
+
+        private void PersistToCache<T>(string cacheKey, T cacheData) where T : class
+        {
+            try
+            {
+                _cache?.Add(cacheKey, cacheData);
+            }
+            catch (System.Exception exception)
+            {
+                var loggerService = ActionContext.Request.GetDependencyScope().GetService(typeof(ILoggingService)) as ILoggingService;
+
+                loggerService?.Error(exception.Message + exception.StackTrace);
+            }
+        }
+
+        private async Task<T> GetFromCacheAsync<T>(string key) where T : class
+        {
+            try
+            {
+                if (_cache != null)
+                {
+                    return await _cache.GetAsync<T>(key);
+                }
+
+                return null;
+            }
+            catch (System.Exception exception)
+            {
+                var loggerService = ActionContext.Request.GetDependencyScope().GetService(typeof(ILoggingService)) as ILoggingService;
+
+                loggerService?.Error(exception.Message + exception.StackTrace);
+
+                return null;
+            }
         }
     }
 }
