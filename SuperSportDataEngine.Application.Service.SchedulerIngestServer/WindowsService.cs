@@ -38,7 +38,9 @@
             RemoveDefaultRetryFilterAttribute();
             var retryPeriodInSeconds = Convert.ToInt32(ConfigurationManager.AppSettings["RetryPeriodInSeconds"]);
 
-            GlobalJobFilters.Filters.Add(new LogExceptionFilterAttribute(_container));
+            // Removing this logging attrbute.
+            // Too much noise.
+            //GlobalJobFilters.Filters.Add(new LogExceptionFilterAttribute(_container));
             GlobalJobFilters.Filters.Add(new CustomRetryFilterAttribute(_container, retryPeriodInSeconds));
         }
 
