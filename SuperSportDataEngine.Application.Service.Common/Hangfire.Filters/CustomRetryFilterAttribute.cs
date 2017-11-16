@@ -67,7 +67,7 @@ namespace SuperSportDataEngine.Application.Service.Common.Hangfire.Filters
                 }
                 else if (retryAttempt > Attempts && OnAttemptsExceeded == AttemptsExceededAction.Delete)
                 {
-                    _logger.Error("Hangfire job has failed. It is being deleted. Job name = {0}", context.BackgroundJob.Job.Method.Name);
+                    //_logger.Error("Hangfire job has failed. It is being deleted. Job name = {0}", context.BackgroundJob.Job.Method.Name);
                     TransitionToDeleted(context, failedState);
                 }
                 else if(retryAttempt > Attempts)
