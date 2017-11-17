@@ -66,8 +66,8 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
             }
             catch (System.Exception e)
             {
-                _logger.Error("Cannot ping MongoDB. " + e.StackTrace);
-                return;
+                //_logger.Error("Cannot ping MongoDB. " + e.StackTrace);
+                //return;
             }
 
             // Add to the collection.
@@ -107,8 +107,8 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
             }
             catch (System.Exception e)
             {
-                _logger.Error("Cannot ping MongoDB. " + e.StackTrace);
-                return;
+                //_logger.Error("Cannot ping MongoDB. " + e.StackTrace);
+                //return;
             }
 
             // Add to the collection.
@@ -148,8 +148,8 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
             }
             catch (System.Exception e)
             {
-                _logger.Error("Cannot ping MongoDB. " + e.StackTrace);
-                return;
+                //_logger.Error("Cannot ping MongoDB. " + e.StackTrace);
+                //return;
             }
 
             // Add to the collection.
@@ -189,8 +189,8 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
             }
             catch (System.Exception e)
             {
-                _logger.Error("Cannot ping MongoDB. " + e.StackTrace);
-                return;
+                //_logger.Error("Cannot ping MongoDB. " + e.StackTrace);
+                //return;
             }
 
             // Add to the collection.
@@ -230,8 +230,8 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
             }
             catch (System.Exception e)
             {
-                _logger.Error("Cannot ping MongoDB. " + e.StackTrace);
-                return;
+                //_logger.Error("Cannot ping MongoDB. " + e.StackTrace);
+                //return;
             }
 
             // Add to the collection.
@@ -271,8 +271,8 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
             }
             catch (System.Exception e)
             {
-                _logger.Error("Cannot ping MongoDB. " + e.StackTrace);
-                return;
+                //_logger.Error("Cannot ping MongoDB. " + e.StackTrace);
+                //return;
             }
 
             // Add to the collection.
