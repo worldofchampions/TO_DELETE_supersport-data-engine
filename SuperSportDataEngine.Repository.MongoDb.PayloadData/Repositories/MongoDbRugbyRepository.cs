@@ -54,11 +54,19 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
                 return;
             }
 
-            bool isMongoLive = db.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
-
-            if (!isMongoLive)
+            try
             {
-                _logger.Error("Unable to connect to MongoDB.");
+                bool isMongoLive = db.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
+
+                if (!isMongoLive)
+                {
+                    _logger.Error("Unable to connect to MongoDB.");
+                    return;
+                }
+            }
+            catch (System.Exception e)
+            {
+                _logger.Error("Cannot ping MongoDB. " + e.StackTrace);
                 return;
             }
 
@@ -87,11 +95,19 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
                 return;
             }
 
-            bool isMongoLive = db.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
-
-            if (!isMongoLive)
+            try
             {
-                _logger.Error("Unable to connect to MongoDB.");
+                bool isMongoLive = db.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
+
+                if (!isMongoLive)
+                {
+                    _logger.Error("Unable to connect to MongoDB.");
+                    return;
+                }
+            }
+            catch (System.Exception e)
+            {
+                _logger.Error("Cannot ping MongoDB. " + e.StackTrace);
                 return;
             }
 
@@ -120,11 +136,19 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
                 return;
             }
 
-            bool isMongoLive = db.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
-
-            if (!isMongoLive)
+            try
             {
-                _logger.Error("Unable to connect to MongoDB.");
+                bool isMongoLive = db.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
+
+                if (!isMongoLive)
+                {
+                    _logger.Error("Unable to connect to MongoDB.");
+                    return;
+                }
+            }
+            catch (System.Exception e)
+            {
+                _logger.Error("Cannot ping MongoDB. " + e.StackTrace);
                 return;
             }
 
@@ -153,11 +177,19 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
                 return;
             }
 
-            bool isMongoLive = db.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
-
-            if (!isMongoLive)
+            try
             {
-                _logger.Error("Unable to connect to MongoDB.");
+                bool isMongoLive = db.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
+
+                if (!isMongoLive)
+                {
+                    _logger.Error("Unable to connect to MongoDB.");
+                    return;
+                }
+            }
+            catch (System.Exception e)
+            {
+                _logger.Error("Cannot ping MongoDB. " + e.StackTrace);
                 return;
             }
 
@@ -186,11 +218,19 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
                 return;
             }
 
-            bool isMongoLive = db.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
-
-            if (!isMongoLive)
+            try
             {
-                _logger.Error("Unable to connect to MongoDB.");
+                bool isMongoLive = db.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
+
+                if (!isMongoLive)
+                {
+                    _logger.Error("Unable to connect to MongoDB.");
+                    return;
+                }
+            }
+            catch (System.Exception e)
+            {
+                _logger.Error("Cannot ping MongoDB. " + e.StackTrace);
                 return;
             }
 
@@ -219,11 +259,19 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
                 return;
             }
 
-            bool isMongoLive = db.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
-
-            if (!isMongoLive)
+            try
             {
-                _logger.Error("Unable to connect to MongoDB.");
+                bool isMongoLive = db.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
+
+                if (!isMongoLive)
+                {
+                    _logger.Error("Unable to connect to MongoDB.");
+                    return;
+                }
+            }
+            catch (System.Exception e)
+            {
+                _logger.Error("Cannot ping MongoDB. " + e.StackTrace);
                 return;
             }
 
