@@ -48,6 +48,12 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 
             // Get the Mongo DB.
             var db = _mongoClient.GetDatabase(_mongoDatabaseName);
+            if (db == null)
+            {
+                _logger.Error("Mongo db object is null.");
+                return;
+            }
+
             bool isMongoLive = db.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
 
             if (!isMongoLive)
@@ -75,6 +81,12 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 
             // Get the Mongo DB.
             var db = _mongoClient.GetDatabase(_mongoDatabaseName);
+            if (db == null)
+            {
+                _logger.Error("Mongo db object is null.");
+                return;
+            }
+
             bool isMongoLive = db.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
 
             if (!isMongoLive)
@@ -102,6 +114,12 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 
             // Get the Mongo DB.
             var db = _mongoClient.GetDatabase(_mongoDatabaseName);
+            if (db == null)
+            {
+                _logger.Error("Mongo db object is null.");
+                return;
+            }
+
             bool isMongoLive = db.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
 
             if (!isMongoLive)
@@ -129,6 +147,12 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 
             // Get the Mongo DB.
             var db = _mongoClient.GetDatabase(_mongoDatabaseName);
+            if (db == null)
+            {
+                _logger.Error("Mongo db object is null.");
+                return;
+            }
+
             bool isMongoLive = db.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
 
             if (!isMongoLive)
@@ -156,6 +180,12 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 
             // Get the Mongo DB.
             var db = _mongoClient.GetDatabase(_mongoDatabaseName);
+            if(db == null)
+            {
+                _logger.Error("Mongo db object is null.");
+                return;
+            }
+
             bool isMongoLive = db.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
 
             if (!isMongoLive)
@@ -183,6 +213,12 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 
             // Get the Mongo DB.
             var db = _mongoClient.GetDatabase(_mongoDatabaseName);
+            if (db == null)
+            {
+                _logger.Error("Mongo db object is null.");
+                return;
+            }
+
             bool isMongoLive = db.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
 
             if (!isMongoLive)
