@@ -90,6 +90,8 @@
 
                 .ForMember(dest => dest.Officials, src => src.UseValue(LegacyFeedConstants.EmptyMatchOfficialsList))
 
+                .ForMember(dest => dest.isScoredLive, exp => exp.MapFrom(src => src.RugbyFixture.RugbyTournament.IsLiveScored))
+
                 .ForMember(dest => dest.Videos, src => src.UseValue(LegacyFeedConstants.EmptyVideosList))
 
                 .ForMember(dest => dest.LiveVideos, src => src.UseValue(LegacyFeedConstants.EmptyLiveVideosList))
