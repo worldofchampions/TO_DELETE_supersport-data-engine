@@ -246,16 +246,13 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             var fixtures = Enumerable.Empty<RugbyFixture>();
 
-            if (tournament != null)
-            {
-                fixtures = (await _rugbyFixturesRepository.AllAsync())
-                    .Where(t => t.RugbyTournament.Id == tournament.Id && t.RugbyFixtureStatus != RugbyFixtureStatus.Result);
+            if (tournament == null) return fixtures;
+
+            fixtures = (await _rugbyFixturesRepository.AllAsync())
+                .Where(t => t.RugbyTournament.Id == tournament.Id && t.RugbyFixtureStatus != RugbyFixtureStatus.Result);
                    
 
-                return fixtures.OrderByDescending(f => f.StartDateTime); 
-            }
-
-            return fixtures;
+            return fixtures.OrderBy(f => f.StartDateTime);
         }
 
         public async Task<Guid> GetTournamentId(string tournamentSlug)
@@ -321,10 +318,10 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             var nationalTeamName = "South Africa";
 
             var fixtures = (await _rugbyFixturesRepository.AllAsync())
-                    .Where(t =>
-                    (t.TeamA.Name.Equals(nationalTeamName, StringComparison.InvariantCultureIgnoreCase) ||
-                    t.TeamB.Name.Equals(nationalTeamName, StringComparison.InvariantCultureIgnoreCase)) &&
-                    t.RugbyFixtureStatus != RugbyFixtureStatus.Result)
+                    .Where(f =>
+                    ((f.TeamA != null && f.TeamA.Name.Equals(nationalTeamName, StringComparison.InvariantCultureIgnoreCase)) ||
+                     (f.TeamB != null && f.TeamB.Name.Equals(nationalTeamName, StringComparison.InvariantCultureIgnoreCase))) &&
+                    f.RugbyFixtureStatus != RugbyFixtureStatus.Result)
                     .OrderBy(f => f.StartDateTime);
 
             return fixtures;
@@ -371,7 +368,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                  .Where(f => f.StartDateTime.UtcDateTime.Date == DateTime.UtcNow.Date && f.RugbyTournament.IsEnabled)
                  .ToList();
 
-            return todayFixtures.OrderByDescending(f => f.StartDateTime);
+            return todayFixtures.OrderBy(f => f.StartDateTime);
         }
 
         public async Task<RugbyMatchDetailsEntity> GetMatchDetailsByLegacyMatchId(int legacyMatchId)
