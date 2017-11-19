@@ -321,10 +321,10 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             var nationalTeamName = "South Africa";
 
             var fixtures = (await _rugbyFixturesRepository.AllAsync())
-                    .Where(t =>
-                    (t.TeamA.Name.Equals(nationalTeamName, StringComparison.InvariantCultureIgnoreCase) ||
-                    t.TeamB.Name.Equals(nationalTeamName, StringComparison.InvariantCultureIgnoreCase)) &&
-                    t.RugbyFixtureStatus != RugbyFixtureStatus.Result)
+                    .Where(f =>
+                    ((f.TeamA != null && f.TeamA.Name.Equals(nationalTeamName, StringComparison.InvariantCultureIgnoreCase)) ||
+                     (f.TeamB != null && f.TeamB.Name.Equals(nationalTeamName, StringComparison.InvariantCultureIgnoreCase))) &&
+                    f.RugbyFixtureStatus != RugbyFixtureStatus.Result)
                     .OrderBy(f => f.StartDateTime);
 
             return fixtures;

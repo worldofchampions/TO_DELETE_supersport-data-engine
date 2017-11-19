@@ -5,6 +5,7 @@ using Microsoft.Practices.Unity;
 using SuperSportDataEngine.Application.Container;
 using SuperSportDataEngine.Application.Container.Enums;
 using Hangfire.Dashboard;
+using Hangfire.Logging;
 
 [assembly: OwinStartup(typeof(SuperSportDataEngine.Application.Service.SchedulerClient.StartUp))]
 
@@ -26,6 +27,10 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
 
             var options = new HangfireDashboardConfiguration(container).GetDashboardOptions();
             app.UseHangfireDashboard("/Hangfire", options);
+
+            // Disable logging for internal Hangfire code.
+            // This will NOT prevent our own logging from happening.
+            LogProvider.SetCurrentLogProvider(null);
         }
     }
 }
