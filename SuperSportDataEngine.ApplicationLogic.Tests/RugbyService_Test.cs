@@ -226,7 +226,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
         public async Task LiveGame_LiveGameCount()
         {
             Guid fixtureGuid = Guid.NewGuid();
-            DateTime fixtureStartDate = DateTime.Now - TimeSpan.FromMinutes(1);
+            DateTime fixtureStartDate = DateTime.UtcNow - TimeSpan.FromMinutes(1);
 
             MockFixtureRepository.Object.Add(
                 new RugbyFixture()
@@ -263,7 +263,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
                 TestTournament);
 
             Guid fixtureGuid = Guid.NewGuid();
-            DateTime fixtureStartDate = DateTime.Now - TimeSpan.FromMinutes(1);
+            DateTime fixtureStartDate = DateTime.UtcNow - TimeSpan.FromMinutes(1);
 
             MockFixtureRepository.Object.Add(
                 new RugbyFixture()
@@ -304,7 +304,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
                 TestTournament);
 
             Guid fixtureGuid = Guid.NewGuid();
-            DateTime fixtureStartDate = DateTime.Now - TimeSpan.FromMinutes(1);
+            DateTime fixtureStartDate = DateTime.UtcNow - TimeSpan.FromMinutes(1);
 
             MockFixtureRepository.Object.Add(
                 new RugbyFixture()
@@ -345,7 +345,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
                 TestTournament);
 
             Guid fixtureGuid = Guid.NewGuid();
-            DateTime fixtureStartDate = DateTime.Now + TimeSpan.FromMinutes(20);
+            DateTime fixtureStartDate = DateTime.UtcNow + TimeSpan.FromMinutes(20);
 
             MockFixtureRepository.Object.Add(
                 new RugbyFixture()
@@ -386,7 +386,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
                 TestTournament);
 
             Guid fixtureGuid = Guid.NewGuid();
-            DateTime fixtureStartDate = DateTime.Now + TimeSpan.FromMinutes(14);
+            DateTime fixtureStartDate = DateTime.UtcNow + TimeSpan.FromMinutes(14);
 
             MockFixtureRepository.Object.Add(
                 new RugbyFixture()
@@ -427,7 +427,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
                 TestTournament);
 
             Guid fixtureGuid = Guid.NewGuid();
-            DateTime fixtureStartDate = DateTime.Now + TimeSpan.FromMinutes(20);
+            DateTime fixtureStartDate = DateTime.UtcNow + TimeSpan.FromMinutes(20);
 
             MockFixtureRepository.Object.Add(
                 new RugbyFixture()
@@ -468,7 +468,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
                 TestTournament);
 
             Guid fixtureGuid = Guid.NewGuid();
-            DateTime fixtureStartDate = DateTime.Now + TimeSpan.FromMinutes(20);
+            DateTime fixtureStartDate = DateTime.UtcNow + TimeSpan.FromMinutes(20);
 
             MockFixtureRepository.Object.Add(
                 new RugbyFixture()
@@ -509,7 +509,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
                 TestTournament);
 
             Guid fixtureGuid = Guid.NewGuid();
-            DateTime fixtureStartDate = DateTime.Now - TimeSpan.FromHours(2);
+            DateTime fixtureStartDate = DateTime.UtcNow - TimeSpan.FromHours(2);
 
             MockFixtureRepository.Object.Add(
                 new RugbyFixture()
@@ -550,7 +550,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
                 TestTournament);
 
             Guid fixtureGuid = Guid.NewGuid();
-            DateTime fixtureStartDate = DateTime.Now - TimeSpan.FromHours(4);
+            DateTime fixtureStartDate = DateTime.UtcNow - TimeSpan.FromHours(4);
 
             MockFixtureRepository.Object.Add(
                 new RugbyFixture()

@@ -1,6 +1,7 @@
 ﻿namespace SuperSportDataEngine.Application.Service.SchedulerIngestServer
 {
     using Hangfire;
+    using Hangfire.Logging;
     using Microsoft.Practices.Unity;
     using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
     using SuperSportDataEngine.Application.Service.Common.Hangfire.Filters;
@@ -26,6 +27,10 @@
             ApplyCustomRetryFilterAttribute();
 
             _jobServer = new BackgroundJobServer(HangfireConfiguration.JobServerOptions);
+            
+            // Disable logging for internal Hangfire code.
+            // This will NOT prevent our own logging from happening.
+            LogProvider.SetCurrentLogProvider(null);
         }
 
         public void StopService()
