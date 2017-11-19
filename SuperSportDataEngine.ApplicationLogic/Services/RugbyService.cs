@@ -246,16 +246,13 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             var fixtures = Enumerable.Empty<RugbyFixture>();
 
-            if (tournament != null)
-            {
-                fixtures = (await _rugbyFixturesRepository.AllAsync())
-                    .Where(t => t.RugbyTournament.Id == tournament.Id && t.RugbyFixtureStatus != RugbyFixtureStatus.Result);
+            if (tournament == null) return fixtures;
+
+            fixtures = (await _rugbyFixturesRepository.AllAsync())
+                .Where(t => t.RugbyTournament.Id == tournament.Id && t.RugbyFixtureStatus != RugbyFixtureStatus.Result);
                    
 
-                return fixtures.OrderByDescending(f => f.StartDateTime); 
-            }
-
-            return fixtures;
+            return fixtures.OrderBy(f => f.StartDateTime);
         }
 
         public async Task<Guid> GetTournamentId(string tournamentSlug)
@@ -371,7 +368,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                  .Where(f => f.StartDateTime.UtcDateTime.Date == DateTime.UtcNow.Date && f.RugbyTournament.IsEnabled)
                  .ToList();
 
-            return todayFixtures.OrderByDescending(f => f.StartDateTime);
+            return todayFixtures.OrderBy(f => f.StartDateTime);
         }
 
         public async Task<RugbyMatchDetailsEntity> GetMatchDetailsByLegacyMatchId(int legacyMatchId)
