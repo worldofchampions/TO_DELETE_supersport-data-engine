@@ -306,7 +306,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             var fixtures = (await _rugbyFixturesRepository.AllAsync())
                     .Where(f => 
                     ((f.TeamA != null && f.TeamA.Name.Equals(nationalTeamName, StringComparison.InvariantCultureIgnoreCase)) ||
-                     (f.TeamA != null && f.TeamB.Name.Equals(nationalTeamName, StringComparison.InvariantCultureIgnoreCase))) &&
+                    (f.TeamB != null && f.TeamB.Name.Equals(nationalTeamName, StringComparison.InvariantCultureIgnoreCase))) &&
                     f.RugbyFixtureStatus == RugbyFixtureStatus.Result)
                     .OrderByDescending(f => f.StartDateTime);
 
