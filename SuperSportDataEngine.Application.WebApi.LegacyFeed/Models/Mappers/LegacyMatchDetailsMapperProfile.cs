@@ -75,7 +75,7 @@
                 .ForMember(dest => dest.Location, exp => exp.MapFrom(src => src.RugbyFixture.RugbyVenue.Name))
 
                 .ForMember(dest => dest.MatchCompleted, exp => exp.MapFrom(
-                    src => src.RugbyFixture.RugbyFixtureStatus == RugbyFixtureStatus.Result ? true : false))
+                    src => src.RugbyFixture.RugbyFixtureStatus == RugbyFixtureStatus.Result))
 
                 .ForMember(dest => dest.Status, exp => exp.MapFrom(
                     src => LegacyFeedConstants.GetFixtureStatusDescription(src.RugbyFixture.RugbyFixtureStatus)))
@@ -90,11 +90,15 @@
 
                 .ForMember(dest => dest.Officials, src => src.UseValue(LegacyFeedConstants.EmptyMatchOfficialsList))
 
+                .ForMember(dest => dest.isScoredLive, exp => exp.MapFrom(src => src.RugbyFixture.RugbyTournament.IsLiveScored))
+
                 .ForMember(dest => dest.Videos, src => src.UseValue(LegacyFeedConstants.EmptyVideosList))
 
                 .ForMember(dest => dest.LiveVideos, src => src.UseValue(LegacyFeedConstants.EmptyLiveVideosList))
 
                 .ForMember(dest => dest.Attendance, src => src.UseValue(LegacyFeedConstants.DefaultAttendanceValue))
+
+                .ForMember(dest => dest.Preview, src => src.UseValue(string.Empty))
 
                 .ForAllOtherMembers(dest => dest.Ignore());
         }
