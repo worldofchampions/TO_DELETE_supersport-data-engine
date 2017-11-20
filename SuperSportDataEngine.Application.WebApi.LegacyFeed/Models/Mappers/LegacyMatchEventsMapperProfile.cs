@@ -13,20 +13,23 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
                 .ForMember(dest => dest.Player1Id, exp => exp.MapFrom(src => src.RugbyPlayer1.LegacyPlayerId))
 
                 .ForMember(dest => dest.Player1DisplayName, exp => exp.MapFrom(
-                    src => src.RugbyPlayer1.FirstName ?? src.RugbyPlayer1.FullName ?? LegacyFeedConstants.EmptyPlayerName))
+                    src => src.RugbyPlayer1 == null ? LegacyFeedConstants.EmptyPlayerName : 
+                    (src.RugbyPlayer1.DisplayNameCmsOverride ?? src.RugbyPlayer1.FullName ?? src.RugbyPlayer1.FirstName ?? LegacyFeedConstants.EmptyPlayerName)))
 
                 .ForMember(dest => dest.Player1Surname, exp => exp.MapFrom(
-                       src => src.RugbyPlayer1.LastName ?? LegacyFeedConstants.EmptyPlayerName))
+                       src => src.RugbyPlayer1 == null ? LegacyFeedConstants.EmptyPlayerName :
+                       (src.RugbyPlayer1.LastName ?? LegacyFeedConstants.EmptyPlayerName)))
 
                 .ForMember(dest => dest.Player1FullName, exp => exp.MapFrom(
-                    src => src.RugbyPlayer1.FullName ?? LegacyFeedConstants.EmptyPlayerName))
+                    src => src.RugbyPlayer1 == null ? LegacyFeedConstants.EmptyPlayerName :
+                    (src.RugbyPlayer1.FullName ?? LegacyFeedConstants.EmptyPlayerName)))
 
                 // For Player 2 Details
                 .ForMember(dest => dest.Player2Id, exp => exp.MapFrom(src => src.RugbyPlayer2.LegacyPlayerId))
 
                 .ForMember(dest => dest.Player2DisplayName, exp => exp.MapFrom(
                     src => src.RugbyPlayer2 == null ? LegacyFeedConstants.EmptyPlayerName : 
-                    (src.RugbyPlayer1.DisplayNameCmsOverride ?? LegacyFeedConstants.EmptyPlayerName)))
+                    (src.RugbyPlayer2.DisplayNameCmsOverride ?? src.RugbyPlayer2.FullName ?? src.RugbyPlayer1.FirstName ?? LegacyFeedConstants.EmptyPlayerName)))
 
                 .ForMember(dest => dest.Player2Surname, exp => exp.MapFrom(
                     src => src.RugbyPlayer2 == null ? LegacyFeedConstants.EmptyPlayerName :
