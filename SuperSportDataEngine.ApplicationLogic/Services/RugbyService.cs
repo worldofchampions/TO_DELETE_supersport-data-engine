@@ -301,21 +301,21 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         private async Task<IEnumerable<RugbyFixture>> GetNationalTeamResults()
         {
-            var nationalTeamName = "South Africa";
+            const string nationalTeamName = "South Africa";
 
             var fixtures = (await _rugbyFixturesRepository.AllAsync())
                     .Where(f => 
                     ((f.TeamA != null && f.TeamA.Name.Equals(nationalTeamName, StringComparison.InvariantCultureIgnoreCase)) ||
                     (f.TeamB != null && f.TeamB.Name.Equals(nationalTeamName, StringComparison.InvariantCultureIgnoreCase))) &&
                     f.RugbyFixtureStatus == RugbyFixtureStatus.Result)
-                    .OrderBy(f => f.StartDateTime);
+                    .OrderByDescending(f => f.StartDateTime);
 
             return fixtures;
         }
 
         private async Task<IEnumerable<RugbyFixture>> GetNationalTeamFixtures()
         {
-            var nationalTeamName = "South Africa";
+            const string nationalTeamName = "South Africa";
 
             var fixtures = (await _rugbyFixturesRepository.AllAsync())
                     .Where(f =>
