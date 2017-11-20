@@ -564,6 +564,11 @@
                     var teamA = allTeams.FirstOrDefault(t => t.ProviderTeamId == team0.teamId);
                     var teamB = allTeams.FirstOrDefault(t => t.ProviderTeamId == team1.teamId);
 
+                    // When either team is null i.e this fixture has missing information.
+                    // Do not ingest this fixture.
+                    if (teamA == null || teamB == null)
+                        continue;
+
                     var newFixture = new RugbyFixture()
                     {
                         ProviderFixtureId = fixtureId,
@@ -576,8 +581,17 @@
                         TeamBIsHomeTeam = team1.isHomeTeam,
                         RugbyFixtureStatus = GetFixtureStatusFromProviderFixtureState(fixture.gameStateName),
                         DataProvider = DataProvider.StatsProzone,
-                        IsLiveScored = tournament != null && tournament.IsLiveScored
+                        IsLiveScored = tournament != null && tournament.IsLiveScored,
+                        TeamAScore = null,
+                        TeamBScore = null
                     };
+
+                    // Should we set the scores of the new fixture?
+                    if(newFixture.RugbyFixtureStatus != RugbyFixtureStatus.PreMatch)
+                    {
+                        newFixture.TeamAScore = team0.teamFinalScore;
+                        newFixture.TeamBScore = team1.teamFinalScore;
+                    }
 
                     if (fixtureInDb == null)
                     {
