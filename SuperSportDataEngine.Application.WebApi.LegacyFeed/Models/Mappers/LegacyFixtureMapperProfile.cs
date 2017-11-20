@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-using System.Collections.Generic;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
 {
@@ -19,6 +18,12 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
                 
                 .ForMember(dest => dest.HomeTeamShortName, expression => expression.MapFrom(
                    src => src.TeamAIsHomeTeam ? src.TeamA.Name : src.TeamB.Name))
+
+                .ForMember(dest => dest.HomeTeamScore, expression => expression.MapFrom(
+                    src => (src.TeamAIsHomeTeam ? src.TeamAScore : src.TeamBScore)))
+
+                .ForMember(dest => dest.AwayTeamScore, expression => expression.MapFrom(
+                    src => (src.TeamAIsHomeTeam ? src.TeamBScore : src.TeamAScore)))
 
                 .ForMember(dest => dest.Location, expression => expression.MapFrom(
                     src => src.RugbyVenue.Name))
