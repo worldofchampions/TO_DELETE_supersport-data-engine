@@ -8,28 +8,41 @@ using Hangfire.Common;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
 using SuperSportDataEngine.Common.Logging;
 using SuperSportDataEngine.Logging.NLog.Logging;
+using System;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.ScheduledManagerTests
 {
     [Category("FixedScheduleJob")]
     public class FixedScheduledJob_Test
     {
-        [TestCase("FixedScheduleJob→ReferenceData", "0 2 * * *")]
-        [TestCase("FixedScheduleJob→Fixtures", "5 2 * * *")]
-        [TestCase("FixedScheduleJob→Logs→ActiveTournaments", "5 2 * * *")]
-        [TestCase("FixedScheduleJob→Logs→CurrentTournaments", "0 */1 * * *")]
-        [TestCase("FixedScheduleJob→Results→AllFixtures", "5 2 * * *")]
-        [TestCase("FixedScheduleJob→Results→EndedFixtures", "0 */1 * * *")]
-        [TestCase("FixedScheduleJob→Results→CurrentDayFixtures", "*/15 * * * *")]
+        [TestCase("FixedScheduleJob→ReferenceData", "0 2 * * *", "normal_priority")]
+        [TestCase("FixedScheduleJob→Fixtures", "5 2 * * *", "normal_priority")]
+        [TestCase("FixedScheduleJob→Logs→ActiveTournaments", "5 2 * * *", "normal_priority")]
+        [TestCase("FixedScheduleJob→Logs→CurrentTournaments", "0 */1 * * *", "normal_priority")]
+        [TestCase("FixedScheduleJob→Results→AllFixtures", "5 2 * * *", "normal_priority")]
+        [TestCase("FixedScheduleJob→Results→EndedFixtures", "0 */1 * * *", "normal_priority")]
+        [TestCase("FixedScheduleJob→Results→CurrentDayFixtures", "*/15 * * * *", "high_priority")]
         public void FixedScheduleJob_WhenUpdateFixedJobsCalled_AddsJobToHangfire(
             string hangfireJobId,
-            string hangfireCronExpression)
+            string hangfireCronExpression,
+            string queue)
         {
             // Mock the Hangfire client, ingest service and job manager.
             var client = new Mock<IBackgroundJobClient>();
             var mockRugbyService = new Mock<IRugbyService>();
             var mockIngestWorkerService = new Mock<IRugbyIngestWorkerService>();
             var mockRecurringJobManager = new Mock<IRecurringJobManager>();
+
+            RecurringJobOptions options = new RecurringJobOptions();
+
+            mockRecurringJobManager.Setup(c =>
+                c.AddOrUpdate(hangfireJobId, It.IsAny<Job>(), hangfireCronExpression, It.IsAny<RecurringJobOptions>()))
+                 .Callback<string, Job, string, RecurringJobOptions>(
+                 (name, job, cron, option) => {
+                     options.QueueName = option.QueueName;
+                     options.TimeZone = option.TimeZone;
+                 });
+
             var mockLogger = new Mock<ILoggingService>();
 
             // Mock and set the job storage.
@@ -67,6 +80,8 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
                             hangfireCronExpression,
                             It.IsAny<RecurringJobOptions>()),
                           Times.AtLeastOnce());
+
+            Assert.AreEqual(queue, options.QueueName);
         }
     }
 }
