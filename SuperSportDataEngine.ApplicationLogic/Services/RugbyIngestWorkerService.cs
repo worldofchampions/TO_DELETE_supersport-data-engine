@@ -564,6 +564,11 @@
                     var teamA = allTeams.FirstOrDefault(t => t.ProviderTeamId == team0.teamId);
                     var teamB = allTeams.FirstOrDefault(t => t.ProviderTeamId == team1.teamId);
 
+                    // When either team is null i.e this fixture has missing information.
+                    // Do not ingest this fixture.
+                    if (teamA == null || teamB == null)
+                        continue;
+
                     var newFixture = new RugbyFixture()
                     {
                         ProviderFixtureId = fixtureId,
