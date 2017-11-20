@@ -56,7 +56,7 @@
             UnityConfigurationManager.RegisterTypes(_childContainer, Container.Enums.ApplicationScope.ServiceSchedulerClient);
         }
 
-        private async Task<int> CreateChildJobsForFetchingLogs()
+        public async Task<int> CreateChildJobsForFetchingLogs()
         {
             var _schedulerTrackingRugbySeasonRepository =
                             _childContainer.Resolve<IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason>>();
