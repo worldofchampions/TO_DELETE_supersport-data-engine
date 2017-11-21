@@ -28,11 +28,16 @@
             _legacyAuthService = container.Resolve<ILegacyAuthService>();
             _cache = container.Resolve<ICache>();
 
-            if (!IsRugbyRequest(request) && !IsAuthRequest(request))
+            if (IsOldFeedRequest(request))
             {
                 return await ForwardRequestToOldFeed(request, cancellationToken);
             }
 
+            return await AuthorizeNewFeedRequest(request, cancellationToken);
+        }
+
+        private async Task<HttpResponseMessage> AuthorizeNewFeedRequest(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
             var queryDictionary = HttpUtility.ParseQueryString(request.RequestUri.Query);
 
             int.TryParse(queryDictionary.Get("site"), out var siteId);
@@ -50,11 +55,23 @@
                 _cache.Add($"auth/{siteId}/{auth}", authModel);
             }
 
-            if (authModel.Authorised) return await base.SendAsync(request, cancellationToken);
+            if (authModel.Authorised)
+            {
+                return await base.SendAsync(request, cancellationToken);
+            }
+
             {
                 var response = new HttpResponseMessage(HttpStatusCode.Forbidden);
+
                 return response;
             }
+        }
+
+        private static bool IsOldFeedRequest(HttpRequestMessage request)
+        {
+            var isOldFeedRequest = !IsRugbyRequest(request) && !IsAuthRequest(request);
+
+            return isOldFeedRequest;
         }
 
         private static async Task<HttpResponseMessage> ForwardRequestToOldFeed(HttpRequestMessage request, CancellationToken cancellationToken)
