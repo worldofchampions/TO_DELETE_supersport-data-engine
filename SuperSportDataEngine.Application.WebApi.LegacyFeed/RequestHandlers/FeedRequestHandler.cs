@@ -1,4 +1,4 @@
-﻿using SuperSportDataEngine.Application.WebApi.LegacyFeed.Config;
+﻿using System.Web.Http;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
 {
@@ -9,6 +9,8 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
     using SuperSportDataEngine.Application.WebApi.LegacyFeed.Helpers.AppSettings;
     using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Config;
+    using SuperSportDataEngine.Common.Logging;
     using System;
     using System.Net;
     using System.Net.Http;
@@ -21,34 +23,61 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
     {
         private ILegacyAuthService _legacyAuthService;
         private ICache _cache;
+        private ILoggingService _loggingService;
 
-        protected override async Task<HttpResponseMessage> SendAsync(
-                        HttpRequestMessage request, CancellationToken cancellationToken)
+        public FeedRequestHandler()
+        {
+            ResolveDependencies();
+        }
+
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            if (!IslegacyAuthServiceAvailable())
+            {
+                var response = new HttpResponseMessage(HttpStatusCode.InternalServerError);
+
+                return response;
+            }
+
+            if (!IsRequestRedirectorEnabled())
+            {
+                return await AuthorizeNewFeedRequest(request, cancellationToken);
+            }
+
+            if (!IsOldFeedRequest(request))
+            {
+                return await AuthorizeNewFeedRequest(request, cancellationToken);
+            }
+
+            return await ForwardRequestToOldFeed(request, cancellationToken);
+        }
+
+
+        private bool IslegacyAuthServiceAvailable()
+        {
+            var results = _legacyAuthService != null;
+
+            return results;
+        }
+
+        private void ResolveDependencies()
         {
             var container = new UnityContainer();
 
             UnityConfigurationManager.RegisterTypes(container, ApplicationScope.WebApiLegacyFeed);
 
+            UnityConfigurationManager.RegisterApiGlobalTypes(container, ApplicationScope.WebApiLegacyFeed);
+
+            _loggingService = container.Resolve<ILoggingService>();
+
             _legacyAuthService = container.Resolve<ILegacyAuthService>();
 
             _cache = container.Resolve<ICache>();
-
-            if (!IsRequestHandlerEnabled())
-            {
-                return await AuthorizeNewFeedRequest(request, cancellationToken);
-            }
-
-            if (IsOldFeedRequest(request))
-            {
-                return await ForwardRequestToOldFeed(request, cancellationToken);
-            }
-
-            return await AuthorizeNewFeedRequest(request, cancellationToken);
         }
 
-        private static bool IsRequestHandlerEnabled()
+        private static bool IsRequestRedirectorEnabled()
         {
-            return LegacyFeedConfig.IsRequestHandlerEnabled;
+            return LegacyFeedConfig.IsRequestRedirectorEnabled;
         }
 
         private async Task<HttpResponseMessage> AuthorizeNewFeedRequest(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -59,7 +88,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
 
             var auth = queryDictionary.Get("auth");
 
-            var authModel = await _cache.GetAsync<AuthModel>($"auth/{siteId}/{auth}");
+            var authModel = await GetAuthModelFromCache(siteId, auth);
 
             if (authModel == null)
             {
@@ -67,18 +96,53 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
                 {
                     Authorised = _legacyAuthService.IsAuthorised(auth, siteId)
                 };
+            }
+
+            if (!authModel.Authorised)
+            {
+                return GetUnauthorizedResponse();
+            }
+
+            PersistRequestToCache(siteId, auth, authModel);
+
+            return await base.SendAsync(request, cancellationToken);
+        }
+
+        private static HttpResponseMessage GetUnauthorizedResponse()
+        {
+            var msg = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+
+            throw new HttpResponseException(msg);
+        }
+
+        private Task<AuthModel> GetAuthModelFromCache(int siteId, string auth)
+        {
+            try
+            {
+                if (_cache is null)
+                {
+                    return null;
+                }
+
+                return _cache.GetAsync<AuthModel>($"auth/{siteId}/{auth}");
+            }
+            catch (Exception exception)
+            {
+                _loggingService.Fatal(exception.Message + exception.StackTrace);
+
+                return null;
+            }
+        }
+
+        private void PersistRequestToCache(int siteId, string auth, AuthModel authModel)
+        {
+            try
+            {
                 _cache.Add($"auth/{siteId}/{auth}", authModel);
             }
-
-            if (authModel.Authorised)
+            catch (Exception exception)
             {
-                return await base.SendAsync(request, cancellationToken);
-            }
-
-            {
-                var response = new HttpResponseMessage(HttpStatusCode.Forbidden);
-
-                return response;
+                _loggingService.Fatal(exception.Message + exception.StackTrace);
             }
         }
 
