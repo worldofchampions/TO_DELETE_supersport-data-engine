@@ -3,9 +3,9 @@
     using Hangfire;
     using Hangfire.Logging;
     using Microsoft.Practices.Unity;
-    using Common.Hangfire.Configuration;
-    using Common.Hangfire.Filters;
-    using Common.Interfaces;
+    using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
+    using SuperSportDataEngine.Application.Service.Common.Hangfire.Filters;
+    using SuperSportDataEngine.Application.Service.Common.Interfaces;
     using System;
     using System.Configuration;
 
