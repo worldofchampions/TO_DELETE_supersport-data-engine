@@ -8,7 +8,6 @@
     using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using System;
-    using System.Collections.Generic;
     using System.Net;
     using System.Net.Http;
     using System.Text.RegularExpressions;
@@ -94,9 +93,11 @@
         {
             const string searchTextLowercase = "/auth/";
 
-            var requestUrlLowercase = (message.RequestUri.ToString()).ToLower();
+            var requestUrlLowercase = message.RequestUri.ToString().ToLower();
 
-            return (requestUrlLowercase.Contains(searchTextLowercase));
+            var result = requestUrlLowercase.Contains(searchTextLowercase);
+
+            return result;
         }
 
         private static HttpRequestMessage ChangeHostRequest(HttpRequestMessage requestMessage, Uri newUri)
