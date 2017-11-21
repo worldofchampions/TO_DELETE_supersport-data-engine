@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
+﻿using SuperSportDataEngine.Application.WebApi.LegacyFeed.Config;
+
+namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
 {
     using Microsoft.Practices.Unity;
     using SuperSportDataEngine.Application.Container;
@@ -24,9 +26,17 @@
                         HttpRequestMessage request, CancellationToken cancellationToken)
         {
             var container = new UnityContainer();
+
             UnityConfigurationManager.RegisterTypes(container, ApplicationScope.WebApiLegacyFeed);
+
             _legacyAuthService = container.Resolve<ILegacyAuthService>();
+
             _cache = container.Resolve<ICache>();
+
+            if (!IsRequestHandlerEnabled())
+            {
+                return await AuthorizeNewFeedRequest(request, cancellationToken);
+            }
 
             if (IsOldFeedRequest(request))
             {
@@ -34,6 +44,11 @@
             }
 
             return await AuthorizeNewFeedRequest(request, cancellationToken);
+        }
+
+        private static bool IsRequestHandlerEnabled()
+        {
+            return LegacyFeedConfig.IsRequestHandlerEnabled;
         }
 
         private async Task<HttpResponseMessage> AuthorizeNewFeedRequest(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -78,11 +93,14 @@
         {
             var newUri = new Uri(
                 $"http://{SuperSportDataApplicationSettingsHelper.GetSuperSportFeedHost()}" +
-                $"{request.RequestUri.GetComponents(UriComponents.PathAndQuery, UriFormat.Unescaped)}"
-                );
+                $"{request.RequestUri.GetComponents(UriComponents.PathAndQuery, UriFormat.Unescaped)}");
+
             var requestOldFeed = ChangeHostRequest(request, newUri);
+
             var client = new HttpClient();
+
             var response = await client.SendAsync(requestOldFeed, cancellationToken);
+
             return response;
         }
 
@@ -102,9 +120,9 @@
 
             var liveMatches = Regex.Match(testUrl, @"\/rugby\/live");
 
-            var isNewFeedRequest = matchFixtures.Success | matchLogs.Success | matchResults.Success | matchDetails.Success | liveMatches.Success;
+            var isRugbyRequest = matchFixtures.Success | matchLogs.Success | matchResults.Success | matchDetails.Success | liveMatches.Success;
 
-            return isNewFeedRequest;
+            return isRugbyRequest;
         }
 
         private static bool IsAuthRequest(HttpRequestMessage message)
@@ -126,6 +144,7 @@
             {
                 requestMessageClone.Content = requestMessage.Content;
             }
+
             requestMessageClone.Version = requestMessage.Version;
 
             foreach (var property in requestMessage.Properties)
