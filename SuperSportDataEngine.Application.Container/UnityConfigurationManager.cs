@@ -35,6 +35,8 @@
 
         public static void RegisterTypes(IUnityContainer container, ApplicationScope applicationScope)
         {
+            new SlackClient();
+
             ApplyRegistrationsForLogging(container);
             ApplyRegistrationsForApplicationLogic(container, applicationScope);
             ApplyRegistrationsForGatewayHttpStatsProzone(container, applicationScope);
