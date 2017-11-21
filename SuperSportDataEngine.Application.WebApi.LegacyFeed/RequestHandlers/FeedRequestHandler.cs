@@ -20,10 +20,6 @@
         private ILegacyAuthService _legacyAuthService;
         private ICache _cache;
 
-        public FeedRequestHandler()
-        {
-        }
-
         protected override async Task<HttpResponseMessage> SendAsync(
                         HttpRequestMessage request, CancellationToken cancellationToken)
         {
@@ -34,14 +30,7 @@
 
             if (!IsRugbyRequest(request) && !IsAuthRequest(request))
             {
-                var newUri = new Uri(
-                    $"http://{SuperSportDataApplicationSettingsHelper.GetSuperSportFeedHost()}" +
-                    $"{request.RequestUri.GetComponents(UriComponents.PathAndQuery, UriFormat.Unescaped)}"
-                    );
-                var requestOldFeed = ChangeHostRequest(request, newUri);
-                var client = new HttpClient();
-                var response = await client.SendAsync(requestOldFeed, cancellationToken);
-                return response;
+                return await ForwardRequestToOldFeed(request, cancellationToken);
             }
 
             var queryDictionary = HttpUtility.ParseQueryString(request.RequestUri.Query);
@@ -58,7 +47,7 @@
                 {
                     Authorised = _legacyAuthService.IsAuthorised(auth, siteId)
                 };
-                _cache.Add<AuthModel>($"auth/{siteId}/{auth}", authModel);
+                _cache.Add($"auth/{siteId}/{auth}", authModel);
             }
 
             if (authModel.Authorised) return await base.SendAsync(request, cancellationToken);
@@ -66,6 +55,18 @@
                 var response = new HttpResponseMessage(HttpStatusCode.Forbidden);
                 return response;
             }
+        }
+
+        private static async Task<HttpResponseMessage> ForwardRequestToOldFeed(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            var newUri = new Uri(
+                $"http://{SuperSportDataApplicationSettingsHelper.GetSuperSportFeedHost()}" +
+                $"{request.RequestUri.GetComponents(UriComponents.PathAndQuery, UriFormat.Unescaped)}"
+                );
+            var requestOldFeed = ChangeHostRequest(request, newUri);
+            var client = new HttpClient();
+            var response = await client.SendAsync(requestOldFeed, cancellationToken);
+            return response;
         }
 
         private static bool IsRugbyRequest(HttpRequestMessage message)
