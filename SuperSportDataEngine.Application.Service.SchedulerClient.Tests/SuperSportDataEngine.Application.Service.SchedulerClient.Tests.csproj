@@ -128,10 +128,10 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ScheduledManagerTests\FixedScheduledJob_Test.cs" />
-    <Compile Include="ScheduledManagerTests\LiveManagerJob_Test.cs" />
-    <Compile Include="ScheduledManagerTests\LogsManagerJob_Test.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ScheduledManagerTests\FixedScheduledJobTest.cs" />
+    <Compile Include="ScheduledManagerTests\LiveManagerJobTest.cs" />
+    <Compile Include="ScheduledManagerTests\LogsManagerJobTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
