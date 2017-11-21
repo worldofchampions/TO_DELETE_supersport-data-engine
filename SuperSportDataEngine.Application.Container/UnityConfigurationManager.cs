@@ -25,6 +25,7 @@
     using System.Web.Configuration;
     using SuperSportDataEngine.Common.Logging;
     using SuperSportDataEngine.Logging.NLog.Logging;
+    using NLog.Slack;
 
     public static class UnityConfigurationManager
     {
