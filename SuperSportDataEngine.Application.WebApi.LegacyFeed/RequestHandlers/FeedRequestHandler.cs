@@ -20,7 +20,6 @@
     {
         private ILegacyAuthService _legacyAuthService;
         private ICache _cache;
-        private readonly UnityContainer container = new UnityContainer();
 
         public FeedRequestHandler()
         {
@@ -42,15 +41,18 @@
                     );
                 var requestOldFeed = ChangeHostRequest(request, newUri);
                 var client = new HttpClient();
-                var response = await client.SendAsync(requestOldFeed);
+                var response = await client.SendAsync(requestOldFeed, cancellationToken);
                 return response;
             }
 
-            var queryDictionary = HttpUtility.ParseQueryString(request.RequestUri.Query.ToString());
-            int siteId;
-            Int32.TryParse(queryDictionary.Get("site"), out siteId);
+            var queryDictionary = HttpUtility.ParseQueryString(request.RequestUri.Query);
+
+            int.TryParse(queryDictionary.Get("site"), out var siteId);
+
             var auth = queryDictionary.Get("auth");
+
             var authModel = await _cache.GetAsync<AuthModel>($"auth/{siteId}/{auth}");
+
             if (authModel == null)
             {
                 authModel = new AuthModel
@@ -60,16 +62,14 @@
                 _cache.Add<AuthModel>($"auth/{siteId}/{auth}", authModel);
             }
 
-            if (!authModel.Authorised)
+            if (authModel.Authorised) return await base.SendAsync(request, cancellationToken);
             {
                 var response = new HttpResponseMessage(HttpStatusCode.Forbidden);
                 return response;
             }
-
-            return await base.SendAsync(request, cancellationToken);
         }
 
-        private bool IsRugbyRequest(HttpRequestMessage message)
+        private static bool IsRugbyRequest(HttpRequestMessage message)
         {
             var requestUrl = message.RequestUri.ToString();
 
@@ -85,43 +85,43 @@
 
             var liveMatches = Regex.Match(testUrl, @"\/rugby\/live");
 
-            bool isNewFeedRequest = matchFixtures.Success | matchLogs.Success | matchResults.Success | matchDetails.Success | liveMatches.Success;
+            var isNewFeedRequest = matchFixtures.Success | matchLogs.Success | matchResults.Success | matchDetails.Success | liveMatches.Success;
 
             return isNewFeedRequest;
         }
 
-        private bool IsAuthRequest(HttpRequestMessage message)
+        private static bool IsAuthRequest(HttpRequestMessage message)
         {
-            var searchTextLowercase = "/auth/";
+            const string searchTextLowercase = "/auth/";
 
             var requestUrlLowercase = (message.RequestUri.ToString()).ToLower();
 
             return (requestUrlLowercase.Contains(searchTextLowercase));
         }
 
-        private HttpRequestMessage ChangeHostRequest(HttpRequestMessage req, Uri newUri)
+        private static HttpRequestMessage ChangeHostRequest(HttpRequestMessage requestMessage, Uri newUri)
         {
-            var clone = new HttpRequestMessage(req.Method, newUri);
+            var requestMessageClone = new HttpRequestMessage(requestMessage.Method, newUri);
 
-            if (req.Method != HttpMethod.Get)
+            if (requestMessage.Method != HttpMethod.Get)
             {
-                clone.Content = req.Content;
+                requestMessageClone.Content = requestMessage.Content;
             }
-            clone.Version = req.Version;
+            requestMessageClone.Version = requestMessage.Version;
 
-            foreach (KeyValuePair<string, object> prop in req.Properties)
+            foreach (var property in requestMessage.Properties)
             {
-                clone.Properties.Add(prop);
-            }
-
-            foreach (KeyValuePair<string, IEnumerable<string>> header in req.Headers)
-            {
-                clone.Headers.TryAddWithoutValidation(header.Key, header.Value);
+                requestMessageClone.Properties.Add(property);
             }
 
-            clone.Headers.Host = newUri.Authority;
+            foreach (var header in requestMessage.Headers)
+            {
+                requestMessageClone.Headers.TryAddWithoutValidation(header.Key, header.Value);
+            }
 
-            return clone;
+            requestMessageClone.Headers.Host = newUri.Authority;
+
+            return requestMessageClone;
         }
     }
 }
