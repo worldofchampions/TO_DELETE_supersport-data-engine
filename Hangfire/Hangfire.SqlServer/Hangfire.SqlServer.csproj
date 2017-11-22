@@ -124,7 +124,6 @@
     <EmbeddedResource Include="Install.sql" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Hangfire.SqlServer.project.json" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

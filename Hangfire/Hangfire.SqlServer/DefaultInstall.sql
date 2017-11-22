@@ -92,7 +92,7 @@ BEGIN
         [Id] [int] IDENTITY(1,1) NOT NULL,
         [JobId] [int] NOT NULL,
 		[Name] [nvarchar](20) NOT NULL,
-		[Reason] [nvarchar](100) NULL,
+		[Reason] [nvarchar](300) NULL,
         [CreatedAt] [datetime] NOT NULL,
         [Data] [nvarchar](max) NULL,
             
@@ -172,7 +172,7 @@ BEGIN
         
     CREATE TABLE [HangFire].[Hash](
         [Id] [int] IDENTITY(1,1) NOT NULL,
-        [Key] [nvarchar](100) NOT NULL,
+        [Key] [nvarchar](300) NOT NULL,
         [Name] [nvarchar](40) NOT NULL,
         [StringValue] [nvarchar](max) NULL,
         [IntValue] [int] NULL,
@@ -190,7 +190,7 @@ BEGIN
         
     CREATE TABLE [HangFire].[List](
         [Id] [int] IDENTITY(1,1) NOT NULL,
-        [Key] [nvarchar](100) NOT NULL,
+        [Key] [nvarchar](300) NOT NULL,
         [Value] [nvarchar](max) NULL,
         [ExpireAt] [datetime] NULL,
             
@@ -200,7 +200,7 @@ BEGIN
         
     CREATE TABLE [HangFire].[Set](
         [Id] [int] IDENTITY(1,1) NOT NULL,
-        [Key] [nvarchar](100) NOT NULL,
+        [Key] [nvarchar](300) NOT NULL,
         [Score] [float] NOT NULL,
         [Value] [nvarchar](256) NOT NULL,
         [ExpireAt] [datetime] NULL,
@@ -217,7 +217,7 @@ BEGIN
         
     CREATE TABLE [HangFire].[Value](
         [Id] [int] IDENTITY(1,1) NOT NULL,
-        [Key] [nvarchar](100) NOT NULL,
+        [Key] [nvarchar](300) NOT NULL,
         [StringValue] [nvarchar](max) NULL,
         [IntValue] [int] NULL,
         [ExpireAt] [datetime] NULL,
@@ -235,7 +235,7 @@ BEGIN
 
 	CREATE TABLE [HangFire].[Counter](
 		[Id] [int] IDENTITY(1,1) NOT NULL,
-		[Key] [nvarchar](100) NOT NULL,
+		[Key] [nvarchar](300) NOT NULL,
 		[Value] [tinyint] NOT NULL,
 		[ExpireAt] [datetime] NULL,
 
@@ -283,8 +283,8 @@ BEGIN
 
 	CREATE TABLE [HangFire].[Hash](
 		[Id] [int] IDENTITY(1,1) NOT NULL,
-		[Key] [nvarchar](100) NOT NULL,
-		[Field] [nvarchar](100) NOT NULL,
+		[Key] [nvarchar](300) NOT NULL,
+		[Field] [nvarchar](300) NOT NULL,
 		[Value] [nvarchar](max) NULL,
 		[ExpireAt] [datetime2](7) NULL,
 		
@@ -307,7 +307,7 @@ BEGIN
 
 	CREATE TABLE [HangFire].[AggregatedCounter] (
 		[Id] [int] IDENTITY(1,1) NOT NULL,
-		[Key] [nvarchar](100) NOT NULL,
+		[Key] [nvarchar](300) NOT NULL,
 		[Value] [bigint] NOT NULL,
 		[ExpireAt] [datetime] NULL,
 
@@ -368,7 +368,7 @@ BEGIN
 	ALTER TABLE [HangFire].[Server] DROP CONSTRAINT [PK_HangFire_Server]
     PRINT 'Dropped constraint [PK_HangFire_Server] to modify the [HangFire].[Server].[Id] column';
 
-	ALTER TABLE [HangFire].[Server] ALTER COLUMN [Id] NVARCHAR (100) NOT NULL;
+	ALTER TABLE [HangFire].[Server] ALTER COLUMN [Id] NVARCHAR (300) NOT NULL;
 	PRINT 'Modified [HangFire].[Server].[Id] length to 100';
 
 	ALTER TABLE [HangFire].[Server] ADD  CONSTRAINT [PK_HangFire_Server] PRIMARY KEY CLUSTERED
