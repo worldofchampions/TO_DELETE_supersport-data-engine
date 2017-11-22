@@ -1,4 +1,4 @@
-﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models
+﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared
 {
     public class AuthModel
     {

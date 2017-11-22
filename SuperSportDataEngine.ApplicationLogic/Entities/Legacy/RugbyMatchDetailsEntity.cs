@@ -1,9 +1,8 @@
-﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-using System.Collections.Generic;
-
-namespace SuperSportDataEngine.ApplicationLogic.Entities.Legacy
-
+﻿namespace SuperSportDataEngine.ApplicationLogic.Entities.Legacy
 {
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+    using System.Collections.Generic;
+
     public class RugbyMatchDetailsEntity
     {
         public List<RugbyMatchEvent> MatchEvents { get; set; }

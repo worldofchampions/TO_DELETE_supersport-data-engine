@@ -1,8 +1,9 @@
-﻿using AutoMapper;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-
-namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
+﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
 {
+    using AutoMapper;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+
     public class LegacyMatchEventsMapperProfile : Profile
     {
         public LegacyMatchEventsMapperProfile()
@@ -13,7 +14,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
                 .ForMember(dest => dest.Player1Id, exp => exp.MapFrom(src => src.RugbyPlayer1.LegacyPlayerId))
 
                 .ForMember(dest => dest.Player1DisplayName, exp => exp.MapFrom(
-                    src => src.RugbyPlayer1 == null ? LegacyFeedConstants.EmptyPlayerName : 
+                    src => src.RugbyPlayer1 == null ? LegacyFeedConstants.EmptyPlayerName :
                     (src.RugbyPlayer1.DisplayNameCmsOverride ?? src.RugbyPlayer1.FullName ?? src.RugbyPlayer1.FirstName ?? LegacyFeedConstants.EmptyPlayerName)))
 
                 .ForMember(dest => dest.Player1Surname, exp => exp.MapFrom(
@@ -28,7 +29,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
                 .ForMember(dest => dest.Player2Id, exp => exp.MapFrom(src => src.RugbyPlayer2.LegacyPlayerId))
 
                 .ForMember(dest => dest.Player2DisplayName, exp => exp.MapFrom(
-                    src => src.RugbyPlayer2 == null ? LegacyFeedConstants.EmptyPlayerName : 
+                    src => src.RugbyPlayer2 == null ? LegacyFeedConstants.EmptyPlayerName :
                     (src.RugbyPlayer2.DisplayNameCmsOverride ?? src.RugbyPlayer2.FullName ?? src.RugbyPlayer1.FirstName ?? LegacyFeedConstants.EmptyPlayerName)))
 
                 .ForMember(dest => dest.Player2Surname, exp => exp.MapFrom(
@@ -51,7 +52,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
                 .ForMember(dest => dest.EventName, exp => exp.MapFrom(
                     src => src.RugbyEventType == null ? LegacyFeedConstants.EmptyEventName :
                     (src.RugbyEventType.EventName ?? LegacyFeedConstants.EmptyEventName)))
-                
+
                 .ForMember(dest => dest.Comments, exp => exp.UseValue(LegacyFeedConstants.EmptyEventComment))
 
                 .ForMember(dest => dest.EventId, exp => exp.MapFrom(src => src.RugbyEventType.EventCode))
