@@ -343,12 +343,12 @@ WriteLiteral("</em></td>\r\n");
             #line default
             #line hidden
 WriteLiteral("                                        <td class=\"word-break\">\r\n                " +
-"                            ");
+"                          ");
 
 
             
             #line 82 "..\..\Dashboard\Pages\DeletedJobsPage.cshtml"
-                                       Write(Html.JobNameLink(job.Key, job.Value.Job));
+                                     Write(Html.JobNameLink(job.Key, monitor.JobDetails(job.Key).Properties["RecurringJobId"], job.Value.Job));
 
             
             #line default
