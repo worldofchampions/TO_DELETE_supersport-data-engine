@@ -1,9 +1,8 @@
-﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
-{
-    using AutoMapper;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+﻿using AutoMapper;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
 
+namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
+{
     public class LegacyGroupedLogMapperProfile : Profile
     {
         public LegacyGroupedLogMapperProfile()
@@ -60,12 +59,12 @@
                 // rank here
                 .ForMember(dest => dest.rank, expression => expression.MapFrom(
                     src => src.RugbyLogGroup.GroupHierarchyLevel == LegacyFeedConstants.GroupHiearachyLevelZero ?
-                    src.LogPosition : 0))
+                    src.LogPosition: 0))
 
                 // Combined rank here
                 .ForMember(dest => dest.CombinedRank, expression => expression.MapFrom(
                     src => src.RugbyLogGroup.GroupHierarchyLevel == LegacyFeedConstants.GroupHiearachyLevelOne ?
-                    src.LogPosition : 0))
+                    src.LogPosition : 0 ))
 
                  // ConferenceRank rank here
                  .ForMember(dest => dest.ConferenceRank, expression => expression.MapFrom(
@@ -74,7 +73,7 @@
 
                 // Home group here
                 .ForMember(dest => dest.HomeGroup, expression => expression.MapFrom(
-                    src => src.RugbyLogGroup.ParentRugbyLogGroup != null ?
+                    src => src.RugbyLogGroup.ParentRugbyLogGroup != null ? 
                     src.RugbyLogGroup.ParentRugbyLogGroup.GroupName : src.RugbyLogGroup.GroupName))
 
                 .ForMember(dest => dest.IsConference, expression => expression.MapFrom(

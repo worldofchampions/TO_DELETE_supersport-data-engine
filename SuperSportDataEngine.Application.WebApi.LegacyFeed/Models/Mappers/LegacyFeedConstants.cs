@@ -1,10 +1,9 @@
-﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
-{
-    using System.Collections.Generic;
-    using System.Linq;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
+﻿using System.Collections.Generic;
+using System.Linq;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
 
+namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
+{
     public static class LegacyFeedConstants
     {
         private const string _emptyString = "";

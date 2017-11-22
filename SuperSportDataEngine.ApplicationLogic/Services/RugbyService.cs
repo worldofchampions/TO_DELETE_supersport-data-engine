@@ -1,18 +1,18 @@
-﻿namespace SuperSportDataEngine.ApplicationLogic.Services
-{
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
-    using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
+﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
+using System.Threading;
+using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
 
+namespace SuperSportDataEngine.ApplicationLogic.Services
+{
     public class RugbyService : IRugbyService
     {
         private readonly IBaseEntityFrameworkRepository<RugbyMatchEvent> _rugbyMatchEventsRepository;
@@ -55,7 +55,6 @@
             _schedulerTrackingRugbyFixtureRepository = schedulerTrackingRugbyFixtureRepository;
             _schedulerTrackingRugbyTournamentRepository = schedulerTrackingRugbyTournamentRepository;
         }
-
         public async Task<IEnumerable<RugbyTournament>> GetActiveTournaments()
         {
             return (await _rugbyTournamentRepository.AllAsync()).Where(c => c.IsEnabled);
@@ -251,6 +250,7 @@
 
             fixtures = (await _rugbyFixturesRepository.AllAsync())
                 .Where(t => t.RugbyTournament.Id == tournament.Id && t.RugbyFixtureStatus != RugbyFixtureStatus.Result);
+                   
 
             return fixtures.OrderBy(f => f.StartDateTime);
         }
@@ -270,6 +270,7 @@
             return (await _rugbyTournamentRepository.AllAsync())
                 .FirstOrDefault(f => f.Slug.Equals(tournamentSlug, StringComparison.InvariantCultureIgnoreCase));
         }
+
 
         public async Task<IEnumerable<RugbyFixture>> GetTournamentResults(string tournamentSlug)
         {
@@ -303,7 +304,7 @@
             const string nationalTeamName = "South Africa";
 
             var fixtures = (await _rugbyFixturesRepository.AllAsync())
-                    .Where(f =>
+                    .Where(f => 
                     ((f.TeamA != null && f.TeamA.Name.Equals(nationalTeamName, StringComparison.InvariantCultureIgnoreCase)) ||
                     (f.TeamB != null && f.TeamB.Name.Equals(nationalTeamName, StringComparison.InvariantCultureIgnoreCase))) &&
                     f.RugbyFixtureStatus == RugbyFixtureStatus.Result)
@@ -370,19 +371,13 @@
             return todayFixtures.OrderBy(f => f.StartDateTime);
         }
 
-        public async Task<RugbyMatchDetailsEntity> GetMatchDetailsByLegacyMatchId(int legacyMatchId, bool omitDisabledFixtures)
+        public async Task<RugbyMatchDetailsEntity> GetMatchDetailsByLegacyMatchId(int legacyMatchId)
         {
             var fixture = await GetRugbyFixtureByLegacyMatchId(legacyMatchId);
 
             if (fixture is null)
             {
                 return null;
-            }
-
-            if (omitDisabledFixtures)
-            {
-                if (fixture.IsDisabledOutbound)
-                    return null;
             }
 
             var teamAlineup = await GetTeamLineupForFixture(fixture.Id, fixture.TeamA?.Id ?? Guid.Empty);

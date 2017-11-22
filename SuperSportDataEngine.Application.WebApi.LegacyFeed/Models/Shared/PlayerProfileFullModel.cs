@@ -1,10 +1,14 @@
-﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared
-{
-    using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
+namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models
+{
     [Serializable]
     public class PlayerProfileFullModel : PlayerProfileModel
     {
+
         #region -- Properties --
 
         public int TeamId { get; set; }
@@ -35,5 +39,8 @@
         public int ClubCaps { get; set; }
 
         #endregion
+
+      
+
     }
 }

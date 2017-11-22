@@ -1,8 +1,7 @@
-﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Football
-{
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
-    using System;
+﻿using System;
 
+namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Football
+{
     [Serializable]
     public class FootballMatchStatisticsModel : MatchStatisticsModel
     {

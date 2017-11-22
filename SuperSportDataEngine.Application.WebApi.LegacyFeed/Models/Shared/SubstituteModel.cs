@@ -1,7 +1,7 @@
-﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared
-{
-    using System;
+﻿using System;
 
+namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models
+{
     [Serializable]
     public class SubstituteModel
     {

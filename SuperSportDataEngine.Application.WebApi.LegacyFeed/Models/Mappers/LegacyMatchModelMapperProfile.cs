@@ -1,19 +1,18 @@
-﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
-{
-    using System;
-    using AutoMapper;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+﻿using AutoMapper;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+using System;
 
+namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
+{
     public class LegacyMatchModelMapperProfile : Profile
     {
         public LegacyMatchModelMapperProfile()
         {
             CreateMap<RugbyFixture, Match>()
 
-                // For Away team
+                // For Away team 
                 .ForMember(dest => dest.AwayTeam, expression => expression.MapFrom(
-                    src => src.TeamAIsHomeTeam ?
+                    src => src.TeamAIsHomeTeam ? 
                     (src.TeamB.NameCmsOverride ?? src.TeamB.Name) : (src.TeamA.NameCmsOverride ?? src.TeamA.Name)))
 
                 .ForMember(dest => dest.AwayTeamId, expression => expression.MapFrom(
@@ -22,7 +21,7 @@
                 .ForMember(dest => dest.AwayTeamScore, expression => expression.MapFrom(
                    src => (src.TeamAIsHomeTeam ? src.TeamBScore : src.TeamAScore) ?? LegacyFeedConstants.DefaultScoreForStartedGame))
 
-                // For Home team
+                // For Home team 
                 .ForMember(dest => dest.HomeTeam, expression => expression.MapFrom(
                     src => src.TeamAIsHomeTeam ?
                     (src.TeamA.NameCmsOverride ?? src.TeamA.Name) : (src.TeamB.NameCmsOverride ?? src.TeamB.Name)))

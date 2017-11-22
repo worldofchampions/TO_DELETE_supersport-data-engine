@@ -1,10 +1,13 @@
-﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
-{
-    using AutoMapper;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
-    using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
+﻿using AutoMapper;
+using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
 
-    public class LegacyScorerModelMapperProfile : Profile
+namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
+{
+    public class LegacyScorerModelMapperProfile: Profile
     {
         public LegacyScorerModelMapperProfile()
         {
@@ -17,7 +20,7 @@
                 .ForMember(dest => dest.EventId, exp => exp.MapFrom(src => src.EventId))
 
                 .ForMember(dest => dest.Name, exp => exp.MapFrom(src => src.Name))
-
+                
                 .ForMember(dest => dest.NickName, exp => exp.MapFrom(src => src.NickName))
 
                 .ForMember(dest => dest.PersonId, exp => exp.MapFrom(src => src.PersonId))

@@ -1,7 +1,11 @@
-﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared
-{
-    using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
 
+namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models
+{
     [Serializable]
     public abstract class PersonModel
     {

@@ -1,23 +1,23 @@
-﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
-{
-    using AutoMapper;
-    using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Helpers.Extensions;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.News;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-    using SuperSportDataEngine.Common.Logging;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Net.Http;
-    using System.Threading.Tasks;
-    using System.Web.Http;
-    using System.Web.Http.Description;
+﻿using AutoMapper;
+using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
+using SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters;
+using SuperSportDataEngine.Application.WebApi.LegacyFeed.Helpers;
+using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models;
+using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers;
+using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.News;
+using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Web.Http;
+using System.Web.Http.Description;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+using SuperSportDataEngine.Common.Logging;
 
+namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
+{
     /// <summary>
     /// SuperSport Rugby Endpoints
     /// </summary>
@@ -53,7 +53,7 @@
 
             if ((response != null)) return Ok(response);
 
-            var matchDetailsFromService = await _rugbyService.GetMatchDetailsByLegacyMatchId(id, true);
+            var matchDetailsFromService = await _rugbyService.GetMatchDetailsByLegacyMatchId(id);
 
             response = Mapper.Map<RugbyMatchDetails>(matchDetailsFromService);
 
@@ -98,6 +98,7 @@
             return Ok();
         }
 
+
         /// <summary>
         /// Get News for Rugby
         /// </summary>
@@ -113,9 +114,7 @@
 
             if (fixtures != null) return Ok(fixtures.ToList());
 
-            fixtures = (await _rugbyService.GetCurrentDayFixturesForActiveTournaments())
-                .Where(x => !x.IsDisabledOutbound)
-                .Select(Mapper.Map<Match>);
+            fixtures = (await _rugbyService.GetCurrentDayFixturesForActiveTournaments()).Select(Mapper.Map<Match>);
 
             var cacheData = fixtures as IList<Match> ?? fixtures.ToList();
 
@@ -123,6 +122,7 @@
 
             return Ok(cacheData.ToList());
         }
+
 
         /// <summary>
         /// Get Fixtures for Tournament
@@ -143,9 +143,7 @@
                 return Ok(fixtures.ToList());
             }
 
-            fixtures = (await _rugbyService.GetTournamentFixtures(category))
-                .Where(x => !x.IsDisabledOutbound)
-                .Select(Mapper.Map<Fixture>);
+            fixtures = (await _rugbyService.GetTournamentFixtures(category)).Select(Mapper.Map<Fixture>);
 
             var cacheData = fixtures as IList<Fixture> ?? fixtures.ToList();
 
@@ -153,6 +151,7 @@
 
             return Ok(cacheData);
         }
+
 
         [HttpGet]
         [Route("{category}/fixtures/excludeinactive")]
@@ -181,9 +180,7 @@
                 return Ok(results);
             }
 
-            results = (await _rugbyService.GetTournamentResults(category))
-                .Where(x => !x.IsDisabledOutbound)
-                .Select(Mapper.Map<Result>);
+            results = (await _rugbyService.GetTournamentResults(category)).Select(Mapper.Map<Result>);
 
             var cacheData = results as IList<Result> ?? results.ToList();
 
@@ -199,6 +196,7 @@
         {
             return await GetResults(category);
         }
+
 
         /// <summary>
         /// Get Logs for Tournament

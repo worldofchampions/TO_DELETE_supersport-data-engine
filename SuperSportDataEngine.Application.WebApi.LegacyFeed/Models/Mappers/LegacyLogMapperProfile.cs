@@ -1,9 +1,8 @@
-﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
-{
-    using AutoMapper;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+﻿using AutoMapper;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
 
+namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
+{
     public class LegacyLogMapperProfile : Profile
     {
         public LegacyLogMapperProfile()
@@ -14,10 +13,10 @@
                     src => src.RugbyTournament.Name))
 
                 .ForMember(dest => dest.GroupName, src => src.UseValue(string.Empty))
-
+                
                 .ForMember(dest => dest.Team, expression => expression.MapFrom(
                     src => src.RugbyTeam.Name))
-
+                
                 .ForMember(dest => dest.TeamShortName, src => src.UseValue(string.Empty))
 
                 .ForMember(dest => dest.TeamID, expression => expression.MapFrom(

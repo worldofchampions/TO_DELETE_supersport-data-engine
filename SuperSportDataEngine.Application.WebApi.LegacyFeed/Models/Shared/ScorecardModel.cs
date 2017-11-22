@@ -1,8 +1,10 @@
-﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared
-{
-    using System;
-    using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 
+namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models
+{
     [Serializable]
     public class ScorecardModel
     {
@@ -10,7 +12,7 @@
     }
 
     [Serializable]
-    public class Innings : TeamModel
+    public class Innings: TeamModel
     {
         public int Number { get; set; }
         public int Runs { get; set; }
@@ -61,7 +63,7 @@
     }
 
     [Serializable]
-    public class Wicket : PersonModel
+    public class Wicket: PersonModel
     {
         public int Order { get; set; }
         public string Overs { get; set; }

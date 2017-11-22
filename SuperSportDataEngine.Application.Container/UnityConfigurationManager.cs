@@ -25,7 +25,6 @@
     using System.Web.Configuration;
     using SuperSportDataEngine.Common.Logging;
     using SuperSportDataEngine.Logging.NLog.Logging;
-    using NLog.Slack;
 
     public static class UnityConfigurationManager
     {
@@ -35,9 +34,6 @@
 
         public static void RegisterTypes(IUnityContainer container, ApplicationScope applicationScope)
         {
-            // Hack sort of. To get the NLog.Slack.dll to be copied.
-            new SlackClient();
-
             ApplyRegistrationsForLogging(container);
             ApplyRegistrationsForApplicationLogic(container, applicationScope);
             ApplyRegistrationsForGatewayHttpStatsProzone(container, applicationScope);
