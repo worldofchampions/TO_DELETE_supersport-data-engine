@@ -1,7 +1,8 @@
-﻿using System;
-
-namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby
+﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby
 {
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
+    using System;
+
     [Serializable]
     public class RugbyPointsScorerModel : PersonModel
     {

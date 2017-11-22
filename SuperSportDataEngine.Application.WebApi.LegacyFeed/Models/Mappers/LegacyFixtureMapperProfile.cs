@@ -1,8 +1,9 @@
-﻿using AutoMapper;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-
-namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
+﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
 {
+    using AutoMapper;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+
     public class LegacyFixtureMapperProfile : Profile
     {
         public LegacyFixtureMapperProfile()
@@ -15,7 +16,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
 
                 .ForMember(dest => dest.AwayTeamShortName, expression => expression.MapFrom(
                     src => src.TeamAIsHomeTeam ? src.TeamB.Name : src.TeamA.Name))
-                
+
                 .ForMember(dest => dest.HomeTeamShortName, expression => expression.MapFrom(
                    src => src.TeamAIsHomeTeam ? src.TeamA.Name : src.TeamB.Name))
 

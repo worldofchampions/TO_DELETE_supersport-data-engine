@@ -7,7 +7,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
     using SuperSportDataEngine.Application.Container.Enums;
     using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
     using SuperSportDataEngine.Application.WebApi.LegacyFeed.Helpers.AppSettings;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using SuperSportDataEngine.Application.WebApi.LegacyFeed.Config;
     using SuperSportDataEngine.Common.Logging;
