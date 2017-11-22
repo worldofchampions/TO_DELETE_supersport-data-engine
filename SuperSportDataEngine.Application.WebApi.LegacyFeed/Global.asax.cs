@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed
+﻿using SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers;
+
+namespace SuperSportDataEngine.Application.WebApi.LegacyFeed
 {
     using System.Net.Http.Formatting;
     using System.Net.Http.Headers;
@@ -18,6 +20,12 @@
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
             ConfigureFomatters();
+            ConfigureRequestHandlers();
+        }
+
+        private void ConfigureRequestHandlers()
+        {
+            GlobalConfiguration.Configuration.MessageHandlers.Add(new FeedRequestHandler());
         }
 
         private static void ConfigureFomatters()

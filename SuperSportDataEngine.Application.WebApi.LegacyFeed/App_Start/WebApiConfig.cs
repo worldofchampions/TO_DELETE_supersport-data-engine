@@ -64,7 +64,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed
 
         private static void ConfigureFeedRequestHandler()
         {
-            _httpConfig.MessageHandlers.Add(new FeedRequestHandler());
+            //_httpConfig.MessageHandlers.Add(new FeedRequestHandler());
         }
 
         private static void ConfigureApiRoutes()
