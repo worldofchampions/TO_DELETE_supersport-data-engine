@@ -111,6 +111,14 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Hangfire\Hangfire.Core\Hangfire.Core.csproj">
+      <Project>{c995ea9e-56ee-4951-8260-d94260a7f4c2}</Project>
+      <Name>Hangfire.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Hangfire\Hangfire.SqlServer\Hangfire.SqlServer.csproj">
+      <Project>{a523c0e3-097d-4869-977f-15a717ea3e83}</Project>
+      <Name>Hangfire.SqlServer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SuperSportDataEngine.ApplicationLogic\SuperSportDataEngine.ApplicationLogic.csproj">
       <Project>{F420939C-B6A6-4C3A-975E-E30E654C4A90}</Project>
       <Name>SuperSportDataEngine.ApplicationLogic</Name>
