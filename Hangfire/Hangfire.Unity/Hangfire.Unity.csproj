@@ -99,7 +99,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Hangfire.Unity.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
