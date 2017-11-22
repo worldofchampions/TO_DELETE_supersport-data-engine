@@ -1,7 +1,8 @@
-﻿using System;
-
-namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Tennis
+﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Tennis
 {
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
+    using System;
+
     [Serializable]
     public class TennisPlayerModel : PersonModel
     {

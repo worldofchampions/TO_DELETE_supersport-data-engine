@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Football
+﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Football
 {
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
+    using System;
+
     [Serializable]
     public class FootballSeasonModel : SeasonModel
     {

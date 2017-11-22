@@ -1,8 +1,8 @@
-﻿using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models;
-using System.Collections.Generic;
-
-namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Helpers
+﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Helpers.Extensions
 {
+    using System.Collections.Generic;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
+
     public static class ResponseModelsExtensions
     {
         public static void AssignOrderingIds(this List<MatchEvent> matchEvents)

@@ -1,10 +1,10 @@
-﻿using AutoMapper;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-using System;
-
-namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
+﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
 {
-    public class LegacyCommentaryMapperProfile: Profile
+    using AutoMapper;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+
+    public class LegacyCommentaryMapperProfile : Profile
     {
         public LegacyCommentaryMapperProfile()
         {
