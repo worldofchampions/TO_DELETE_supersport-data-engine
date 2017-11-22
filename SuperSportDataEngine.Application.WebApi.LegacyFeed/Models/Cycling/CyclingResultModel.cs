@@ -1,7 +1,8 @@
-﻿using System;
-
-namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Cycling
+﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Cycling
 {
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
+    using System;
+
     [Serializable]
     public class CyclingResultModel : PersonModel
     {

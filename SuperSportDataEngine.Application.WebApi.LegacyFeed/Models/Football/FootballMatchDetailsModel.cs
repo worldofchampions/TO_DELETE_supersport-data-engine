@@ -1,8 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Football
+﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Football
 {
+    using System;
+    using System.Collections.Generic;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
+
     [Serializable]
     public class FootballMatchDetailsModel : MatchDetailsModel
     {
@@ -59,6 +60,4 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Football
 
         private bool IsOwnGoal { get; set; }
     }
-
-    
 }
