@@ -7,7 +7,6 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed
     using System.Web.Http;
     using System.Web.Mvc;
     using System.Web.Optimization;
-    using System.Web.Routing;
 
     public class WebApiApplication : System.Web.HttpApplication
     {
@@ -16,14 +15,13 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
-            RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
             ConfigureFomatters();
             ConfigureRequestHandlers();
         }
 
-        private void ConfigureRequestHandlers()
+        private static void ConfigureRequestHandlers()
         {
             GlobalConfiguration.Configuration.MessageHandlers.Add(new FeedRequestHandler());
         }

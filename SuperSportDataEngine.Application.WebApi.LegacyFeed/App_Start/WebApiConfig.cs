@@ -20,8 +20,6 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed
 
             ConfigureApiRoutes();
 
-            ConfigureFeedRequestHandler();
-
             ConfigureFeedMappings();
 
             RegisterLegacyExceptionFilter();
@@ -62,18 +60,13 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed
             GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.Formatting = Newtonsoft.Json.Formatting.Indented;
         }
 
-        private static void ConfigureFeedRequestHandler()
-        {
-            //_httpConfig.MessageHandlers.Add(new FeedRequestHandler());
-        }
-
         private static void ConfigureApiRoutes()
         {
             _httpConfig.MapHttpAttributeRoutes();
 
             _httpConfig.Routes.MapHttpRoute(
                 name: "DefaultApi",
-                routeTemplate: "api/{sport}/{category}",
+                routeTemplate: "{sport}/{category}/{type}/{id}",
                 defaults: new
                 {
                     category = RouteParameter.Optional,
