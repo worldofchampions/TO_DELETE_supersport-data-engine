@@ -35,6 +35,7 @@
 
         public static void RegisterTypes(IUnityContainer container, ApplicationScope applicationScope)
         {
+            // Hack sort of. To get the NLog.Slack.dll to be copied.
             new SlackClient();
 
             ApplyRegistrationsForLogging(container);
