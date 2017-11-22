@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models
+﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared
 {
+    using System;
+
     [Serializable]
-    public class Scorer: PersonModel
+    public class Scorer : PersonModel
     {
         public string Type { get; set; }
         public int EventId { get; set; }

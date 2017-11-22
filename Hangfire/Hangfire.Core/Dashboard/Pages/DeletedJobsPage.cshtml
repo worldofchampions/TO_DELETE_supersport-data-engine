@@ -79,7 +79,7 @@
                                     else
                                     {
                                         <td class="word-break">
-                                            @Html.JobNameLink(job.Key, job.Value.Job)
+                                          @Html.JobNameLink(job.Key, monitor.JobDetails(job.Key).Properties["RecurringJobId"], job.Value.Job)
                                         </td>
                                         <td class="align-right">
                                             @if (job.Value.DeletedAt.HasValue)
