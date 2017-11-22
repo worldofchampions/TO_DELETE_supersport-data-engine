@@ -181,7 +181,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
 
             MockRecurringJobManager.Verify(m => m.Trigger(
                         "LiveManagerJob→LiveMatch→TeamA vs TeamB"),
-                        Times.Once());
+                        Times.Once());             
 
             var f = MockSchedulerTrackingFixtureRepository.Object.All().FirstOrDefault();
 
