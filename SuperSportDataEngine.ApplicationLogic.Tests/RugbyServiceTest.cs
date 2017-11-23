@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using System;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
-using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
 using SuperSportDataEngine.Common.Logging;
 using System.Threading;
 using System.Linq;
@@ -31,7 +30,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
         Mock<TestEntityFrameworkRepository<RugbyPlayerLineup>> _mockLineupRepository;
         Mock<TestEntityFrameworkRepository<RugbyMatchStatistics>> _mockMatchStatisticsRepository;
         Mock<TestEntityFrameworkRepository<RugbyMatchEvent>> _mockMatchEventsRepository;
-        Mock<ILoggingService> _mockLogger;
 
         [SetUp]
         public void SetUp()
@@ -60,8 +58,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
             _mockGroupedLogRepository =
                     new Mock<TestEntityFrameworkRepository<RugbyGroupedLog>>(new List<RugbyGroupedLog>());
 
-            new Mock<TestEntityFrameworkRepository<RugbyMatchDetailsEntity>>(new List<RugbyMatchDetailsEntity>());
-
             _mockCommentaryRepository =
                      new Mock<TestEntityFrameworkRepository<RugbyCommentary>>(new List<RugbyCommentary>());
 
@@ -74,8 +70,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
             _mockMatchEventsRepository =
                     new Mock<TestEntityFrameworkRepository<RugbyMatchEvent>>(new List<RugbyMatchEvent>());
 
-            _mockLogger =
-                    new Mock<ILoggingService>();
+            new Mock<ILoggingService>();
 
             _rugbyService = new RugbyService(
                 _mockMatchEventsRepository.Object,
