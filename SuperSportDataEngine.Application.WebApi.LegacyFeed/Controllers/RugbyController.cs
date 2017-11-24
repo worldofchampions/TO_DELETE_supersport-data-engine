@@ -1,23 +1,23 @@
-﻿using AutoMapper;
-using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
-using SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters;
-using SuperSportDataEngine.Application.WebApi.LegacyFeed.Helpers;
-using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models;
-using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers;
-using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.News;
-using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using System.Web.Http;
-using System.Web.Http.Description;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-using SuperSportDataEngine.Common.Logging;
-
-namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
+﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 {
+    using AutoMapper;
+    using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Helpers.Extensions;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.News;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+    using SuperSportDataEngine.Common.Logging;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net.Http;
+    using System.Threading.Tasks;
+    using System.Web.Http;
+    using System.Web.Http.Description;
+
     /// <summary>
     /// SuperSport Rugby Endpoints
     /// </summary>
@@ -53,7 +53,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 
             if ((response != null)) return Ok(response);
 
-            var matchDetailsFromService = await _rugbyService.GetMatchDetailsByLegacyMatchId(id);
+            var matchDetailsFromService = await _rugbyService.GetMatchDetailsByLegacyMatchId(id, true);
 
             response = Mapper.Map<RugbyMatchDetails>(matchDetailsFromService);
 
@@ -98,7 +98,6 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             return Ok();
         }
 
-
         /// <summary>
         /// Get News for Rugby
         /// </summary>
@@ -114,7 +113,9 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 
             if (fixtures != null) return Ok(fixtures.ToList());
 
-            fixtures = (await _rugbyService.GetCurrentDayFixturesForActiveTournaments()).Select(Mapper.Map<Match>);
+            fixtures = (await _rugbyService.GetCurrentDayFixturesForActiveTournaments())
+                .Where(x => !x.IsDisabledOutbound)
+                .Select(Mapper.Map<Match>);
 
             var cacheData = fixtures as IList<Match> ?? fixtures.ToList();
 
@@ -122,7 +123,6 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 
             return Ok(cacheData.ToList());
         }
-
 
         /// <summary>
         /// Get Fixtures for Tournament
@@ -143,7 +143,9 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
                 return Ok(fixtures.ToList());
             }
 
-            fixtures = (await _rugbyService.GetTournamentFixtures(category)).Select(Mapper.Map<Fixture>);
+            fixtures = (await _rugbyService.GetTournamentFixtures(category))
+                .Where(x => !x.IsDisabledOutbound)
+                .Select(Mapper.Map<Fixture>);
 
             var cacheData = fixtures as IList<Fixture> ?? fixtures.ToList();
 
@@ -151,7 +153,6 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 
             return Ok(cacheData);
         }
-
 
         [HttpGet]
         [Route("{category}/fixtures/excludeinactive")]
@@ -180,7 +181,9 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
                 return Ok(results);
             }
 
-            results = (await _rugbyService.GetTournamentResults(category)).Select(Mapper.Map<Result>);
+            results = (await _rugbyService.GetTournamentResults(category))
+                .Where(x => !x.IsDisabledOutbound)
+                .Select(Mapper.Map<Result>);
 
             var cacheData = results as IList<Result> ?? results.ToList();
 
@@ -196,7 +199,6 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         {
             return await GetResults(category);
         }
-
 
         /// <summary>
         /// Get Logs for Tournament

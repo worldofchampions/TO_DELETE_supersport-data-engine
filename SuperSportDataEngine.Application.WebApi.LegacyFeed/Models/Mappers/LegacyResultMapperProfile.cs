@@ -1,8 +1,9 @@
-﻿using AutoMapper;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-
-namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
+﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
 {
+    using AutoMapper;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+
     public class LegacyResultMapperProfile : Profile
     {
         public LegacyResultMapperProfile()
@@ -13,7 +14,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
 
                 .ForMember(dest => dest.Sport, expression => expression.UseValue(SportType.Rugby))
 
-                .ForMember(dest => dest.LeagueUrlName, expression =>  expression.MapFrom(
+                .ForMember(dest => dest.LeagueUrlName, expression => expression.MapFrom(
                     src => src.RugbyTournament.Slug))
 
                 .ForMember(dest => dest.HomeTeamScore, expression => expression.MapFrom(

@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models
+﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared
 {
-  //  [Serializable]
+    using System;
+    using System.Collections.Generic;
+
+    //  [Serializable]
     public class Match
     {
         public string LeagueName { get; set; }

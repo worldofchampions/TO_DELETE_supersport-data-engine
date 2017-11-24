@@ -99,7 +99,7 @@
         {
             if (cancellationToken.IsCancellationRequested)
                 return;
-
+            
             var entitiesResponse =
                 _statsProzoneIngestService.IngestRugbyReferenceData(cancellationToken);
 
@@ -564,6 +564,11 @@
                     var teamA = allTeams.FirstOrDefault(t => t.ProviderTeamId == team0.teamId);
                     var teamB = allTeams.FirstOrDefault(t => t.ProviderTeamId == team1.teamId);
 
+                    // When either team is null i.e this fixture has missing information.
+                    // Do not ingest this fixture.
+                    if (teamA == null || teamB == null)
+                        continue;
+
                     var newFixture = new RugbyFixture()
                     {
                         ProviderFixtureId = fixtureId,
@@ -576,8 +581,17 @@
                         TeamBIsHomeTeam = team1.isHomeTeam,
                         RugbyFixtureStatus = GetFixtureStatusFromProviderFixtureState(fixture.gameStateName),
                         DataProvider = DataProvider.StatsProzone,
-                        IsLiveScored = tournament != null && tournament.IsLiveScored
+                        IsLiveScored = tournament != null && tournament.IsLiveScored,
+                        TeamAScore = null,
+                        TeamBScore = null
                     };
+
+                    // Should we set the scores of the new fixture?
+                    if(newFixture.RugbyFixtureStatus != RugbyFixtureStatus.PreMatch)
+                    {
+                        newFixture.TeamAScore = team0.teamFinalScore;
+                        newFixture.TeamBScore = team1.teamFinalScore;
+                    }
 
                     if (fixtureInDb == null)
                     {
@@ -713,7 +727,7 @@
                 return;
 
             var activeTournaments =
-                await _rugbyService.GetActiveTournaments();
+                (await _rugbyService.GetActiveTournaments()).ToList();
 
             await IngestLogsHelper(activeTournaments, cancellationToken);
         }
@@ -724,12 +738,12 @@
                 return;
 
             var currentTournaments =
-                await _rugbyService.GetCurrentTournaments();
+                (await _rugbyService.GetCurrentTournaments()).ToList();
 
             await IngestLogsHelper(currentTournaments, cancellationToken);
         }
 
-        private async Task IngestLogsHelper(IEnumerable<RugbyTournament> tournaments, CancellationToken cancellationToken)
+        private async Task IngestLogsHelper(List<RugbyTournament> tournaments, CancellationToken cancellationToken)
         {
             var seasons = (await _rugbySeasonRepository.AllAsync()).ToList();
 
@@ -1445,7 +1459,7 @@
                 if (team == null) continue;
 
                 var stats = teamMatch.teamStats.matchStats.matchStat;
-                var statsInDb = matchStatistics.FirstOrDefault(s => team != null && (fixture != null && (s.RugbyFixtureId == fixture.Id && s.RugbyTeamId == team.Id)));
+                var statsInDb = matchStatistics.FirstOrDefault(s => (fixture != null && (s.RugbyFixtureId == fixture.Id && s.RugbyTeamId == team.Id)));
 
                 var statsMap = MakeStatisticsMap(stats);
                 if (fixture == null) continue;
@@ -1612,7 +1626,7 @@
                             fixture => fixture.RugbyTournament != null &&
                                        fixture.RugbyTournament.IsEnabled &&
                                        fixture.StartDateTime >= now &&
-                                       fixture.StartDateTime <= nowPlusTwoDays);
+                                       fixture.StartDateTime <= nowPlusTwoDays).ToList();
 
             await IngestLineUpsForFixtures(cancellationToken, gamesInTheNext2Days);
         }
@@ -1623,8 +1637,11 @@
             {
                 var fixtureId = fixture.ProviderFixtureId;
 
-                matchStatsResponse = 
-                    await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, fixtureId);
+                if (matchStatsResponse == null)
+                {
+                    matchStatsResponse =
+                        await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, fixtureId);
+                }
 
                 if (matchStatsResponse == null)
                     continue;
@@ -1874,7 +1891,11 @@
 
             var fixtureState = GetFixtureStatusFromProviderFixtureState(gameState);
             schedule.RugbyFixtureStatus = fixtureState;
-            schedule.SchedulerStateFixtures = SchedulerStateForRugbyFixturePolling.SchedulingCompleted;
+            if (schedule.StartDateTime < DateTimeOffset.UtcNow)
+            {
+                schedule.SchedulerStateFixtures = SchedulerStateForRugbyFixturePolling.SchedulingCompleted;
+            }
+            
             _schedulerTrackingRugbyFixtureRepository.Update(schedule);
 
             await _schedulerTrackingRugbyFixtureRepository.SaveAsync();

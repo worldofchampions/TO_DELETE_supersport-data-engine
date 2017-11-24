@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models
+﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared
 {
+    using System;
+
     [Serializable]
-    public class RankingModel: PersonModel
+    public class RankingModel : PersonModel
     {
         public int Rank { get; set; }
         public string Points { get; set; }

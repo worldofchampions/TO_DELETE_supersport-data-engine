@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models
+﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared
 {
+    using System;
+
     [Serializable]
-    public class Player: PersonModel
+    public class Player : PersonModel
     {
         public int Number { get; set; }
         public string PositionName { get; set; }

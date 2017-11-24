@@ -1,8 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Cricket
+﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Cricket
 {
+    using System;
+    using System.Collections.Generic;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
+
     [Serializable]
     public class CricketMatchModel : Match
     {

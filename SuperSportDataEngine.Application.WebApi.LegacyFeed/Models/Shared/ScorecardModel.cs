@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models
+﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared
 {
+    using System;
+    using System.Collections.Generic;
+
     [Serializable]
     public class ScorecardModel
     {
@@ -12,7 +10,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models
     }
 
     [Serializable]
-    public class Innings: TeamModel
+    public class Innings : TeamModel
     {
         public int Number { get; set; }
         public int Runs { get; set; }
@@ -63,7 +61,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models
     }
 
     [Serializable]
-    public class Wicket: PersonModel
+    public class Wicket : PersonModel
     {
         public int Order { get; set; }
         public string Overs { get; set; }
