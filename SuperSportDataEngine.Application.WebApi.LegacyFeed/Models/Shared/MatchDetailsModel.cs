@@ -48,9 +48,9 @@
 
         public List<ChannelRegions> channelRegions { get; set; }
 
-        public virtual int TeamAScore { get; set; }
+        public virtual int? TeamAScore { get; set; }
 
-        public virtual int TeamBScore { get; set; }
+        public virtual int? TeamBScore { get; set; }
 
         public int TeamAHalfTimeScore { get; set; }
 
