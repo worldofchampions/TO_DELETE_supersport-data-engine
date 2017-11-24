@@ -632,10 +632,10 @@
 
         private static RugbyFixtureStatus GetFixtureStatusFromProviderFixtureState(RugbyFixture fixture, string gameStateName)
         {
-            if (fixture != null && fixture.CmsOverrideModeIsActive)
-            {
-                return fixture.RugbyFixtureStatus;
-            }
+            //if (fixture != null && fixture.CmsOverrideModeIsActive)
+            //{
+            //    return fixture.RugbyFixtureStatus;
+            //}
 
             if (gameStateName.Equals(ProviderGameStateConstant.PreGame, StringComparison.InvariantCultureIgnoreCase))
                 return RugbyFixtureStatus.PreMatch;
