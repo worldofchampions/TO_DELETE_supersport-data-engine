@@ -40,9 +40,6 @@
 
         public int? TeamBScore { get; set; }
 
-        /// <summary> A CMS driven value to indicate if a fixture is live scored. </summary>
-        public bool IsLiveScored { get; set; }
-
         /// <summary>
         /// A CMS driven value to indicate that a fixture should not be served out, e.g. to cater for
         /// scenarios when encountering a problem with provider data. This field has no impact on the
@@ -50,15 +47,18 @@
         /// </summary>
         public bool IsDisabledOutbound { get; set; }
 
-        /// <summary>
-        /// Provides a mode to manually handle fixture data e.g. to cater for scenarios when
-        /// temporarily encountering a problem with provider data. Whilst the CMS override mode is
-        /// active, the following values are controlled manually (i.e. not set by ingest):
-        /// - StartDateTime
-        /// - RugbyFixtureStatus
-        /// - TeamAScore
-        /// - TeamBScore
-        /// </summary>
+        /// <summary> A CMS driven value to indicate if a fixture is live scored. </summary>
+        public bool IsLiveScored { get; set; }
+
+        /// <summary> 
+        /// Provides a mode to manually handle fixture data e.g. to cater for scenarios when 
+        /// temporarily encountering a problem with provider data. Whilst the CMS override mode is 
+        /// active, the following values are controlled manually (i.e. not set by ingest): 
+        /// - StartDateTime 
+        /// - RugbyFixtureStatus 
+        /// - TeamAScore 
+        /// - TeamBScore 
+        /// </summary> 
         public bool CmsOverrideModeIsActive { get; set; }
     }
 }

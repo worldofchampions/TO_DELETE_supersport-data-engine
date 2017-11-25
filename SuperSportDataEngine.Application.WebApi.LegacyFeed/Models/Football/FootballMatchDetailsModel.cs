@@ -15,9 +15,9 @@
         private bool _isScoredLive = true;
         public bool isScoredLive { get; set; }
 
-        public override int? TeamAScore { get; set; }
+        public override int TeamAScore { get; set; }
 
-        public override int? TeamBScore { get; set; }
+        public override int TeamBScore { get; set; }
 
         public int TeamAPenalties { get; set; }
 

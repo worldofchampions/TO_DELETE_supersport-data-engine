@@ -99,6 +99,22 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
         }
 
         [Test]
+        public void TestAddMinutes()
+        {
+            var StartDatetime = DateTime.UtcNow.AddHours(3);
+
+            Assert.IsFalse(StartDatetime < DateTime.UtcNow - TimeSpan.FromHours(6));
+        }
+
+        [Test]
+        public void TestAddMinutes2()
+        {
+            var StartDatetime = DateTime.UtcNow.AddHours(-7);
+
+            Assert.IsTrue(StartDatetime < DateTime.UtcNow - TimeSpan.FromHours(6));
+        }
+
+        [Test]
         public void GetFixtureState_EndedFixture_ResultOnlyPolling_GameEnd()
         {
             var now = new DateTime(2000, 01, 01, 14, 15, 0);
@@ -116,56 +132,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
 
             var status = FixturesStateHelper.GetSchedulerStateForFixture(now, RugbyFixtureStatus.Result, gameStartTime);
             Assert.AreEqual(SchedulerStateForRugbyFixturePolling.SchedulingCompleted, status);
-        }
-
-        [Test]
-        public void GetFixtureState_EndedFixture_SchedulingNotStarted_Cancelled()
-        {
-            var now = new DateTime(2000, 01, 01, 15, 15, 0);
-            var gameStartTime = new DateTime(2000, 01, 01, 15, 10, 0);
-
-            var status = FixturesStateHelper.GetSchedulerStateForFixture(now, RugbyFixtureStatus.Cancelled, gameStartTime);
-            Assert.AreEqual(SchedulerStateForRugbyFixturePolling.SchedulingNotYetStarted, status);
-        }
-
-        [Test]
-        public void GetFixtureState_EndedFixture_SchedulingNotStarted_Postponed()
-        {
-            var now = new DateTime(2000, 01, 01, 15, 15, 0);
-            var gameStartTime = new DateTime(2000, 01, 01, 15, 10, 0);
-
-            var status = FixturesStateHelper.GetSchedulerStateForFixture(now, RugbyFixtureStatus.Postponed, gameStartTime);
-            Assert.AreEqual(SchedulerStateForRugbyFixturePolling.SchedulingNotYetStarted, status);
-        }
-
-        [Test]
-        public void GetFixtureState_EndedFixture_SchedulingNotStarted_Delayed()
-        {
-            var now = new DateTime(2000, 01, 01, 15, 15, 0);
-            var gameStartTime = new DateTime(2000, 01, 01, 15, 10, 0);
-
-            var status = FixturesStateHelper.GetSchedulerStateForFixture(now, RugbyFixtureStatus.Delayed, gameStartTime);
-            Assert.AreEqual(SchedulerStateForRugbyFixturePolling.SchedulingNotYetStarted, status);
-        }
-
-        [Test]
-        public void GetFixtureState_EndedFixture_SchedulingNotStarted_Abandoned()
-        {
-            var now = new DateTime(2000, 01, 01, 15, 15, 0);
-            var gameStartTime = new DateTime(2000, 01, 01, 15, 10, 0);
-
-            var status = FixturesStateHelper.GetSchedulerStateForFixture(now, RugbyFixtureStatus.Abandoned, gameStartTime);
-            Assert.AreEqual(SchedulerStateForRugbyFixturePolling.SchedulingNotYetStarted, status);
-        }
-
-        [Test]
-        public void GetFixtureState_EndedFixture_SchedulingNotStarted_Suspended()
-        {
-            var now = new DateTime(2000, 01, 01, 15, 15, 0);
-            var gameStartTime = new DateTime(2000, 01, 01, 15, 10, 0);
-
-            var status = FixturesStateHelper.GetSchedulerStateForFixture(now, RugbyFixtureStatus.Suspended, gameStartTime);
-            Assert.AreEqual(SchedulerStateForRugbyFixturePolling.SchedulingNotYetStarted, status);
         }
     }
 }

@@ -13,7 +13,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
         
         string IMigrationMetadata.Id
         {
-            get { return "201711231150488_Added_CmsOverrideModeIsActive_to_RugbyFixture_table"; }
+            get { return "201711251910519_Added_CmsOverrideModeIsActive_to_RugbyFixture_table"; }
         }
         
         string IMigrationMetadata.Source

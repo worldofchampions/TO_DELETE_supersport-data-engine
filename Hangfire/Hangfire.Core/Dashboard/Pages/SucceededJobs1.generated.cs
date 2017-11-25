@@ -360,8 +360,8 @@ WriteLiteral("</em>\r\n                                        </td>\r\n");
             
             #line default
             #line hidden
-WriteLiteral("                                        <td class=\"min-width\">\r\n                 " +
-"                         ");
+WriteLiteral("                                        <td class=\"word-break\">\r\n                " +
+"                          ");
 
 
             
