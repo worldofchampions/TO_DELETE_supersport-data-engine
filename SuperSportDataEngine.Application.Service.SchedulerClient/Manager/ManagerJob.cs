@@ -84,10 +84,16 @@
             _logger.Debug("Do work for ManagerJob's.");
 
             ConfigureDepenencies();
-
-            await _liveManagerJob.DoWorkAsync();
-            await _fixturesManagerJob.DoWorkAsync();
-            await _logsManagerJob.DoWorkAsync();
+            try
+            {
+                await _liveManagerJob.DoWorkAsync();
+                await _fixturesManagerJob.DoWorkAsync();
+                await _logsManagerJob.DoWorkAsync();
+            }
+            catch (Exception exception)
+            {
+                _logger.Info(exception.StackTrace);
+            }
 
             _timer.Start();
         }

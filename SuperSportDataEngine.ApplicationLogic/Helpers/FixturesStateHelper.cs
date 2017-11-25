@@ -9,12 +9,12 @@ namespace SuperSportDataEngine.ApplicationLogic.Helpers
         public static SchedulerStateForRugbyFixturePolling GetSchedulerStateForFixture(DateTime now, RugbyFixtureStatus gameStatus, DateTime startDateTime)
         {
             if (gameStatus == RugbyFixtureStatus.PreMatch &&
-                (now + TimeSpan.FromMinutes(15)) < startDateTime)
+                (now.AddMinutes(15)) < startDateTime)
                 return SchedulerStateForRugbyFixturePolling.SchedulingNotYetStarted;
 
             if (gameStatus == RugbyFixtureStatus.PreMatch &&
-                (now + TimeSpan.FromMinutes(15)) > startDateTime &&
-                (now + TimeSpan.FromMinutes(15)) < (startDateTime + TimeSpan.FromHours(3)))
+                (now.AddMinutes(15)) > startDateTime &&
+                (now.AddMinutes(15)) < (startDateTime + TimeSpan.FromHours(3)))
                 return SchedulerStateForRugbyFixturePolling.PreLivePolling;
 
             if (gameStatus == RugbyFixtureStatus.FirstHalf ||
@@ -24,18 +24,18 @@ namespace SuperSportDataEngine.ApplicationLogic.Helpers
                 return SchedulerStateForRugbyFixturePolling.LivePolling;
 
             if (gameStatus == RugbyFixtureStatus.Result &&
-                now > (startDateTime + TimeSpan.FromMinutes(110)) &&
-                now < (startDateTime + TimeSpan.FromMinutes(125)))
+                now > (startDateTime.AddMinutes(110)) &&
+                now < (startDateTime.AddMinutes(125)))
                 return SchedulerStateForRugbyFixturePolling.PostLivePolling;
 
             if (gameStatus == RugbyFixtureStatus.Result &&
-               now > (startDateTime + TimeSpan.FromMinutes(125)) &&
-               now < (startDateTime + TimeSpan.FromMinutes(185)))
+               now > (startDateTime.AddMinutes(125)) &&
+               now < (startDateTime.AddMinutes(185)))
                 return SchedulerStateForRugbyFixturePolling.ResultOnlyPolling;
 
             if (gameStatus == RugbyFixtureStatus.Result &&
-               now > (startDateTime + TimeSpan.FromMinutes(185)) &&
-               now < (startDateTime + TimeSpan.FromHours(6)))
+               now > (startDateTime.AddMinutes(185)) &&
+               now < (startDateTime.AddHours(6)))
                 return SchedulerStateForRugbyFixturePolling.SchedulingCompleted;
 
             return SchedulerStateForRugbyFixturePolling.SchedulingNotYetStarted;

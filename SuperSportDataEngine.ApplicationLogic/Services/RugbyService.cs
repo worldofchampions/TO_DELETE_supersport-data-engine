@@ -527,7 +527,7 @@
         {
             var pastFixturesIdsNotScheduledYet =
                             (await _schedulerTrackingRugbyFixtureRepository.AllAsync()).Where(s => s.SchedulerStateFixtures != SchedulerStateForRugbyFixturePolling.SchedulingCompleted &&
-                            s.StartDateTime < DateTime.UtcNow - TimeSpan.FromHours(6)).Select(s => s.FixtureId).ToList();
+                            s.StartDateTime < DateTime.UtcNow.AddHours(-6)).Select(s => s.FixtureId).ToList();
 
             var fixtures = (_rugbyFixturesRepository.Where(f => pastFixturesIdsNotScheduledYet.Contains(f.Id)))
                                 .OrderByDescending(f => f.StartDateTime);
