@@ -7,10 +7,12 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
     {
         public override void Up()
         {
+            AddColumn("dbo.RugbyFixtures", "CmsOverrideModeIsActive", c => c.Boolean(nullable: false));
         }
-        
+
         public override void Down()
         {
+            DropColumn("dbo.RugbyFixtures", "CmsOverrideModeIsActive");
         }
     }
 }
