@@ -552,8 +552,6 @@
                 {
                     var fixtureId = fixture.gameId;
 
-                    // Lookup in Db
-                    var fixtureInDb = allFixtures.FirstOrDefault(f => f.ProviderFixtureId == fixtureId);
                     DateTimeOffset.TryParse(fixture.startTimeUTC, out DateTimeOffset startTime);
                     var teams = fixture.teams.ToArray();
                     // We need temporary variables here.
@@ -593,26 +591,29 @@
                         newFixture.TeamBScore = team1.teamFinalScore;
                     }
 
+                    // Lookup in Db
+                    var fixtureInDb = allFixtures.FirstOrDefault(f => f.ProviderFixtureId == fixtureId);
+
                     if (fixtureInDb == null)
                     {
                         _rugbyFixturesRepository.Add(newFixture);
                     }
                     else
                     {
-                        // Only update the scores for games that are completed.
-                        // Real-time scores will be updated separately 
-                        // in a method that runs more frequently.
-                        if (fixtureInDb.RugbyFixtureStatus == RugbyFixtureStatus.Result)
+                        if (!fixtureInDb.CmsOverrideModeIsActive)
                         {
-                            newFixture.TeamAScore = team0.teamFinalScore;
-                            newFixture.TeamBScore = team1.teamFinalScore;
+                            fixtureInDb.StartDateTime = startTime;
+                            fixtureInDb.RugbyFixtureStatus = GetFixtureStatusFromProviderFixtureState(fixture.gameStateName);
 
-                            fixtureInDb.TeamAScore = newFixture.TeamAScore;
-                            fixtureInDb.TeamBScore = newFixture.TeamBScore;
+                            // Only update the scores for games that are completed. 
+                            // Real-time scores will be updated separately in a method that runs more frequently. 
+                            if (fixtureInDb.RugbyFixtureStatus == RugbyFixtureStatus.Result)
+                            {
+                                fixtureInDb.TeamAScore = team0.teamFinalScore;
+                                fixtureInDb.TeamBScore = team1.teamFinalScore;
+                            }
                         }
 
-                        fixtureInDb.StartDateTime = startTime;
-                        fixtureInDb.RugbyFixtureStatus = GetFixtureStatusFromProviderFixtureState(fixture.gameStateName);
                         fixtureInDb.RugbyVenue = newFixture.RugbyVenue;
                         fixtureInDb.TeamA = newFixture.TeamA;
                         fixtureInDb.TeamB = newFixture.TeamB;
@@ -1392,8 +1393,11 @@
 
             if (rugbyFixture != null)
             {
-                rugbyFixture.RugbyFixtureStatus = fixtureState;
-                _rugbyFixturesRepository.Update(rugbyFixture);
+                if (!rugbyFixture.CmsOverrideModeIsActive)
+                {
+                    rugbyFixture.RugbyFixtureStatus = fixtureState;
+                    _rugbyFixturesRepository.Update(rugbyFixture);
+                }
             }
 
             await _rugbyFixturesRepository.SaveAsync();
@@ -1419,9 +1423,12 @@
             }
             else
             {
-                fixtureInDb.TeamAScore = scores.teamAScore;
-                fixtureInDb.TeamBScore = scores.teamBScore;
-                _rugbyFixturesRepository.Update(fixtureInDb);
+                if (!fixtureInDb.CmsOverrideModeIsActive)
+                {
+                    fixtureInDb.TeamAScore = scores.teamAScore;
+                    fixtureInDb.TeamBScore = scores.teamBScore;
+                    _rugbyFixturesRepository.Update(fixtureInDb);
+                }
             }
 
             await _rugbyFixturesRepository.SaveAsync();
