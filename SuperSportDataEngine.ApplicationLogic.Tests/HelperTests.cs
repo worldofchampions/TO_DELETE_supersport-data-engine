@@ -99,6 +99,22 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
         }
 
         [Test]
+        public void TestAddMinutes()
+        {
+            var StartDatetime = DateTime.UtcNow.AddHours(3);
+
+            Assert.IsFalse(StartDatetime < DateTime.UtcNow - TimeSpan.FromHours(6));
+        }
+
+        [Test]
+        public void TestAddMinutes2()
+        {
+            var StartDatetime = DateTime.UtcNow.AddHours(-7);
+
+            Assert.IsTrue(StartDatetime < DateTime.UtcNow - TimeSpan.FromHours(6));
+        }
+
+        [Test]
         public void GetFixtureState_EndedFixture_ResultOnlyPolling_GameEnd()
         {
             var now = new DateTime(2000, 01, 01, 14, 15, 0);

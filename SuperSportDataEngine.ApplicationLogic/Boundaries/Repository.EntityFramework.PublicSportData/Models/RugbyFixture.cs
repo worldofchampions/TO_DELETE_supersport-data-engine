@@ -49,5 +49,16 @@
 
         /// <summary> A CMS driven value to indicate if a fixture is live scored. </summary>
         public bool IsLiveScored { get; set; }
+
+        /// <summary> 
+        /// Provides a mode to manually handle fixture data e.g. to cater for scenarios when 
+        /// temporarily encountering a problem with provider data. Whilst the CMS override mode is 
+        /// active, the following values are controlled manually (i.e. not set by ingest): 
+        /// - StartDateTime 
+        /// - RugbyFixtureStatus 
+        /// - TeamAScore 
+        /// - TeamBScore 
+        /// </summary> 
+        public bool CmsOverrideModeIsActive { get; set; }
     }
 }

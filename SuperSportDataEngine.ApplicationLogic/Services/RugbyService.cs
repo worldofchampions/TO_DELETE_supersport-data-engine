@@ -518,17 +518,16 @@
 
         public async Task<IEnumerable<RugbyFixture>> GetPostponedFixtures()
         {
-            return (await _rugbyFixturesRepository.AllAsync())
-                .Where(f =>
-                    f.RugbyFixtureStatus == RugbyFixtureStatus.PreMatch &&
-                    f.StartDateTime < (DateTimeOffset.UtcNow - TimeSpan.FromHours(3)));
+            return (await _rugbyFixturesRepository.AllAsync()).Where(f =>
+                (f.RugbyFixtureStatus == RugbyFixtureStatus.PreMatch && f.StartDateTime < (DateTimeOffset.UtcNow - TimeSpan.FromHours(3)))
+                || (f.RugbyFixtureStatus == RugbyFixtureStatus.Postponed));
         }
 
         public async Task<IEnumerable<RugbyFixture>> GetFixturesNotIngestedYet()
         {
             var pastFixturesIdsNotScheduledYet =
                             (await _schedulerTrackingRugbyFixtureRepository.AllAsync()).Where(s => s.SchedulerStateFixtures != SchedulerStateForRugbyFixturePolling.SchedulingCompleted &&
-                            s.StartDateTime < DateTime.UtcNow - TimeSpan.FromHours(6)).Select(s => s.FixtureId).ToList();
+                            s.StartDateTime < DateTime.UtcNow.AddHours(-6)).Select(s => s.FixtureId).ToList();
 
             var fixtures = (_rugbyFixturesRepository.Where(f => pastFixturesIdsNotScheduledYet.Contains(f.Id)))
                                 .OrderByDescending(f => f.StartDateTime);
