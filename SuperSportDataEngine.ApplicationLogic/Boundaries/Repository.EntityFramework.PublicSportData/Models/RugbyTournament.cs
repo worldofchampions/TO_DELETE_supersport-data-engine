@@ -36,6 +36,9 @@
         /// <summary> A CMS driven value to indicate if a tournament is live scored. </summary>
         public bool IsLiveScored { get; set; }
 
+        /// <summary> A CMS driven value to indicate if the tournament has logs/ladder standings. </summary>
+        public bool HasLogs { get; set; }
+
         public DataProvider DataProvider { get; set; }
     }
 }

@@ -197,7 +197,7 @@
             {
                 var teamInDb = teamsAlreadyInDb.FirstOrDefault(t => t.ProviderTeamId == team.id);
 
-                if (teamInDb == null)
+                if (teamInDb == null || teamInDb.ProviderTeamId == 0)
                 {
                     var newTeam = new RugbyTeam()
                     {
@@ -564,8 +564,10 @@
 
                     // When either team is null i.e this fixture has missing information.
                     // Do not ingest this fixture.
-                    if (teamA == null || teamB == null)
-                        continue;
+                    // Ammended: Ingest this fixture.
+                    // We have a TBC team in the DB for when a team is un-determined.
+                    //if (teamA == null || teamB == null)
+                    //    continue;
 
                     var newFixture = new RugbyFixture()
                     {
@@ -1218,7 +1220,7 @@
                     return;
 
                 var teamInDb = rugbyFixture.TeamA != null && rugbyFixture.TeamA.ProviderTeamId == error.teamId ? rugbyFixture.TeamA : rugbyFixture.TeamB;
-                if (teamInDb == null) continue;
+                if (teamInDb == null || teamInDb.ProviderTeamId == 0) continue;
 
                 var newEvent = new RugbyMatchEvent()
                 {
@@ -1280,7 +1282,7 @@
                     return;
 
                 var teamInDb = rugbyFixture.TeamA != null && rugbyFixture.TeamA.ProviderTeamId == penaltyEvent.teamId ? rugbyFixture.TeamA : rugbyFixture.TeamB;
-                if (teamInDb == null) continue;
+                if (teamInDb == null || teamInDb.ProviderTeamId == 0) continue;
 
                 var newEvent = new RugbyMatchEvent()
                 {
@@ -1338,7 +1340,7 @@
                     return;
 
                 var teamInDb = rugbyFixture.TeamA != null && rugbyFixture.TeamA.ProviderTeamId == team.teamId ? rugbyFixture.TeamA : rugbyFixture.TeamB;
-                if (teamInDb == null) continue;
+                if (teamInDb == null || teamInDb.ProviderTeamId == 0) continue;
 
                 var scoreEvents = team.statScoringEvent;
                 if (scoreEvents == null)
@@ -1716,7 +1718,7 @@
                     var teamId = squad.teamId;
                     var dbTeam = fixture.TeamA != null && fixture.TeamA.ProviderTeamId == teamId ? fixture.TeamA : fixture.TeamB;
 
-                    if (dbTeam == null)
+                    if (dbTeam == null || dbTeam.ProviderTeamId == 0)
                         continue;
 
                     var shirtNumber = player.shirtNum;
