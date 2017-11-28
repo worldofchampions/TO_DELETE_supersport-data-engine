@@ -332,7 +332,7 @@
 
             var logs = Enumerable.Empty<RugbyGroupedLog>();
 
-            if (tournament != null)
+            if (tournament != null && tournament.HasLogs)
             {
                 logs = (await _rugbyGroupedLogsRepository.AllAsync())
                     .Where(t => t.RugbyTournament.IsEnabled && t.RugbyTournamentId == tournament.Id)
@@ -351,7 +351,7 @@
 
             var flatLogs = Enumerable.Empty<RugbyFlatLog>();
 
-            if (tournament != null)
+            if (tournament != null && tournament.HasLogs)
             {
                 flatLogs = (await _rugbyFlatLogsRepository.AllAsync())
                     .Where(t => t.RugbyTournament.IsEnabled && t.RugbyTournamentId == tournament.Id && t.RugbySeason.IsCurrent)
