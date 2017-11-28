@@ -13,7 +13,11 @@
 
         private static void ApplyForwardPendingMigrations(DbMigrator dbMigrator)
         {
-            if (dbMigrator.GetPendingMigrations().Any())
+            // Apply forward migrations and seeding database regardless
+            // of whether there are pending migrations or not.
+            // This is so that new seed data is applied
+            // even though there are no pending migrations.
+            //if (dbMigrator.GetPendingMigrations().Any())
                 dbMigrator.Update();
         }
 
