@@ -1,27 +1,23 @@
 ﻿using SuperSportDataEngine.Application.WebApi.LegacyFeed.App_Start;
-using SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers;
 using System.Net.Http.Formatting;
 using System.Web.Http;
 using Microsoft.Practices.Unity;
 using SuperSportDataEngine.Application.Container;
-using SuperSportDataEngine.Application.WebApi.LegacyFeed.Config;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed
 {
     public static class WebApiConfig
     {
-        private static HttpConfiguration httpConfig;
+        private static HttpConfiguration _httpConfig;
         public static void Register(HttpConfiguration config)
         {
-            httpConfig = config;
+            _httpConfig = config;
 
             ConfigureDependencyContainer();
 
             ConfigureResponseFormatters();
 
             ConfigureApiRoutes();
-
-            ConfigureFeedRequestHandler();
 
             ConfigureFeedMappings();
 
@@ -34,7 +30,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed
 
             UnityConfigurationManager.RegisterApiGlobalTypes(container, Container.Enums.ApplicationScope.WebApiLegacyFeed);
 
-            httpConfig.DependencyResolver = new UnityDependencyResolver(container);
+            _httpConfig.DependencyResolver = new UnityDependencyResolver(container);
         }
 
         private static void RegisterLegacyExceptionFilter()
@@ -45,42 +41,31 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed
         private static void ConfigureResponseFormatters()
         {
             // For All Media Types
-            httpConfig.Formatters.Clear();
+            _httpConfig.Formatters.Clear();
 
             // For XML
-            httpConfig.Formatters.Add(new XmlMediaTypeFormatter());
+            _httpConfig.Formatters.Add(new XmlMediaTypeFormatter());
 
-            httpConfig.Formatters.XmlFormatter.UseXmlSerializer = true;
+            _httpConfig.Formatters.XmlFormatter.UseXmlSerializer = true;
 
             GlobalConfiguration.Configuration.Formatters.XmlFormatter.Indent = true;
 
             // For JSON
-            httpConfig.Formatters.Add(new JsonMediaTypeFormatter());
+            _httpConfig.Formatters.Add(new JsonMediaTypeFormatter());
 
-            ((Newtonsoft.Json.Serialization.DefaultContractResolver)httpConfig
+            ((Newtonsoft.Json.Serialization.DefaultContractResolver)_httpConfig
                 .Formatters.JsonFormatter.SerializerSettings.ContractResolver).IgnoreSerializableAttribute = true;
 
             GlobalConfiguration.Configuration.Formatters.JsonFormatter.SerializerSettings.Formatting = Newtonsoft.Json.Formatting.Indented;
-
-        }
-
-        private static void ConfigureFeedRequestHandler()
-        {
-            var requestHandlerEnabled = LegacyFeedConfig.IsRequestHandlerEnabled;
-
-            if (requestHandlerEnabled)
-            {
-                httpConfig.MessageHandlers.Add(new FeedRequestHandler());
-            }
         }
 
         private static void ConfigureApiRoutes()
         {
-            httpConfig.MapHttpAttributeRoutes();
+            _httpConfig.MapHttpAttributeRoutes();
 
-            httpConfig.Routes.MapHttpRoute(
+            _httpConfig.Routes.MapHttpRoute(
                 name: "DefaultApi",
-                routeTemplate: "api/{sport}/{category}",
+                routeTemplate: "{sport}/{category}/{type}/{id}",
                 defaults: new
                 {
                     category = RouteParameter.Optional,
