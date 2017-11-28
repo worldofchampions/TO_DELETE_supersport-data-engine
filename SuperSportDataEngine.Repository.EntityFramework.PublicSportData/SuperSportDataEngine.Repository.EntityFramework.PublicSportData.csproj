@@ -216,6 +216,10 @@
     <Compile Include="Migrations\201711251910519_Added_CmsOverrideModeIsActive_to_RugbyFixture_table.Designer.cs">
       <DependentUpon>201711251910519_Added_CmsOverrideModeIsActive_to_RugbyFixture_table.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201711280810482_Add_HasLogs_To_Rugby_Tournament.cs" />
+    <Compile Include="Migrations\201711280810482_Add_HasLogs_To_Rugby_Tournament.Designer.cs">
+      <DependentUpon>201711280810482_Add_HasLogs_To_Rugby_Tournament.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypeProviderMappings.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypes.cs" />
@@ -338,6 +342,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201711251910519_Added_CmsOverrideModeIsActive_to_RugbyFixture_table.resx">
       <DependentUpon>201711251910519_Added_CmsOverrideModeIsActive_to_RugbyFixture_table.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201711280810482_Add_HasLogs_To_Rugby_Tournament.resx">
+      <DependentUpon>201711280810482_Add_HasLogs_To_Rugby_Tournament.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
