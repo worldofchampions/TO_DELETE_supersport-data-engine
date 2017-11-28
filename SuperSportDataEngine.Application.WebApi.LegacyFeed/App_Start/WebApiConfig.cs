@@ -1,5 +1,4 @@
 ﻿using SuperSportDataEngine.Application.WebApi.LegacyFeed.App_Start;
-using SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers;
 using System.Net.Http.Formatting;
 using System.Web.Http;
 using Microsoft.Practices.Unity;
