@@ -7,17 +7,14 @@
     [Serializable]
     public class FootballMatchDetailsModel : MatchDetailsModel
     {
-        private int teamAScore = 0;
-        private int teamBScore = 0;
-
         public List<FootballMatchStatisticsModel> TeamsMatchStatistics { get; set; }
 
         private bool _isScoredLive = true;
         public bool isScoredLive { get; set; }
 
-        public override int TeamAScore { get; set; }
+        public override int? TeamAScore { get; set; }
 
-        public override int TeamBScore { get; set; }
+        public override int? TeamBScore { get; set; }
 
         public int TeamAPenalties { get; set; }
 
