@@ -566,8 +566,12 @@
                     // Do not ingest this fixture.
                     // Ammended: Ingest this fixture.
                     // We have a TBC team in the DB for when a team is un-determined.
-                    //if (teamA == null || teamB == null)
-                    //    continue;
+
+                    var isFixtureTbc = teamA == null || teamB == null;
+                    var isFixturePartOfAFinal = IsProviderFixturePartOfFinal(roundFixture);
+
+                    if (isFixtureTbc && !isFixturePartOfAFinal)
+                        continue;
 
                     var newFixture = new RugbyFixture()
                     {
@@ -631,6 +635,20 @@
             }
 
             await _rugbyFixturesRepository.SaveAsync();
+        }
+
+        private bool IsProviderFixturePartOfFinal(Boundaries.Gateway.Http.StatsProzone.Models.RugbyFixtures.RoundFixture roundFixture)
+        {
+            if (roundFixture.roundName.Equals("Quarter Finals"))
+                return true;
+
+            if (roundFixture.roundName.Equals("Semi Finals"))
+                return true;
+
+            if (roundFixture.roundName.Equals("Final"))
+                return true;
+
+            return false;
         }
 
         private static RugbyFixtureStatus GetFixtureStatusFromProviderFixtureState(RugbyFixture rugbyFixture, string gameStateName)
