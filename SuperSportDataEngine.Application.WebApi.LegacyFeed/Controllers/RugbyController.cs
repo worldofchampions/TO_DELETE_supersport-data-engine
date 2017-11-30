@@ -89,7 +89,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
                 Message = LegacyFeedConstants.GeneralResponseMessage
             };
 
-            _logger.Info("Replying with general response message.");
+            //_logger.Info("Replying with general response message.");
 
             return Ok(response);
         }
