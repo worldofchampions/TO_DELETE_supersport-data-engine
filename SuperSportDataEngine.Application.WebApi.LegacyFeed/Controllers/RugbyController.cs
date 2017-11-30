@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
+﻿using System;
+
+namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 {
     using AutoMapper;
     using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
@@ -29,8 +31,10 @@
         private readonly IRugbyService _rugbyService;
         private readonly ICache _cache;
 
-        public RugbyController(IRugbyService rugbyService,
-            ICache cache)
+        public RugbyController(
+            IRugbyService rugbyService,
+            ICache cache,
+            ILoggingService logger)
         {
             _cache = cache;
             _rugbyService = rugbyService;
