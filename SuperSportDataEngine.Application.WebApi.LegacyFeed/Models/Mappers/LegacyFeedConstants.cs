@@ -55,7 +55,7 @@
 
         private const string ForfeitedDescription = "Forfeited";
 
-        private const string AbandonedDescription = "Abandoned";
+        private const string SuspendedDescription = "Suspended";
 
         public const int CommentaryEventId = 0;
 
@@ -151,10 +151,19 @@
                     return CancelledDescription;
 
                 case RugbyFixtureStatus.Abandoned:
-                    return AbandonedDescription;
+                    return CancelledDescription;
 
                 case RugbyFixtureStatus.Delayed:
                     return DelayedDescription;
+
+                case RugbyFixtureStatus.Postponed:
+                    return PostponedDescription;
+
+                case RugbyFixtureStatus.Forfeited:
+                    return ForfeitedDescription;
+
+                case RugbyFixtureStatus.Suspended:
+                    return SuspendedDescription;
                 
                 default:
                     return UnknownFixtureStatusDescription;
