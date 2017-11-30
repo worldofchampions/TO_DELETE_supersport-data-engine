@@ -30,6 +30,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
     {
         private readonly IRugbyService _rugbyService;
         private readonly ICache _cache;
+        private readonly ILoggingService _logger;
 
         public RugbyController(
             IRugbyService rugbyService,
@@ -38,6 +39,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         {
             _cache = cache;
             _rugbyService = rugbyService;
+            _logger = logger;
         }
 
         /// <summary>
@@ -86,6 +88,8 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             {
                 Message = LegacyFeedConstants.GeneralResponseMessage
             };
+
+            _logger.Info("Replying with general response message.");
 
             return Ok(response);
         }
