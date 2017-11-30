@@ -35,7 +35,8 @@
 
                 .ForMember(dest => dest.Channels, expression => expression.UseValue(LegacyFeedConstants.EmptyChannelsList))
 
-                .ForMember(dest => dest.Status, src => src.Ignore())
+                .ForMember(dest => dest.Status, exp => exp.MapFrom(
+                        src => LegacyFeedConstants.GetFixtureStatusDescription(src.RugbyFixtureStatus)))
 
                 .ForMember(dest => dest.video, src => src.Ignore());
         }
