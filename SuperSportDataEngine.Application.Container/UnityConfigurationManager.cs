@@ -81,8 +81,6 @@
             }
             catch (System.Exception exception)
             {
-                // TODO: Send mail alert when this occurs.
-
                 container.RegisterType<ICache, Cache>(new ContainerControlledLifetimeManager(),new InjectionFactory((x) => null));
 
                 logger.Error(exception.StackTrace);

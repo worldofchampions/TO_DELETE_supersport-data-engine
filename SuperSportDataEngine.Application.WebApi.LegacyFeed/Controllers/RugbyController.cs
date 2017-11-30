@@ -11,6 +11,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
     using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby;
     using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
     using SuperSportDataEngine.Common.Logging;
     using System.Collections.Generic;
@@ -29,6 +30,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
     {
         private readonly IRugbyService _rugbyService;
         private readonly ICache _cache;
+        private readonly ILoggingService _logger;
 
         public RugbyController(
             IRugbyService rugbyService,
@@ -37,6 +39,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         {
             _cache = cache;
             _rugbyService = rugbyService;
+            _logger = logger;
         }
 
         /// <summary>
@@ -85,6 +88,8 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             {
                 Message = LegacyFeedConstants.GeneralResponseMessage
             };
+
+            _logger.Info("Replying with general response message.");
 
             return Ok(response);
         }
@@ -163,7 +168,30 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         [ResponseType(typeof(List<Fixture>))]
         public async Task<IHttpActionResult> GetFixturesByStatus(string category)
         {
-            return await GetFixtures(category);
+            var cacheKey = $"rugby/{category}/fixtures/excludeinactive";
+
+            var fixtures = await GetFromCacheAsync<IEnumerable<Fixture>>(cacheKey);
+
+            if (fixtures != null)
+            {
+                return Ok(fixtures.ToList());
+            }
+
+            fixtures = (await _rugbyService.GetTournamentFixtures(category))
+                .Where(x =>
+                    !x.IsDisabledOutbound &&
+                    x.RugbyFixtureStatus != RugbyFixtureStatus.Abandoned &&
+                    x.RugbyFixtureStatus != RugbyFixtureStatus.Cancelled &&
+                    x.RugbyFixtureStatus != RugbyFixtureStatus.Delayed &&
+                    x.RugbyFixtureStatus != RugbyFixtureStatus.Postponed &&
+                    x.RugbyFixtureStatus != RugbyFixtureStatus.Suspended)
+                .Select(Mapper.Map<Fixture>);
+
+            var cacheData = fixtures as IList<Fixture> ?? fixtures.ToList();
+
+            PersistToCache(cacheKey, cacheData);
+
+            return Ok(cacheData);
         }
 
         /// <summary>
@@ -201,7 +229,30 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         [ResponseType(typeof(List<Result>))]
         public async Task<IHttpActionResult> GetResultsByStatus(string category)
         {
-            return await GetResults(category);
+            var cacheKey = $"rugby/{category}/results/excludeinactive";
+
+            var results = await GetFromCacheAsync<IEnumerable<Result>>(cacheKey);
+
+            if (results != null)
+            {
+                return Ok(results);
+            }
+
+            results = (await _rugbyService.GetTournamentResults(category))
+                .Where(x =>
+                    !x.IsDisabledOutbound &&
+                    x.RugbyFixtureStatus != RugbyFixtureStatus.Abandoned &&
+                    x.RugbyFixtureStatus != RugbyFixtureStatus.Cancelled &&
+                    x.RugbyFixtureStatus != RugbyFixtureStatus.Delayed &&
+                    x.RugbyFixtureStatus != RugbyFixtureStatus.Postponed &&
+                    x.RugbyFixtureStatus != RugbyFixtureStatus.Suspended)
+                .Select(Mapper.Map<Result>);
+
+            var cacheData = results as IList<Result> ?? results.ToList();
+
+            PersistToCache(cacheKey, cacheData);
+
+            return Ok(cacheData);
         }
 
         /// <summary>
