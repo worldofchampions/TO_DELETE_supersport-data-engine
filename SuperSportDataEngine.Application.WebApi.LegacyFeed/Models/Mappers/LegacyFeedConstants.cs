@@ -53,6 +53,8 @@
 
         private const string DelayedDescription = "Delayed";
 
+        private const string AbandonedDescription = "Abandoned";
+
         private const string ForfeitedDescription = "Forfeited";
 
         private const string SuspendedDescription = "Suspended";
@@ -151,7 +153,7 @@
                     return CancelledDescription;
 
                 case RugbyFixtureStatus.Abandoned:
-                    return CancelledDescription;
+                    return AbandonedDescription;
 
                 case RugbyFixtureStatus.Delayed:
                     return DelayedDescription;
