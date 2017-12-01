@@ -24,7 +24,7 @@
                 .ForMember(dest => dest.CombinedName, exp => exp.MapFrom(src => src.RugbyPlayer.FullName))
 
                 .ForMember(dest => dest.DisplayName, exp => exp.MapFrom(
-                    src => src.RugbyPlayer.DisplayNameCmsOverride ?? src.RugbyPlayer.FirstName ?? LegacyFeedConstants.EmptyPlayerName))
+                    src => src.RugbyPlayer.DisplayNameCmsOverride ?? src.RugbyPlayer.FullName ?? LegacyFeedConstants.EmptyPlayerName))
 
                 .ForMember(dest => dest.IsCaptain, exp => exp.MapFrom(src => src.IsCaptain))
 
