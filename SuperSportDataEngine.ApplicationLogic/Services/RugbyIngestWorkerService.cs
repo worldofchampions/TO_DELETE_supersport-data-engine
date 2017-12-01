@@ -1665,6 +1665,7 @@
             await IngestLineUpsForFixtures(cancellationToken, gamesInTheNext2Days);
         }
 
+        private SemaphoreSlim LineUpSemaphore = new SemaphoreSlim(0, 1);
         private async Task IngestLineUpsForFixtures(CancellationToken cancellationToken, IEnumerable<RugbyFixture> rugbyFixtures, RugbyMatchStatsResponse matchStatsResponse = null)
         {
             foreach (var fixture in rugbyFixtures)
@@ -1686,7 +1687,7 @@
                 }
                 catch (Exception e)
                 {
-                    _logger.Error(e.StackTrace);
+                    _logger.Info("Syncronisation issues when ingesting lineups." + e.StackTrace);
                 }
             }
         }
