@@ -385,7 +385,7 @@
                     return null;
             }
 
-            var lineupForFixture = await GetLineupForFixture(fixture.Id);
+            var lineupForFixture = GetLineupForFixture(fixture.Id);
 
             var statsForFixture = await GetMatchStatsForFixture(fixture.Id);
 
@@ -474,10 +474,9 @@
                 .Where(s => s.RugbyFixture.Id == fixtureId).ToList();
         }
 
-        private async Task<List<RugbyPlayerLineup>> GetLineupForFixture(Guid fixtureId)
+        private List<RugbyPlayerLineup> GetLineupForFixture(Guid fixtureId)
         {
-            return (await _rugbyPlayerLineupsRepository.AllAsync())
-                .Where(l => l.RugbyFixture.Id == fixtureId).ToList();
+            return _rugbyPlayerLineupsRepository.Where(l => l.RugbyFixture.Id == fixtureId).ToList();
         }
 
         private async Task<List<LegacyRugbyMatchEventEntity>> GetCommentaryAsRugbyMatchEvents(Guid fixtureId)
