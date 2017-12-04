@@ -17,6 +17,7 @@
         Cancelled = 11,
         Delayed = 12,
         Postponed = 13,
-        Suspended = 14
+        Suspended = 14,
+        Forfeited = 15
     }
 }

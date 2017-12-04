@@ -47,6 +47,18 @@
 
         private const string ExtraTimeDescription = "Extra Time";
 
+        private const string CancelledDescription = "Cancelled";
+
+        private const string PostponedDescription = "Postponed";
+
+        private const string DelayedDescription = "Delayed";
+
+        private const string AbandonedDescription = "Abandoned";
+
+        private const string ForfeitedDescription = "Forfeited";
+
+        private const string SuspendedDescription = "Suspended";
+
         public const int CommentaryEventId = 0;
 
         public const string DefaultAttendanceValue = "0";
@@ -137,6 +149,24 @@
                 case RugbyFixtureStatus.ExtraTime:
                     return ExtraTimeDescription;
 
+                case RugbyFixtureStatus.Cancelled:
+                    return CancelledDescription;
+
+                case RugbyFixtureStatus.Abandoned:
+                    return AbandonedDescription;
+
+                case RugbyFixtureStatus.Delayed:
+                    return DelayedDescription;
+
+                case RugbyFixtureStatus.Postponed:
+                    return PostponedDescription;
+
+                case RugbyFixtureStatus.Forfeited:
+                    return ForfeitedDescription;
+
+                case RugbyFixtureStatus.Suspended:
+                    return SuspendedDescription;
+                
                 default:
                     return UnknownFixtureStatusDescription;
             }

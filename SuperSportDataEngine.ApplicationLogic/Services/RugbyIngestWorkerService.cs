@@ -1505,11 +1505,10 @@
                     RugbyTeam = team,
                     RugbyTeamId = team.Id,
                     YellowCards = (int)statsMap.GetValueOrDefault(2),
-                    //CarriesCrossedGainLine = statsMap.GetValueOrDefault("(Time)Territory"),
                     CleanBreaks = (int)statsMap.GetValueOrDefault(7),
                     ConversionAttempts = (int)statsMap.GetValueOrDefault(2047),
-                    Conversions = (int)statsMap.GetValueOrDefault(2046),
-                    ConversionsMissed = (int)statsMap.GetValueOrDefault(2048),
+                    Conversions = (int)statsMap.GetValueOrDefault(9),
+                    ConversionsMissed = (int)statsMap.GetValueOrDefault(10),
                     DefendersBeaten = (int)statsMap.GetValueOrDefault(8),
                     DropGoalAttempts = (int)statsMap.GetValueOrDefault(2049),
                     DropGoals = (int)statsMap.GetValueOrDefault(2050),
@@ -1518,9 +1517,9 @@
                     LineOutsWon = (int)statsMap.GetValueOrDefault(19),
                     Offloads = (int)statsMap.GetValueOrDefault(46),
                     Passes = (int)statsMap.GetValueOrDefault(2012),
-                    Penalties = (int)(statsMap.GetValueOrDefault(2038) - statsMap.GetValueOrDefault(2039)),
+                    Penalties = (int)statsMap.GetValueOrDefault(11),
                     PenaltiesConceded = (int)statsMap.GetValueOrDefault(2079),
-                    PenaltiesMissed = (int)statsMap.GetValueOrDefault(2039),
+                    PenaltiesMissed = (int)statsMap.GetValueOrDefault(12),
                     PenaltyAttempts = (int)statsMap.GetValueOrDefault(2038),
                     PenaltyTries = (int)statsMap.GetValueOrDefault(10530),
                     Possession = (int)statsMap.GetValueOrDefault(42),
@@ -1665,6 +1664,7 @@
             await IngestLineUpsForFixtures(cancellationToken, gamesInTheNext2Days);
         }
 
+        private SemaphoreSlim LineUpSemaphore = new SemaphoreSlim(0, 1);
         private async Task IngestLineUpsForFixtures(CancellationToken cancellationToken, IEnumerable<RugbyFixture> rugbyFixtures, RugbyMatchStatsResponse matchStatsResponse = null)
         {
             foreach (var fixture in rugbyFixtures)
@@ -1686,7 +1686,7 @@
                 }
                 catch (Exception e)
                 {
-                    _logger.Error(e.StackTrace);
+                    _logger.Info("Syncronisation issues when ingesting lineups." + e.StackTrace);
                 }
             }
         }
