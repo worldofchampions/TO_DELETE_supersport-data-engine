@@ -627,6 +627,7 @@
                         fixtureInDb.TeamAIsHomeTeam = newFixture.TeamAIsHomeTeam;
                         fixtureInDb.TeamBIsHomeTeam = newFixture.TeamBIsHomeTeam;
                         fixtureInDb.RugbyTournament = newFixture.RugbyTournament;
+
                         // Do not update the isLiveScored property here.
                         // It will be updated by the CMS.
 

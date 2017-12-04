@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.ApplicationLogic.Entities.Legacy
+﻿using System;
+
+namespace SuperSportDataEngine.ApplicationLogic.Entities.Legacy
 {
     public class LegacyRugbyScorerEntity
     {
@@ -11,5 +13,7 @@
         public string NickName { get; set; }
         public string CombinedName { get; set; }
         public string DisplayName { get; set; }
+
+        public Guid RugbyTeamId { get; set; }
     }
 }

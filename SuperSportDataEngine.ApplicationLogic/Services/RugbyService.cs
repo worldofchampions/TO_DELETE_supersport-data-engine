@@ -385,15 +385,15 @@
                     return null;
             }
 
-            var teamAlineup = await GetTeamLineupForFixture(fixture.Id, fixture.TeamA?.Id ?? Guid.Empty);
-
-            var teamBlineup = await GetTeamLineupForFixture(fixture.Id, fixture.TeamB?.Id ?? Guid.Empty);
+            var lineupForFixture = await GetLineupForFixture(fixture.Id);
+            var teamAlineup = lineupForFixture.Where(l => l.RugbyTeamId == (fixture.TeamA?.Id ?? Guid.Empty)).ToList();
+            var teamBlineup = lineupForFixture.Where(l => l.RugbyTeamId == (fixture.TeamB?.Id ?? Guid.Empty)).ToList();
 
             var bothTeamsLineups = teamAlineup.Concat(teamBlineup).OrderBy(p => p.JerseyNumber).ToList();
 
-            var statsA = await GetMatchStatsForTeam(fixture.Id, fixture.TeamA?.Id ?? Guid.Empty);
-
-            var statsB = await GetMatchStatsForTeam(fixture.Id, fixture.TeamB?.Id ?? Guid.Empty);
+            var statsForFixture = await GetMatchStatsForFixture(fixture.Id);
+            var statsA = statsForFixture.FirstOrDefault(s => s.RugbyTeamId == (fixture.TeamA?.Id ?? Guid.Empty));
+            var statsB = statsForFixture.FirstOrDefault(s => s.RugbyTeamId == (fixture.TeamB?.Id ?? Guid.Empty));
 
             var events = await GetRugbyFixtureEvents(fixture.Id);
 
@@ -403,9 +403,9 @@
 
             events = events.OrderByDescending(e => e.GameTimeInSeconds).ThenByDescending(e => e.TimestampCreated).ToList();
 
-            var teamAScorers = await GetTeamScorersForFixture(fixture.Id, fixture.TeamA?.Id ?? Guid.Empty);
-
-            var teamBScorers = await GetTeamScorersForFixture(fixture.Id, fixture.TeamB?.Id ?? Guid.Empty);
+            var scorersForFixture = await GetScorersForFixture(fixture.Id);
+            var teamAScorers = scorersForFixture.Where(s => s.RugbyTeamId == (fixture.TeamA?.Id ?? Guid.Empty)).ToList();
+            var teamBScorers = scorersForFixture.Where(s => s.RugbyTeamId == (fixture.TeamB?.Id ?? Guid.Empty)).ToList();
 
             var matchDetails = new RugbyMatchDetailsEntity
             {
@@ -423,9 +423,9 @@
             return matchDetails;
         }
 
-        private async Task<List<LegacyRugbyScorerEntity>> GetTeamScorersForFixture(Guid fixtureId, Guid teamId)
+        private async Task<List<LegacyRugbyScorerEntity>> GetScorersForFixture(Guid fixtureId)
         {
-            var teamScoringEvents = await GetTeamScoringEventsForFixture(fixtureId, teamId);
+            var teamScoringEvents = await GetScoringEventsForFixture(fixtureId);
 
             return teamScoringEvents.Select(scoringEvent => new LegacyRugbyScorerEntity
             {
@@ -437,23 +437,23 @@
                 PersonId = scoringEvent.RugbyPlayer1.LegacyPlayerId,
                 Surname = scoringEvent.RugbyPlayer1.LastName,
                 Time = scoringEvent.GameTimeInMinutes.ToString(),
-                Type = scoringEvent.RugbyEventType.EventName
+                Type = scoringEvent.RugbyEventType.EventName,
+                RugbyTeamId = scoringEvent.RugbyTeamId
             })
             .ToList();
         }
 
-        private async Task<List<RugbyMatchEvent>> GetTeamScoringEventsForFixture(Guid fixtureId, Guid teamId)
+        private async Task<List<RugbyMatchEvent>> GetScoringEventsForFixture(Guid fixtureId)
         {
             return (await _rugbyMatchEventsRepository.AllAsync())
-                .Where(s => s.RugbyFixture.Id == fixtureId && s.RugbyTeamId == teamId)
-                .ToList().Where(e =>
-                e.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.PenaltyTryFivePoints ||
-                e.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.PenaltyTrySevenPoints ||
-                e.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.DropGoalFromMark ||
-                e.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.Conversion ||
-                e.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.DropGoal ||
-                e.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.Penalty ||
-                e.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.Try)
+                .Where(s => s.RugbyFixture.Id == fixtureId &&
+                (s.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.PenaltyTryFivePoints ||
+                 s.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.PenaltyTrySevenPoints ||
+                 s.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.DropGoalFromMark ||
+                 s.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.Conversion ||
+                 s.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.DropGoal ||
+                 s.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.Penalty ||
+                 s.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.Try))
                 .ToList();
         }
 
@@ -470,16 +470,16 @@
                 .ToList();
         }
 
-        private async Task<RugbyMatchStatistics> GetMatchStatsForTeam(Guid fixtureId, Guid teamId)
+        private async Task<List<RugbyMatchStatistics>> GetMatchStatsForFixture(Guid fixtureId)
         {
             return (await _rugbyMatchStatisticsRepository.AllAsync())
-                    .FirstOrDefault(s => s.RugbyFixture.Id == fixtureId && s.RugbyTeamId == teamId);
+                .Where(s => s.RugbyFixture.Id == fixtureId).ToList();
         }
 
-        private async Task<List<RugbyPlayerLineup>> GetTeamLineupForFixture(Guid fixtureId, Guid teamId)
+        private async Task<List<RugbyPlayerLineup>> GetLineupForFixture(Guid fixtureId)
         {
             return (await _rugbyPlayerLineupsRepository.AllAsync())
-                 .Where(l => l.RugbyFixture.Id == fixtureId && l.RugbyTeam.Id == teamId).ToList();
+                .Where(l => l.RugbyFixture.Id == fixtureId).ToList();
         }
 
         private async Task<List<LegacyRugbyMatchEventEntity>> GetCommentaryAsRugbyMatchEvents(Guid fixtureId)
