@@ -19,15 +19,18 @@
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyEventsFlow;
     using System.Diagnostics;
     using SuperSportDataEngine.Common.Logging;
+    using System.Configuration;
 
     public class StatsProzoneRugbyIngestService : IStatsProzoneRugbyIngestService
     {
-        ILoggingService _logger;
+        readonly ILoggingService _logger;
+        private int _maximumSecondsForRequest;
 
         public StatsProzoneRugbyIngestService(
             ILoggingService logger)
         {
             _logger = logger;
+            _maximumSecondsForRequest = int.Parse(ConfigurationManager.AppSettings["maximumSecondsForRequest"]);
         }
 
         public RugbyEntitiesResponse IngestRugbyReferenceData(CancellationToken cancellationToken)
@@ -46,7 +49,7 @@
             }
         }
 
-        private static RugbyEntitiesResponse RugbyEntitiesResponse()
+        private RugbyEntitiesResponse RugbyEntitiesResponse()
         {
             WebRequest request = WebRequest.Create("http://rugbyunion-api.stats.com/api/ru/configuration/entities");
             request.Method = "GET";
@@ -72,6 +75,8 @@
                     // This might be delayed due to provider being slow to process request,
                     // and is intended.
                     entitiesResponse.ResponseTime = DateTime.Now;
+                    CheckIfRequestTakingTooLong(request, entitiesResponse);
+
                     return entitiesResponse;
                 }
             }
@@ -93,7 +98,7 @@
             }
         }
 
-        private static RugbyFixturesResponse RugbyFixturesResponse(RugbyTournament tournament, int seasonId)
+        private RugbyFixturesResponse RugbyFixturesResponse(RugbyTournament tournament, int seasonId)
         {
             var tournamentId = tournament.ProviderTournamentId;
 
@@ -124,6 +129,8 @@
                     // This might be delayed due to provider being slow to process request,
                     // and is intended.
                     fixturesResponse.ResponseTime = DateTime.Now;
+                    CheckIfRequestTakingTooLong(request, fixturesResponse);
+
                     return fixturesResponse;
                 }
             }
@@ -145,7 +152,7 @@
             }
         }
 
-        private static RugbySeasonResponse RugbySeasonResponse(int tournamentId, int tournamentYear)
+        private RugbySeasonResponse RugbySeasonResponse(int tournamentId, int tournamentYear)
         {
             WebRequest request = WebRequest.Create("http://rugbyunion-api.stats.com/api/ru/competitions/seasons/" +
                                                    tournamentId + "/" + tournamentYear);
@@ -174,6 +181,8 @@
                     // This might be delayed due to provider being slow to process request,
                     // and is intended.
                     seasonsResponse.ResponseTime = DateTime.Now;
+                    CheckIfRequestTakingTooLong(request, seasonsResponse);
+
                     return seasonsResponse;
                 }
             }
@@ -192,7 +201,7 @@
             }
         }
 
-        private static RugbyFixturesResponse ResponseData(int tournamentId, int seasonId)
+        private RugbyFixturesResponse ResponseData(int tournamentId, int seasonId)
         {
             WebRequest request = GetWebRequestForFixturesEndpoint(tournamentId, seasonId, null);
 
@@ -210,6 +219,7 @@
                         JsonConvert.DeserializeObject<RugbyFixtures>(responseDataFromServer);
 
                     responseData.ResponseTime = DateTime.Now;
+                    CheckIfRequestTakingTooLong(request, responseData);
 
                     return responseData;
                 }
@@ -229,7 +239,7 @@
             }
         }
 
-        private static RugbyFlatLogsResponse RugbyFlatLogsResponse(int competitionId, int seasonId)
+        private RugbyFlatLogsResponse RugbyFlatLogsResponse(int competitionId, int seasonId)
         {
             WebRequest request = GetWebRequestForLogsEndpoint(competitionId, seasonId);
 
@@ -245,6 +255,7 @@
                         JsonConvert.DeserializeObject<RugbyFlatLogs>(s);
 
                     logsResponse.ResponseTime = DateTime.Now;
+                    CheckIfRequestTakingTooLong(request, logsResponse);
 
                     return logsResponse;
                 }
@@ -267,6 +278,7 @@
                         JsonConvert.DeserializeObject<RugbyGroupedLogs>(s);
 
                     logsResponse.ResponseTime = DateTime.Now;
+                    CheckIfRequestTakingTooLong(request, logsResponse);
 
                     return logsResponse;
                 }
@@ -319,15 +331,11 @@
                 {
                     RequestTime = DateTime.Now
                 };
-
-            Stopwatch responseTime = Stopwatch.StartNew();
+            
             using (WebResponse response = await request.GetResponseAsync())
             {
-                responseTime.Stop();
-                _logger.Info("Response time is " + responseTime.ElapsedMilliseconds + "ms.");
                 using (Stream responseStream = response.GetResponseStream())
                 {
-                    Stopwatch mappingTime = Stopwatch.StartNew();
                     StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
                     matchStatsResponse.RugbyMatchStats =
                         JsonConvert.DeserializeObject<RugbyMatchStats>(reader.ReadToEnd());
@@ -336,8 +344,8 @@
                     // This might be delayed due to provider being slow to process request,
                     // and is intended.
                     matchStatsResponse.ResponseTime = DateTime.Now;
-                    mappingTime.Stop();
-                    _logger.Info("Mapping time is " + mappingTime.ElapsedMilliseconds + "ms.");
+                    CheckIfRequestTakingTooLong(request, matchStatsResponse);
+
                     return matchStatsResponse;
                 }
             }
@@ -359,7 +367,7 @@
             }
         }
 
-        private static async Task<RugbyEventsFlowResponse> EventsFlowResponse(long providerFixtureId)
+        private async Task<RugbyEventsFlowResponse> EventsFlowResponse(long providerFixtureId)
         {
             WebRequest request =
                 WebRequest.Create("http://rugbyunion-api.stats.com/api/ru/matchStats/eventsflow/" + providerFixtureId + "/");
@@ -388,6 +396,9 @@
                     // This might be delayed due to provider being slow to process request,
                     // and is intended.
                     eventsFlowResponse.ResponseTime = DateTime.Now;
+
+                    CheckIfRequestTakingTooLong(request, eventsFlowResponse);
+
                     return eventsFlowResponse;
                 }
             }
@@ -406,6 +417,17 @@
             request.ContentType = "application/json; charset=UTF-8";
 
             return request;
+        }
+
+        private void CheckIfRequestTakingTooLong(WebRequest request, dynamic o)
+        {
+            var timeDifference = (o.ResponseTime - o.RequestTime);
+            var seconds = timeDifference.TotalSeconds;
+
+            if (seconds > _maximumSecondsForRequest)
+            {
+                _logger.Error("HTTP request taking too long. " + request.RequestUri + ". Taking " + seconds + " seconds.");
+            }
         }
     }
 }

@@ -1664,8 +1664,7 @@
 
             await IngestLineUpsForFixtures(cancellationToken, gamesInTheNext2Days);
         }
-
-        private SemaphoreSlim LineUpSemaphore = new SemaphoreSlim(0, 1);
+        
         private async Task IngestLineUpsForFixtures(CancellationToken cancellationToken, IEnumerable<RugbyFixture> rugbyFixtures, RugbyMatchStatsResponse matchStatsResponse = null)
         {
             foreach (var fixture in rugbyFixtures)
@@ -1873,6 +1872,9 @@
         {
             foreach (var fixture in pastFixtures)
             {
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
                 Stopwatch provider = Stopwatch.StartNew();
 
                 var providerFixtureId = fixture.ProviderFixtureId;
