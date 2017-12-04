@@ -13,7 +13,6 @@
             if (context.RugbyEventTypeProviderMappings.Any())
                 return;
 
-            // TODO: [Davide] This is a temporary data, populate with the final data set once all the mappings have been confirmed.
             context.RugbyEventTypeProviderMappings.AddOrUpdate(
                 x => x.DataProvider,
                 new RugbyEventTypeProviderMapping { DataProvider = DataProvider.StatsProzone, ProviderEventTypeId = 0, ProviderEventName = "Substitution-In", RugbyEventType = context.RugbyEventTypes.Single(s => s.EventCode == SeedRugbyEventTypes.EventCode_200_Substitution_In) },
