@@ -99,5 +99,10 @@ namespace SuperSportDataEngine.Tests.Common.Repositories.Test
         {
             return _items.AsQueryable().Where(predicate);
         }
+
+        public T FirstOrDefault(Expression<Func<T, bool>> predicate)
+        {
+            return _items.AsQueryable().FirstOrDefault(predicate);
+        }
     }
 }
