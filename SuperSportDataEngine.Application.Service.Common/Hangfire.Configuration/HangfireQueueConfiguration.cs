@@ -2,28 +2,8 @@
 {
     public static class HangfireQueueConfiguration
     {
-        public static string HighPriority
-        {
-            get
-            {
-                return "high_priority";
-            }
-        }
+        public static string HighPriority => "high_priority";
 
-        public static string NormalPriority
-        {
-            get
-            {
-                return "normal_priority";
-            }
-        }
-
-        public static string Default
-        {
-            get
-            {
-                return "default";
-            }
-        }
+        public static string NormalPriority => "normal_priority";
     }
 }
