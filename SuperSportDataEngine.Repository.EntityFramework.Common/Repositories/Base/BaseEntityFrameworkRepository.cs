@@ -129,6 +129,11 @@
             return offlineResult.Union(dbResult);
         }
 
+        public T FirstOrDefault(Expression<Func<T, bool>> predicate)
+        {
+            return AsSet().FirstOrDefault(predicate);
+        }
+
         protected DbSet<T> AsSet()
         {
             return _dbContext.Set<T>();
