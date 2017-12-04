@@ -271,6 +271,7 @@
             var activeTournaments = (await _rugbyTournamentRepository.AllAsync()).Where(t => t.IsEnabled);
             foreach (var tournament in activeTournaments)
             {
+                await IngestPastSeason(cancellationToken, tournament, DateTime.Now.Year);
                 await IngestPastSeason(cancellationToken, tournament, DateTime.Now.Year - 1);
                 await IngestPastSeason(cancellationToken, tournament, DateTime.Now.Year - 2);
             }
