@@ -17,10 +17,12 @@ namespace SuperSportDataEngine.ApplicationLogic.Helpers
                 (now.AddMinutes(15)) < (startDateTime + TimeSpan.FromHours(3)))
                 return SchedulerStateForRugbyFixturePolling.PreLivePolling;
 
-            if (gameStatus == RugbyFixtureStatus.FirstHalf ||
+            if ((gameStatus == RugbyFixtureStatus.FirstHalf ||
                 gameStatus == RugbyFixtureStatus.HalfTime ||
                 gameStatus == RugbyFixtureStatus.SecondHalf ||
-                gameStatus == RugbyFixtureStatus.FullTime)
+                gameStatus == RugbyFixtureStatus.FullTime) &&
+                (now.AddMinutes(15)) > startDateTime &&
+                (now.AddMinutes(15)) < (startDateTime + TimeSpan.FromHours(3)))
                 return SchedulerStateForRugbyFixturePolling.LivePolling;
 
             if (gameStatus == RugbyFixtureStatus.Result &&
