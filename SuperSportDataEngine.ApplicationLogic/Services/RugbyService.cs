@@ -386,26 +386,24 @@
             }
 
             var lineupForFixture = await GetLineupForFixture(fixture.Id);
-            var teamAlineup = lineupForFixture.Where(l => l.RugbyTeamId == (fixture.TeamA?.Id ?? Guid.Empty)).ToList();
-            var teamBlineup = lineupForFixture.Where(l => l.RugbyTeamId == (fixture.TeamB?.Id ?? Guid.Empty)).ToList();
-
-            var bothTeamsLineups = teamAlineup.Concat(teamBlineup).OrderBy(p => p.JerseyNumber).ToList();
 
             var statsForFixture = await GetMatchStatsForFixture(fixture.Id);
-            var statsA = statsForFixture.FirstOrDefault(s => s.RugbyTeamId == (fixture.TeamA?.Id ?? Guid.Empty));
-            var statsB = statsForFixture.FirstOrDefault(s => s.RugbyTeamId == (fixture.TeamB?.Id ?? Guid.Empty));
 
             var events = await GetRugbyFixtureEvents(fixture.Id);
-
-            var matchCommentaryAsEvents = await GetCommentaryAsRugbyMatchEvents(fixture.Id);
-
-            events.AddRange(matchCommentaryAsEvents);
-
-            events = events.OrderByDescending(e => e.GameTimeInSeconds).ThenByDescending(e => e.TimestampCreated).ToList();
 
             var scorersForFixture = await GetScorersForFixture(fixture.Id);
             var teamAScorers = scorersForFixture.Where(s => s.RugbyTeamId == (fixture.TeamA?.Id ?? Guid.Empty)).ToList();
             var teamBScorers = scorersForFixture.Where(s => s.RugbyTeamId == (fixture.TeamB?.Id ?? Guid.Empty)).ToList();
+
+            var teamAlineup = lineupForFixture.Where(l => l.RugbyTeamId == (fixture.TeamA?.Id ?? Guid.Empty)).ToList();
+            var teamBlineup = lineupForFixture.Where(l => l.RugbyTeamId == (fixture.TeamB?.Id ?? Guid.Empty)).ToList();
+            var bothTeamsLineups = lineupForFixture.OrderBy(p => p.JerseyNumber).ToList();
+
+            var statsA = statsForFixture.FirstOrDefault(s => s.RugbyTeamId == (fixture.TeamA?.Id ?? Guid.Empty));
+            var statsB = statsForFixture.FirstOrDefault(s => s.RugbyTeamId == (fixture.TeamB?.Id ?? Guid.Empty));
+
+            events.AddRange(await GetCommentaryAsRugbyMatchEvents(fixture.Id));
+            events = events.OrderByDescending(e => e.GameTimeInSeconds).ThenByDescending(e => e.TimestampCreated).ToList();
 
             var matchDetails = new RugbyMatchDetailsEntity
             {
