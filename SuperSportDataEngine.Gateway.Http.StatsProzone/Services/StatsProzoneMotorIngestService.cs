@@ -65,6 +65,27 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             return tournamentRacesEntitiesResponse;
         }
 
+        public MotorEntitiesResponse IngestTournamentSchedule(string providerTournamentSlug, int providerSeasonId)
+        {
+            var requestForTournamentSchedule = GetWebRequestForTournamentSchedule(providerTournamentSlug, providerSeasonId);
+
+            MotorEntitiesResponse tournamentSchedule;
+
+            using (var webResponse = requestForTournamentSchedule.GetResponse())
+            {
+                using (var responseStream = webResponse.GetResponseStream())
+                {
+                    if (responseStream is null) return null;
+
+                    var streamReader = new StreamReader(responseStream, Encoding.UTF8);
+
+                    tournamentSchedule = JsonConvert.DeserializeObject<MotorEntitiesResponse>(streamReader.ReadToEnd());
+                }
+            }
+
+            return tournamentSchedule;
+        }
+
         public MotorEntitiesResponse IngestTournamentDrivers(string providerTournamentSlug)
         {
             var webRequestForDriverIngest = GetWebRequestForDriversIngest(providerTournamentSlug);
@@ -225,6 +246,23 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             requestForTeamIngest.Method = "GET";
 
             return requestForTeamIngest;
+        }
+
+        private static WebRequest GetWebRequestForTournamentSchedule(string providerTournamentSlug, int providerSeasonId)
+        {
+            var eventsUrl = $"/v1/decode/motor/{providerTournamentSlug}/events/";
+
+            var requestSignature = GetRequestSignature();
+
+            var queryString = $"?season={providerSeasonId}&api_key={StatsApiKey}&sig={requestSignature}";
+
+            var requestUriString = StatsApiBaseUrl + eventsUrl + queryString;
+
+            var requestForTournamentSchedule = WebRequest.Create(requestUriString);
+
+            requestForTournamentSchedule.Method = "GET";
+
+            return requestForTournamentSchedule;
         }
 
         private static string GetRequestSignature()

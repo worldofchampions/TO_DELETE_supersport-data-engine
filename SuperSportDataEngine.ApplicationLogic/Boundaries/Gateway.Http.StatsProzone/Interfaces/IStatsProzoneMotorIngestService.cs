@@ -10,5 +10,6 @@
         MotorEntitiesResponse IngestTeamStandings(string providerTournamentSlug);
         MotorEntitiesResponse IngestTournaments();
         MotorEntitiesResponse IngestTournamentRaces(string providerTournamentSlug);
+        MotorEntitiesResponse IngestTournamentSchedule(string providerTournamentSlug, int providerSeasonId);
     }
 }
