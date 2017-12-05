@@ -80,6 +80,9 @@
     <Compile Include="Boundaries\ApplicationLogic\Interfaces\ILegacyAuthService.cs" />
     <Compile Include="Boundaries\ApplicationLogic\Interfaces\IRugbyIngestWorkerService.cs" />
     <Compile Include="Boundaries\ApplicationLogic\Interfaces\ISchedulerClientService.cs" />
+    <Compile Include="Boundaries\Gateway.Http.StatsProzone\Interfaces\IStatsProzoneMotorIngestService.cs" />
+    <Compile Include="Boundaries\Gateway.Http.StatsProzone\Models\Motor\ApiResult.cs" />
+    <Compile Include="Boundaries\Gateway.Http.StatsProzone\Models\Motor\MotorEntitiesResponse.cs" />
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\Models\RugbyEntities.cs" />
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\Interfaces\IStatsProzoneRugbyIngestService.cs" />
     <Compile Include="Boundaries\ApplicationLogic\Interfaces\IRugbyService.cs" />
@@ -158,5 +161,6 @@
       <Name>SuperSportDataEngine.Common</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
