@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motor
 {
@@ -33,6 +34,185 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsPro
         public int season { get; set; }
         public string name { get; set; }
         public bool isActive { get; set; }
+
+        public List<EventType> eventType { get; set; }
+    }
+
+    public class EventType
+    {
+        public int eventTypeId { get; set; }
+        public string name { get; set; }
+        public List<Event> events { get; set; }
+    }
+
+    public class Event
+    {
+        public int eventId { get; set; }
+        public EventRound eventRound { get; set; }
+        public List<StartDate> startDate { get; set; }
+        public bool isTba { get; set; }
+        public IsDataConfirmed isDataConfirmed { get; set; }
+        public EventStatus eventStatus { get; set; }
+        public Race race { get; set; }
+        public Venue venue { get; set; }
+        public List<TvStation> tvStations { get; set; }
+        public List<Champion> champions { get; set; }
+        public ScheduledDistance scheduledDistance { get; set; }
+        public Points points { get; set; }
+        public CarDetails carDetails { get; set; }
+        public List<QualifyingEvent> qualifyingEvents { get; set; }
+        public List<PracticeEvent> practiceEvents { get; set; }
+        public CoverageLevel coverageLevel { get; set; }
+        public Boxscore boxscore { get; set; }
+    }
+
+    public class Venue
+    {
+        public int venueId { get; set; }
+        public string name { get; set; }
+        public string city { get; set; }
+        public Country country { get; set; }
+    }
+
+    public class TvStation
+    {
+        public int tvStationId { get; set; }
+        public string name { get; set; }
+        public string callLetters { get; set; }
+        public NetworkType networkType { get; set; }
+        public Country country { get; set; }
+    }
+
+    public class NetworkType
+    {
+        public int networkTypeId { get; set; }
+        public string name { get; set; }
+    }
+
+    public class CompletedDistance
+    {
+        public int laps { get; set; }
+    }
+
+    public class Cautions
+    {
+        public bool isVictoryUnderCaution { get; set; }
+    }
+
+    public class FastestSpeed
+    {
+        public int speedUnitId { get; set; }
+        public string name { get; set; }
+        public string abbreviation { get; set; }
+        public string speed { get; set; }
+    }
+
+    public class FastestTime
+    {
+        public int minutes { get; set; }
+        public int seconds { get; set; }
+        public int milliseconds { get; set; }
+    }
+
+    public class PracticeEvent
+    {
+        public int sequence { get; set; }
+        public List<StartDate> startDate { get; set; }
+        public bool isTba { get; set; }
+    }
+
+    public class CoverageLevel
+    {
+        public int coverageLevelId { get; set; }
+        public string details { get; set; }
+        public string name { get; set; }
+    }
+
+    public class TimeOfRace
+    {
+    }
+
+    public class VictoryMargin
+    {
+    }
+
+    public class PoleTime
+    {
+    }
+
+    public class Result
+    {
+        public Player player { get; set; }
+        public Qualifying qualifying { get; set; }
+        public Car car { get; set; }
+        public Owner owner { get; set; }
+        public CarStatus carStatus { get; set; }
+        public List<object> averageSpeed { get; set; }
+        public CarPosition carPosition { get; set; }
+        public Laps laps { get; set; }
+        public List<object> moneyWon { get; set; }
+        public FinishingTime finishingTime { get; set; }
+        public Points points { get; set; }
+    }
+
+    public class Points
+    {
+        public Driver driver { get; set; }
+        public Owner owner { get; set; }
+        public bool arePointsAvailable { get; set; }
+    }
+
+    public class Champion
+    {
+        public string championType { get; set; }
+        public int playerId { get; set; }
+        public string firstName { get; set; }
+        public string lastName { get; set; }
+        public Owner owner { get; set; }
+        public Car car { get; set; }
+    }
+
+    public class ScheduledDistance
+    {
+        public int laps { get; set; }
+        public double miles { get; set; }
+        public double kilometers { get; set; }
+    }
+
+    public class Driver
+    {
+        public string total { get; set; }
+        public string bonus { get; set; }
+        public object penalty { get; set; }
+    }
+
+    public class FinishingTime
+    {
+        public int hours { get; set; }
+        public int minutes { get; set; }
+        public int seconds { get; set; }
+        public int milliseconds { get; set; }
+    }
+
+    public class Boxscore
+    {
+        public TimeOfRace timeOfRace { get; set; }
+        public VictoryMargin victoryMargin { get; set; }
+        public List<object> averageSpeed { get; set; }
+        public List<FastestSpeed> fastestSpeed { get; set; }
+        public FastestTime fastestTime { get; set; }
+        public List<object> poleSpeed { get; set; }
+        public PoleTime poleTime { get; set; }
+        public Cautions cautions { get; set; }
+        public CompletedDistance completedDistance { get; set; }
+        public List<LeadChange> leadChanges { get; set; }
+        public List<Result> results { get; set; }
+    }
+
+    public class EventRound
+    {
+        public int eventRoundId { get; set; }
+        public string name { get; set; }
     }
 
     public class Race
@@ -40,6 +220,20 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsPro
         public int raceId { get; set; }
         public string name { get; set; }
         public string displayName { get; set; }
+        public string nameFull { get; set; }
+    }
+
+    public class IsDataConfirmed
+    {
+        public bool results { get; set; }
+    }
+
+    public class EventStatus
+    {
+        public int eventStatusId { get; set; }
+        public bool isUnderCaution { get; set; }
+        public object reason { get; set; }
+        public string name { get; set; }
     }
 
     public class SubLeague
@@ -138,6 +332,74 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsPro
         public string name { get; set; }
     }
 
+    public class Qualifying
+    {
+        public Exemption exemption { get; set; }
+        public bool isWildCard { get; set; }
+        public bool isQualified { get; set; }
+        public List<QualifyingRun> qualifyingRuns { get; set; }
+    }
+
+    public class QualifyingEvent
+    {
+        public int sequence { get; set; }
+        public List<StartDate> startDate { get; set; }
+        public bool isTba { get; set; }
+    }
+
+    public class QualifyingRun
+    {
+        public int sequence { get; set; }
+        public List<StartDate> startDate { get; set; }
+        public List<AverageSpeed> averageSpeed { get; set; }
+        public Time time { get; set; }
+    }
+
+    public class CarDetails
+    {
+        public bool isRestrictorPlate { get; set; }
+    }
+
+    public class StartDate
+    {
+        public int year { get; set; }
+        public int month { get; set; }
+        public int date { get; set; }
+        public int hour { get; set; }
+        public int minute { get; set; }
+        public DateTime full { get; set; }
+        public string dateType { get; set; }
+    }
+
+    public class Exemption
+    {
+    }
+
+    public class LeadChange
+    {
+        public int sequence { get; set; }
+        public Player player { get; set; }
+        public int startLap { get; set; }
+        public int endLap { get; set; }
+        public Owner owner { get; set; }
+        public Car car { get; set; }
+    }
+
+    public class AverageSpeed
+    {
+        public int speedUnitId { get; set; }
+        public string name { get; set; }
+        public string abbreviation { get; set; }
+        public string speed { get; set; }
+    }
+
+    public class Time
+    {
+        public int minutes { get; set; }
+        public int seconds { get; set; }
+        public int milliseconds { get; set; }
+    }
+
     public class Car
     {
         public Make make { get; set; }
@@ -155,6 +417,21 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsPro
     {
         public int totalLed { get; set; }
         public int completed { get; set; }
+        public int behind { get; set; }
+        public bool isFastest { get; set; }
+        public List<object> led { get; set; }
+    }
+
+    public class CarPosition
+    {
+        public int startingPosition { get; set; }
+        public int position { get; set; }
+    }
+
+    public class CarStatus
+    {
+        public int carStatusId { get; set; }
+        public string name { get; set; }
     }
 
     public class Finishes
@@ -173,5 +450,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsPro
     {
         public int ownerId { get; set; }
         public string name { get; set; }
+        public string total { get; set; }
+        public string bonus { get; set; }
+        public object penalty { get; set; }
     }
 }
