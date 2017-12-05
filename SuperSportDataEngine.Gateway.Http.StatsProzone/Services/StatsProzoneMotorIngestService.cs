@@ -44,9 +44,9 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             return tournamentsEntitiesResponse;
         }
 
-        public MotorEntitiesResponse IngestTournamentRaces(string providerTournamentSlug)
+        public MotorEntitiesResponse IngestTournamentRaces(string providerSlug)
         {
-            var statsWebRequest = GetWebRequestForRacesIngest(providerTournamentSlug);
+            var statsWebRequest = GetWebRequestForRacesIngest(providerSlug);
 
             MotorEntitiesResponse tournamentRacesEntitiesResponse;
 
@@ -65,9 +65,9 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             return tournamentRacesEntitiesResponse;
         }
 
-        public MotorEntitiesResponse IngestTournamentSchedule(string providerTournamentSlug, int providerSeasonId)
+        public MotorEntitiesResponse IngestTournamentSchedule(string providerSlug, int providerSeasonId)
         {
-            var requestForTournamentSchedule = GetWebRequestForTournamentSchedule(providerTournamentSlug, providerSeasonId);
+            var requestForTournamentSchedule = GetWebRequestForTournamentSchedule(providerSlug, providerSeasonId);
 
             MotorEntitiesResponse tournamentSchedule;
 
@@ -86,9 +86,30 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             return tournamentSchedule;
         }
 
-        public MotorEntitiesResponse IngestTournamentDrivers(string providerTournamentSlug)
+        public MotorEntitiesResponse IngestTournamentResults(string providerSlug, int providerSeasonId, int providerRaceId)
         {
-            var webRequestForDriverIngest = GetWebRequestForDriversIngest(providerTournamentSlug);
+            var raceResultsRequest = GetWebRequestForRaceResultsIngest(providerSlug, providerSeasonId, providerRaceId);
+
+            MotorEntitiesResponse raceResultsResponse;
+
+            using (var webResponse = raceResultsRequest.GetResponse())
+            {
+                using (var responseStream = webResponse.GetResponseStream())
+                {
+                    if (responseStream is null) return null;
+
+                    var streamReader = new StreamReader(responseStream, Encoding.UTF8);
+
+                    raceResultsResponse = JsonConvert.DeserializeObject<MotorEntitiesResponse>(streamReader.ReadToEnd());
+                }
+            }
+
+            return raceResultsResponse;
+        }
+
+        public MotorEntitiesResponse IngestTournamentDrivers(string providerSlug)
+        {
+            var webRequestForDriverIngest = GetWebRequestForDriversIngest(providerSlug);
 
             MotorEntitiesResponse tournamentDrivers;
 
@@ -107,9 +128,9 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             return tournamentDrivers;
         }
 
-        public MotorEntitiesResponse IngestTournamentTeams(string providerTournamentSlug)
+        public MotorEntitiesResponse IngestTournamentTeams(string providerSlug)
         {
-            var webRequestForTeamIngestIngest = GetWebRequestForTeamsIngest(providerTournamentSlug);
+            var webRequestForTeamIngestIngest = GetWebRequestForTeamsIngest(providerSlug);
 
             MotorEntitiesResponse tournamentTeamsResponse;
 
@@ -128,23 +149,23 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             return tournamentTeamsResponse;
         }
 
-        public MotorEntitiesResponse IngestDriverStandings(string providerTournamentSlug)
+        public MotorEntitiesResponse IngestDriverStandings(string providerSlug)
         {
-            var driverStandings = IngestStandings(providerTournamentSlug, DriverStandingsTypeId);
+            var driverStandings = IngestStandings(providerSlug, DriverStandingsTypeId);
 
             return driverStandings;
         }
 
-        public MotorEntitiesResponse IngestTeamStandings(string providerTournamentSlug)
+        public MotorEntitiesResponse IngestTeamStandings(string providerSlug)
         {
-            var teamStandings = IngestStandings(providerTournamentSlug, TeamStandingsTypeId);
+            var teamStandings = IngestStandings(providerSlug, TeamStandingsTypeId);
 
             return teamStandings;
         }
 
-        private static MotorEntitiesResponse IngestStandings(string providerTournamentSlug, string standingsTypeId)
+        private static MotorEntitiesResponse IngestStandings(string providerSlug, string standingsTypeId)
         {
-            var webRequestForStandingsIngest = GetWebRequestForStandingsIngest(providerTournamentSlug, standingsTypeId);
+            var webRequestForStandingsIngest = GetWebRequestForStandingsIngest(providerSlug, standingsTypeId);
 
             MotorEntitiesResponse standings;
 
@@ -163,9 +184,9 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             return standings;
         }
 
-        private static WebRequest GetWebRequestForDriversIngest(string providerTournamentSlug)
+        private static WebRequest GetWebRequestForDriversIngest(string providerSlug)
         {
-            var driversUrl = $"/v1/stats/motor/{providerTournamentSlug}/participants/";
+            var driversUrl = $"/v1/stats/motor/{providerSlug}/participants/";
 
             var requestSignature = GetRequestSignature();
 
@@ -180,9 +201,9 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             return webRequestForDriverIngest;
         }
 
-        private static WebRequest GetWebRequestForTeamsIngest(string providerTournamentSlug)
+        private static WebRequest GetWebRequestForTeamsIngest(string providerSlug)
         {
-            var teamsUrl = $"/v1/stats/motor/{providerTournamentSlug}/teams/";
+            var teamsUrl = $"/v1/stats/motor/{providerSlug}/teams/";
 
             var requestSignature = GetRequestSignature();
 
@@ -197,9 +218,9 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             return requestForTeamIngest;
         }
 
-        private static WebRequest GetWebRequestForStandingsIngest(string standingsTypeId, string providerTournamentSlug)
+        private static WebRequest GetWebRequestForStandingsIngest(string standingsTypeId, string providerSlug)
         {
-            var standingsUrl = $"/v1/stats/motor/{providerTournamentSlug}/standings/";
+            var standingsUrl = $"/v1/stats/motor/{providerSlug}/standings/";
 
             var requestSignature = GetRequestSignature();
 
@@ -231,9 +252,9 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             return requestForTournamentsIngest;
         }
 
-        private static WebRequest GetWebRequestForRacesIngest(string providerTournamentSlug)
+        private static WebRequest GetWebRequestForRacesIngest(string providerSlug)
         {
-            var racesUrl = $"/v1/decode/motor/{providerTournamentSlug}/races/";
+            var racesUrl = $"/v1/decode/motor/{providerSlug}/races/";
 
             var requestSignature = GetRequestSignature();
 
@@ -248,15 +269,32 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             return requestForTeamIngest;
         }
 
-        private static WebRequest GetWebRequestForTournamentSchedule(string providerTournamentSlug, int providerSeasonId)
+        private static WebRequest GetWebRequestForTournamentSchedule(string providerSlug, int providerSeasonId)
         {
-            var eventsUrl = $"/v1/stats/motor/{providerTournamentSlug}/events/";
+            var eventsUrl = $"/v1/stats/motor/{providerSlug}/events/";
 
             var requestSignature = GetRequestSignature();
 
             var queryString = $"?season={providerSeasonId}&api_key={StatsApiKey}&sig={requestSignature}";
 
             var requestUriString = StatsApiBaseUrl + eventsUrl + queryString;
+
+            var requestForTournamentSchedule = WebRequest.Create(requestUriString);
+
+            requestForTournamentSchedule.Method = "GET";
+
+            return requestForTournamentSchedule;
+        }
+
+        private static WebRequest GetWebRequestForRaceResultsIngest(string providerSlug, int providerSeasonId, int raceId)
+        {
+            var raceResultsUrl = $"/v1/stats/motor/{providerSlug}/events/";
+
+            var requestSignature = GetRequestSignature();
+
+            var queryString = $"?box=true&season={providerSeasonId}&raceId={raceId}&api_key={StatsApiKey}&sig={requestSignature}";
+
+            var requestUriString = StatsApiBaseUrl + raceResultsUrl + queryString;
 
             var requestForTournamentSchedule = WebRequest.Create(requestUriString);
 

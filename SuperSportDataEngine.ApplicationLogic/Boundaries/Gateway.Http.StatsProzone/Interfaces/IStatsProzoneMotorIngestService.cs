@@ -4,12 +4,13 @@
 
     public interface IStatsProzoneMotorIngestService
     {
-        MotorEntitiesResponse IngestTournamentDrivers(string providerTournamentSlug);
-        MotorEntitiesResponse IngestTournamentTeams(string providerTournamentSlug);
-        MotorEntitiesResponse IngestDriverStandings(string providerTournamentSlug);
-        MotorEntitiesResponse IngestTeamStandings(string providerTournamentSlug);
+        MotorEntitiesResponse IngestTournamentDrivers(string providerSlug);
+        MotorEntitiesResponse IngestTournamentTeams(string providerSlug);
+        MotorEntitiesResponse IngestDriverStandings(string providerSlug);
+        MotorEntitiesResponse IngestTeamStandings(string providerSlug);
         MotorEntitiesResponse IngestTournaments();
-        MotorEntitiesResponse IngestTournamentRaces(string providerTournamentSlug);
-        MotorEntitiesResponse IngestTournamentSchedule(string providerTournamentSlug, int providerSeasonId);
+        MotorEntitiesResponse IngestTournamentRaces(string providerSlug);
+        MotorEntitiesResponse IngestTournamentSchedule(string providerSlug, int providerSeasonId);
+        MotorEntitiesResponse IngestTournamentResults(string providerSlug, int providerSeasonId, int providerRaceId);
     }
 }
