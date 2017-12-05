@@ -21,7 +21,7 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
         private const string DriverStandingsTypeId = "1"; //TODO Move to STATS constants
 
-        private const string BaseUrl = "http://api.stats.com";
+        private const string StatsApiBaseUrl = "http://api.stats.com";
 
         public MotorEntitiesResponse IngestTournamentDrivers(string providerTournamentSlug)
         {
@@ -79,6 +79,28 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             return teamStandings;
         }
 
+        public MotorEntitiesResponse IngestTournaments()
+        {
+
+            var webRequestForTournamentsIngest = GetWebRequestForTournamentsIngest();
+
+            MotorEntitiesResponse tournamentsEntitiesResponse;
+
+            using (var webResponse = webRequestForTournamentsIngest.GetResponse())
+            {
+                using (var responseStream = webResponse.GetResponseStream())
+                {
+                    if (responseStream == null) return null;
+
+                    var streamReader = new StreamReader(responseStream, Encoding.UTF8);
+
+                    tournamentsEntitiesResponse = JsonConvert.DeserializeObject<MotorEntitiesResponse>(streamReader.ReadToEnd());
+                }
+            }
+
+            return tournamentsEntitiesResponse;
+        }
+
         private static MotorEntitiesResponse IngestStandings(string providerTournamentSlug, string standingsTypeId)
         {
             var webRequestForStandingsIngest = GetWebRequestForStandingsIngest(providerTournamentSlug, standingsTypeId);
@@ -108,7 +130,7 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
             var queryString = $"?api_key={StatsApiKey} & sig= {requestSignature}";
 
-            var requestUriString = BaseUrl + driversUrl + queryString;
+            var requestUriString = StatsApiBaseUrl + driversUrl + queryString;
 
             var webRequestForDriverIngest = WebRequest.Create(requestUriString);
 
@@ -125,7 +147,7 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
             var queryString = $"?api_key={StatsApiKey} & sig= {requestSignature}";
 
-            var requestUriString = BaseUrl + teamsUrl + queryString;
+            var requestUriString = StatsApiBaseUrl + teamsUrl + queryString;
 
             var requestForTeamIngest = WebRequest.Create(requestUriString);
 
@@ -142,13 +164,30 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
             var queryString = $"?standingsTypeId={standingsTypeId}&languageId=1&api_key={StatsApiKey}&sig={requestSignature}";
 
-            var requestUriString = BaseUrl + standingsUrl + queryString;
+            var requestUriString = StatsApiBaseUrl + standingsUrl + queryString;
 
             var webRequestForStandingsIngest = WebRequest.Create(requestUriString);
 
             webRequestForStandingsIngest.Method = "GET";
 
             return webRequestForStandingsIngest;
+        }
+
+        private static WebRequest GetWebRequestForTournamentsIngest()
+        {
+            const string statsMotorLeaguesUrl = "/v1/stats/motor/leagues/";
+
+            var requestSignature = GetRequestSignature();
+
+            var queryString = $"?api_key={StatsApiKey}&sig={requestSignature}";
+
+            var requestUriString = StatsApiBaseUrl + statsMotorLeaguesUrl + queryString;
+
+            var requestForTournamentsIngest = WebRequest.Create(requestUriString);
+
+            requestForTournamentsIngest.Method = "GET";
+
+            return requestForTournamentsIngest;
         }
 
         private static string GetRequestSignature()
