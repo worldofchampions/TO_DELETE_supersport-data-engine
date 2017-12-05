@@ -330,14 +330,14 @@
             return await Task.FromResult(flatLogs.ToList());
         }
 
-        public Task<List<RugbyFixture>> GetCurrentDayFixturesForActiveTournaments()
+        public async Task<List<RugbyFixture>> GetCurrentDayFixturesForActiveTournaments()
         {
             var now = DateTime.UtcNow.Date;
 
-            var todayFixtures = _rugbyFixturesRepository
+            var todayFixtures = (await _rugbyFixturesRepository.AllAsync())
                 .Where(f => f.StartDateTime.UtcDateTime.Date == now && f.RugbyTournament.IsEnabled).ToList();
 
-            return Task.FromResult(todayFixtures.OrderBy(f => f.StartDateTime).ToList());
+            return todayFixtures.OrderBy(f => f.StartDateTime).ToList();
         }
 
         public async Task<RugbyMatchDetailsEntity> GetMatchDetailsByLegacyMatchId(int legacyMatchId, bool omitDisabledFixtures)
