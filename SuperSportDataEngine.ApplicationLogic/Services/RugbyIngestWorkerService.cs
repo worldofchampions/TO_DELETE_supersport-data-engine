@@ -1038,7 +1038,7 @@
                 if (results == null)
                     continue;
 
-                 await PersistRugbyFixturesToPublicSportsRepository(cancellationToken,results);
+                await PersistRugbyFixturesToPublicSportsRepository(cancellationToken,results);
             }
         }
 

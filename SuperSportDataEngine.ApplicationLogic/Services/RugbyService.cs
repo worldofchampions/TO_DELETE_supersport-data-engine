@@ -58,23 +58,23 @@
 
         public async Task<IEnumerable<RugbyTournament>> GetActiveTournaments()
         {
-            return (await _rugbyTournamentRepository.AllAsync()).Where(c => c.IsEnabled);
+            return await Task.FromResult(_rugbyTournamentRepository.Where(c => c.IsEnabled).ToList());
         }
 
         public async Task<IEnumerable<RugbyTournament>> GetCurrentTournaments()
         {
-            var tournamentsGuidsThatAreCurrent = (await _schedulerTrackingRugbySeasonRepository.AllAsync()).Where(s => s.RugbySeasonStatus == RugbySeasonStatus.InProgress).Select(s => s.TournamentId);
-            return (await _rugbyTournamentRepository.AllAsync()).Where(t => t.IsEnabled && tournamentsGuidsThatAreCurrent.Contains(t.Id)).Select(t => t);
+            var tournamentsGuidsThatAreCurrent = await Task.FromResult(_schedulerTrackingRugbySeasonRepository.Where(s => s.RugbySeasonStatus == RugbySeasonStatus.InProgress).Select(s => s.TournamentId).ToList());
+            return await Task.FromResult(_rugbyTournamentRepository.Where(t => t.IsEnabled && tournamentsGuidsThatAreCurrent.Contains(t.Id)).Select(t => t).ToList());
         }
 
         public async Task<SchedulerStateForManagerJobPolling> GetSchedulerStateForManagerJobPolling(Guid tournamentId)
         {
             var season =
-                (await _schedulerTrackingRugbySeasonRepository.AllAsync())
+                await Task.FromResult(_schedulerTrackingRugbySeasonRepository
                     .FirstOrDefault(
                         s => s.TournamentId == tournamentId &&
                         (s.RugbySeasonStatus == RugbySeasonStatus.InProgress ||
-                          s.RugbySeasonStatus == RugbySeasonStatus.NotActive));
+                          s.RugbySeasonStatus == RugbySeasonStatus.NotActive)));
 
             return season?.SchedulerStateForManagerJobPolling ?? SchedulerStateForManagerJobPolling.Undefined;
         }
@@ -82,37 +82,26 @@
         public async Task<IEnumerable<RugbyTournament>> GetEndedTournaments()
         {
             var tournamentGuids =
-                (await _schedulerTrackingRugbySeasonRepository.AllAsync())
+                await Task.FromResult(_schedulerTrackingRugbySeasonRepository
                     .Where(
                         season => season.RugbySeasonStatus == RugbySeasonStatus.Ended &&
                         season.SchedulerStateForManagerJobPolling == SchedulerStateForManagerJobPolling.Running)
-                    .Select(s => s.TournamentId);
+                    .Select(s => s.TournamentId));
 
-            return
-                (await _rugbyTournamentRepository.AllAsync())
-                    .Where(tournament => tournamentGuids.Contains(tournament.Id))
-                    .Select(t => t);
+            return await Task.FromResult(_rugbyTournamentRepository.Where(tournament => tournamentGuids.Contains(tournament.Id)).Select(t => t));
         }
 
         public async Task<IEnumerable<RugbyTournament>> GetInactiveTournaments()
         {
-            return
-                (await _rugbyTournamentRepository.AllAsync())
-                    .Where(t => t.IsEnabled == false);
+            return await Task.FromResult(_rugbyTournamentRepository.Where(t => t.IsEnabled == false).ToList());
         }
 
         public async Task<int> GetCurrentProviderSeasonIdForTournament(CancellationToken cancellationToken, Guid tournamentId)
         {
             var currentSeason =
-                    (await _rugbySeasonRepository.AllAsync())
-                        .FirstOrDefault(season => season.RugbyTournament.Id == tournamentId && season.IsCurrent);
+                    await Task.FromResult(_rugbySeasonRepository.FirstOrDefault(season => season.RugbyTournament.Id == tournamentId && season.IsCurrent));
 
-            if (currentSeason != null)
-            {
-                return currentSeason.ProviderSeasonId;
-            }
-
-            return DateTime.Now.Year;
+            return currentSeason?.ProviderSeasonId ?? DateTime.Now.Year;
         }
 
         public async Task<IEnumerable<RugbyFixture>> GetLiveFixturesForCurrentTournament(CancellationToken cancellationToken, Guid tournamentId)
@@ -120,11 +109,6 @@
             var liveGames = (await _rugbyFixturesRepository.AllAsync())
                     .Where(IsFixtureLive)
                     .Where(fixture => fixture.RugbyTournament != null && fixture.RugbyTournament.Id == tournamentId);
-
-            // For debugging when there's no live games.
-            //return
-            //    (await _rugbyFixturesRepository.AllAsync())
-            //        .Where(f => f.RugbyTournament.Id == tournamentId && (f.ProviderFixtureId == 20171211210 || f.ProviderFixtureId == 20171211220));
 
             return liveGames;
         }
@@ -146,28 +130,24 @@
             var liveGames = (await _rugbyFixturesRepository.AllAsync())
                                 .Where(IsFixtureLive);
 
-            // For debugging when there's no live games.
-            //return 2;
-
             return liveGames.Count();
         }
 
         public async Task<IEnumerable<RugbyFixture>> GetCompletedFixtures()
         {
-            // For debugging when there's no live games.
-            //return new List<RugbyFixture>();
-            var completedSchedules = (await _schedulerTrackingRugbyFixtureRepository.AllAsync()).Where(
-                    f => f.SchedulerStateFixtures == SchedulerStateForRugbyFixturePolling.SchedulingCompleted).Select(s => s.FixtureId).ToList();
-            var fixturesCompleted = (await _rugbyFixturesRepository.AllAsync()).Where(f => completedSchedules.Contains(f.Id));
+            var completedSchedules = _schedulerTrackingRugbyFixtureRepository.Where(
+                    f => f.SchedulerStateFixtures == SchedulerStateForRugbyFixturePolling.SchedulingCompleted).Select(s => s.FixtureId);
 
-            return fixturesCompleted;
+            var fixturesCompleted = _rugbyFixturesRepository.Where(f => completedSchedules.Contains(f.Id));
+
+            return await Task.FromResult(fixturesCompleted.ToList());
         }
 
         public async Task<bool> HasFixtureEnded(long providerFixtureId)
         {
             var fixture =
-                    (await _rugbyFixturesRepository.AllAsync())
-                        .FirstOrDefault(f => f.ProviderFixtureId == providerFixtureId);
+                await Task.FromResult(
+                    _rugbyFixturesRepository.FirstOrDefault(f => f.ProviderFixtureId == providerFixtureId));
 
             if (fixture != null)
                 return fixture.RugbyFixtureStatus == RugbyFixtureStatus.Result;
@@ -179,10 +159,9 @@
 
         public async Task<IEnumerable<RugbyTournament>> GetActiveTournamentsForMatchesInResultsState()
         {
-            var tournamentsThatHaveFixturesInResultState =
-                    (await _rugbyFixturesRepository.AllAsync())
+            var tournamentsThatHaveFixturesInResultState = await Task.FromResult(_rugbyFixturesRepository
                         .Where(f => f.RugbyFixtureStatus == RugbyFixtureStatus.Result)
-                        .Select(f => f.RugbyTournament);
+                        .Select(f => f.RugbyTournament).ToList());
 
             return tournamentsThatHaveFixturesInResultState;
         }
@@ -229,11 +208,7 @@
 
         public async Task<IEnumerable<RugbyFixture>> GetTournamentFixtures(Guid tournamentId, RugbyFixtureStatus fixtureStatus)
         {
-            var fixtures = (await _rugbyFixturesRepository.AllAsync())
-                .Where(t => t.RugbyTournament.Id == tournamentId &&
-                t.RugbyFixtureStatus == fixtureStatus);
-
-            return fixtures;
+            return await Task.FromResult(_rugbyFixturesRepository.Where(t => t.RugbyTournament.Id == tournamentId && t.RugbyFixtureStatus == fixtureStatus).OrderByDescending(f => f.StartDateTime));
         }
 
         public async Task<IEnumerable<RugbyFixture>> GetTournamentFixtures(string tournamentSlug)
@@ -249,26 +224,24 @@
 
             if (tournament == null) return fixtures;
 
-            fixtures = (await _rugbyFixturesRepository.AllAsync())
-                .Where(t => t.RugbyTournament.Id == tournament.Id && t.RugbyFixtureStatus != RugbyFixtureStatus.Result);
+            fixtures = _rugbyFixturesRepository.Where(t => t.RugbyTournament.Id == tournament.Id && t.RugbyFixtureStatus != RugbyFixtureStatus.Result).OrderBy(f => f.StartDateTime);
 
-            return fixtures.OrderBy(f => f.StartDateTime);
+            return await Task.FromResult(fixtures.ToList());
         }
 
         public async Task<Guid> GetTournamentId(string tournamentSlug)
         {
-            var tournament = (await _rugbyTournamentRepository.AllAsync()).FirstOrDefault(f => f.Slug == tournamentSlug);
+            var tournament = _rugbyTournamentRepository.FirstOrDefault(f => f.Slug == tournamentSlug);
 
             if (tournament == null)
                 throw new Exception("Tournament slug does not exist.");
 
-            return tournament.Id;
+            return await Task.FromResult(tournament.Id);
         }
 
         public async Task<RugbyTournament> GetTournamentBySlug(string tournamentSlug)
         {
-            return (await _rugbyTournamentRepository.AllAsync())
-                .FirstOrDefault(f => f.Slug.Equals(tournamentSlug, StringComparison.InvariantCultureIgnoreCase));
+            return await Task.FromResult(_rugbyTournamentRepository.FirstOrDefault(f => f.Slug.Equals(tournamentSlug, StringComparison.InvariantCultureIgnoreCase)));
         }
 
         public async Task<IEnumerable<RugbyFixture>> GetTournamentResults(string tournamentSlug)
@@ -284,8 +257,7 @@
 
             if (tournament != null)
             {
-                fixturesInResultsState = (await GetTournamentFixtures(tournament.Id, RugbyFixtureStatus.Result))
-                    .OrderByDescending(f => f.StartDateTime);
+                fixturesInResultsState = await GetTournamentFixtures(tournament.Id, RugbyFixtureStatus.Result);
             }
 
             return fixturesInResultsState;
@@ -302,28 +274,26 @@
         {
             const string nationalTeamName = "South Africa";
 
-            var fixtures = (await _rugbyFixturesRepository.AllAsync())
-                    .Where(f =>
+            var fixtures = _rugbyFixturesRepository.Where(f =>
                     ((f.TeamA != null && f.TeamA.Name.Equals(nationalTeamName, StringComparison.InvariantCultureIgnoreCase)) ||
                     (f.TeamB != null && f.TeamB.Name.Equals(nationalTeamName, StringComparison.InvariantCultureIgnoreCase))) &&
                     f.RugbyFixtureStatus == RugbyFixtureStatus.Result)
                     .OrderByDescending(f => f.StartDateTime);
 
-            return fixtures;
+            return await Task.FromResult(fixtures.ToList());
         }
 
         private async Task<IEnumerable<RugbyFixture>> GetNationalTeamFixtures()
         {
             const string nationalTeamName = "South Africa";
 
-            var fixtures = (await _rugbyFixturesRepository.AllAsync())
-                    .Where(f =>
+            var fixtures = _rugbyFixturesRepository.Where(f =>
                     ((f.TeamA != null && f.TeamA.Name.Equals(nationalTeamName, StringComparison.InvariantCultureIgnoreCase)) ||
                      (f.TeamB != null && f.TeamB.Name.Equals(nationalTeamName, StringComparison.InvariantCultureIgnoreCase))) &&
                     f.RugbyFixtureStatus != RugbyFixtureStatus.Result)
                     .OrderBy(f => f.StartDateTime);
 
-            return fixtures;
+            return await Task.FromResult(fixtures.ToList());
         }
 
         public async Task<IEnumerable<RugbyGroupedLog>> GetGroupedLogs(string tournamentSlug)
@@ -334,15 +304,15 @@
 
             if (tournament != null && tournament.HasLogs)
             {
-                logs = (await _rugbyGroupedLogsRepository.AllAsync())
+                logs = _rugbyGroupedLogsRepository
                     .Where(t => t.RugbyTournament.IsEnabled && t.RugbyTournamentId == tournament.Id)
                     .OrderBy(g => g.RugbyLogGroup.Id)
                     .ThenBy(t => t.LogPosition);
 
-                return logs;
+                return await Task.FromResult(logs.ToList());
             }
 
-            return logs;
+            return await Task.FromResult(logs.ToList());
         }
 
         public async Task<IEnumerable<RugbyFlatLog>> GetFlatLogs(string tournamentSlug)
@@ -353,21 +323,19 @@
 
             if (tournament != null && tournament.HasLogs)
             {
-                flatLogs = (await _rugbyFlatLogsRepository.AllAsync())
-                    .Where(t => t.RugbyTournament.IsEnabled && t.RugbyTournamentId == tournament.Id && t.RugbySeason.IsCurrent)
+                flatLogs = _rugbyFlatLogsRepository.Where(t => t.RugbyTournament.IsEnabled && t.RugbyTournamentId == tournament.Id && t.RugbySeason.IsCurrent)
                     .OrderBy(t => t.LogPosition);
             }
 
-            return flatLogs;
+            return await Task.FromResult(flatLogs.ToList());
         }
 
-        public async Task<IEnumerable<RugbyFixture>> GetCurrentDayFixturesForActiveTournaments()
+        public Task<List<RugbyFixture>> GetCurrentDayFixturesForActiveTournaments()
         {
-            var todayFixtures = (await _rugbyFixturesRepository.AllAsync())
-                 .Where(f => f.StartDateTime.UtcDateTime.Date == DateTime.UtcNow.Date && f.RugbyTournament.IsEnabled)
-                 .ToList();
+            var todayFixtures = _rugbyFixturesRepository
+                .Where(f => f.StartDateTime.UtcDateTime.Date == DateTime.UtcNow.Date && f.RugbyTournament.IsEnabled);
 
-            return todayFixtures.OrderBy(f => f.StartDateTime);
+            return Task.FromResult(todayFixtures.OrderBy(f => f.StartDateTime).ToList());
         }
 
         public async Task<RugbyMatchDetailsEntity> GetMatchDetailsByLegacyMatchId(int legacyMatchId, bool omitDisabledFixtures)
@@ -385,36 +353,24 @@
                     return null;
             }
 
-            var lineupForFixture = GetLineupForFixture(fixture.Id);
-            var statsForFixture = GetMatchStatsForFixture(fixture.Id);
-            var events = GetRugbyFixtureEvents(fixture.Id);
-
+            var lineupForFixture = await GetLineupForFixture(fixture.Id);
+            var statsForFixture = await GetMatchStatsForFixture(fixture.Id);
+            var events = await GetRugbyFixtureEvents(fixture.Id);
             var scorersForFixture = await GetScorersForFixture(fixture.Id);
-            var teamAScorers = scorersForFixture.Where(s => s.RugbyTeamId == (fixture.TeamA?.Id ?? Guid.Empty)).ToList();
-            var teamBScorers = scorersForFixture.Where(s => s.RugbyTeamId == (fixture.TeamB?.Id ?? Guid.Empty)).ToList();
-
-            var teamAlineup = lineupForFixture.Where(l => l.RugbyTeamId == (fixture.TeamA?.Id ?? Guid.Empty)).ToList();
-            var teamBlineup = lineupForFixture.Where(l => l.RugbyTeamId == (fixture.TeamB?.Id ?? Guid.Empty)).ToList();
-            var bothTeamsLineups = lineupForFixture.OrderBy(p => p.JerseyNumber).ToList();
-
-            var statsA = statsForFixture.FirstOrDefault(s => s.RugbyTeamId == (fixture.TeamA?.Id ?? Guid.Empty));
-            var statsB = statsForFixture.FirstOrDefault(s => s.RugbyTeamId == (fixture.TeamB?.Id ?? Guid.Empty));
 
             events.AddRange(await GetCommentaryAsRugbyMatchEvents(fixture.Id));
-            events = events.OrderByDescending(e => e.GameTimeInSeconds).ThenByDescending(e => e.TimestampCreated).ToList();
 
-            var matchDetails = new RugbyMatchDetailsEntity
-            {
-                TeamALineup = teamAlineup,
-                TeamBLineup = teamBlineup,
-                TeamAMatchStatistics = statsA,
-                TeamBMatchStatistics = statsB,
-                RugbyFixture = fixture,
-                TeamsLineups = bothTeamsLineups,
-                MatchEvents = events,
-                TeamAScorers = teamAScorers,
-                TeamBScorers = teamBScorers
-            };
+            var matchDetails = new RugbyMatchDetailsEntity();
+
+            matchDetails.TeamALineup = lineupForFixture.Where(l => l.RugbyTeamId == (fixture.TeamA?.Id ?? Guid.Empty)).ToList();
+            matchDetails.TeamBLineup = lineupForFixture.Where(l => l.RugbyTeamId == (fixture.TeamB?.Id ?? Guid.Empty)).ToList();
+            matchDetails.TeamAMatchStatistics = statsForFixture.FirstOrDefault(s => s.RugbyTeamId == (fixture.TeamA?.Id ?? Guid.Empty));
+            matchDetails.TeamBMatchStatistics = statsForFixture.FirstOrDefault(s => s.RugbyTeamId == (fixture.TeamB?.Id ?? Guid.Empty));
+            matchDetails.RugbyFixture = fixture;
+            matchDetails.TeamsLineups = lineupForFixture.OrderBy(p => p.JerseyNumber).ToList();
+            matchDetails.MatchEvents = events.OrderByDescending(e => e.GameTimeInSeconds).ThenByDescending(e => e.TimestampCreated).ToList();
+            matchDetails.TeamAScorers = scorersForFixture.Where(s => s.RugbyTeamId == (fixture.TeamA?.Id ?? Guid.Empty)).ToList();
+            matchDetails.TeamBScorers = scorersForFixture.Where(s => s.RugbyTeamId == (fixture.TeamB?.Id ?? Guid.Empty)).ToList();
 
             return matchDetails;
         }
@@ -441,7 +397,7 @@
 
         private async Task<List<RugbyMatchEvent>> GetScoringEventsForFixture(Guid fixtureId)
         {
-            return (await _rugbyMatchEventsRepository.AllAsync())
+            return await Task.FromResult(_rugbyMatchEventsRepository
                 .Where(s => s.RugbyFixture.Id == fixtureId &&
                 (s.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.PenaltyTryFivePoints ||
                  s.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.PenaltyTrySevenPoints ||
@@ -450,7 +406,7 @@
                  s.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.DropGoal ||
                  s.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.Penalty ||
                  s.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.Try))
-                .ToList();
+                .ToList());
         }
 
         private RugbyFixture GetRugbyFixtureByLegacyMatchId(int legacyMatchId)
@@ -458,19 +414,19 @@
             return _rugbyFixturesRepository.FirstOrDefault(f => f.LegacyFixtureId == legacyMatchId);
         }
 
-        private List<RugbyMatchEvent> GetRugbyFixtureEvents(Guid fixtureId)
+        private async Task<List<RugbyMatchEvent>> GetRugbyFixtureEvents(Guid fixtureId)
         {
-            return _rugbyMatchEventsRepository.Where(s => s.RugbyFixture.Id == fixtureId).ToList();
+            return await Task.FromResult(_rugbyMatchEventsRepository.Where(s => s.RugbyFixture.Id == fixtureId).ToList());
         }
 
-        private List<RugbyMatchStatistics> GetMatchStatsForFixture(Guid fixtureId)
+        private async Task<List<RugbyMatchStatistics>> GetMatchStatsForFixture(Guid fixtureId)
         {
-            return _rugbyMatchStatisticsRepository.Where(s => s.RugbyFixture.Id == fixtureId).ToList();
+            return await Task.FromResult( _rugbyMatchStatisticsRepository.Where(s => s.RugbyFixture.Id == fixtureId).ToList());
         }
 
-        private List<RugbyPlayerLineup> GetLineupForFixture(Guid fixtureId)
+        private async Task<List<RugbyPlayerLineup>> GetLineupForFixture(Guid fixtureId)
         {
-            return _rugbyPlayerLineupsRepository.Where(l => l.RugbyFixture.Id == fixtureId).ToList();
+            return await Task.FromResult(_rugbyPlayerLineupsRepository.Where(l => l.RugbyFixture.Id == fixtureId).ToList());
         }
 
         private async Task<List<LegacyRugbyMatchEventEntity>> GetCommentaryAsRugbyMatchEvents(Guid fixtureId)
@@ -497,7 +453,7 @@
                 matchCommentariesAsEvents.Add(matchEvent);
             }
 
-            return matchCommentariesAsEvents;
+            return await Task.FromResult(matchCommentariesAsEvents);
         }
 
         private List<RugbyCommentary> GetRugbyMatchCommentary(Guid fixtureId)
@@ -507,31 +463,31 @@
 
         public async Task<IEnumerable<RugbyFixture>> GetPostponedFixtures()
         {
-            return (await _rugbyFixturesRepository.AllAsync()).Where(f =>
+            return await Task.FromResult(_rugbyFixturesRepository.Where(f =>
                 (f.RugbyFixtureStatus == RugbyFixtureStatus.PreMatch && f.StartDateTime < (DateTimeOffset.UtcNow - TimeSpan.FromHours(3)))
-                || (f.RugbyFixtureStatus == RugbyFixtureStatus.Postponed));
+                || (f.RugbyFixtureStatus == RugbyFixtureStatus.Postponed)));
         }
 
         public async Task<IEnumerable<RugbyFixture>> GetFixturesNotIngestedYet()
         {
             var pastFixturesIdsNotScheduledYet =
-                            (await _schedulerTrackingRugbyFixtureRepository.AllAsync()).Where(s => s.SchedulerStateFixtures != SchedulerStateForRugbyFixturePolling.SchedulingCompleted &&
-                            s.StartDateTime < DateTime.UtcNow.AddHours(-6)).Select(s => s.FixtureId).ToList();
+                _schedulerTrackingRugbyFixtureRepository
+                    .Where(s => s.SchedulerStateFixtures != SchedulerStateForRugbyFixturePolling.SchedulingCompleted &&
+                                s.StartDateTime < DateTime.UtcNow.AddHours(-6)).Select(s => s.FixtureId).ToList();
 
             var fixtures = (_rugbyFixturesRepository.Where(f => pastFixturesIdsNotScheduledYet.Contains(f.Id)))
                                 .OrderByDescending(f => f.StartDateTime);
 
-            return fixtures;
+            return await Task.FromResult(fixtures);
         }
 
         public async Task<IEnumerable<RugbyFixture>> GetPastDaysFixtures(int numberOfDays)
         {
             var now = DateTime.UtcNow;
 
-            var fixtures = (await _rugbyFixturesRepository.AllAsync())
-                .Where(f => now - f.StartDateTime < TimeSpan.FromDays(numberOfDays)).ToList();
+            var fixtures = _rugbyFixturesRepository.Where(f => now - f.StartDateTime < TimeSpan.FromDays(numberOfDays));
 
-            return fixtures;
+            return await Task.FromResult(fixtures.ToList());
         }
     }
 }
