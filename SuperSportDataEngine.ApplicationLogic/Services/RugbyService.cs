@@ -353,10 +353,9 @@
                     return null;
             }
 
-            var lineupForFixture = GetLineupForFixture(fixture.Id);
-            var statsForFixture = GetMatchStatsForFixture(fixture.Id);
-            var events = GetRugbyFixtureEvents(fixture.Id);
-
+            var lineupForFixture = await GetLineupForFixture(fixture.Id);
+            var statsForFixture = await GetMatchStatsForFixture(fixture.Id);
+            var events = await GetRugbyFixtureEvents(fixture.Id);
             var scorersForFixture = await GetScorersForFixture(fixture.Id);
 
             events.AddRange(await GetCommentaryAsRugbyMatchEvents(fixture.Id));
@@ -415,19 +414,19 @@
             return _rugbyFixturesRepository.FirstOrDefault(f => f.LegacyFixtureId == legacyMatchId);
         }
 
-        private List<RugbyMatchEvent> GetRugbyFixtureEvents(Guid fixtureId)
+        private async Task<List<RugbyMatchEvent>> GetRugbyFixtureEvents(Guid fixtureId)
         {
-            return _rugbyMatchEventsRepository.Where(s => s.RugbyFixture.Id == fixtureId).ToList();
+            return await Task.FromResult(_rugbyMatchEventsRepository.Where(s => s.RugbyFixture.Id == fixtureId).ToList());
         }
 
-        private List<RugbyMatchStatistics> GetMatchStatsForFixture(Guid fixtureId)
+        private async Task<List<RugbyMatchStatistics>> GetMatchStatsForFixture(Guid fixtureId)
         {
-            return _rugbyMatchStatisticsRepository.Where(s => s.RugbyFixture.Id == fixtureId).ToList();
+            return await Task.FromResult( _rugbyMatchStatisticsRepository.Where(s => s.RugbyFixture.Id == fixtureId).ToList());
         }
 
-        private List<RugbyPlayerLineup> GetLineupForFixture(Guid fixtureId)
+        private async Task<List<RugbyPlayerLineup>> GetLineupForFixture(Guid fixtureId)
         {
-            return _rugbyPlayerLineupsRepository.Where(l => l.RugbyFixture.Id == fixtureId).ToList();
+            return await Task.FromResult(_rugbyPlayerLineupsRepository.Where(l => l.RugbyFixture.Id == fixtureId).ToList());
         }
 
         private async Task<List<LegacyRugbyMatchEventEntity>> GetCommentaryAsRugbyMatchEvents(Guid fixtureId)
