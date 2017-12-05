@@ -250,7 +250,7 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
         private static WebRequest GetWebRequestForTournamentSchedule(string providerTournamentSlug, int providerSeasonId)
         {
-            var eventsUrl = $"/v1/decode/motor/{providerTournamentSlug}/events/";
+            var eventsUrl = $"/v1/stats/motor/{providerTournamentSlug}/events/";
 
             var requestSignature = GetRequestSignature();
 
