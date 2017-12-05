@@ -89,7 +89,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
                 _mockSchedulerTrackingSeasonRepository.Object,
                 _mockFixtureRepository.Object,
                 _mockSchedulerTrackingTournamentsRepository.Object,
-                _mockSchedulerTrackingFixtureRepository.Object);
+                _mockSchedulerTrackingFixtureRepository.Object,
+                _mockLogger.Object);
         }
 
         [Test]
