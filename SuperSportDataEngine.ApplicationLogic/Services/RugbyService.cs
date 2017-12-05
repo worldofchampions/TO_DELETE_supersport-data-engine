@@ -332,8 +332,10 @@
 
         public Task<List<RugbyFixture>> GetCurrentDayFixturesForActiveTournaments()
         {
+            var now = DateTime.UtcNow.Date;
+
             var todayFixtures = _rugbyFixturesRepository
-                .Where(f => f.StartDateTime.UtcDateTime.Date == DateTime.UtcNow.Date && f.RugbyTournament.IsEnabled).ToList();
+                .Where(f => f.StartDateTime.UtcDateTime.Date == now && f.RugbyTournament.IsEnabled).ToList();
 
             return Task.FromResult(todayFixtures.OrderBy(f => f.StartDateTime).ToList());
         }
