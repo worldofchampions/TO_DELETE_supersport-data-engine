@@ -24,6 +24,22 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsPro
         public string displayName { get; set; }
         public SubLeague subLeague { get; set; }
         public List<UriPath> uriPaths { get; set; }
+        public Season season { get; set; }
+        public List<Race> races { get; set; }
+    }
+
+    public class Season
+    {
+        public int season { get; set; }
+        public string name { get; set; }
+        public bool isActive { get; set; }
+    }
+
+    public class Race
+    {
+        public int raceId { get; set; }
+        public string name { get; set; }
+        public string displayName { get; set; }
     }
 
     public class SubLeague
