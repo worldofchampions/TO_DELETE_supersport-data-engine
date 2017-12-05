@@ -1,4 +1,7 @@
-﻿namespace SuperSportDataEngine.ApplicationLogic.Services
+﻿using System.Diagnostics;
+using SuperSportDataEngine.Common.Logging;
+
+namespace SuperSportDataEngine.ApplicationLogic.Services
 {
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
@@ -27,6 +30,7 @@
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> _schedulerTrackingRugbySeasonRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyFixture> _rugbyFixturesRepository;
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> _schedulerTrackingRugbyFixtureRepository;
+        private readonly ILoggingService _logger;
 
         public RugbyService(
             IBaseEntityFrameworkRepository<RugbyMatchEvent> rugbyMatchEventsRepository,
@@ -40,8 +44,10 @@
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> schedulerTrackingRugbySeasonRepository,
             IBaseEntityFrameworkRepository<RugbyFixture> rugbyFixturesRepository,
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> schedulerTrackingRugbyTournamentRepository,
-            IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> schedulerTrackingRugbyFixtureRepository)
+            IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> schedulerTrackingRugbyFixtureRepository,
+            ILoggingService logger)
         {
+            _logger = logger;
             _rugbyMatchEventsRepository = rugbyMatchEventsRepository;
             _rugbyMatchStatisticsRepository = rugbyMatchStatisticsRepository;
             _rugbyPlayerLineupsRepository = rugbyPlayerLineupsRepository;
@@ -341,7 +347,9 @@
         }
 
         public async Task<RugbyMatchDetailsEntity> GetMatchDetailsByLegacyMatchId(int legacyMatchId, bool omitDisabledFixtures)
-        {
+        { 
+            var stopwatch = Stopwatch.StartNew();
+
             var fixture = GetRugbyFixtureByLegacyMatchId(legacyMatchId);
 
             if (fixture is null)
@@ -374,6 +382,8 @@
             matchDetails.TeamAScorers = scorersForFixture.Where(s => s.RugbyTeamId == (fixture.TeamA?.Id ?? Guid.Empty)).ToList();
             matchDetails.TeamBScorers = scorersForFixture.Where(s => s.RugbyTeamId == (fixture.TeamB?.Id ?? Guid.Empty)).ToList();
 
+            stopwatch.Stop();
+            _logger.Info("Match Details: " + stopwatch.ElapsedMilliseconds + "ms.");
             return matchDetails;
         }
 
