@@ -4,8 +4,8 @@
 
     public interface IStatsProzoneMotorIngestService
     {
-        MotorEntitiesResponse IngestTournamentDrivers(string tournamentName);
-        MotorEntitiesResponse IngestDriverStandings(string tournamentName);
-        MotorEntitiesResponse IngestTeamStandings(string tournamentName);
+        MotorEntitiesResponse IngestTournamentDrivers(string providerTournamentSlug);
+        MotorEntitiesResponse IngestDriverStandings(string providerTournamentSlug);
+        MotorEntitiesResponse IngestTeamStandings(string providerTournamentSlug);
     }
 }
