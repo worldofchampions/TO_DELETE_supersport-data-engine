@@ -165,7 +165,7 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
             var requestSignature = GetRequestSignature();
 
-            var queryString = $"?api_key={StatsApiKey} & sig= {requestSignature}";
+            var queryString = $"?api_key={StatsApiKey}&sig={requestSignature}";
 
             var requestUriString = StatsApiBaseUrl + teamsUrl + queryString;
 
@@ -216,7 +216,7 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
             var requestSignature = GetRequestSignature();
 
-            var queryString = $"?api_key={StatsApiKey} & sig= {requestSignature}";
+            var queryString = $"?api_key={StatsApiKey}&sig={requestSignature}";
 
             var requestUriString = StatsApiBaseUrl + racesUrl + queryString;
 
