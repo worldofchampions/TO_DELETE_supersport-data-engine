@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 {
@@ -60,9 +61,17 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 
             if ((response != null)) return Ok(response);
 
+            var stopwatch = Stopwatch.StartNew();
             var matchDetailsFromService = await _rugbyService.GetMatchDetailsByLegacyMatchId(id, true);
+            stopwatch.Stop();
 
+            _logger.Info("Service: Match Details: " + stopwatch.ElapsedMilliseconds + "ms.");
+
+            stopwatch.Restart();
             response = Mapper.Map<RugbyMatchDetails>(matchDetailsFromService);
+            stopwatch.Stop();
+
+            _logger.Info("Automapper: Match Details: " + stopwatch.ElapsedMilliseconds + "ms.");
 
             if (response != null)
             {
