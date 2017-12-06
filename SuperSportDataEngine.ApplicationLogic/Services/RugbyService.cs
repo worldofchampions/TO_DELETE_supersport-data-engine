@@ -347,9 +347,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         }
 
         public async Task<RugbyMatchDetailsEntity> GetMatchDetailsByLegacyMatchId(int legacyMatchId, bool omitDisabledFixtures)
-        { 
-            var stopwatch = Stopwatch.StartNew();
-
+        {
             var fixture = GetRugbyFixtureByLegacyMatchId(legacyMatchId);
 
             if (fixture is null)
@@ -381,9 +379,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             matchDetails.MatchEvents = events.OrderByDescending(e => e.GameTimeInSeconds).ThenByDescending(e => e.TimestampCreated).ToList();
             matchDetails.TeamAScorers = scorersForFixture.Where(s => s.RugbyTeamId == (fixture.TeamA?.Id ?? Guid.Empty)).ToList();
             matchDetails.TeamBScorers = scorersForFixture.Where(s => s.RugbyTeamId == (fixture.TeamB?.Id ?? Guid.Empty)).ToList();
-
-            stopwatch.Stop();
-            _logger.Info("Match Details: " + stopwatch.ElapsedMilliseconds + "ms.");
+            
             return matchDetails;
         }
 
