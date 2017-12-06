@@ -51,6 +51,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         [HttpGet]
         [Route("matchdetails/{id:int}")]
         [ResponseType(typeof(RugbyMatchDetails))]
+        [LogTimeFilter]
         public async Task<IHttpActionResult> GetMatchDetails(int id)
         {
             var cacheKey = $"rugby/matchdetails/{id}";
@@ -60,18 +61,11 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             var response = matchDetailsFromCache;
 
             if ((response != null)) return Ok(response);
-
-            var stopwatch = Stopwatch.StartNew();
+            
             var matchDetailsFromService = await _rugbyService.GetMatchDetailsByLegacyMatchId(id, true);
-            stopwatch.Stop();
 
-            _logger.Info("Service: Match Details: " + stopwatch.ElapsedMilliseconds + "ms.");
-
-            stopwatch.Restart();
             response = Mapper.Map<RugbyMatchDetails>(matchDetailsFromService);
-            stopwatch.Stop();
 
-            _logger.Info("Automapper: Match Details: " + stopwatch.ElapsedMilliseconds + "ms.");
 
             if (response != null)
             {
