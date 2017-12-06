@@ -12,5 +12,6 @@
         MotorEntitiesResponse IngestTournamentRaces(string providerSlug);
         MotorEntitiesResponse IngestTournamentSchedule(string providerSlug, int providerSeasonId);
         MotorEntitiesResponse IngestTournamentResults(string providerSlug, int providerSeasonId, int providerRaceId);
+        MotorEntitiesResponse IngestTournamentGrid(string providerSlug, int providerSeasonId, int providerRaceId);
     }
 }

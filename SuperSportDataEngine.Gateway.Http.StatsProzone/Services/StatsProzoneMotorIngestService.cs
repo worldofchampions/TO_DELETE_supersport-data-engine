@@ -107,6 +107,11 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             return raceResultsResponse;
         }
 
+        public MotorEntitiesResponse IngestTournamentGrid(string providerSlug, int providerSeasonId, int providerRaceId)
+        {
+            return IngestTournamentResults(providerSlug, providerSeasonId, providerRaceId);
+        }
+
         public MotorEntitiesResponse IngestTournamentDrivers(string providerSlug)
         {
             var webRequestForDriverIngest = GetWebRequestForDriversIngest(providerSlug);
