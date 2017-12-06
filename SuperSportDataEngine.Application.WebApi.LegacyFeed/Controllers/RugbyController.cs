@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 {
@@ -50,6 +51,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         [HttpGet]
         [Route("matchdetails/{id:int}")]
         [ResponseType(typeof(RugbyMatchDetails))]
+        [LogTimeFilter]
         public async Task<IHttpActionResult> GetMatchDetails(int id)
         {
             var cacheKey = $"rugby/matchdetails/{id}";
@@ -59,10 +61,11 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             var response = matchDetailsFromCache;
 
             if ((response != null)) return Ok(response);
-
+            
             var matchDetailsFromService = await _rugbyService.GetMatchDetailsByLegacyMatchId(id, true);
 
             response = Mapper.Map<RugbyMatchDetails>(matchDetailsFromService);
+
 
             if (response != null)
             {
