@@ -312,8 +312,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             {
                 logs = _rugbyGroupedLogsRepository
                     .Where(t => t.RugbyTournament.IsEnabled && t.RugbyTournamentId == tournament.Id)
-                    .OrderBy(g => g.RugbyLogGroup.Id)
-                    .ThenBy(t => t.LogPosition);
+                    .OrderBy(g => g.RugbyLogGroup.Id).ThenBy(t => t.LogPosition);
 
                 return await Task.FromResult(logs.ToList());
             }
@@ -329,8 +328,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             if (tournament != null && tournament.HasLogs)
             {
-                flatLogs = _rugbyFlatLogsRepository.Where(t => t.RugbyTournament.IsEnabled && t.RugbyTournamentId == tournament.Id && t.RugbySeason.IsCurrent)
-                    .OrderBy(t => t.LogPosition);
+                flatLogs = _rugbyFlatLogsRepository.Where(t => t.RugbyTournament.IsEnabled && t.RugbyTournamentId == tournament.Id && t.RugbySeason.IsCurrent).OrderBy(t => t.LogPosition);
             }
 
             return await Task.FromResult(flatLogs.ToList());
@@ -338,12 +336,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<List<RugbyFixture>> GetCurrentDayFixturesForActiveTournaments()
         {
-            var now = DateTime.UtcNow.Date;
+            var todayFixtures = _rugbyFixturesRepository.All().Where(f => f.StartDateTime.Date == DateTime.Now.Date && f.RugbyTournament.IsEnabled).OrderBy(f => f.StartDateTime);
 
-            var todayFixtures = (await _rugbyFixturesRepository.AllAsync())
-                .Where(f => f.StartDateTime.UtcDateTime.Date == now && f.RugbyTournament.IsEnabled).ToList();
-
-            return todayFixtures.OrderBy(f => f.StartDateTime).ToList();
+            return await Task.FromResult(todayFixtures.ToList());
         }
 
         public async Task<RugbyMatchDetailsEntity> GetMatchDetailsByLegacyMatchId(int legacyMatchId, bool omitDisabledFixtures)
