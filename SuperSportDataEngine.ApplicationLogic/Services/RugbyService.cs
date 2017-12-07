@@ -312,8 +312,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             {
                 logs = _rugbyGroupedLogsRepository
                     .Where(t => t.RugbyTournament.IsEnabled && t.RugbyTournamentId == tournament.Id)
-                    .OrderBy(g => g.RugbyLogGroup.Id)
-                    .ThenBy(t => t.LogPosition);
+                    .OrderBy(g => g.RugbyLogGroup.Id).ThenBy(t => t.LogPosition);
 
                 return await Task.FromResult(logs.ToList());
             }
@@ -329,8 +328,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             if (tournament != null && tournament.HasLogs)
             {
-                flatLogs = _rugbyFlatLogsRepository.Where(t => t.RugbyTournament.IsEnabled && t.RugbyTournamentId == tournament.Id && t.RugbySeason.IsCurrent)
-                    .OrderBy(t => t.LogPosition);
+                flatLogs = _rugbyFlatLogsRepository.Where(t => t.RugbyTournament.IsEnabled && t.RugbyTournamentId == tournament.Id && t.RugbySeason.IsCurrent).OrderBy(t => t.LogPosition);
             }
 
             return await Task.FromResult(flatLogs.ToList());
@@ -338,18 +336,14 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<List<RugbyFixture>> GetCurrentDayFixturesForActiveTournaments()
         {
-            var now = DateTime.UtcNow.Date;
+            var today = DateTime.UtcNow.Date;
+            var todayFixtures = _rugbyFixturesRepository.Where(f => f.StartDateTime == today && f.RugbyTournament.IsEnabled).OrderBy(f => f.StartDateTime);
 
-            var todayFixtures = (await _rugbyFixturesRepository.AllAsync())
-                .Where(f => f.StartDateTime.UtcDateTime.Date == now && f.RugbyTournament.IsEnabled).ToList();
-
-            return todayFixtures.OrderBy(f => f.StartDateTime).ToList();
+            return await Task.FromResult(todayFixtures.ToList());
         }
 
         public async Task<RugbyMatchDetailsEntity> GetMatchDetailsByLegacyMatchId(int legacyMatchId, bool omitDisabledFixtures)
-        { 
-            var stopwatch = Stopwatch.StartNew();
-
+        {
             var fixture = GetRugbyFixtureByLegacyMatchId(legacyMatchId);
 
             if (fixture is null)
@@ -366,7 +360,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             var lineupForFixture = await GetLineupForFixture(fixture.Id);
             var statsForFixture = await GetMatchStatsForFixture(fixture.Id);
             var events = await GetRugbyFixtureEvents(fixture.Id);
-            var scorersForFixture = await GetScorersForFixture(fixture.Id);
+            var scorersForFixture = await GetScorersForFixture(events, fixture.Id);
 
             events.AddRange(await GetCommentaryAsRugbyMatchEvents(fixture.Id));
 
@@ -381,15 +375,13 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             matchDetails.MatchEvents = events.OrderByDescending(e => e.GameTimeInSeconds).ThenByDescending(e => e.TimestampCreated).ToList();
             matchDetails.TeamAScorers = scorersForFixture.Where(s => s.RugbyTeamId == (fixture.TeamA?.Id ?? Guid.Empty)).ToList();
             matchDetails.TeamBScorers = scorersForFixture.Where(s => s.RugbyTeamId == (fixture.TeamB?.Id ?? Guid.Empty)).ToList();
-
-            stopwatch.Stop();
-            _logger.Info("Match Details: " + stopwatch.ElapsedMilliseconds + "ms.");
+            
             return matchDetails;
         }
 
-        private async Task<List<LegacyRugbyScorerEntity>> GetScorersForFixture(Guid fixtureId)
+        private async Task<List<LegacyRugbyScorerEntity>> GetScorersForFixture(IEnumerable<RugbyMatchEvent> events, Guid fixtureId)
         {
-            var teamScoringEvents = await GetScoringEventsForFixture(fixtureId);
+            var teamScoringEvents = await GetScoringEventsForFixture(events, fixtureId);
 
             return teamScoringEvents.Select(scoringEvent => new LegacyRugbyScorerEntity
             {
@@ -407,9 +399,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             .ToList();
         }
 
-        private async Task<List<RugbyMatchEvent>> GetScoringEventsForFixture(Guid fixtureId)
+        private async Task<List<RugbyMatchEvent>> GetScoringEventsForFixture(IEnumerable<RugbyMatchEvent> events, Guid fixtureId)
         {
-            return await Task.FromResult(_rugbyMatchEventsRepository
+            return await Task.FromResult(events
                 .Where(s => s.RugbyFixture.Id == fixtureId &&
                 (s.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.PenaltyTryFivePoints ||
                  s.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.PenaltyTrySevenPoints ||
@@ -482,10 +474,12 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<IEnumerable<RugbyFixture>> GetFixturesNotIngestedYet()
         {
+            var hoursBeforeNow = DateTime.UtcNow.AddHours(-6);
+
             var pastFixturesIdsNotScheduledYet =
                 _schedulerTrackingRugbyFixtureRepository
                     .Where(s => s.SchedulerStateFixtures != SchedulerStateForRugbyFixturePolling.SchedulingCompleted &&
-                                s.StartDateTime < DateTime.UtcNow.AddHours(-6)).Select(s => s.FixtureId).ToList();
+                                s.StartDateTime < hoursBeforeNow).Select(s => s.FixtureId).ToList();
 
             var fixtures = (_rugbyFixturesRepository.Where(f => pastFixturesIdsNotScheduledYet.Contains(f.Id)))
                                 .OrderByDescending(f => f.StartDateTime);
@@ -495,9 +489,10 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<IEnumerable<RugbyFixture>> GetPastDaysFixtures(int numberOfDays)
         {
-            var now = DateTime.UtcNow;
+            var fewDaysAgo = DateTime.UtcNow.Date.Subtract(TimeSpan.FromDays(numberOfDays));
+            var today = DateTime.Today;
 
-            var fixtures = _rugbyFixturesRepository.Where(f => now - f.StartDateTime < TimeSpan.FromDays(numberOfDays));
+            var fixtures = _rugbyFixturesRepository.Where(f => f.StartDateTime < today && f.StartDateTime >= fewDaysAgo);
 
             return await Task.FromResult(fixtures.ToList());
         }
