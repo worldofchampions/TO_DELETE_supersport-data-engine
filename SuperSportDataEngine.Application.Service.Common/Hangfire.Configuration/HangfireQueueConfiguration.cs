@@ -5,5 +5,7 @@
         public static string HighPriority => "high_priority";
 
         public static string NormalPriority => "normal_priority";
+
+        public static string DefaultPriority => "default";
     }
 }
