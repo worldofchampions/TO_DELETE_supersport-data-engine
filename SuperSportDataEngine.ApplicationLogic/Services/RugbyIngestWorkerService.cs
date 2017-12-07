@@ -1131,11 +1131,8 @@
         {
             var fixtureInDb = (await _rugbyFixturesRepository.AllAsync()).FirstOrDefault(f => f.ProviderFixtureId == providerFixtureId);
 
-            while (true)
+            while (!cancellationToken.IsCancellationRequested)
             {
-                if (cancellationToken.IsCancellationRequested)
-                    return;
-
                 if (fixtureInDb == null)
                     return;
 
