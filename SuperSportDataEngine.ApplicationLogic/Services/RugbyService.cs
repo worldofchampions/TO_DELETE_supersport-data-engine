@@ -336,7 +336,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<List<RugbyFixture>> GetCurrentDayFixturesForActiveTournaments()
         {
-            var todayFixtures = _rugbyFixturesRepository.All().Where(f => f.StartDateTime.Date == DateTime.Now.Date && f.RugbyTournament.IsEnabled).OrderBy(f => f.StartDateTime);
+            var today = DateTime.UtcNow.Date;
+            var todayFixtures = _rugbyFixturesRepository.Where(f => f.StartDateTime == today && f.RugbyTournament.IsEnabled).OrderBy(f => f.StartDateTime);
 
             return await Task.FromResult(todayFixtures.ToList());
         }
