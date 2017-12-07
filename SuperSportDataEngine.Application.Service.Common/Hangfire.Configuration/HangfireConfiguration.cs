@@ -88,7 +88,9 @@ namespace SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration
                                     // This will be the highest priority queue.
                                     // In code, no jobs will be scheduled on this queue.
                                     HangfireQueueConfiguration.HighPriority,
-                                    HangfireQueueConfiguration.NormalPriority }
+                                    HangfireQueueConfiguration.NormalPriority,
+                                    HangfireQueueConfiguration.DefaultPriority
+                                }
                         };
                 }
 
