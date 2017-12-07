@@ -105,6 +105,14 @@
     <Compile Include="Boundaries\Repository.EntityFramework.Common\Models\Base\BaseModel.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.Common\Models\Enums\DataProvider.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Enums\RugbyLogType.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Motor\MotorCar.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Motor\MotorDriver.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Motor\MotorDriverStanding.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Motor\MotorLeague.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Motor\MotorRace.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Motor\MotorSeason.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Motor\MotorTeam.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Motor\MotorTeamStanding.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyCommentary.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyEventType.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyEventTypeProviderMapping.cs" />
