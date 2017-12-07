@@ -1,9 +1,13 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motor;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
 
 namespace SuperSportDataEngine.ApplicationLogic.Services
 {
@@ -14,9 +18,17 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         //TODO: Get this from repository
         private readonly List<string> _activeTournamentsSlugsTemp = new List<string> { "f1" };
 
-        public MotorIngestWorkerService(IStatsProzoneMotorIngestService statsProzoneMotorIngestService)
+        //TODO: Get this from UnitOfWwork
+
+        private readonly IBaseEntityFrameworkRepository<MotorDriver> _motorDriverRepository;
+
+
+        public MotorIngestWorkerService(
+            IStatsProzoneMotorIngestService statsProzoneMotorIngestService,
+            IBaseEntityFrameworkRepository<MotorDriver> motorDriverRepository)
         {
             _statsProzoneMotorIngestService = statsProzoneMotorIngestService;
+            _motorDriverRepository = motorDriverRepository;
         }
 
         public async Task IngestDriversForActiveTournaments(CancellationToken cancellationToken)
@@ -128,9 +140,60 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             // TODO
         }
 
-        private static async Task PersistTournamentDriversInRepository(MotorEntitiesResponse tournamentDriversResponse)
+        private async Task PersistTournamentDriversInRepository(MotorEntitiesResponse providerResponse)
         {
-            // TODO
+            if (providerResponse.recordCount <= 0)
+            {
+                return;
+            }
+
+            var apiResult = providerResponse.apiResults.FirstOrDefault();
+            var providerDataIsValid = apiResult?.league.subLeague?.players != null;
+            if (providerDataIsValid)
+            {
+                var driversFromProvider = apiResult.league.subLeague.players;
+
+                foreach (var providerDriver in driversFromProvider)
+                {
+                    var driverInRepo =
+                        _motorDriverRepository.FirstOrDefault(d => d.ProviderDriverId == providerDriver.playerId);
+
+                    if (driverInRepo is null)
+                    {
+                        SaveNewDriverInRepo(providerDriver);
+                    }
+                    else
+                    {
+                        UpdateDriverInRepo(providerDriver, driverInRepo);
+                    }
+                }
+            }
+        }
+
+        private void SaveNewDriverInRepo(Player providerDriver)
+        {
+            var driver = new MotorDriver
+            {
+                FirstName = providerDriver.firstName,
+                LastName = providerDriver.lastName,
+                HeightInCentimeters = providerDriver.height.centimeters,
+                WeightInKilograms = providerDriver.weight.kilograms,
+                ProviderDriverId = providerDriver.playerId,
+                DataProvider = DataProvider.StatsProzone
+            };
+
+            _motorDriverRepository.Add(driver);
+        }
+
+        private void UpdateDriverInRepo(Player providerDriver, MotorDriver driverFromRepository)
+        {
+            driverFromRepository.FirstName = providerDriver.firstName;
+            driverFromRepository.LastName = providerDriver.lastName;
+            driverFromRepository.HeightInCentimeters = providerDriver.height.centimeters;
+            driverFromRepository.WeightInKilograms = providerDriver.weight.kilograms;
+            driverFromRepository.DataProvider = DataProvider.StatsProzone;
+
+            _motorDriverRepository.Update(driverFromRepository);
         }
 
         private static async Task PersistTournamentTeamsInRepository(MotorEntitiesResponse tournamentTeamsResponse)
