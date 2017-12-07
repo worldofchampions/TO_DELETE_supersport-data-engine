@@ -473,10 +473,12 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<IEnumerable<RugbyFixture>> GetFixturesNotIngestedYet()
         {
+            var hoursBeforeNow = DateTime.UtcNow.AddHours(-6);
+
             var pastFixturesIdsNotScheduledYet =
                 _schedulerTrackingRugbyFixtureRepository
                     .Where(s => s.SchedulerStateFixtures != SchedulerStateForRugbyFixturePolling.SchedulingCompleted &&
-                                s.StartDateTime < DateTime.UtcNow.AddHours(-6)).Select(s => s.FixtureId).ToList();
+                                s.StartDateTime < hoursBeforeNow).Select(s => s.FixtureId).ToList();
 
             var fixtures = (_rugbyFixturesRepository.Where(f => pastFixturesIdsNotScheduledYet.Contains(f.Id)))
                                 .OrderByDescending(f => f.StartDateTime);
@@ -486,9 +488,10 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<IEnumerable<RugbyFixture>> GetPastDaysFixtures(int numberOfDays)
         {
-            var now = DateTime.UtcNow;
+            var fewDaysAgo = DateTime.UtcNow.Date.Subtract(TimeSpan.FromDays(numberOfDays));
+            var today = DateTime.Today;
 
-            var fixtures = _rugbyFixturesRepository.Where(f => now - f.StartDateTime < TimeSpan.FromDays(numberOfDays));
+            var fixtures = _rugbyFixturesRepository.Where(f => f.StartDateTime < today && f.StartDateTime >= fewDaysAgo);
 
             return await Task.FromResult(fixtures.ToList());
         }
