@@ -238,8 +238,4 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Microsoft.VisualStudio.SlowCheetah.3.0.61\build\Microsoft.VisualStudio.SlowCheetah.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.VisualStudio.SlowCheetah.3.0.61\build\Microsoft.VisualStudio.SlowCheetah.targets'))" />
   </Target>
-  <Target Name="AfterBuild">
-    <Copy SourceFiles="..\SuperSportDataEngine.Application.Container\bin\$(Configuration)\NLog.config"
-          DestinationFolder="$(TargetDir)" />
-  </Target>
 </Project>
