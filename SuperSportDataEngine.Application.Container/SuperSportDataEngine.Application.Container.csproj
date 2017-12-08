@@ -136,41 +136,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="NLog.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <SubType>Designer</SubType>
-      <TransformOnBuild>true</TransformOnBuild>
-    </Content>
-    <None Include="app.config" />
-    <None Include="NLog.Debug.config">
-      <DependentUpon>NLog.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="NLog.Prod.config">
-      <DependentUpon>NLog.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="NLog.QA.config">
-      <DependentUpon>NLog.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="NLog.Release.config">
-      <DependentUpon>NLog.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="NLog.Staging.config">
-      <DependentUpon>NLog.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="NLog.xsd">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
