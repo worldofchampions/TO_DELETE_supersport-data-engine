@@ -383,19 +383,20 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         {
             var teamScoringEvents = await GetScoringEventsForFixture(events, fixtureId);
 
-            return teamScoringEvents.Select(scoringEvent => new LegacyRugbyScorerEntity
-            {
-                CombinedName = scoringEvent.RugbyPlayer1.FullName,
-                DisplayName = scoringEvent.RugbyPlayer1.FullName,
-                EventId = scoringEvent.RugbyEventType.EventCode,
-                Name = scoringEvent.RugbyPlayer1.FirstName,
-                NickName = null,
-                PersonId = scoringEvent.RugbyPlayer1.LegacyPlayerId,
-                Surname = scoringEvent.RugbyPlayer1.LastName,
-                Time = scoringEvent.GameTimeInMinutes.ToString(),
-                Type = scoringEvent.RugbyEventType.EventName,
-                RugbyTeamId = scoringEvent.RugbyTeamId
-            })
+            return teamScoringEvents.Select(
+                scoringEvent => new LegacyRugbyScorerEntity
+                {
+                    CombinedName = scoringEvent.RugbyPlayer1.FullName,
+                    DisplayName = scoringEvent.RugbyPlayer1.FullName,
+                    EventId = scoringEvent.RugbyEventType.EventCode,
+                    Name = scoringEvent.RugbyPlayer1.FirstName,
+                    NickName = null,
+                    PersonId = scoringEvent.RugbyPlayer1.LegacyPlayerId,
+                    Surname = scoringEvent.RugbyPlayer1.LastName,
+                    Time = scoringEvent.GameTimeInMinutes.ToString(),
+                    Type = scoringEvent.RugbyEventType.EventName,
+                    RugbyTeamId = scoringEvent.RugbyTeamId
+                })
             .ToList();
         }
 
@@ -403,6 +404,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         {
             return await Task.FromResult(events
                 .Where(s => s.RugbyFixture.Id == fixtureId &&
+                s.RugbyPlayer1 != null &&
                 (s.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.PenaltyTryFivePoints ||
                  s.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.PenaltyTrySevenPoints ||
                  s.RugbyEventType.EventCode == LegacyRugbyScoringEventsConstants.DropGoalFromMark ||
