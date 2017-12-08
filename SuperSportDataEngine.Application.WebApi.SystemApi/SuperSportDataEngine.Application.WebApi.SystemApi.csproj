@@ -393,8 +393,4 @@
   </Target>
   <Target Name="AfterBuild">
   </Target> -->
-  <Target Name="AfterBuild">
-    <Copy SourceFiles="..\SuperSportDataEngine.Application.Container\bin\$(Configuration)\NLog.config"
-          DestinationFolder="$(TargetDir)" />
-  </Target>
 </Project>
