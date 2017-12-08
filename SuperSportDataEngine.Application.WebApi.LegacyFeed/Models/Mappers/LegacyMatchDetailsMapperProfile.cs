@@ -86,7 +86,8 @@
                 .ForMember(dest => dest.MatchID, exp => exp.MapFrom(src => src.RugbyFixture.LegacyFixtureId))
 
                 .ForMember(dest => dest.MatchTime, exp => exp.MapFrom(
-                    src => src.RugbyFixture.StartDateTime.UtcDateTime.ToLocalTime().ToString("s")))
+                    src => (src.RugbyFixture.StartDateTime.UtcDateTime.ToLocalTime().AddSeconds(
+                        src.RugbyFixture.GameTimeInSeconds)).ToString("s")))
 
                 .ForMember(dest => dest.Officials, src => src.UseValue(LegacyFeedConstants.EmptyMatchOfficialsList))
 

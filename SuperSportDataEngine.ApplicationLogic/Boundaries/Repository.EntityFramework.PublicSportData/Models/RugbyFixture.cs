@@ -60,5 +60,7 @@
         /// - TeamBScore 
         /// </summary> 
         public bool CmsOverrideModeIsActive { get; set; }
+
+        public int GameTimeInSeconds { get; set; }
     }
 }
