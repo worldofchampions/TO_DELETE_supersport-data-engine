@@ -81,7 +81,9 @@
 
         private async void UpdateManagerJobs(object sender, ElapsedEventArgs e)
         {
-            _logger.Debug("Do work for ManagerJob's.");
+            var methodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
+
+            await _logger.Debug(methodName, "Do work for ManagerJob's.");
 
             ConfigureDepenencies();
             try
@@ -92,7 +94,7 @@
             }
             catch (Exception exception)
             {
-                _logger.Info(exception.StackTrace);
+                await _logger.Info(methodName, exception.StackTrace);
             }
 
             _timer.Start();

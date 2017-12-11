@@ -60,7 +60,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
                     }
                     catch (Exception e)
                     {
-                        _logger.Info(e.StackTrace);
+                        _logger.Info("UpdateRecurringJobDefinitions.ThrowsException", e.StackTrace);
                     }
                     
 

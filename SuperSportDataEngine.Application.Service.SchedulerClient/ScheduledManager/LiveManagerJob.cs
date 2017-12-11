@@ -67,7 +67,6 @@
                 if (fixtureInDb != null &&
                     fixtureInDb.SchedulerStateFixtures != SchedulerStateForRugbyFixturePolling.SchedulingNotYetStarted)
                 {
-                    _logger.Info("Setting SchedulerStateFixtures for " + matchName + " to SchedulingNotYetStarted.");
                     fixtureInDb.SchedulerStateFixtures = SchedulerStateForRugbyFixturePolling.SchedulingNotYetStarted;
                     _schedulerTrackingRugbyFixtureRepository.Update(fixtureInDb);
                 }
@@ -97,7 +96,6 @@
                 if (fixtureInDb != null && 
                     fixtureInDb.SchedulerStateFixtures != SchedulerStateForRugbyFixturePolling.SchedulingCompleted)
                 {
-                    _logger.Info("Setting SchedulerStateFixtures for " + matchName + " to SchedulingCompleted.");
                     fixtureInDb.SchedulerStateFixtures = SchedulerStateForRugbyFixturePolling.SchedulingCompleted;
                     _schedulerTrackingRugbyFixtureRepository.Update(fixtureInDb);
                 }
@@ -116,8 +114,6 @@
                 var liveFixtures =
                     (await _rugbyService.GetLiveFixturesForCurrentTournament(CancellationToken.None, tournament.Id)).ToList();
 
-                _logger.Info("There are " + liveFixtures.Count() + " live fixtures for tournament " + tournament.Name);
-
                 foreach (var fixture in liveFixtures)
                 {
                     if (fixture.TeamA == null) continue;
@@ -127,7 +123,6 @@
 
                     var jobId = ConfigurationManager.AppSettings["LiveManagerJob_LiveMatch_JobIdPrefix"] + matchName;
                     var jobCronExpression = ConfigurationManager.AppSettings["LiveManagerJob_LiveMatch_JobCronExpression"];
-                    _logger.Info(jobId + " " + jobCronExpression);
 
                     _recurringJobManager.AddOrUpdate(
                         jobId,

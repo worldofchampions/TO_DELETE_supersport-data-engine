@@ -2,12 +2,18 @@
 using NLog.Config;
 using SuperSportDataEngine.Common.Logging;
 using System;
+using System.Threading.Tasks;
+using System.Web.Caching;
+using System.Web.Hosting;
+using NLog.Internal;
+using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
 
 namespace SuperSportDataEngine.Logging.NLog.Logging
 {
     public class LoggingService : Logger, ILoggingService
     {
         private const string _loggerName = "NLogLogger";
+        private static int cacheTtlInMinutes = 15;
 
         public static ILoggingService GetLoggingService()
         {
@@ -16,79 +22,150 @@ namespace SuperSportDataEngine.Logging.NLog.Logging
             ConfigurationItemFactory.Default.LayoutRenderers
                 .RegisterDefinition("web_variables", typeof(WebVariablesRenderer));
             ILoggingService logger = (ILoggingService)LogManager.GetLogger(_loggerName, typeof(LoggingService));
+
+            cacheTtlInMinutes = int.Parse(new ConfigurationManager().AppSettings["loggingTtlInMinutes"]);
+
             return logger;
         }
 
-        public void Debug(Exception exception, string format, params object[] args)
+        public async Task Debug(string key, string format, params object[] args)
+        {
+            if (!IsDebugEnabled) return;
+            var logEvent = GetLogEvent(_loggerName, LogLevel.Debug, null, format, args);
+            await LogWithCache(key, logEvent);
+        }
+
+        public async Task Debug(string key, string format, Exception exception, params object[] args)
         {
             if (!IsDebugEnabled) return;
             var logEvent = GetLogEvent(_loggerName, LogLevel.Debug, exception, format, args);
-            Log(typeof(LoggingService), logEvent);
+            await LogWithCache(key, logEvent);
         }
 
-        public void Error(Exception exception, string format, params object[] args)
+        public async Task Debug(string key, Exception exception, string format, params object[] args)
+        {
+            if (!IsDebugEnabled) return;
+            var logEvent = GetLogEvent(_loggerName, LogLevel.Debug, exception, format, args);
+            await LogWithCache(key, logEvent);
+        }
+
+        private async Task LogWithCache(string key, LogEventInfo logEvent)
+        {
+            if (Cache == null)
+            {
+                Log(typeof(LoggingService), logEvent);
+            }
+            else
+            {
+                var logEventFromCache = await Cache.GetAsync<LogEventInfo>(key);
+                if (logEventFromCache == null)
+                {
+                    Cache.Add(key, logEvent, TimeSpan.FromMinutes(cacheTtlInMinutes));
+                    Log(typeof(LoggingService), logEvent);
+                }
+            }
+        }
+
+        public async Task Error(string key, string format, params object[] args)
+        {
+            if (!IsDebugEnabled) return;
+            var logEvent = GetLogEvent(_loggerName, LogLevel.Error, null, format, args);
+            await LogWithCache(key, logEvent);
+        }
+
+        public async Task Error(string key, Exception exception, string format, params object[] args)
         {
             if (!IsErrorEnabled) return;
             var logEvent = GetLogEvent(_loggerName, LogLevel.Error, exception, format, args);
-            Log(typeof(LoggingService), logEvent);
+            await LogWithCache(key, logEvent);
         }
 
-        public void Fatal(Exception exception, string format, params object[] args)
+        public async Task Fatal(string key, string format, params object[] args)
+        {
+            if (!IsDebugEnabled) return;
+            var logEvent = GetLogEvent(_loggerName, LogLevel.Fatal, null, format, args);
+            await LogWithCache(key, logEvent);
+        }
+
+        public async Task Fatal(string key, Exception exception, string format, params object[] args)
         {
             if (!IsFatalEnabled) return;
             var logEvent = GetLogEvent(_loggerName, LogLevel.Fatal, exception, format, args);
-            Log(typeof(LoggingService), logEvent);
+            await LogWithCache(key, logEvent);
         }
 
-        public void Info(Exception exception, string format, params object[] args)
+        public async Task Info(string key, string format, params object[] args)
+        {
+            if (!IsDebugEnabled) return;
+            var logEvent = GetLogEvent(_loggerName, LogLevel.Info, null, format, args);
+            await LogWithCache(key, logEvent);
+        }
+
+        public async Task Info(string key, Exception exception, string format, params object[] args)
         {
             if (!IsInfoEnabled) return;
             var logEvent = GetLogEvent(_loggerName, LogLevel.Info, exception, format, args);
-            Log(typeof(LoggingService), logEvent);
+            await LogWithCache(key, logEvent);
         }
 
-        public void Trace(Exception exception, string format, params object[] args)
+        public async Task Trace(string key, string format, params object[] args)
+        {
+            if (!IsDebugEnabled) return;
+            var logEvent = GetLogEvent(_loggerName, LogLevel.Trace, null, format, args);
+            await LogWithCache(key, logEvent);
+        }
+
+        public async Task Trace(string key, Exception exception, string format, params object[] args)
         {
             if (!IsTraceEnabled) return;
             var logEvent = GetLogEvent(_loggerName, LogLevel.Trace, exception, format, args);
-            Log(typeof(LoggingService), logEvent);
+            await LogWithCache(key, logEvent);
         }
 
-        public void Warn(Exception exception, string format, params object[] args)
+        public async Task Warn(string key, string format, params object[] args)
+        {
+            if (!IsDebugEnabled) return;
+            var logEvent = GetLogEvent(_loggerName, LogLevel.Warn, null, format, args);
+            await LogWithCache(key, logEvent);
+        }
+
+        public async Task Warn(string key, Exception exception, string format, params object[] args)
         {
             if (!IsWarnEnabled) return;
             var logEvent = GetLogEvent(_loggerName, LogLevel.Warn, exception, format, args);
-            Log(typeof(LoggingService), logEvent);
+            await LogWithCache(key, logEvent);
         }
 
-        public void Debug(Exception exception)
+        public ICache Cache { get; set; }
+
+        public async Task Debug(string key, Exception exception)
         {
-            Debug(exception, string.Empty);
+            await Debug(key, exception, string.Empty);
         }
 
-        public void Error(Exception exception)
+        public async Task Error(string key, Exception exception)
         {
-            Error(exception, string.Empty);
+            await Error(key, exception, string.Empty);
         }
 
-        public void Fatal(Exception exception)
+        public async Task Fatal(string key, Exception exception)
         {
-            Fatal(exception, string.Empty);
+            await Fatal(key, exception, string.Empty);
         }
 
-        public void Info(Exception exception)
+        public async Task Info(string key, Exception exception)
         {
-            Info(exception, string.Empty);
+            await Info(key, exception, string.Empty);
         }
 
-        public void Trace(Exception exception)
+        public async Task Trace(string key, Exception exception)
         {
-            Trace(exception, string.Empty);
+            await Trace(key, exception, string.Empty);
         }
 
-        public void Warn(Exception exception)
+        public async Task Warn(string key, Exception exception)
         {
-            Warn(exception, string.Empty);
+            await Warn(key, exception, string.Empty);
         }
 
         private LogEventInfo GetLogEvent(string loggerName, LogLevel level, Exception exception, string format, object[] args)
