@@ -128,7 +128,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
             }
             catch (Exception exception)
             {
-                _loggingService.Fatal(exception.Message + exception.StackTrace);
+                _loggingService.Fatal("GetAuthModelFromCache", exception.Message + exception.StackTrace);
 
                 return null;
             }
@@ -142,7 +142,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
             }
             catch (Exception exception)
             {
-                _loggingService.Fatal(exception.Message + exception.StackTrace);
+                _loggingService.Fatal("PersistRequestToCache", exception.Message + exception.StackTrace);
             }
         }
 
