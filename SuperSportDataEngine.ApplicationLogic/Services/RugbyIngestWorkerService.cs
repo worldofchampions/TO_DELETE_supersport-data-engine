@@ -120,8 +120,6 @@
             var playersAlreadyInDb = await _rugbyPlayerRepository.AllAsync();
             var players = playersAlreadyInDb as IList<RugbyPlayer> ?? playersAlreadyInDb.ToList();
 
-            _logger.Debug("Got " + entitiesResponse.Entities.players.Count + " players from the Provider.");
-
             foreach (var player in entitiesResponse.Entities.players)
             {
                 if (cancellationToken.IsCancellationRequested)
@@ -192,7 +190,6 @@
 
             var teamsAlreadyInDb = (await _rugbyTeamRepository.AllAsync()).ToList();
 
-            _logger.Debug("Got " + entitiesResponse.Entities.teams.Count + " teams from the Provider.");
             foreach (var team in entitiesResponse.Entities.teams)
             {
                 if (cancellationToken.IsCancellationRequested)
@@ -231,7 +228,6 @@
 
             var venuesAlreadyInDb = (await _rugbyVenueRepository.AllAsync()).ToList();
 
-            _logger.Debug("Got " + entitiesResponse.Entities.venues.Count + " venues from the Provider.");
             foreach (var venue in entitiesResponse.Entities.venues)
             {
                 if (cancellationToken.IsCancellationRequested)
@@ -1256,7 +1252,6 @@
             var count = eventsToRemove.Count;
             if (count > 0)
             {
-                _logger.Info("Going to remove " + count + " events from the DB. There are not in the provider response.");
                 _rugbyMatchEventsRepository.DeleteRange(eventsToRemove);
             }
 
@@ -1681,9 +1676,6 @@
                 }
             }
 
-            _logger.Debug("Going to remove " + commentariesThatShouldBeRemovedFromDb.Count + " commentary items from the DB for fixture " + 
-               fixture.ProviderFixtureId + ". They are not in the provider response.");
-
             if(commentariesThatShouldBeRemovedFromDb.Count > 0)
             {
                 _rugbyCommentaryRepository.DeleteRange(commentariesThatShouldBeRemovedFromDb);
@@ -1735,7 +1727,6 @@
                 }
                 catch (Exception e)
                 {
-                    _logger.Info("Syncronisation issues when ingesting lineups." + e.StackTrace);
                 }
             }
         }
@@ -1835,7 +1826,6 @@
 
             if (lineupsToRemoveFromDb.Count > 0)
             {
-                _logger.Info("Going to remove " + lineupsToRemoveFromDb.Count + " lineup entries from the db. They have been changed and new entries have been added.");
                 _rugbyPlayerLineupsRepository.DeleteRange(lineupsToRemoveFromDb);
             }
 
@@ -1959,7 +1949,6 @@
                 _mongoDbRepository.Save(eventsFlowResponse);
 
                 s.Stop();
-                _logger.Info("Completed ingest of live data for fixture " + fixture.ProviderFixtureId + ". Taken " + s.ElapsedMilliseconds + "ms.");
             }
         }
 

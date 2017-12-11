@@ -44,7 +44,7 @@
             }
             catch (Exception e)
             {
-                _logger.Debug(e.StackTrace);
+                _logger.Debug(System.Reflection.MethodBase.GetCurrentMethod().Name, e.StackTrace);
                 return null;
             }
         }
@@ -93,7 +93,7 @@
             }
             catch (Exception e)
             {
-                _logger.Debug(e.StackTrace);   
+                _logger.Debug(System.Reflection.MethodBase.GetCurrentMethod().Name, e.StackTrace);   
                 return null;
             }
         }
@@ -147,7 +147,7 @@
             }
             catch (Exception e)
             {
-                _logger.Debug(e.StackTrace);
+                _logger.Debug(System.Reflection.MethodBase.GetCurrentMethod().Name, e.StackTrace);
                 return null;
             }
         }
@@ -196,7 +196,7 @@
             }
             catch (Exception e)
             {
-                _logger.Debug(e.StackTrace);
+                _logger.Debug(System.Reflection.MethodBase.GetCurrentMethod().Name, e.StackTrace);
                 return null;
             }
         }
@@ -234,7 +234,7 @@
             }
             catch (Exception e)
             {
-                _logger.Debug(e.StackTrace);
+                _logger.Debug(System.Reflection.MethodBase.GetCurrentMethod().Name, e.StackTrace);
                 return null;
             }
         }
@@ -311,7 +311,7 @@
             }
             catch (Exception e)
             {
-                _logger.Debug(e.StackTrace);
+                await _logger.Debug(System.Reflection.MethodBase.GetCurrentMethod().Name, e.StackTrace);
                 return null;
             }
         }
@@ -362,7 +362,7 @@
             }
             catch (Exception e)
             {
-                _logger.Debug(e.StackTrace);
+                await _logger.Debug(System.Reflection.MethodBase.GetCurrentMethod().Name, e.StackTrace);
                 return null;
             }
         }
@@ -426,7 +426,8 @@
 
             if (seconds > _maximumSecondsForRequest)
             {
-                _logger.Error("HTTP request taking too long. " + request.RequestUri + ". Taking " + seconds + " seconds.");
+                _logger.Error("HTTPRequestTooLong." + request.RequestUri, 
+                    "HTTP request taking too long. " + request.RequestUri + ". Taking " + seconds + " seconds.");
             }
         }
     }

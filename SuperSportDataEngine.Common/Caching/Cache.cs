@@ -2,22 +2,15 @@
 using StackExchange.Redis;
 using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
-namespace SuperSportDataEngine.Application.WebApi.Common.Caching
+namespace SuperSportDataEngine.Common.Caching
 {
     public class Cache : ICache
     {
         private readonly ConnectionMultiplexer _redisConnection;
 
-        private IDatabase Database
-        {
-            get
-            {
-                return _redisConnection.GetDatabase();
-            }
-        }
+        private IDatabase Database => _redisConnection.GetDatabase();
 
         public Cache(ConnectionMultiplexer redisConnection)
         {

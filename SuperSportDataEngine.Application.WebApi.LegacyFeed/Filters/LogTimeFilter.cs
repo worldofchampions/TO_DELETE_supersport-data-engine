@@ -28,8 +28,9 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters
         public override void OnActionExecuted(HttpActionExecutedContext actionExecutedContext)
         {
             _stopwatch.Stop();
+            var actionName = actionExecutedContext.ActionContext.ActionDescriptor.ActionName;
             var loggerService = actionExecutedContext.Request.GetDependencyScope().GetService(typeof(ILoggingService)) as ILoggingService;
-            loggerService?.Info(actionExecutedContext.ActionContext.ActionDescriptor.ActionName + ": Took " + _stopwatch.ElapsedMilliseconds + "ms.");
+            loggerService?.Info("ElapsedTime." + actionName, actionName + ": Took " + _stopwatch.ElapsedMilliseconds + "ms.");
         }
     }
 }
