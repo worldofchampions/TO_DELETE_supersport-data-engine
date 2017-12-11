@@ -85,7 +85,6 @@
 
                     if (season != null)
                     {
-                        _logger.Info("Setting SchedulerStateForManagerJobPolling for season " + seasonId + " of tourrnament " + tournament.Name + " to Running.");
                         season.SchedulerStateForManagerJobPolling = SchedulerStateForManagerJobPolling.Running;
                         _schedulerTrackingRugbySeasonRepository.Update(season);
                     }

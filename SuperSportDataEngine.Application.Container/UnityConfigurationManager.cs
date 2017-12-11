@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.Application.Container
+﻿using SuperSportDataEngine.Common.Caching;
+
+namespace SuperSportDataEngine.Application.Container
 {
     using Hangfire;
     using Hangfire.SqlServer;
@@ -6,7 +8,6 @@
     using MongoDB.Driver;
     using StackExchange.Redis;
     using SuperSportDataEngine.Application.Container.Enums;
-    using SuperSportDataEngine.Application.WebApi.Common.Caching;
     using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
@@ -73,17 +74,19 @@
 
             try
             {
-                if (applicationScope == ApplicationScope.WebApiLegacyFeed || applicationScope == ApplicationScope.WebApiPublicApi)
+                //if (applicationScope == ApplicationScope.WebApiLegacyFeed || applicationScope == ApplicationScope.WebApiPublicApi)
                 {
                     container.RegisterType<ICache, Cache>(new ContainerControlledLifetimeManager(),
                         new InjectionFactory((x) => new Cache(ConnectionMultiplexer.Connect(WebConfigurationManager.ConnectionStrings["Redis"].ConnectionString))));
+
+                    logger.Cache = container.Resolve<ICache>();
                 }
             }
             catch (System.Exception exception)
             {
                 container.RegisterType<ICache, Cache>(new ContainerControlledLifetimeManager(),new InjectionFactory((x) => null));
 
-                logger.Error(exception.StackTrace);
+                logger.Error("NoCacheInDIContainer", exception.StackTrace);
             }
         }
 
