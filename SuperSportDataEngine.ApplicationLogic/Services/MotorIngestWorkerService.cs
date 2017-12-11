@@ -17,6 +17,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         //TODO: Get this from UnitOfWwork
         private readonly IBaseEntityFrameworkRepository<MotorDriver> _motorDriverRepository;
         private readonly IBaseEntityFrameworkRepository<MotorLeague> _motorLeaguesRepository;
+        private readonly IBaseEntityFrameworkRepository<MotorRace> _motorRaceRepository;
+
 
         public MotorIngestWorkerService(
             IStatsProzoneMotorIngestService statsProzoneMotorIngestService,
@@ -100,7 +102,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 {
                     if (league.ProviderSlug == null) continue;
                     var races = _statsProzoneMotorIngestService.IngestTournamentRaces(league.ProviderSlug);
-                    await PersistRacesInRepository(races, cancellationToken);
+                    await PersistRacesInRepository(races, league, cancellationToken);
                 }
             }
         }
@@ -172,6 +174,33 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             }
         }
 
+        private async Task PersistRacesInRepository(MotorEntitiesResponse providerResponse, MotorLeague league, CancellationToken cancellationToken)
+        {
+            var responseHasNoData = providerResponse.recordCount <= 0;
+            if (responseHasNoData) return;
+
+            var apiResult = providerResponse.apiResults.FirstOrDefault();
+            var providerDataIsValid = apiResult?.league.races != null;
+            if (providerDataIsValid)
+            {
+                var racesFromProvider = apiResult.league.races;
+                foreach (var providerRace in racesFromProvider)
+                {
+                    var raceInRepo = _motorRaceRepository.FirstOrDefault(r => r.LegacyRaceId == providerRace.raceId);
+                    if (raceInRepo is null)
+                    {
+                        SaveNewRaceInRepo(providerRace, league);
+                    }
+                    else
+                    {
+                        UpdateRaceInRepo(providerRace, raceInRepo);
+                    }
+                }
+
+                await _motorRaceRepository.SaveAsync();
+            }
+        }
+
         private void SaveNewDriverInRepo(Player providerDriver)
         {
             var driver = new MotorDriver
@@ -187,15 +216,34 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             _motorDriverRepository.Add(driver);
         }
 
-        private void UpdateDriverInRepo(Player providerDriver, MotorDriver driverFromRepository)
+        private void UpdateDriverInRepo(Player providerDriver, MotorDriver driverInRepo)
         {
-            driverFromRepository.FirstName = providerDriver.firstName;
-            driverFromRepository.LastName = providerDriver.lastName;
-            driverFromRepository.HeightInCentimeters = providerDriver.height.centimeters;
-            driverFromRepository.WeightInKilograms = providerDriver.weight.kilograms;
-            driverFromRepository.DataProvider = DataProvider.StatsProzone;
+            driverInRepo.FirstName = providerDriver.firstName;
+            driverInRepo.LastName = providerDriver.lastName;
+            driverInRepo.HeightInCentimeters = providerDriver.height.centimeters;
+            driverInRepo.WeightInKilograms = providerDriver.weight.kilograms;
+            driverInRepo.DataProvider = DataProvider.StatsProzone;
 
-            _motorDriverRepository.Update(driverFromRepository);
+            _motorDriverRepository.Update(driverInRepo);
+        }
+
+        private static void UpdateRaceInRepo(Race providerRace, MotorRace raceInRepo)
+        {
+            raceInRepo.Name = providerRace.name;
+        }
+
+        private void SaveNewRaceInRepo(Race motorRace, MotorLeague motorLeague)
+        {
+            var newRace = new MotorRace
+            {
+                ProviderRaceId = motorRace.raceId,
+                Name = motorRace.name,
+                DataProvider = DataProvider.StatsProzone,
+                MotorLeague = motorLeague,
+                MotorLeagueId = motorLeague.Id
+            };
+
+            _motorRaceRepository.Add(newRace);
         }
 
         private static async Task PersistTournamentTeamsInRepository(MotorEntitiesResponse tournamentTeamsResponse)
@@ -203,7 +251,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             // TODO
         }
 
-        private static async Task PersistDriverStandingsInRepository(MotorEntitiesResponse driverStandings,
+        private async Task PersistDriverStandingsInRepository(MotorEntitiesResponse providerResponse,
             CancellationToken cancellationToken)
         {
             //TODO
@@ -217,11 +265,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         private static async Task PersistTournamentsInRepository(MotorEntitiesResponse tournaments,
             CancellationToken cancellationToken)
-        {
-            //TODO
-        }
-
-        private async Task PersistRacesInRepository(MotorEntitiesResponse races, CancellationToken cancellationToken)
         {
             //TODO
         }
