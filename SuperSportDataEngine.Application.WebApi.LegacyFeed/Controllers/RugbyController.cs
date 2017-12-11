@@ -363,7 +363,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             {
                 var loggerService = ActionContext.Request.GetDependencyScope().GetService(typeof(ILoggingService)) as ILoggingService;
 
-                loggerService?.Error(cacheKey, "key = " + cacheKey + " " + exception.Message + exception.StackTrace);
+                loggerService?.Error("PersistToCache." + cacheKey, "key = " + cacheKey + " " + exception.Message + exception.StackTrace);
             }
         }
 
@@ -382,7 +382,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             {
                 var loggerService = ActionContext.Request.GetDependencyScope().GetService(typeof(ILoggingService)) as ILoggingService;
 
-                loggerService?.Error(key, "key = " + key + " " + exception.Message + exception.StackTrace);
+                loggerService?.Error("GetFromCacheAsync." + key, "key = " + key + " " + exception.Message + exception.StackTrace);
 
                 return null;
             }
