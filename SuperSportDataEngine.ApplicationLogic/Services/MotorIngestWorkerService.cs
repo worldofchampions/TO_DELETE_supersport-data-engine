@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
@@ -169,6 +167,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                         UpdateDriverInRepo(providerDriver, driverInRepo);
                     }
                 }
+
+                await _motorDriverRepository.SaveAsync();
             }
         }
 
