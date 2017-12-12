@@ -96,7 +96,15 @@ namespace SuperSportDataEngine.Common.Caching
             {
                 var transaction = Database.CreateTransaction();
                 command(transaction);
-                transaction.Execute();
+
+                try
+                {
+                    transaction.Execute();
+                }
+                catch (Exception)
+                {
+                    // ignored 
+                }
             }
         }
     }
