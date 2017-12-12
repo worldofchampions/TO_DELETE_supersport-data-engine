@@ -9,6 +9,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsPro
         public string name { get; set; }
         public League league { get; set; }
         public List<UriPath> uriPaths { get; set; }
+        public List<League> leagues { get; set; }
     }
 
     public class UriPath
