@@ -356,14 +356,16 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 
         private void PersistToCache<T>(string cacheKey, T cacheData) where T : class
         {
+            var loggerService = ActionContext.Request.GetDependencyScope().GetService(typeof(ILoggingService)) as ILoggingService;
+
             try
             {
+                loggerService?.Debug("AddingtoCache.CacheData." + cacheKey, "cacheData = " + JsonConvert.SerializeObject(cacheData));
                 _cache?.Add(cacheKey, cacheData);
+                loggerService?.Debug("AddedtoCache.CacheData." + cacheKey, "cacheData = " + JsonConvert.SerializeObject(cacheData));
             }
             catch (Exception exception)
             {
-                var loggerService = ActionContext.Request.GetDependencyScope().GetService(typeof(ILoggingService)) as ILoggingService;
-
                 loggerService?.Error("PersistToCache." + cacheKey, "key = " + cacheKey + " " + exception.Message + exception.StackTrace);
                 loggerService?.Debug("PersistToCache.CacheData." + cacheKey, "cacheData = " + JsonConvert.SerializeObject(cacheData));
             }
