@@ -78,16 +78,14 @@ namespace SuperSportDataEngine.Application.Container
                 {
                     container.RegisterType<ICache, Cache>(new ContainerControlledLifetimeManager(),
                         new InjectionFactory((x) => new Cache(ConnectionMultiplexer.Connect(WebConfigurationManager.ConnectionStrings["Redis"].ConnectionString))));
-
-                    logger.Cache = container.Resolve<ICache>();
                 }
             }
-            catch (System.Exception exception)
+            catch (System.Exception)
             {
                 container.RegisterType<ICache, Cache>(new ContainerControlledLifetimeManager(),new InjectionFactory((x) => null));
-
-                logger.Error("NoCacheInDIContainer", exception.StackTrace);
             }
+
+            logger.Cache = container.Resolve<ICache>();
         }
 
         private static void ApplyRegistrationsForGatewayHttpStatsProzone(IUnityContainer container, ApplicationScope applicationScope)
