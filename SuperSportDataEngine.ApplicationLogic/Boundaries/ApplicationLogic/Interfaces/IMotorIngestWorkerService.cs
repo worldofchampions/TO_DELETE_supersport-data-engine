@@ -2,7 +2,7 @@
 {
     using System.Threading;
     using System.Threading.Tasks;
-
+    using Gateway.Http.StatsProzone.Models.RequestModels;
     public interface IMotorIngestWorkerService
     {
         Task IngestDriversForActiveTournaments(CancellationToken cancellationToken);
@@ -12,7 +12,7 @@
         Task IngestTournaments(CancellationToken cancellationToken);
         Task IngestRacesForActiveTournaments(CancellationToken cancellationToken);
         Task IngestSchedulesForActiveTournaments(CancellationToken cancellationToken);
-        Task IngestTournamentResults(string providerSlug, int providerSeasonId, int providerRaceId, CancellationToken cancellationToken);
-        Task IngestTournamentGrid(string providerSlug, int providerSeasonId, int providerRaceId, CancellationToken cancellationToken);
+        Task IngestTournamentResults(MotorResultRequestEntity motorResultRequestEntity, CancellationToken cancellationToken);
+        Task IngestTournamentGrid(MotorResultRequestEntity motorResultRequestEntity, CancellationToken cancellationToken);
     }
 }

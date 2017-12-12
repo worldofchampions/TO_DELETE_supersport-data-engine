@@ -1,7 +1,7 @@
 ﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces
 {
     using Models.Motor;
-
+    using Models.RequestModels;
     public interface IStatsProzoneMotorIngestService
     {
         MotorEntitiesResponse IngestTournamentDrivers(string providerSlug);
@@ -11,7 +11,7 @@
         MotorEntitiesResponse IngestTournaments();
         MotorEntitiesResponse IngestTournamentRaces(string providerSlug);
         MotorEntitiesResponse IngestTournamentSchedule(string providerSlug, int providerSeasonId);
-        MotorEntitiesResponse IngestTournamentResults(string providerSlug, int providerSeasonId, int providerRaceId);
-        MotorEntitiesResponse IngestTournamentGrid(string providerSlug, int providerSeasonId, int providerRaceId);
+        MotorEntitiesResponse IngestTournamentResults(MotorResultRequestEntity motorResultRequestEntity);
+        MotorEntitiesResponse IngestTournamentGrid(MotorResultRequestEntity motorResultRequestEntity);
     }
 }

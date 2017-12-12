@@ -8,6 +8,7 @@ using System.Text;
 using Newtonsoft.Json;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motor;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RequestModels;
 
 namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 {
@@ -86,9 +87,9 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             return tournamentSchedule;
         }
 
-        public MotorEntitiesResponse IngestTournamentResults(string providerSlug, int providerSeasonId, int providerRaceId)
+        public MotorEntitiesResponse IngestTournamentResults(MotorResultRequestEntity motorResultRequestEntity)
         {
-            var raceResultsRequest = GetWebRequestForRaceResultsIngest(providerSlug, providerSeasonId, providerRaceId);
+            var raceResultsRequest = GetWebRequestForRaceResultsIngest(motorResultRequestEntity.ProviderSlug, motorResultRequestEntity.ProviderSeasonId, motorResultRequestEntity.ProviderRaceId);
 
             MotorEntitiesResponse raceResultsResponse;
 
@@ -107,9 +108,9 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             return raceResultsResponse;
         }
 
-        public MotorEntitiesResponse IngestTournamentGrid(string providerSlug, int providerSeasonId, int providerRaceId)
+        public MotorEntitiesResponse IngestTournamentGrid(MotorResultRequestEntity motorResultRequestEntity)
         {
-            return IngestTournamentResults(providerSlug, providerSeasonId, providerRaceId);
+            return IngestTournamentResults(motorResultRequestEntity);
         }
 
         public MotorEntitiesResponse IngestTournamentDrivers(string providerSlug)

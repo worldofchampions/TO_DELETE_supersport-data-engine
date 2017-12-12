@@ -1,9 +1,11 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motor;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RequestModels;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
@@ -118,45 +120,33 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 foreach (var league in motorLeagues)
                 {
                     if (league.ProviderSlug == null) continue;
-                    var schedule = _statsProzoneMotorIngestService.IngestTournamentSchedule(league.ProviderSlug, league.ProviderLeagueId);
+                    var schedule = 
+                        _statsProzoneMotorIngestService.IngestTournamentSchedule(league.ProviderSlug, league.ProviderLeagueId);
                     await PersistScheduleInRepository(schedule, cancellationToken);
                 }
             }
         }
-
-        public async Task IngestTournamentResults(string providerSlug, int providerSeasonId, int providerRaceId,
+        
+        public async Task IngestTournamentResults(MotorResultRequestEntity resultRequestEntity,
             CancellationToken cancellationToken)
         {
-            var raceResults = _statsProzoneMotorIngestService.IngestTournamentResults(providerSlug, providerSeasonId, providerRaceId);
+            var raceResults = _statsProzoneMotorIngestService.IngestTournamentResults(resultRequestEntity);
 
             await PersistResultsInRepository(raceResults, cancellationToken);
         }
 
-        public async Task IngestTournamentGrid(string providerSlug, int providerSeasonId, int providerRaceId,
-            CancellationToken cancellationToken)
+        public async Task IngestTournamentGrid(MotorResultRequestEntity motorResultRequestEntity, CancellationToken cancellationToken)
         {
-            var tournamentGrid = _statsProzoneMotorIngestService.IngestTournamentGrid(
-                providerSlug, providerSeasonId, providerRaceId);
+            var tournamentGrid = _statsProzoneMotorIngestService.IngestTournamentGrid(motorResultRequestEntity);
 
             await PersistGridInRepository(tournamentGrid, cancellationToken);
         }
 
-        private static async Task PersistGridInRepository(MotorEntitiesResponse tournamentGrid, CancellationToken cancellationToken)
-        {
-            // TODO
-        }
-
         private async Task PersistTournamentDriversInRepository(MotorEntitiesResponse providerResponse)
         {
-            var responseHasNoData = providerResponse.recordCount <= 0;
-            if (responseHasNoData) return;
-
-            var apiResult = providerResponse.apiResults.FirstOrDefault();
-            var providerDataIsValid = apiResult?.league.subLeague?.players != null;
-            if (providerDataIsValid)
+            var driversFromProvider = ExtractDriversFromProviderResponse(providerResponse);
+            if (driversFromProvider != null)
             {
-                var driversFromProvider = apiResult.league.subLeague.players;
-
                 foreach (var providerDriver in driversFromProvider)
                 {
                     var driverInRepo =
@@ -176,45 +166,50 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             }
         }
 
-        private async Task PersistRacesInRepository(MotorEntitiesResponse providerResponse, MotorLeague league, CancellationToken cancellationToken)
+        private static IEnumerable<Player> ExtractDriversFromProviderResponse(MotorEntitiesResponse response)
         {
-            var responseHasNoData = providerResponse.recordCount <= 0;
-            if (responseHasNoData) return;
+            var responseHasNoData = response.recordCount <= 0;
+            return responseHasNoData ? null : response.apiResults.FirstOrDefault()?.leagues.FirstOrDefault()?.subLeague.players;
+        }
 
-            var apiResult = providerResponse.apiResults.FirstOrDefault();
-            var providerDataIsValid = apiResult?.league.races != null;
-            if (providerDataIsValid)
+        private async Task PersistRacesInRepository(MotorEntitiesResponse providerResponse, 
+            MotorLeague league, CancellationToken cancellationToken)
+        {
+            var racesFromProvider = ExtractRacesFromProviderResponse(providerResponse);
+            if (racesFromProvider is null)
+                return;
+
+            foreach (var providerRace in racesFromProvider)
             {
-                var racesFromProvider = apiResult.league.races;
-                foreach (var providerRace in racesFromProvider)
+                var raceInRepo = _motorRaceRepository.FirstOrDefault(r => r.LegacyRaceId == providerRace.raceId);
+                if (raceInRepo is null)
                 {
-                    var raceInRepo = _motorRaceRepository.FirstOrDefault(r => r.LegacyRaceId == providerRace.raceId);
-                    if (raceInRepo is null)
-                    {
-                        SaveNewRaceInRepo(providerRace, league);
-                    }
-                    else
-                    {
-                        UpdateRaceInRepo(providerRace, raceInRepo);
-                    }
+                    SaveNewRaceInRepo(providerRace, league);
                 }
-
-                await _motorRaceRepository.SaveAsync();
+                else
+                {
+                    UpdateRaceInRepo(providerRace, raceInRepo);
+                }
             }
+
+            await _motorRaceRepository.SaveAsync();
+        }
+
+        private static IEnumerable<Race> ExtractRacesFromProviderResponse(MotorEntitiesResponse response)
+        {
+            return response.recordCount <= 0 ? null : response.apiResults.FirstOrDefault()?.leagues.FirstOrDefault()?.races;
         }
 
         private async Task PersistTournamentsInRepository(MotorEntitiesResponse providerResponse,
             CancellationToken cancellationToken)
         {
-            if (providerResponse.recordCount <= 0) return;
-
-            var apiResult = providerResponse.apiResults.FirstOrDefault();
-            if (apiResult?.leagues != null)
+            var leaguesFromProvider = ExtractLeaguesFromProviderResponse(providerResponse);
+            if (leaguesFromProvider != null)
             {
-                var leaguesFromProvider = apiResult.leagues;
                 foreach (var leagueFromProvider in leaguesFromProvider)
                 {
-                    var leagueInRepo = _motorLeaguesRepository.FirstOrDefault(l => l.ProviderLeagueId == leagueFromProvider.leagueId);
+                    var leagueInRepo = 
+                        _motorLeaguesRepository.FirstOrDefault(l => l.ProviderLeagueId == leagueFromProvider.leagueId);
                     if (leagueInRepo is null)
                     {
                         SaveNewLeagueInRepo(leagueFromProvider);
@@ -227,6 +222,11 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
                 await _motorRaceRepository.SaveAsync();
             }
+        }
+
+        private static IEnumerable<League> ExtractLeaguesFromProviderResponse(MotorEntitiesResponse response)
+        {
+            return response.recordCount <= 0 ? null : response.apiResults.FirstOrDefault()?.leagues;
         }
 
         private void UpdateLeagueInRepo(League leagueFromProvider, MotorLeague leagueInRepo)
@@ -325,5 +325,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             //TODO
         }
 
+        private static async Task PersistGridInRepository(MotorEntitiesResponse tournamentGrid, CancellationToken cancellationToken)
+        {
+            // TODO
+        }
     }
 }
