@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using Newtonsoft.Json;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 {
@@ -364,7 +365,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
                 var loggerService = ActionContext.Request.GetDependencyScope().GetService(typeof(ILoggingService)) as ILoggingService;
 
                 loggerService?.Error("PersistToCache." + cacheKey, "key = " + cacheKey + " " + exception.Message + exception.StackTrace);
-                loggerService?.Debug("PersistToCache.CacheData." + cacheKey, "cacheData = " + cacheData);
+                loggerService?.Debug("PersistToCache.CacheData." + cacheKey, "cacheData = " + JsonConvert.SerializeObject(cacheData));
             }
         }
 
