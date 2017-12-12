@@ -185,6 +185,7 @@
     <Compile Include="Config\LegacyFeedConfig.cs" />
     <Compile Include="Filters\LegacyExceptionFilter.cs" />
     <Compile Include="Filters\LogTimeFilter.cs" />
+    <Compile Include="Handlers\BufferedNonStreamedContentHandler.cs" />
     <Compile Include="Helpers\Extensions\ResponseModelsExtensions.cs" />
     <Compile Include="Models\Mappers\LegacyFeedConstants.cs" />
     <Compile Include="Models\Mappers\LegacyCommentaryAsEventMapperProfile.cs" />
