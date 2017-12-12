@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
-using Newtonsoft.Json;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 {
@@ -18,7 +16,6 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
     using SuperSportDataEngine.Common.Logging;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Net.Http;
     using System.Threading.Tasks;
     using System.Web.Http;
     using System.Web.Http.Description;
@@ -358,14 +355,11 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         {
             try
             {
-                _logger?.Debug("AddingtoCache.CacheData." + cacheKey, "cacheData = " + JsonConvert.SerializeObject(cacheData));
                 _cache?.Add(cacheKey, cacheData);
-                _logger?.Debug("AddedtoCache.CacheData." + cacheKey, "cacheData = " + JsonConvert.SerializeObject(cacheData));
             }
             catch (Exception exception)
             {
                 _logger?.Error("PersistToCache." + cacheKey, "key = " + cacheKey + " " + exception.Message + exception.StackTrace);
-                _logger?.Debug("PersistToCache.CacheData." + cacheKey, "cacheData = " + JsonConvert.SerializeObject(cacheData));
             }
         }
 
@@ -382,9 +376,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             }
             catch (Exception exception)
             {
-                var loggerService = ActionContext.Request.GetDependencyScope().GetService(typeof(ILoggingService)) as ILoggingService;
-
-                loggerService?.Error("GetFromCacheAsync." + key, "key = " + key + " " + exception.Message + exception.StackTrace);
+                _logger?.Error("GetFromCacheAsync." + key, "key = " + key + " " + exception.Message + exception.StackTrace);
 
                 return null;
             }
