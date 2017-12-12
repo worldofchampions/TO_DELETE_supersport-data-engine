@@ -32,11 +32,7 @@ namespace SuperSportDataEngine.Application.Container
     {
         private const string PublicSportDataRepository = "PublicSportDataRepository";
         private const string SystemSportDataRepository = "SystemSportDataRepository";
-        private static readonly ILoggingService Logger = LoggingService.GetLoggingService();
-
-        private static readonly ICache Cache =
-            new Cache(
-                ConnectionMultiplexer.Connect(WebConfigurationManager.ConnectionStrings["Redis"].ConnectionString));
+        private static ILoggingService logger = LoggingService.GetLoggingService();
 
         public static void RegisterTypes(IUnityContainer container, ApplicationScope applicationScope)
         {
@@ -58,7 +54,7 @@ namespace SuperSportDataEngine.Application.Container
 
         private static void ApplyRegistrationsForLogging(IUnityContainer container)
         {
-            container.RegisterType<ILoggingService>(new InjectionFactory(l => Logger));
+            container.RegisterType<ILoggingService>(new InjectionFactory(l => logger));
         }
 
         private static void ApplyRegistrationsForApplicationLogic(IUnityContainer container, ApplicationScope applicationScope)
@@ -80,15 +76,18 @@ namespace SuperSportDataEngine.Application.Container
             {
                 //if (applicationScope == ApplicationScope.WebApiLegacyFeed || applicationScope == ApplicationScope.WebApiPublicApi)
                 {
-                    container.RegisterType<ICache, Cache>(new InjectionFactory((x) => Cache));
+                    container.RegisterType<ICache, Cache>(new ContainerControlledLifetimeManager(),
+                        new InjectionFactory((x) => new Cache(ConnectionMultiplexer.Connect(WebConfigurationManager.ConnectionStrings["Redis"].ConnectionString))));
+
+                    logger.Cache = container.Resolve<ICache>();
                 }
             }
-            catch (System.Exception)
+            catch (System.Exception exception)
             {
                 container.RegisterType<ICache, Cache>(new ContainerControlledLifetimeManager(),new InjectionFactory((x) => null));
-            }
 
-            Logger.Cache = container.Resolve<ICache>();
+                logger.Error("NoCacheInDIContainer", exception.StackTrace);
+            }
         }
 
         private static void ApplyRegistrationsForGatewayHttpStatsProzone(IUnityContainer container, ApplicationScope applicationScope)
