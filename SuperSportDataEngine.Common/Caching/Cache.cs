@@ -9,6 +9,7 @@ namespace SuperSportDataEngine.Common.Caching
     public class Cache : ICache
     {
         private readonly ConnectionMultiplexer _redisConnection;
+        private readonly object _lock = new object();
 
         private IDatabase Database => _redisConnection.GetDatabase();
 
@@ -34,8 +35,8 @@ namespace SuperSportDataEngine.Common.Caching
                 {
                     t.HashSetAsync(key,
                         new HashEntry[] {
-                        new HashEntry("value", JsonConvert.SerializeObject(cacheObject)),
-                        new HashEntry("parent", parentKey)
+                            new HashEntry("value", JsonConvert.SerializeObject(cacheObject)),
+                            new HashEntry("parent", parentKey)
                         },
                         CommandFlags.FireAndForget);
                 }
@@ -43,7 +44,7 @@ namespace SuperSportDataEngine.Common.Caching
                 {
                     t.HashSetAsync(key,
                         new HashEntry[] {
-                        new HashEntry("value", JsonConvert.SerializeObject(cacheObject))
+                            new HashEntry("value", JsonConvert.SerializeObject(cacheObject))
                         },
                         CommandFlags.FireAndForget);
                 }
@@ -89,11 +90,22 @@ namespace SuperSportDataEngine.Common.Caching
             Database.KeyExpireAsync($"{parentKey}$$children", ttl, CommandFlags.FireAndForget);
         }
 
-        private bool ExecuteTransaction(Action<ITransaction> command)
+        private void ExecuteTransaction(Action<ITransaction> command)
         {
-            var transaction = _redisConnection.GetDatabase().CreateTransaction();
-            command(transaction);
-            return transaction.Execute();
+            lock (_lock)
+            {
+                var transaction = Database.CreateTransaction();
+                command(transaction);
+
+                try
+                {
+                    transaction.Execute();
+                }
+                catch (Exception)
+                {
+                    // ignored 
+                }
+            }
         }
     }
 }
