@@ -33,6 +33,30 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFram
         /// <summary> A CMS driven value. </summary>
         public string DisplayNameCmsOverride { get; set; }
 
+        /// <summary> A provider driven value. </summary>
+        public string CountryName { get; set; }
+
+        /// <summary> A provider driven value. </summary>
+        public int ProviderCarId { get; set; }
+
+        /// <summary> A provider driven value. </summary>
+        public int? CarNumber { get; set; }
+
+        /// <summary> A provider driven value. </summary>
+        public int? CarDisplayNumber { get; set; }
+
+        /// <summary> A provider driven value. </summary>
+        public string CarName { get; set; }
+
+        /// <summary> A provider driven value. </summary>
+        public string CarDisplayName { get; set; }
+
+        /// <summary> A provider driven value. </summary>
+        public string TeamName { get; set; }
+
+        /// <summary> A provider driven value. </summary>
+        public int ProviderTeamId { get; set; }
+
         public DataProvider DataProvider { get; set; }
     }
 }
