@@ -23,7 +23,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             {
                 return _schedulerClientRepository.All().ToList();
             }
-            catch (Exception exception)
+            catch (Exception)
             {
                 Console.WriteLine("Cannot get scheduler dashboard users.");
                 throw;

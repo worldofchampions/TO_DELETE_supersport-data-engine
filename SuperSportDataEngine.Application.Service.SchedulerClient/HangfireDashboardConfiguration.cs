@@ -3,6 +3,7 @@ using Hangfire;
 using Hangfire.Dashboard;
 using Microsoft.Practices.Unity;
 using System.Configuration;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient
 {
@@ -41,28 +42,32 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
 
         private IEnumerable<BasicAuthAuthorizationUser> GetHangfireDashboardUsers()
         {
-//#if DEBUG
+#if DEBUG
             return new[]
             {
                 new BasicAuthAuthorizationUser
                 {
                     Login = ConfigurationManager.AppSettings["SchedulerDashboardUsername"],
-                    PasswordClear = ConfigurationManager.AppSettings["SchedulerDashboardPassword"]
+                    PasswordClear = ConfigurationManager.AppSettings["SchedulerDashboardPassword"],
                 }
             };
-//#else
-//            var schedulerClientService = _unityContainer.Resolve<ISchedulerClientService>();
+#else
+            var schedulerClientService = _unityContainer.Resolve<ISchedulerClientService>();
 
-//            var usersFromService = schedulerClientService.GetSchedulerDashboardUsers();
+            var usersFromService = schedulerClientService.GetSchedulerDashboardUsers();
 
-//            //TODO: Refactor: Use Collection Mapper?
-//            var dashboardUser = new List<BasicAuthAuthorizationUser>();
-//            foreach (var user in usersFromService)
-//            {
-//                dashboardUser.Add(new BasicAuthAuthorizationUser { Login = user.Username, PasswordClear = user.PasswordPlain });
-//            }
-//            return dashboardUser;
-//#endif
+            //TODO: Refactor: Use Collection Mapper?
+            var dashboardUser = new List<BasicAuthAuthorizationUser>();
+            foreach (var user in usersFromService)
+            {
+                dashboardUser.Add(
+                    new BasicAuthAuthorizationUser {
+                        Login = user.Username, 
+                        PasswordClear = user.PasswordPlain
+                    });
+            }
+            return dashboardUser;
+#endif
         }
     }
 }
