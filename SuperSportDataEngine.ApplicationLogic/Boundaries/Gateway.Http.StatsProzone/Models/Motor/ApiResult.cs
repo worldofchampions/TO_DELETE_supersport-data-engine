@@ -239,6 +239,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsPro
 
     public class SubLeague
     {
+        public List<Owner> owners;
         public int subLeagueId { get; set; }
         public string name { get; set; }
         public string abbreviation { get; set; }

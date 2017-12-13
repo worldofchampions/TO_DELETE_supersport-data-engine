@@ -7,6 +7,7 @@
     {
         Task IngestDriversForActiveTournaments(CancellationToken cancellationToken);
         Task IngestTeamsForActiveTournaments(CancellationToken cancellationToken);
+        Task IngestOwnersForActiveTournaments(CancellationToken cancellationToken);
         Task IngestDriverStandingsForActiveTournaments(CancellationToken cancellationToken);
         Task IngestTeamStandingsForActiveTournaments(CancellationToken cancellationToken);
         Task IngestTournaments(CancellationToken cancellationToken);
