@@ -6,6 +6,8 @@
     {
         MotorEntitiesResponse IngestTournamentDrivers(string providerSlug);
         MotorEntitiesResponse IngestTournamentTeams(string providerSlug);
+        MotorEntitiesResponse IngestTournamentOwners(string providerSlug);
+
         MotorEntitiesResponse IngestDriverStandings(string providerSlug);
         MotorEntitiesResponse IngestTeamStandings(string providerSlug);
         MotorEntitiesResponse IngestTournaments();

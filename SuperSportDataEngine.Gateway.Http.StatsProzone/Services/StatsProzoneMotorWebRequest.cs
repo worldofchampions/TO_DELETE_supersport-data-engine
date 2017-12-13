@@ -139,6 +139,24 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             return requestForTournamentSchedule;
         }
 
+        public WebRequest GetRequestForOwners(string providerSlug)
+        {
+
+            var ownersUrl = $"/v1/stats/motor/{providerSlug}/owners/";
+
+            var requestSignature = GetRequestSignature();
+
+            var queryString = $"?api_key={_statsApiKey}&sig={requestSignature}";
+
+            var requestUriString = _statsApiBaseUrl + ownersUrl + queryString;
+
+            var requestForOwners = WebRequest.Create(requestUriString);
+
+            requestForOwners.Method = "GET";
+
+            return requestForOwners;
+        }
+
         private string GetRequestSignature()
         {
             var timestamp = GetCurrentTimestamp();

@@ -150,6 +150,27 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             return tournamentTeamsResponse;
         }
 
+        public MotorEntitiesResponse IngestTournamentOwners(string providerSlug)
+        {
+            var ownersRequest = _prozoneMotorWebRequest.GetRequestForOwners(providerSlug);
+
+            MotorEntitiesResponse owners;
+
+            using (var webResponse = ownersRequest.GetResponse())
+            {
+                using (var responseStream = webResponse.GetResponseStream())
+                {
+                    if (responseStream is null) return null;
+
+                    var streamReader = new StreamReader(responseStream, Encoding.UTF8);
+
+                    owners = JsonConvert.DeserializeObject<MotorEntitiesResponse>(streamReader.ReadToEnd());
+                }
+            }
+
+            return owners;
+        }
+
         public MotorEntitiesResponse IngestDriverStandings(string providerSlug)
         {
             var driverStandings = IngestStandings(providerSlug, DriverStandingsTypeId);
