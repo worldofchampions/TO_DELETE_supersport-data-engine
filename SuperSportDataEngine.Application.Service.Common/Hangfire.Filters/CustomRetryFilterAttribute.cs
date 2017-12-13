@@ -105,6 +105,8 @@ namespace SuperSportDataEngine.Application.Service.Common.Hangfire.Filters
             {
                 Reason = string.Format("Automatic deletion after retry count exceeded {0}", Attempts)
             };
+
+            BackgroundJob.Delete(context.BackgroundJob.Id);
         }
         // delayed_job uses the same basic formula
         private static int SecondsToDelay(long retryCount)

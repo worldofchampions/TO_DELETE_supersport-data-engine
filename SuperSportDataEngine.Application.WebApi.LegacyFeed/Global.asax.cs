@@ -1,4 +1,5 @@
-﻿using SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers;
+﻿using SuperSportDataEngine.Application.WebApi.LegacyFeed.Handlers;
+using SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed
 {
@@ -24,6 +25,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed
         private static void ConfigureRequestHandlers()
         {
             GlobalConfiguration.Configuration.MessageHandlers.Add(new FeedRequestHandler());
+            GlobalConfiguration.Configuration.MessageHandlers.Add(new BufferNonStreamedContentHandler());
         }
 
         private static void ConfigureFomatters()

@@ -1,23 +1,21 @@
 ﻿using System;
-using System.Diagnostics;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 {
     using AutoMapper;
-    using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Helpers.Extensions;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.News;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+    using Common.Interfaces;
+    using Filters;
+    using Helpers.Extensions;
+    using Models.Mappers;
+    using Models.News;
+    using Models.Rugby;
+    using Models.Shared;
+    using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+    using ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
+    using ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
     using SuperSportDataEngine.Common.Logging;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Net.Http;
     using System.Threading.Tasks;
     using System.Web.Http;
     using System.Web.Http.Description;
@@ -359,11 +357,9 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             {
                 _cache?.Add(cacheKey, cacheData);
             }
-            catch (System.Exception exception)
+            catch (Exception exception)
             {
-                var loggerService = ActionContext.Request.GetDependencyScope().GetService(typeof(ILoggingService)) as ILoggingService;
-
-                loggerService?.Error(exception.Message + exception.StackTrace);
+                _logger?.Error("PersistToCache." + cacheKey, "key = " + cacheKey + " " + exception.Message + exception.StackTrace);
             }
         }
 
@@ -378,11 +374,9 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 
                 return null;
             }
-            catch (System.Exception exception)
+            catch (Exception exception)
             {
-                var loggerService = ActionContext.Request.GetDependencyScope().GetService(typeof(ILoggingService)) as ILoggingService;
-
-                loggerService?.Error(exception.Message + exception.StackTrace);
+                _logger?.Error("GetFromCacheAsync." + key, "key = " + key + " " + exception.Message + exception.StackTrace);
 
                 return null;
             }

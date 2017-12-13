@@ -120,8 +120,6 @@
             var playersAlreadyInDb = await _rugbyPlayerRepository.AllAsync();
             var players = playersAlreadyInDb as IList<RugbyPlayer> ?? playersAlreadyInDb.ToList();
 
-            _logger.Debug("Got " + entitiesResponse.Entities.players.Count + " players from the Provider.");
-
             foreach (var player in entitiesResponse.Entities.players)
             {
                 if (cancellationToken.IsCancellationRequested)
@@ -192,9 +190,11 @@
 
             var teamsAlreadyInDb = (await _rugbyTeamRepository.AllAsync()).ToList();
 
-            _logger.Debug("Got " + entitiesResponse.Entities.teams.Count + " teams from the Provider.");
             foreach (var team in entitiesResponse.Entities.teams)
             {
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
                 var teamInDb = teamsAlreadyInDb.FirstOrDefault(t => t.ProviderTeamId == team.id);
 
                 if (teamInDb == null || teamInDb.ProviderTeamId == 0)
@@ -228,9 +228,11 @@
 
             var venuesAlreadyInDb = (await _rugbyVenueRepository.AllAsync()).ToList();
 
-            _logger.Debug("Got " + entitiesResponse.Entities.venues.Count + " venues from the Provider.");
             foreach (var venue in entitiesResponse.Entities.venues)
             {
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
                 // Lookup in db
                 var venueInDb = venuesAlreadyInDb.FirstOrDefault(v => v.ProviderVenueId == venue.id);
 
@@ -261,6 +263,9 @@
             var activeTournaments = (await _rugbyTournamentRepository.AllAsync()).Where(t => t.IsEnabled);
             foreach (var tournament in activeTournaments)
             {
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
                 await IngestSeason(cancellationToken, tournament, DateTime.Now.Year);
                 await IngestSeason(cancellationToken, tournament, DateTime.Now.Year + 1);
             }
@@ -271,6 +276,9 @@
             var activeTournaments = (await _rugbyTournamentRepository.AllAsync()).Where(t => t.IsEnabled);
             foreach (var tournament in activeTournaments)
             {
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
                 await IngestPastSeason(cancellationToken, tournament, DateTime.Now.Year);
                 await IngestPastSeason(cancellationToken, tournament, DateTime.Now.Year - 1);
                 await IngestPastSeason(cancellationToken, tournament, DateTime.Now.Year - 2);
@@ -357,6 +365,9 @@
 
             foreach (var tournament in activeTournaments)
             {
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
                 var activeSeasonId = await _rugbyService.GetCurrentProviderSeasonIdForTournament(cancellationToken, tournament.Id);
 
                 var fixtures =
@@ -549,8 +560,14 @@
 
             foreach (var roundFixture in fixtures.Fixtures.roundFixtures)
             {
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
                 foreach (var fixture in roundFixture.gameFixtures)
                 {
+                    if (cancellationToken.IsCancellationRequested)
+                        return;
+
                     var fixtureId = fixture.gameId;
 
                     DateTimeOffset.TryParse(fixture.startTimeUTC, out DateTimeOffset startTime);
@@ -777,6 +794,9 @@
 
             foreach (var tournament in tournaments)
             {
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
                 int activeSeasonIdForTournament =
                         await _rugbyService.GetCurrentProviderSeasonIdForTournament(cancellationToken, tournament.Id);
 
@@ -980,6 +1000,9 @@
 
             foreach (var tournament in activeTournaments)
             {
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
                 var seasonId = await _rugbyService.GetCurrentProviderSeasonIdForTournament(cancellationToken, tournament.Id);
                 var results = _statsProzoneIngestService.IngestFixturesForTournament(tournament, seasonId, cancellationToken);
                 if (results == null)
@@ -1030,6 +1053,9 @@
 
             foreach (var fixture in currentDayFixtures)
             {
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
                 var tournamentId = fixture.RugbyTournament.ProviderTournamentId;
 
                 var seasonId = await _rugbyService.GetCurrentProviderSeasonIdForTournament(cancellationToken, fixture.RugbyTournament.Id);
@@ -1051,6 +1077,9 @@
 
             foreach (var fixture in fixtures)
             {
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
                 var tournamentId = fixture.RugbyTournament.ProviderTournamentId;
 
                 var seasonId = await _rugbyService.GetCurrentProviderSeasonIdForTournament(cancellationToken, fixture.RugbyTournament.Id);
@@ -1129,13 +1158,10 @@
 
         public async Task IngestLiveMatchData(CancellationToken cancellationToken, long providerFixtureId)
         {
-            var fixtureInDb = (await _rugbyFixturesRepository.AllAsync()).FirstOrDefault(f => f.ProviderFixtureId == providerFixtureId);
+            var fixtureInDb = _rugbyFixturesRepository.FirstOrDefault(f => f.ProviderFixtureId == providerFixtureId);
 
-            while (true)
+            while (!cancellationToken.IsCancellationRequested)
             {
-                if (cancellationToken.IsCancellationRequested)
-                    return;
-
                 if (fixtureInDb == null)
                     return;
 
@@ -1152,6 +1178,7 @@
                     continue;
 
                 await IngestLineUpsForFixtures(cancellationToken, new List<RugbyFixture>() { fixtureInDb });
+                await IngestGameTime(cancellationToken, matchStatsResponse, fixtureInDb);
 
                 var playersForFixture = _rugbyPlayerLineupsRepository.Where(l => l.RugbyFixture.ProviderFixtureId == fixtureInDb.ProviderFixtureId).Select(l => l.RugbyPlayer).ToList();
                 await IngestCommentary(cancellationToken, eventsFlowResponse.RugbyEventsFlow.commentaryFlow, fixtureInDb, playersForFixture);
@@ -1177,6 +1204,20 @@
 
                 Thread.Sleep(5_000);
             }
+        }
+
+        private async Task IngestGameTime(CancellationToken cancellationToken, RugbyMatchStatsResponse matchStatsResponse, RugbyFixture rugbyFixture)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return;
+
+            if (matchStatsResponse.RugbyMatchStats?.gameInfo == null)
+                return;
+
+            rugbyFixture.GameTimeInSeconds = matchStatsResponse.RugbyMatchStats.gameInfo.gameSeconds;
+            _rugbyFixturesRepository.Update(rugbyFixture);
+
+            await _rugbyFixturesRepository.SaveAsync();
         }
 
         private async Task UpdateSchedulerTrackingFixturesTable(Guid fixtureId, string fixtureGameState)
@@ -1211,7 +1252,6 @@
             var count = eventsToRemove.Count;
             if (count > 0)
             {
-                _logger.Info("Going to remove " + count + " events from the DB. There are not in the provider response.");
                 _rugbyMatchEventsRepository.DeleteRange(eventsToRemove);
             }
 
@@ -1636,9 +1676,6 @@
                 }
             }
 
-            _logger.Debug("Going to remove " + commentariesThatShouldBeRemovedFromDb.Count + " commentary items from the DB for fixture " + 
-               fixture.ProviderFixtureId + ". They are not in the provider response.");
-
             if(commentariesThatShouldBeRemovedFromDb.Count > 0)
             {
                 _rugbyCommentaryRepository.DeleteRange(commentariesThatShouldBeRemovedFromDb);
@@ -1670,6 +1707,9 @@
         {
             foreach (var fixture in rugbyFixtures)
             {
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
                 var fixtureId = fixture.ProviderFixtureId;
 
                 if (matchStatsResponse == null)
@@ -1687,7 +1727,6 @@
                 }
                 catch (Exception e)
                 {
-                    _logger.Info("Syncronisation issues when ingesting lineups." + e.StackTrace);
                 }
             }
         }
@@ -1726,7 +1765,7 @@
 
                     if (dbPlayer == null)
                         continue;
-
+                    
                     if (dbPlayer.FirstName == null && dbPlayer.LastName == null)
                     {
                         dbPlayer.FirstName = player.playerFirstName;
@@ -1787,7 +1826,6 @@
 
             if (lineupsToRemoveFromDb.Count > 0)
             {
-                _logger.Info("Going to remove " + lineupsToRemoveFromDb.Count + " lineup entries from the db. They have been changed and new entries have been added.");
                 _rugbyPlayerLineupsRepository.DeleteRange(lineupsToRemoveFromDb);
             }
 
@@ -1899,7 +1937,7 @@
                 await IngestLineUpsForFixtures(cancellationToken, new List<RugbyFixture>() { fixture }, matchStatsResponse);
 
                 var playersForFixture = _rugbyPlayerLineupsRepository.Where(l => l.RugbyFixture.ProviderFixtureId == fixture.ProviderFixtureId).Select(l => l.RugbyPlayer).ToList();
-
+                await IngestGameTime(cancellationToken, matchStatsResponse, fixture);
                 await IngestCommentary(cancellationToken, eventsFlowResponse.RugbyEventsFlow.commentaryFlow, fixture, playersForFixture);
                 await IngestMatchStatisticsData(cancellationToken, matchStatsResponse, providerFixtureId);
                 await IngestScoreData(cancellationToken, matchStatsResponse);
@@ -1911,7 +1949,6 @@
                 _mongoDbRepository.Save(eventsFlowResponse);
 
                 s.Stop();
-                _logger.Info("Completed ingest of live data for fixture " + fixture.ProviderFixtureId + ". Taken " + s.ElapsedMilliseconds + "ms.");
             }
         }
 

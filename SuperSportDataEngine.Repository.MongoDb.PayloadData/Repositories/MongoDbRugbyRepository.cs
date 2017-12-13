@@ -50,7 +50,7 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
             var db = _mongoClient.GetDatabase(_mongoDatabaseName);
             if (db == null)
             {
-                _logger.Error("Mongo db object is null.");
+                _logger.Error("MongoDbIsNull", "Mongo db object is null.");
                 return;
             }
 
@@ -60,14 +60,12 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 
                 if (!isMongoLive)
                 {
-                    _logger.Error("Unable to connect to MongoDB.");
+                    _logger.Error("MongoDbCannotConnect", "Unable to connect to MongoDB.");
                     return;
                 }
             }
-            catch (System.Exception e)
+            catch (System.Exception)
             {
-                //_logger.Error("Cannot ping MongoDB. " + e.StackTrace);
-                //return;
             }
 
             // Add to the collection.
@@ -91,7 +89,7 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
             var db = _mongoClient.GetDatabase(_mongoDatabaseName);
             if (db == null)
             {
-                _logger.Error("Mongo db object is null.");
+                _logger.Error("MongoDbIsNull", "Mongo db object is null.");
                 return;
             }
 
@@ -101,7 +99,7 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 
                 if (!isMongoLive)
                 {
-                    _logger.Error("Unable to connect to MongoDB.");
+                    _logger.Error("MongoDbCannotConnect" ,"Unable to connect to MongoDB.");
                     return;
                 }
             }
@@ -132,7 +130,7 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
             var db = _mongoClient.GetDatabase(_mongoDatabaseName);
             if (db == null)
             {
-                _logger.Error("Mongo db object is null.");
+                _logger.Error("MongoDbIsNull", "Mongo db object is null.");
                 return;
             }
 
@@ -142,7 +140,7 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 
                 if (!isMongoLive)
                 {
-                    _logger.Error("Unable to connect to MongoDB.");
+                    _logger.Error("MongoDbCannotConnect", "Unable to connect to MongoDB.");
                     return;
                 }
             }
@@ -173,7 +171,7 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
             var db = _mongoClient.GetDatabase(_mongoDatabaseName);
             if (db == null)
             {
-                _logger.Error("Mongo db object is null.");
+                _logger.Error("MongoDbIsNull", "Mongo db object is null.");
                 return;
             }
 
@@ -183,7 +181,7 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 
                 if (!isMongoLive)
                 {
-                    _logger.Error("Unable to connect to MongoDB.");
+                    _logger.Error("MongoDbCannotConnect", "Unable to connect to MongoDB.");
                     return;
                 }
             }
@@ -214,7 +212,7 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
             var db = _mongoClient.GetDatabase(_mongoDatabaseName);
             if(db == null)
             {
-                _logger.Error("Mongo db object is null.");
+                _logger.Error("MongoDbIsNull", "Mongo db object is null.");
                 return;
             }
 
@@ -224,7 +222,7 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 
                 if (!isMongoLive)
                 {
-                    _logger.Error("Unable to connect to MongoDB.");
+                    _logger.Error("MongoDbCannotConnect", "Unable to connect to MongoDB.");
                     return;
                 }
             }
@@ -255,7 +253,7 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
             var db = _mongoClient.GetDatabase(_mongoDatabaseName);
             if (db == null)
             {
-                _logger.Error("Mongo db object is null.");
+                _logger.Error("MongoDbIsNull", "Mongo db object is null.");
                 return;
             }
 
@@ -265,7 +263,7 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 
                 if (!isMongoLive)
                 {
-                    _logger.Error("Unable to connect to MongoDB.");
+                    _logger.Error("MongoDbCannotConnect", "Unable to connect to MongoDB.");
                     return;
                 }
             }

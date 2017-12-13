@@ -336,7 +336,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<List<RugbyFixture>> GetCurrentDayFixturesForActiveTournaments()
         {
-            var todayFixtures = _rugbyFixturesRepository.All().Where(f => f.StartDateTime.Date == DateTime.Now.Date && f.RugbyTournament.IsEnabled).OrderBy(f => f.StartDateTime);
+            var today = DateTime.UtcNow.Date;
+            var todayFixtures = _rugbyFixturesRepository.Where(f => f.StartDateTime == today && f.RugbyTournament.IsEnabled).OrderBy(f => f.StartDateTime);
 
             return await Task.FromResult(todayFixtures.ToList());
         }
@@ -382,7 +383,31 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         {
             var teamScoringEvents = await GetScoringEventsForFixture(events, fixtureId);
 
-            return teamScoringEvents.Select(scoringEvent => new LegacyRugbyScorerEntity
+            return teamScoringEvents.Select(GetLegacyRugbyScorerEntity)
+            .ToList();
+        }
+
+        private LegacyRugbyScorerEntity GetLegacyRugbyScorerEntity(RugbyMatchEvent scoringEvent)
+        {
+            // If the player is null, this is a team scoring event.
+            if (scoringEvent.RugbyPlayer1 == null)
+            {
+                return new LegacyRugbyScorerEntity
+                {
+                    CombinedName = "",
+                    DisplayName = "",
+                    EventId = scoringEvent.RugbyEventType.EventCode,
+                    Name = "",
+                    NickName = null,
+                    PersonId = 0,
+                    Surname = "",
+                    Time = scoringEvent.GameTimeInMinutes.ToString(),
+                    Type = scoringEvent.RugbyEventType.EventName,
+                    RugbyTeamId = scoringEvent.RugbyTeamId
+                };
+            }
+
+            return new LegacyRugbyScorerEntity
             {
                 CombinedName = scoringEvent.RugbyPlayer1.FullName,
                 DisplayName = scoringEvent.RugbyPlayer1.FullName,
@@ -394,8 +419,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 Time = scoringEvent.GameTimeInMinutes.ToString(),
                 Type = scoringEvent.RugbyEventType.EventName,
                 RugbyTeamId = scoringEvent.RugbyTeamId
-            })
-            .ToList();
+            };
         }
 
         private async Task<List<RugbyMatchEvent>> GetScoringEventsForFixture(IEnumerable<RugbyMatchEvent> events, Guid fixtureId)
