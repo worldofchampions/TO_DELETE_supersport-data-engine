@@ -17,6 +17,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFram
         /// <summary> A clustered-key record identifier. </summary>
         public Guid MotorRaceId { get; set; }
 
+        /// <summary> A clustered-key record identifier. </summary>
+        public Guid MotorDriverId { get; set; }
+
         public int Points { get; set; }
 
         public int Rank { get; set; }
@@ -54,5 +57,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFram
         public virtual MotorRace MotorRace { get; set; }
 
         public virtual MotorTeam MotorTeam { get; set; }
+
+        public virtual MotorDriver MotorDriver { get; set; }
+
     }
 }

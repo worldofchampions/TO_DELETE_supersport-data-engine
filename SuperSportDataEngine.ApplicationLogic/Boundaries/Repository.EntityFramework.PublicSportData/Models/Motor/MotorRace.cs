@@ -24,6 +24,10 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFram
         /// <summary> A CMS driven value. </summary>
         public string NameCmsOverride { get; set; }
 
+
+        /// <summary> A CMS driven value. </summary>
+        public bool IsEnabled { get; set; }
+
         /// <summary> A CMS defined value to uniquely identify a tournament for URL purposes. </summary>
         public string Slug { get; set; }
 
@@ -36,5 +40,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFram
         public virtual MotorLeague MotorLeague { get; set; }
 
         public DataProvider DataProvider { get; set; }
+        
     }
 }

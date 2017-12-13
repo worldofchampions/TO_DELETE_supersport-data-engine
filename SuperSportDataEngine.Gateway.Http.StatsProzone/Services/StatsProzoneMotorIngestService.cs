@@ -63,11 +63,11 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
         public MotorEntitiesResponse IngestTournamentSchedule(string providerSlug, int providerSeasonId)
         {
-            var requestForTournamentSchedule = _prozoneMotorWebRequest.GetRequestForSchedule(providerSlug, providerSeasonId);
+            var requestForSchedule = _prozoneMotorWebRequest.GetRequestForSchedule(providerSlug, providerSeasonId);
 
             MotorEntitiesResponse tournamentSchedule;
 
-            using (var webResponse = requestForTournamentSchedule.GetResponse())
+            using (var webResponse = requestForSchedule.GetResponse())
             {
                 using (var responseStream = webResponse.GetResponseStream())
                 {

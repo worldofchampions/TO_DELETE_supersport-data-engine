@@ -20,18 +20,20 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         private readonly IBaseEntityFrameworkRepository<MotorDriver> _motorDriverRepository;
         private readonly IBaseEntityFrameworkRepository<MotorLeague> _motorLeaguesRepository;
         private readonly IBaseEntityFrameworkRepository<MotorRace> _motorRaceRepository;
-
+        private readonly IBaseEntityFrameworkRepository<MotorDriverStanding> _driverStandingRepository;
 
         public MotorIngestWorkerService(
             IStatsProzoneMotorIngestService statsProzoneMotorIngestService,
             IBaseEntityFrameworkRepository<MotorDriver> motorDriverRepository,
             IBaseEntityFrameworkRepository<MotorLeague> motorLeaguesRepository,
-            IBaseEntityFrameworkRepository<MotorRace> motorRaceRepository)
+            IBaseEntityFrameworkRepository<MotorRace> motorRaceRepository,
+            IBaseEntityFrameworkRepository<MotorDriverStanding> driverStandingRepository)
         {
             _statsProzoneMotorIngestService = statsProzoneMotorIngestService;
             _motorDriverRepository = motorDriverRepository;
             _motorLeaguesRepository = motorLeaguesRepository;
             _motorRaceRepository = motorRaceRepository;
+            _driverStandingRepository = driverStandingRepository;
         }
 
         public async Task IngestDriversForActiveTournaments(CancellationToken cancellationToken)
@@ -63,14 +65,14 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task IngestDriverStandingsForActiveTournaments(CancellationToken cancellationToken)
         {
-            var motorLeagues = _motorLeaguesRepository.Where(league => league.IsEnabled);
+            var motorLeagues = _motorLeaguesRepository.Where(race => race.IsEnabled);
             if (motorLeagues != null)
             {
                 foreach (var league in motorLeagues)
                 {
                     if (league.ProviderSlug == null) continue;
                     var driverStandings = _statsProzoneMotorIngestService.IngestDriverStandings(league.ProviderSlug);
-                    await PersistDriverStandingsInRepository(driverStandings, cancellationToken);
+                    await PersistDriverStandingsInRepository(driverStandings, league, cancellationToken);
                 }
             }
         }
@@ -120,13 +122,13 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 foreach (var league in motorLeagues)
                 {
                     if (league.ProviderSlug == null) continue;
-                    var schedule = 
+                    var schedule =
                         _statsProzoneMotorIngestService.IngestTournamentSchedule(league.ProviderSlug, league.ProviderLeagueId);
                     await PersistScheduleInRepository(schedule, cancellationToken);
                 }
             }
         }
-        
+
         public async Task IngestTournamentResults(MotorResultRequestEntity resultRequestEntity,
             CancellationToken cancellationToken)
         {
@@ -154,7 +156,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
                     if (driverInRepo is null)
                     {
-                        SaveNewDriverInRepo(providerDriver);
+                        AddNewDriverInRepo(providerDriver);
                     }
                     else
                     {
@@ -172,7 +174,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             return responseHasNoData ? null : response.apiResults.FirstOrDefault()?.leagues.FirstOrDefault()?.subLeague.players;
         }
 
-        private async Task PersistRacesInRepository(MotorEntitiesResponse providerResponse, 
+        private async Task PersistRacesInRepository(MotorEntitiesResponse providerResponse,
             MotorLeague league, CancellationToken cancellationToken)
         {
             var racesFromProvider = ExtractRacesFromProviderResponse(providerResponse);
@@ -208,7 +210,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             {
                 foreach (var leagueFromProvider in leaguesFromProvider)
                 {
-                    var leagueInRepo = 
+                    var leagueInRepo =
                         _motorLeaguesRepository.FirstOrDefault(l => l.ProviderLeagueId == leagueFromProvider.leagueId);
                     if (leagueInRepo is null)
                     {
@@ -227,6 +229,15 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         private static IEnumerable<League> ExtractLeaguesFromProviderResponse(MotorEntitiesResponse response)
         {
             return response.recordCount <= 0 ? null : response.apiResults.FirstOrDefault()?.leagues;
+        }
+
+        private static IEnumerable<Player> ExtractDriverStandingsFromProviderResponse(MotorEntitiesResponse response)
+        {
+            if (response.recordCount <= 0) return null;
+
+            var result = response.apiResults.FirstOrDefault()?.leagues.FirstOrDefault()?.subLeague?.players;
+
+            return result;
         }
 
         private void UpdateLeagueInRepo(League leagueFromProvider, MotorLeague leagueInRepo)
@@ -253,7 +264,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             _motorLeaguesRepository.Add(league);
         }
 
-        private void SaveNewDriverInRepo(Player providerDriver)
+        private void AddNewDriverInRepo(Player providerDriver)
         {
             var driver = new MotorDriver
             {
@@ -303,10 +314,74 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             // TODO
         }
 
-        private async Task PersistDriverStandingsInRepository(MotorEntitiesResponse providerResponse,
-            CancellationToken cancellationToken)
+        private async Task PersistDriverStandingsInRepository(MotorEntitiesResponse providerResponse, MotorLeague league, CancellationToken cancellationToken)
         {
-            //TODO
+            var standingsFromProvider = ExtractDriverStandingsFromProviderResponse(providerResponse);
+            if (standingsFromProvider != null)
+            {
+                foreach (var providerEntry in standingsFromProvider)
+                {
+                    var driverStanding =
+                        _driverStandingRepository.FirstOrDefault(s => s.MotorDriver.ProviderDriverId == providerEntry.playerId);
+                    if (driverStanding is null)
+                    {
+                        SaveNewDriverStandingInRepo(providerEntry, league);
+                    }
+                    else
+                    {
+                        UpdateDriverStandingInRepo(providerEntry, driverStanding);
+                    }
+                }
+
+                await _driverStandingRepository.SaveAsync();
+            }
+        }
+
+        private static void UpdateDriverStandingInRepo(Player providerStanding, MotorDriverStanding repoStanding)
+        {
+            repoStanding.Points = providerStanding.points;
+            repoStanding.Rank = providerStanding.rank;
+            repoStanding.Wins = providerStanding.finishes.first;
+            repoStanding.FinishedSecond = providerStanding.finishes.second;
+            repoStanding.FinishedThird = providerStanding.finishes.third;
+            repoStanding.Top5Finishes = providerStanding.finishes.top5;
+            repoStanding.Top10Finishes = providerStanding.finishes.top10;
+            repoStanding.Top15Finishes = providerStanding.finishes.top15;
+            repoStanding.Top20Finishes = providerStanding.finishes.top20;
+            repoStanding.DidNotFinish = providerStanding.finishes.didNotFinish;
+            repoStanding.LapsCompleted = providerStanding.laps.completed;
+            repoStanding.LapsTotalLed = providerStanding.laps.totalLed;
+        }
+
+        private void SaveNewDriverStandingInRepo(Player player, MotorLeague league)
+        {
+            var repoDriver = _motorDriverRepository.FirstOrDefault(d => d.ProviderDriverId == player.playerId);
+            if (repoDriver is null)
+            {
+                AddNewDriverInRepo(player);
+                _motorDriverRepository.SaveAsync();
+                repoDriver = _motorDriverRepository.FirstOrDefault(d => d.ProviderDriverId == player.playerId);
+            }
+
+            var standingEntry = new MotorDriverStanding
+            {
+                MotorLeague = league,
+                Points = player.points,
+                Rank = player.rank,
+                Wins = player.finishes.first,
+                FinishedSecond = player.finishes.second,
+                FinishedThird = player.finishes.third,
+                Top5Finishes = player.finishes.top5,
+                Top10Finishes = player.finishes.top10,
+                Top15Finishes = player.finishes.top15,
+                Top20Finishes = player.finishes.top20,
+                DidNotFinish = player.finishes.didNotFinish,
+                LapsCompleted = player.laps.completed,
+                LapsTotalLed = player.laps.totalLed,
+                MotorDriver = repoDriver
+            };
+
+            _driverStandingRepository.Add(standingEntry);
         }
 
         private static async Task PersistTeamStandingsInRepository(MotorEntitiesResponse teamStandings,
