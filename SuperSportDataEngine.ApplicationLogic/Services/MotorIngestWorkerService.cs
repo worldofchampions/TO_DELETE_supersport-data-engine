@@ -268,11 +268,18 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         {
             var driver = new MotorDriver
             {
+                ProviderDriverId = providerDriver.playerId,
                 FirstName = providerDriver.firstName,
                 LastName = providerDriver.lastName,
                 HeightInCentimeters = providerDriver.height.centimeters,
                 WeightInKilograms = providerDriver.weight.kilograms,
-                ProviderDriverId = providerDriver.playerId,
+                CountryName = providerDriver.birth.country.name,
+                ProviderCarId = providerDriver.car.make.makeId,
+                CarNumber = providerDriver.car.carNumber,
+                CarDisplayNumber = providerDriver.car.carDisplayNumber,
+                CarName = providerDriver.car.make.name,
+                TeamName = providerDriver.owner.name,
+                ProviderTeamId = providerDriver.owner.ownerId,
                 DataProvider = DataProvider.StatsProzone
             };
 
@@ -353,31 +360,31 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             repoStanding.LapsTotalLed = providerStanding.laps.totalLed;
         }
 
-        private void SaveNewDriverStandingInRepo(Player player, MotorLeague league)
+        private void SaveNewDriverStandingInRepo(Player providerPlayerInfo, MotorLeague league)
         {
-            var repoDriver = _motorDriverRepository.FirstOrDefault(d => d.ProviderDriverId == player.playerId);
+            var repoDriver = _motorDriverRepository.FirstOrDefault(d => d.ProviderDriverId == providerPlayerInfo.playerId);
             if (repoDriver is null)
             {
-                AddNewDriverInRepo(player);
+                AddNewDriverInRepo(providerPlayerInfo);
                 _motorDriverRepository.SaveAsync();
-                repoDriver = _motorDriverRepository.FirstOrDefault(d => d.ProviderDriverId == player.playerId);
+                repoDriver = _motorDriverRepository.FirstOrDefault(d => d.ProviderDriverId == providerPlayerInfo.playerId);
             }
 
             var standingEntry = new MotorDriverStanding
             {
                 MotorLeague = league,
-                Points = player.points,
-                Rank = player.rank,
-                Wins = player.finishes.first,
-                FinishedSecond = player.finishes.second,
-                FinishedThird = player.finishes.third,
-                Top5Finishes = player.finishes.top5,
-                Top10Finishes = player.finishes.top10,
-                Top15Finishes = player.finishes.top15,
-                Top20Finishes = player.finishes.top20,
-                DidNotFinish = player.finishes.didNotFinish,
-                LapsCompleted = player.laps.completed,
-                LapsTotalLed = player.laps.totalLed,
+                Points = providerPlayerInfo.points,
+                Rank = providerPlayerInfo.rank,
+                Wins = providerPlayerInfo.finishes.first,
+                FinishedSecond = providerPlayerInfo.finishes.second,
+                FinishedThird = providerPlayerInfo.finishes.third,
+                Top5Finishes = providerPlayerInfo.finishes.top5,
+                Top10Finishes = providerPlayerInfo.finishes.top10,
+                Top15Finishes = providerPlayerInfo.finishes.top15,
+                Top20Finishes = providerPlayerInfo.finishes.top20,
+                DidNotFinish = providerPlayerInfo.finishes.didNotFinish,
+                LapsCompleted = providerPlayerInfo.laps.completed,
+                LapsTotalLed = providerPlayerInfo.laps.totalLed,
                 MotorDriver = repoDriver
             };
 
