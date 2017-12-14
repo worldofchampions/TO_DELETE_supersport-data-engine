@@ -22,6 +22,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         private readonly IBaseEntityFrameworkRepository<MotorRace> _motorRaceRepository;
         private readonly IBaseEntityFrameworkRepository<MotorDriverStanding> _driverStandingRepository;
         private readonly IBaseEntityFrameworkRepository<MotorTeam> _teamsRepository;
+        private readonly IBaseEntityFrameworkRepository<MotorRaceResult> _resultsRepository;
+
 
 
         public MotorIngestWorkerService(
@@ -30,7 +32,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             IBaseEntityFrameworkRepository<MotorLeague> motorLeaguesRepository,
             IBaseEntityFrameworkRepository<MotorRace> motorRaceRepository,
             IBaseEntityFrameworkRepository<MotorDriverStanding> driverStandingRepository,
-            IBaseEntityFrameworkRepository<MotorTeam> teamsRepository)
+            IBaseEntityFrameworkRepository<MotorTeam> teamsRepository, 
+            IBaseEntityFrameworkRepository<MotorRaceResult> resultsRepository)
         {
             _statsProzoneMotorIngestService = statsProzoneMotorIngestService;
             _motorDriverRepository = motorDriverRepository;
@@ -38,6 +41,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             _motorRaceRepository = motorRaceRepository;
             _driverStandingRepository = driverStandingRepository;
             _teamsRepository = teamsRepository;
+            _resultsRepository = resultsRepository;
         }
 
         public async Task IngestDriversForActiveTournaments(CancellationToken cancellationToken)
@@ -80,7 +84,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 }
             }
         }
-
 
         public async Task IngestDriverStandingsForActiveTournaments(CancellationToken cancellationToken)
         {
@@ -171,7 +174,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 foreach (var providerDriver in driversFromProvider)
                 {
                     var driverInRepo =
-                        _motorDriverRepository.FirstOrDefault(d => d.ProviderDriverId == providerDriver.playerId);
+                        _motorDriverRepository.FirstOrDefault(d => d.ProviderId == providerDriver.playerId);
 
                     if (driverInRepo is null)
                     {
@@ -249,7 +252,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 foreach (var providerEntry in standingsFromProvider)
                 {
                     var driverStanding =
-                        _driverStandingRepository.FirstOrDefault(s => s.MotorDriver.ProviderDriverId == providerEntry.playerId);
+                        _driverStandingRepository.FirstOrDefault(s => s.MotorDriver.ProviderId == providerEntry.playerId);
                     if (driverStanding is null)
                     {
                         AddNewDriverStandingToRepo(providerEntry, league);
@@ -289,6 +292,48 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             await _teamsRepository.SaveAsync();
 
+        }
+
+        private async Task PersistResultsInRepository(MotorEntitiesResponse response, CancellationToken cancellationToken)
+        {
+            var resultsFromProviderResponse = ExtractResultsFromProviderResponse(response);
+
+            if (resultsFromProviderResponse is null)
+            {
+                return;
+            }
+
+            foreach (var result in resultsFromProviderResponse)
+            {
+                var resultInRepo = 
+                    _resultsRepository.FirstOrDefault(r => r.MotorDriver.ProviderId == result.player.playerId);
+
+                if (resultInRepo is null)
+                {
+                    AddNewResultsToRepo(result);
+                }
+                else
+                {
+                    UpdateResultInRepo(resultInRepo, result);
+                }
+            }
+
+            await _teamsRepository.SaveAsync();
+        }
+
+        private static void UpdateResultInRepo(MotorRaceResult resultInRepo, Result result)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        private static void AddNewResultsToRepo(Result result)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        private IEnumerable<Result> ExtractResultsFromProviderResponse(MotorEntitiesResponse response)
+        {
+            throw new System.NotImplementedException();
         }
 
         private static IEnumerable<Race> ExtractRacesFromProviderResponse(MotorEntitiesResponse response)
@@ -349,7 +394,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         {
             var driver = new MotorDriver
             {
-                ProviderDriverId = providerDriver.playerId,
+                ProviderId = providerDriver.playerId,
                 FirstName = providerDriver.firstName,
                 LastName = providerDriver.lastName,
                 HeightInCentimeters = providerDriver.height.centimeters,
@@ -439,12 +484,12 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         private void AddNewDriverStandingToRepo(Player providerPlayerInfo, MotorLeague league)
         {
-            var repoDriver = _motorDriverRepository.FirstOrDefault(d => d.ProviderDriverId == providerPlayerInfo.playerId);
+            var repoDriver = _motorDriverRepository.FirstOrDefault(d => d.ProviderId == providerPlayerInfo.playerId);
             if (repoDriver is null)
             {
                 AddNewDriverToRepo(providerPlayerInfo);
                 _motorDriverRepository.SaveAsync();
-                repoDriver = _motorDriverRepository.FirstOrDefault(d => d.ProviderDriverId == providerPlayerInfo.playerId);
+                repoDriver = _motorDriverRepository.FirstOrDefault(d => d.ProviderId == providerPlayerInfo.playerId);
             }
 
             var standingEntry = new MotorDriverStanding
@@ -479,10 +524,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             //TODO
         }
 
-        private async Task PersistResultsInRepository(MotorEntitiesResponse raceResults, CancellationToken cancellationToken)
-        {
-            //TODO
-        }
+       
 
         private static async Task PersistGridInRepository(MotorEntitiesResponse tournamentGrid, CancellationToken cancellationToken)
         {

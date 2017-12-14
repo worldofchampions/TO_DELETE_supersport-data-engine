@@ -13,7 +13,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFram
         public int LegacyDriverId { get; set; }
 
         /// <summary> The provider's record identifier. </summary>
-        public int ProviderDriverId { get; set; }
+        public int ProviderId { get; set; }
 
         /// <summary> A provider driven value. </summary>
         public string FirstName { get; set; }
