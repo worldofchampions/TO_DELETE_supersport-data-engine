@@ -305,8 +305,11 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             foreach (var result in resultsFromProviderResponse)
             {
+                var playerId = result?.player?.playerId;
+                if(playerId is null) continue;
+
                 var resultInRepo = 
-                    _resultsRepository.FirstOrDefault(r => r.MotorDriver.ProviderId == result.player.playerId);
+                    _resultsRepository.FirstOrDefault(r => r.MotorDriver.ProviderId == playerId);
 
                 if (resultInRepo is null)
                 {
