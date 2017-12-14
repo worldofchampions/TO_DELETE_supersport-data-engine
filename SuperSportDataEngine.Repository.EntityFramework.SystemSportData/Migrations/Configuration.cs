@@ -1,6 +1,7 @@
 using Newtonsoft.Json;
 using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
 using SuperSportDataEngine.ApplicationLogic.Entities.Legacy.Mappers;
+using SuperSportDataEngine.Repository.EntityFramework.SystemSportData.Migrations.Seed;
 
 namespace SuperSportDataEngine.Repository.EntityFramework.SystemSportData.Migrations
 {
@@ -23,6 +24,8 @@ namespace SuperSportDataEngine.Repository.EntityFramework.SystemSportData.Migrat
             var authFeedConsumers = feedConsumerEntities.Select(LegacyAuthFeedConsumerMapper.MapToModel);
 
             context.LegacyAuthFeedConsumers.AddOrUpdate(p => p.Name, authFeedConsumers.ToArray());
+
+            SeedSchedulingDashboardUsers.Seed(context);
         }
 
         public static List<LegacyAuthFeedConsumerEntity> ReadConsumersFromJson()
