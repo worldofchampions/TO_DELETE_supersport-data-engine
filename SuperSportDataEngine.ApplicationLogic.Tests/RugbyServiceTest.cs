@@ -587,7 +587,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
                 new RugbyFixture()
                 {
                     Id = Guid.NewGuid(),
-                    StartDateTime = DateTime.UtcNow
+                    StartDateTime = DateTime.Today.Subtract(TimeSpan.FromDays(1))
                 });
             Assert.AreEqual(1, (await _rugbyService.GetPastDaysFixtures(4)).Count());
         }
@@ -601,7 +601,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
                     new RugbyFixture()
                     {
                         Id = Guid.NewGuid(),
-                        StartDateTime = DateTime.UtcNow
+                        StartDateTime = DateTime.Today.Subtract(TimeSpan.FromDays(1))
                     },
                     new RugbyFixture()
                     {
@@ -622,12 +622,12 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
                     new RugbyFixture()
                     {
                         Id = Guid.NewGuid(),
-                        StartDateTime = DateTime.UtcNow
+                        StartDateTime = DateTime.Today.Subtract(TimeSpan.FromDays(1))
                     },
                     new RugbyFixture()
                     {
                         Id = Guid.NewGuid(),
-                        StartDateTime = DateTime.UtcNow - TimeSpan.FromDays(1)
+                        StartDateTime = DateTime.Today.Subtract(TimeSpan.FromDays(2))
                     }
                 });
 

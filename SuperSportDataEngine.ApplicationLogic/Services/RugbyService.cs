@@ -490,8 +490,10 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<IEnumerable<RugbyFixture>> GetPostponedFixtures()
         {
+            var threeHoursAgo = (DateTimeOffset.UtcNow - TimeSpan.FromHours(3));
+
             return await Task.FromResult(_rugbyFixturesRepository.Where(f =>
-                (f.RugbyFixtureStatus == RugbyFixtureStatus.PreMatch && f.StartDateTime < (DateTimeOffset.UtcNow - TimeSpan.FromHours(3)))
+                (f.RugbyFixtureStatus == RugbyFixtureStatus.PreMatch && f.StartDateTime < threeHoursAgo)
                 || (f.RugbyFixtureStatus == RugbyFixtureStatus.Postponed)));
         }
 
