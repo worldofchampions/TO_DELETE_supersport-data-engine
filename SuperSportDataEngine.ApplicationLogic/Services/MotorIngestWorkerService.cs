@@ -627,12 +627,14 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             if (response.recordCount <= 0)
                 return null;
 
-            var result = response.apiResults.FirstOrDefault()
+            var teams = response.apiResults.FirstOrDefault()
                 ?.leagues.FirstOrDefault()
                 ?.subLeague
-                ?.season.standings.teams;
+                ?.season
+                ?.standings
+                ?.teams;
 
-            return result;
+            return teams;
         }
 
         private static IEnumerable<Owner> ExtractOwnersFromProviderResponse(MotorEntitiesResponse response)
