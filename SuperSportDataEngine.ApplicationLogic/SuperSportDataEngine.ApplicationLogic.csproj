@@ -115,6 +115,7 @@
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyTeam.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyTournament.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyVenue.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\UnitOfWork\IPublicSportDataUnitOfWork.cs" />
     <Compile Include="Entities\Legacy\LegacyRugbyMatchEventEntity.cs" />
     <Compile Include="Entities\Legacy\LegacyRugbyScorerEntity.cs" />
     <Compile Include="Entities\Legacy\LegacyRugbyScoringEventsConstants.cs" />
@@ -158,5 +159,6 @@
       <Name>SuperSportDataEngine.Common</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

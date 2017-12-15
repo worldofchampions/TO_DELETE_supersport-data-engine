@@ -233,6 +233,7 @@
     <Compile Include="Migrations\Seed\SeedRugbyEventTypes.cs" />
     <Compile Include="Migrations\Seed\SeedTeams.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UnitOfWork\PublicSportDataUnitOfWork.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SuperSportDataEngine.ApplicationLogic\SuperSportDataEngine.ApplicationLogic.csproj">

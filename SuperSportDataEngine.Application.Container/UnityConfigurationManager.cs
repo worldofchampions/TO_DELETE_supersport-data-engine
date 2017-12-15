@@ -1,4 +1,6 @@
-﻿using SuperSportDataEngine.Common.Caching;
+﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
+using SuperSportDataEngine.Common.Caching;
+using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.UnitOfWork;
 
 namespace SuperSportDataEngine.Application.Container
 {
@@ -169,6 +171,29 @@ namespace SuperSportDataEngine.Application.Container
             container.RegisterType<IBaseEntityFrameworkRepository<RugbyVenue>, BaseEntityFrameworkRepository<RugbyVenue>>(
                 new HierarchicalLifetimeManager(),
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyVenue>(container.Resolve<DbContext>(PublicSportDataRepository))));
+
+            container.RegisterType<DbContext, PublicSportDataContext>(
+                new HierarchicalLifetimeManager());
+
+            container.RegisterType<IPublicSportDataUnitOfWork, PublicSportDataUnitOfWork>(
+                new HierarchicalLifetimeManager(),
+                new InjectionFactory((x) => new PublicSportDataUnitOfWork(
+                    container.Resolve<DbContext>(PublicSportDataRepository),
+                    container.Resolve<IBaseEntityFrameworkRepository<RugbyCommentary>>(),
+                    container.Resolve<IBaseEntityFrameworkRepository<RugbyEventType>>(),
+                    container.Resolve<IBaseEntityFrameworkRepository<RugbyEventTypeProviderMapping>>(),
+                    container.Resolve<IBaseEntityFrameworkRepository<RugbyFixture>>(),
+                    container.Resolve<IBaseEntityFrameworkRepository<RugbyFlatLog>>(),
+                    container.Resolve<IBaseEntityFrameworkRepository<RugbyGroupedLog>>(),
+                    container.Resolve<IBaseEntityFrameworkRepository<RugbyLogGroup>>(),
+                    container.Resolve<IBaseEntityFrameworkRepository<RugbyMatchEvent>>(),
+                    container.Resolve<IBaseEntityFrameworkRepository<RugbyMatchStatistics>>(),
+                    container.Resolve<IBaseEntityFrameworkRepository<RugbyPlayer>>(),
+                    container.Resolve<IBaseEntityFrameworkRepository<RugbyPlayerLineup>>(),
+                    container.Resolve<IBaseEntityFrameworkRepository<RugbySeason>>(),
+                    container.Resolve<IBaseEntityFrameworkRepository<RugbyTeam>>(),
+                    container.Resolve<IBaseEntityFrameworkRepository<RugbyTournament>>(),
+                    container.Resolve<IBaseEntityFrameworkRepository<RugbyVenue>>())));
         }
 
         private static void ApplyRegistrationsForRepositoryEntityFrameworkSystemSportData(IUnityContainer container)
