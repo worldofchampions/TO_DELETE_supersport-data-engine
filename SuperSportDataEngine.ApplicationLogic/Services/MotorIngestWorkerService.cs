@@ -336,14 +336,14 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 }
                 else
                 {
-                    UpdateResultInRepo(resultInRepo, result);
+                    UpdateResultsInRepo(resultInRepo, result);
                 }
             }
 
             await _resultsRepository.SaveAsync();
         }
 
-        private void UpdateResultInRepo(MotorRaceResult resultInRepo, Result result)
+        private void UpdateResultsInRepo(MotorRaceResult resultInRepo, Result result)
         {
             resultInRepo.DriverTotalPoints = int.Parse(result.points.driver.total);
             resultInRepo.DriverPenaltyPoints = int.Parse(result.points.driver.penalty);
@@ -578,9 +578,37 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             _teamStandingRepository.Update(repoStanding);
         }
 
-        private void AddNewTeamStandingToRepo(Team providerEntry)
+        private void AddNewTeamStandingToRepo(Team providerTeam)
         {
-            throw new System.NotImplementedException();
+            if (providerTeam == null || providerTeam.finishes is null)
+                return;
+
+            var teamFromRepo = _teamsRepository.FirstOrDefault(t => t.ProviderTeamId == providerTeam.teamId);
+
+            if (teamFromRepo is null)
+            {
+                //TODO: This team is new, persist it in repo before persisting TeamStanding
+            }
+
+            var teamStanding = new MotorTeamStanding
+            {
+                Wins = providerTeam.finishes.first,
+                FinishedSecond = providerTeam.finishes.second,
+                FinishedThird = providerTeam.finishes.third,
+                Top5Finishes = providerTeam.finishes.top5,
+                Top10Finishes = providerTeam.finishes.top10,
+                Top15Finishes = providerTeam.finishes.top15,
+                Top20Finishes = providerTeam.finishes.top20,
+                DidNotFinish = providerTeam.finishes.didNotFinish,
+
+                Points = providerTeam.points,
+                Rank = providerTeam.rank,
+
+                Starts = providerTeam.starts,
+                Poles = providerTeam.poles
+            };
+
+            _teamStandingRepository.Add(teamStanding);
         }
 
         private static IEnumerable<Result> ExtractResultsFromProviderResponse(MotorEntitiesResponse response)
