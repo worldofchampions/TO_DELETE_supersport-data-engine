@@ -7,10 +7,10 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Extensions
 {
     public static class WebExtensions
     {
-        public static async Task<WebResponse> GetResponseAsync(this WebRequest request, int timeoutInSeconds, ILoggingService logger)
+        public static async Task<WebResponse> GetResponseAsync(this WebRequest request, int timeoutInMilliseconds, ILoggingService logger)
         {
             var requestTask = Task.Factory.FromAsync(request.BeginGetResponse, request.EndGetResponse, null);
-            var timeOutTask = Task.Delay(timeoutInSeconds * 1000);
+            var timeOutTask = Task.Delay(timeoutInMilliseconds);
 
             var result = await Task.WhenAny(requestTask, timeOutTask).ConfigureAwait(false);
 

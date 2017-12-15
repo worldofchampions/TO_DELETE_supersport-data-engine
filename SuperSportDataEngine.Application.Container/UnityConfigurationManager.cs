@@ -95,7 +95,8 @@ namespace SuperSportDataEngine.Application.Container
             if (applicationScope == ApplicationScope.ServiceSchedulerClient ||
                 applicationScope == ApplicationScope.ServiceSchedulerIngestServer)
             {
-                container.RegisterType<IStatsProzoneRugbyIngestService, StatsProzoneRugbyIngestService>(new HierarchicalLifetimeManager());
+                container.RegisterType<IStatsProzoneRugbyIngestService, StatsProzoneRugbyIngestService>(
+                    new HierarchicalLifetimeManager());
             }
         }
 

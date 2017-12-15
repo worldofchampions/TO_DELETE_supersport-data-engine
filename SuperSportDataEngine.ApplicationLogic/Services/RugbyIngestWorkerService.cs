@@ -104,7 +104,7 @@
                 await _statsProzoneIngestService.IngestRugbyReferenceData(cancellationToken);
 
             if (entitiesResponse == null)
-                return;
+                throw new NullReferenceException("Provider request failed due to timeout.");
 
             await PersistVenuesInRepository(cancellationToken, entitiesResponse);
             await PersistTeamsInRepository(cancellationToken, entitiesResponse);

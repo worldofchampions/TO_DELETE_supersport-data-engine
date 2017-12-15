@@ -25,15 +25,15 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
     public class StatsProzoneRugbyIngestService : IStatsProzoneRugbyIngestService
     {
         readonly ILoggingService _logger;
-        private readonly int _maximumSecondsForRequestWithResponse;
-        private readonly int _maximumSecondsForResponse;
+        private readonly int _maximumTimeForRequestWithResponseInMilliseconds;
+        private readonly int _maximumTimeForResponseInMilliseconds;
 
         public StatsProzoneRugbyIngestService(
             ILoggingService logger)
         {
             _logger = logger;
-            _maximumSecondsForRequestWithResponse = int.Parse(ConfigurationManager.AppSettings["maximumSecondsForRequestWithResponse"]);
-            _maximumSecondsForResponse = int.Parse(ConfigurationManager.AppSettings["maximumSecondsForResponse"]);
+            _maximumTimeForRequestWithResponseInMilliseconds = int.Parse(ConfigurationManager.AppSettings["maximumTimeForRequestWithResponseInMilliseconds"]);
+            _maximumTimeForResponseInMilliseconds = int.Parse(ConfigurationManager.AppSettings["maximumTimeForResponseInMilliseconds"]);
         }
 
         public async Task<RugbyEntitiesResponse> IngestRugbyReferenceData(CancellationToken cancellationToken)
@@ -66,7 +66,7 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
                     RequestTime = DateTime.Now
                 };
 
-            using (WebResponse response = await request.GetResponseAsync(_maximumSecondsForResponse, _logger))
+            using (WebResponse response = await request.GetResponseAsync(_maximumTimeForResponseInMilliseconds, _logger))
             {
                 using (Stream responseStream = response.GetResponseStream())
                 {
@@ -120,7 +120,7 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
                     RequestTime = DateTime.Now
                 };
 
-            using (WebResponse response = await request.GetResponseAsync(_maximumSecondsForResponse, _logger))
+            using (WebResponse response = await request.GetResponseAsync(_maximumTimeForResponseInMilliseconds, _logger))
             {
                 using (Stream responseStream = response.GetResponseStream())
                 {
@@ -171,7 +171,7 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
                     RequestTime = DateTime.Now
                 };
 
-            using (WebResponse response = await request.GetResponseAsync(_maximumSecondsForResponse, _logger))
+            using (WebResponse response = await request.GetResponseAsync(_maximumTimeForResponseInMilliseconds, _logger))
             {
                 using (Stream responseStream = response.GetResponseStream())
                 {
@@ -210,7 +210,7 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
             var responseData = new RugbyFixturesResponse() {RequestTime = DateTime.Now};
 
-            using (WebResponse response = await request.GetResponseAsync(_maximumSecondsForResponse, _logger))
+            using (WebResponse response = await request.GetResponseAsync(_maximumTimeForResponseInMilliseconds, _logger))
             {
                 using (Stream responseStream = response.GetResponseStream())
                 {
@@ -248,7 +248,7 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             
             var logsResponse = new RugbyFlatLogsResponse() {RequestTime = DateTime.Now};
 
-            using (WebResponse response = await request.GetResponseAsync(_maximumSecondsForResponse, _logger))
+            using (WebResponse response = await request.GetResponseAsync(_maximumTimeForResponseInMilliseconds, _logger))
             {
                 using (Stream responseStream = response.GetResponseStream())
                 {
@@ -271,7 +271,7 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
             var logsResponse = new RugbyGroupedLogsResponse() { RequestTime = DateTime.Now };
 
-            using (WebResponse response = await request.GetResponseAsync(_maximumSecondsForResponse, _logger))
+            using (WebResponse response = await request.GetResponseAsync(_maximumTimeForResponseInMilliseconds, _logger))
             {
                 using (Stream responseStream = response.GetResponseStream())
                 {
@@ -426,7 +426,7 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             var timeDifference = (o.ResponseTime - o.RequestTime);
             var seconds = timeDifference.TotalSeconds;
 
-            if (seconds > _maximumSecondsForRequestWithResponse)
+            if (seconds > _maximumTimeForRequestWithResponseInMilliseconds)
             {
                 _logger.Error("HTTPRequestTooLong." + request.RequestUri, 
                     "HTTP request taking too long. " + request.RequestUri + ". Taking " + seconds + " seconds.");
