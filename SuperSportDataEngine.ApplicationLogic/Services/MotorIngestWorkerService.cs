@@ -32,7 +32,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             IBaseEntityFrameworkRepository<MotorRace> raceRepository,
             IBaseEntityFrameworkRepository<MotorDriverStanding> driverStandingRepository,
             IBaseEntityFrameworkRepository<MotorTeam> teamsRepository,
-            IBaseEntityFrameworkRepository<MotorRaceResult> resultsRepository, 
+            IBaseEntityFrameworkRepository<MotorRaceResult> resultsRepository,
             IBaseEntityFrameworkRepository<MotorTeamStanding> teamStandingRepository)
         {
             _statsProzoneMotorIngestService = statsProzoneMotorIngestService;
@@ -191,12 +191,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             }
         }
 
-        private static IEnumerable<Player> ExtractDriversFromProviderResponse(MotorEntitiesResponse response)
-        {
-            var responseHasNoData = response.recordCount <= 0;
-            return responseHasNoData ? null : response.apiResults.FirstOrDefault()?.leagues.FirstOrDefault()?.subLeague.players;
-        }
-
         private async Task PersistRacesInRepository(MotorEntitiesResponse providerResponse,
             MotorLeague league, CancellationToken cancellationToken)
         {
@@ -290,16 +284,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
                 await _driverStandingRepository.SaveAsync();
             }
-        }
-
-        private void UpdateTeamStandingInRepo(Team providerEntry, MotorTeamStanding teamStanding)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        private void AddNewTeamStandingToRepo(Team providerEntry)
-        {
-            throw new System.NotImplementedException();
         }
 
         private async Task PersistTournamentOwnersInRepository(MotorEntitiesResponse response)
@@ -518,6 +502,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         private void UpdateDriverStandingInRepo(Player providerStanding, MotorDriverStanding repoStanding)
         {
+            if (providerStanding == null || providerStanding.finishes is null)
+                return;
+
             repoStanding.Points = providerStanding.points;
             repoStanding.Rank = providerStanding.rank;
             repoStanding.Wins = providerStanding.finishes.first;
@@ -534,43 +521,75 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             _driverStandingRepository.Update(repoStanding);
         }
 
-        private void AddNewDriverStandingToRepo(Player providerPlayerInfo, MotorLeague league)
+        private void AddNewDriverStandingToRepo(Player providerStanding, MotorLeague league)
         {
-            var repoDriver = _driverRepository.FirstOrDefault(d => d.ProviderId == providerPlayerInfo.playerId);
+            if (providerStanding == null || providerStanding.finishes is null)
+                return;
+
+            var repoDriver = _driverRepository.FirstOrDefault(d => d.ProviderId == providerStanding.playerId);
             if (repoDriver is null)
             {
-                AddNewDriverToRepo(providerPlayerInfo);
+                AddNewDriverToRepo(providerStanding);
                 _driverRepository.SaveAsync();
-                repoDriver = _driverRepository.FirstOrDefault(d => d.ProviderId == providerPlayerInfo.playerId);
+                repoDriver = _driverRepository.FirstOrDefault(d => d.ProviderId == providerStanding.playerId);
             }
 
             var standingEntry = new MotorDriverStanding
             {
                 MotorLeague = league,
-                Points = providerPlayerInfo.points,
-                Rank = providerPlayerInfo.rank,
-                Wins = providerPlayerInfo.finishes.first,
-                FinishedSecond = providerPlayerInfo.finishes.second,
-                FinishedThird = providerPlayerInfo.finishes.third,
-                Top5Finishes = providerPlayerInfo.finishes.top5,
-                Top10Finishes = providerPlayerInfo.finishes.top10,
-                Top15Finishes = providerPlayerInfo.finishes.top15,
-                Top20Finishes = providerPlayerInfo.finishes.top20,
-                DidNotFinish = providerPlayerInfo.finishes.didNotFinish,
-                LapsCompleted = providerPlayerInfo.laps.completed,
-                LapsTotalLed = providerPlayerInfo.laps.totalLed,
+                Points = providerStanding.points,
+                Rank = providerStanding.rank,
+                Wins = providerStanding.finishes.first,
+                FinishedSecond = providerStanding.finishes.second,
+                FinishedThird = providerStanding.finishes.third,
+                Top5Finishes = providerStanding.finishes.top5,
+                Top10Finishes = providerStanding.finishes.top10,
+                Top15Finishes = providerStanding.finishes.top15,
+                Top20Finishes = providerStanding.finishes.top20,
+                DidNotFinish = providerStanding.finishes.didNotFinish,
+                LapsCompleted = providerStanding.laps.completed,
+                LapsTotalLed = providerStanding.laps.totalLed,
                 MotorDriver = repoDriver
             };
 
             _driverStandingRepository.Add(standingEntry);
         }
 
+        private void UpdateTeamStandingInRepo(Team providerStanding, MotorTeamStanding repoStanding)
+        {
+            if (providerStanding == null || providerStanding.finishes is null)
+                return;
+
+            repoStanding.Wins = providerStanding.finishes.first;
+            repoStanding.FinishedSecond = providerStanding.finishes.second;
+            repoStanding.FinishedThird = providerStanding.finishes.third;
+            repoStanding.Top5Finishes = providerStanding.finishes.top5;
+            repoStanding.Top10Finishes = providerStanding.finishes.top10;
+            repoStanding.Top15Finishes = providerStanding.finishes.top15;
+            repoStanding.Top20Finishes = providerStanding.finishes.top20;
+            repoStanding.DidNotFinish = providerStanding.finishes.didNotFinish;
+
+            repoStanding.Points = providerStanding.points;
+            repoStanding.Rank = providerStanding.rank;
+
+            repoStanding.Starts = providerStanding.starts;
+            repoStanding.Poles = providerStanding.poles;
+
+            _teamStandingRepository.Update(repoStanding);
+        }
+
+        private void AddNewTeamStandingToRepo(Team providerEntry)
+        {
+            throw new System.NotImplementedException();
+        }
+
         private static IEnumerable<Result> ExtractResultsFromProviderResponse(MotorEntitiesResponse response)
         {
-            if (response.recordCount <= 0)
+            if (response != null && response.recordCount <= 0)
                 return null;
 
-            var result = response.apiResults.FirstOrDefault()
+            var result = response
+                ?.apiResults.FirstOrDefault()
                 ?.leagues.FirstOrDefault()
                 ?.subLeague
                 ?.season
@@ -584,10 +603,11 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         private static IEnumerable<Race> ExtractRacesFromProviderResponse(MotorEntitiesResponse response)
         {
-            if (response.recordCount <= 0)
+            if (response != null && response.recordCount <= 0)
                 return null;
 
-            var races = response.apiResults.FirstOrDefault()
+            var races = response
+                ?.apiResults.FirstOrDefault()
                 ?.leagues.FirstOrDefault()
                 ?.races;
 
@@ -596,10 +616,11 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         private static IEnumerable<League> ExtractLeaguesFromProviderResponse(MotorEntitiesResponse response)
         {
-            if (response.recordCount <= 0)
+            if (response != null && response.recordCount <= 0)
                 return null;
 
-            var leagues = response.apiResults.FirstOrDefault()
+            var leagues = response
+                ?.apiResults.FirstOrDefault()
                 ?.leagues;
 
             return leagues;
@@ -607,10 +628,11 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         private static IEnumerable<Player> ExtractDriverStandingsFromProviderResponse(MotorEntitiesResponse response)
         {
-            if (response.recordCount <= 0)
+            if (response != null && response.recordCount <= 0)
                 return null;
 
-            var result = response.apiResults.FirstOrDefault()
+            var result = response
+                ?.apiResults.FirstOrDefault()
                 ?.leagues.FirstOrDefault()
                 ?.subLeague
                 ?.season
@@ -622,10 +644,11 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         private static IEnumerable<Team> ExtractTeamStandingsFromProviderResponse(MotorEntitiesResponse response)
         {
-            if (response.recordCount <= 0)
+            if (response != null && response.recordCount <= 0)
                 return null;
 
-            var teams = response.apiResults.FirstOrDefault()
+            var teams = response
+                ?.apiResults.FirstOrDefault()
                 ?.leagues.FirstOrDefault()
                 ?.subLeague
                 ?.season
@@ -637,15 +660,31 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         private static IEnumerable<Owner> ExtractOwnersFromProviderResponse(MotorEntitiesResponse response)
         {
-            if (response.recordCount <= 0)
+            if (response != null && response.recordCount <= 0)
                 return null;
 
-            var results = response.apiResults.FirstOrDefault()
+            var results = response
+                ?.apiResults.FirstOrDefault()
                 ?.leagues.FirstOrDefault()
                 ?.subLeague
                 ?.owners;
 
             return results;
+        }
+
+        private static IEnumerable<Player> ExtractDriversFromProviderResponse(MotorEntitiesResponse response)
+        {
+            if (response != null && response.recordCount <= 0)
+                return null;
+
+            var players = response
+                ?.apiResults
+                ?.FirstOrDefault()
+                ?.leagues.FirstOrDefault()
+                ?.subLeague
+                ?.players;
+
+            return players;
         }
 
         private static async Task PersistTournamentTeamsInRepository(MotorEntitiesResponse tournamentTeamsResponse)
