@@ -20,6 +20,10 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFram
 
         public int Wins { get; set; }
 
+        public int FinishedSecond { get; set; }
+
+        public int FinishedThird { get; set; }
+
         public int Top5Finishes { get; set; }
 
         public int Top10Finishes { get; set; }
@@ -41,5 +45,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFram
         public virtual MotorSeason RugbySeason { get; set; }
 
         public virtual MotorTeam MotorTeam { get; set; }
+        
     }
 }
