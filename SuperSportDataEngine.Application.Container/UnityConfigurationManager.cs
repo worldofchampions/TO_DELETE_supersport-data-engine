@@ -175,22 +175,7 @@ namespace SuperSportDataEngine.Application.Container
             container.RegisterType<IPublicSportDataUnitOfWork, PublicSportDataUnitOfWork>(
                 new HierarchicalLifetimeManager(),
                 new InjectionFactory((x) => new PublicSportDataUnitOfWork(
-                    container.Resolve<DbContext>(PublicSportDataRepository),
-                    container.Resolve<IBaseEntityFrameworkRepository<RugbyCommentary>>(),
-                    container.Resolve<IBaseEntityFrameworkRepository<RugbyEventType>>(),
-                    container.Resolve<IBaseEntityFrameworkRepository<RugbyEventTypeProviderMapping>>(),
-                    container.Resolve<IBaseEntityFrameworkRepository<RugbyFixture>>(),
-                    container.Resolve<IBaseEntityFrameworkRepository<RugbyFlatLog>>(),
-                    container.Resolve<IBaseEntityFrameworkRepository<RugbyGroupedLog>>(),
-                    container.Resolve<IBaseEntityFrameworkRepository<RugbyLogGroup>>(),
-                    container.Resolve<IBaseEntityFrameworkRepository<RugbyMatchEvent>>(),
-                    container.Resolve<IBaseEntityFrameworkRepository<RugbyMatchStatistics>>(),
-                    container.Resolve<IBaseEntityFrameworkRepository<RugbyPlayer>>(),
-                    container.Resolve<IBaseEntityFrameworkRepository<RugbyPlayerLineup>>(),
-                    container.Resolve<IBaseEntityFrameworkRepository<RugbySeason>>(),
-                    container.Resolve<IBaseEntityFrameworkRepository<RugbyTeam>>(),
-                    container.Resolve<IBaseEntityFrameworkRepository<RugbyTournament>>(),
-                    container.Resolve<IBaseEntityFrameworkRepository<RugbyVenue>>())));
+                    container.Resolve<DbContext>(PublicSportDataRepository))));
         }
 
         private static void ApplyRegistrationsForRepositoryEntityFrameworkSystemSportData(IUnityContainer container)
