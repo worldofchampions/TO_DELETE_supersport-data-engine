@@ -42,7 +42,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFram
 
         public virtual MotorLeague MotorLeague { get; set; }
 
-        public virtual MotorSeason RugbySeason { get; set; }
+        public virtual MotorSeason MotorSeason { get; set; }
 
         public virtual MotorTeam MotorTeam { get; set; }
         
