@@ -22,7 +22,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         private readonly IBaseEntityFrameworkRepository<MotorRace> _raceRepository;
         private readonly IBaseEntityFrameworkRepository<MotorDriverStanding> _driverStandingRepository;
         private readonly IBaseEntityFrameworkRepository<MotorTeamStanding> _teamStandingRepository;
-
         private readonly IBaseEntityFrameworkRepository<MotorTeam> _teamsRepository;
         private readonly IBaseEntityFrameworkRepository<MotorRaceResult> _resultsRepository;
 
@@ -623,7 +622,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         private static IEnumerable<Team> ExtractTeamStandingsFromProviderResponse(MotorEntitiesResponse response)
         {
-
             if (response.recordCount <= 0)
                 return null;
 

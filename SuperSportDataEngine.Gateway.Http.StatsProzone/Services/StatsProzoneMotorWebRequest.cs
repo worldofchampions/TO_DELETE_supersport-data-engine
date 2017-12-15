@@ -207,10 +207,6 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
             return stamp;
         }
-
-        WebRequest IProviderWebRequest.GetRequestForDrivers(string providerSlug)
-        {
-            return GetRequestForDrivers(providerSlug);
-        }
+      
     }
 }
