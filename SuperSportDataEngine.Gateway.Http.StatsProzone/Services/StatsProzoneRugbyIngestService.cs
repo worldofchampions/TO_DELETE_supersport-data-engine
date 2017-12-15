@@ -24,13 +24,13 @@
     public class StatsProzoneRugbyIngestService : IStatsProzoneRugbyIngestService
     {
         readonly ILoggingService _logger;
-        private int _maximumSecondsForRequest;
+        private int _maximumSecondsForRequestWithResponse;
 
         public StatsProzoneRugbyIngestService(
             ILoggingService logger)
         {
             _logger = logger;
-            _maximumSecondsForRequest = int.Parse(ConfigurationManager.AppSettings["maximumSecondsForRequest"]);
+            _maximumSecondsForRequestWithResponse = int.Parse(ConfigurationManager.AppSettings["maximumSecondsForRequestWithResponse"]);
         }
 
         public RugbyEntitiesResponse IngestRugbyReferenceData(CancellationToken cancellationToken)
@@ -242,7 +242,7 @@
         private RugbyFlatLogsResponse RugbyFlatLogsResponse(int competitionId, int seasonId)
         {
             WebRequest request = GetWebRequestForLogsEndpoint(competitionId, seasonId);
-
+            
             var logsResponse = new RugbyFlatLogsResponse() {RequestTime = DateTime.Now};
 
             using (WebResponse response = request.GetResponse())
@@ -292,7 +292,6 @@
             var request = WebRequest.Create(baseUrl + competionId + "/" + seasonId + "/" + roundId);
 
             request.Method = "GET";
-
             request.Headers["Authorization"] = "Basic U3VwZXJTcG9ydF9NZWRpYTpTdTkzUjdyMFA1";
 
             request.ContentType = "application/json; charset=UTF-8";
@@ -424,7 +423,7 @@
             var timeDifference = (o.ResponseTime - o.RequestTime);
             var seconds = timeDifference.TotalSeconds;
 
-            if (seconds > _maximumSecondsForRequest)
+            if (seconds > _maximumSecondsForRequestWithResponse)
             {
                 _logger.Error("HTTPRequestTooLong." + request.RequestUri, 
                     "HTTP request taking too long. " + request.RequestUri + ". Taking " + seconds + " seconds.");
