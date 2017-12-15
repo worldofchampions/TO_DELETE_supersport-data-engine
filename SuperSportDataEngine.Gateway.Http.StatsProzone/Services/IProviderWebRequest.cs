@@ -1,5 +1,4 @@
 ﻿using System.Net;
-
 namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 {
     public interface IProviderWebRequest
