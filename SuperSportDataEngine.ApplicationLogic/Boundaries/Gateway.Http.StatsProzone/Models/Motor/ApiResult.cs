@@ -184,7 +184,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsPro
     {
         public string total { get; set; }
         public string bonus { get; set; }
-        public object penalty { get; set; }
+        public string penalty { get; set; }
     }
 
     public class FinishingTime
@@ -454,6 +454,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsPro
         public string name { get; set; }
         public string total { get; set; }
         public string bonus { get; set; }
-        public object penalty { get; set; }
+        public string penalty { get; set; }
     }
 }

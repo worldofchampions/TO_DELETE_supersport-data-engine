@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -321,12 +322,32 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 }
             }
 
-            await _teamsRepository.SaveAsync();
+            await _resultsRepository.SaveAsync();
         }
 
-        private static void UpdateResultInRepo(MotorRaceResult resultInRepo, Result result)
+        private void UpdateResultInRepo(MotorRaceResult resultInRepo, Result result)
         {
-            throw new System.NotImplementedException();
+            resultInRepo.DriverTotalPoints = int.Parse(result.points.driver.total);
+            resultInRepo.DriverPenaltyPoints = int.Parse(result.points.driver.penalty);
+            resultInRepo.DriverBonusPoints = int.Parse(result.points.driver.bonus);
+
+            resultInRepo.OwnerTotalPoints = int.Parse(result.points.owner.total);
+            resultInRepo.OwnerBonusPoints = int.Parse(result.points.owner.bonus);
+            resultInRepo.OwnerPenaltyPoints = int.Parse(result.points.owner.penalty);
+
+            resultInRepo.FinishingTime.Hours = result.finishingTime.hours;
+            resultInRepo.FinishingTime.Minutes = result.finishingTime.minutes;
+            resultInRepo.FinishingTime.Seconds = result.finishingTime.seconds;
+
+            resultInRepo.IsFastest = result.laps.isFastest;
+            resultInRepo.LapsLed = result.laps.totalLed;
+            resultInRepo.LapsBehind = result.laps.behind;
+            resultInRepo.LapsCompleted = result.laps.completed;
+
+            resultInRepo.Position = result.carPosition.position;
+            resultInRepo.StartingPosition = result.carPosition.startingPosition;
+
+            _resultsRepository.Update(resultInRepo);
         }
 
         private static void AddNewResultsToRepo(Result result)
