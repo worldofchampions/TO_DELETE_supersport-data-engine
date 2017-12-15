@@ -294,7 +294,7 @@
                         tournament, seasonId, cancellationToken);
 
             if (fixtures == null)
-                return;
+                throw new NullReferenceException("Provider request failed due to timeout.");
 
             await PersistFixturesData(cancellationToken, fixtures);
 
@@ -308,7 +308,7 @@
         {
             var season = await _statsProzoneIngestService.IngestSeasonData(cancellationToken, tournament.ProviderTournamentId, year);
             if (season == null)
-                return;
+                throw new NullReferenceException("Provider request failed due to timeout.");
 
             var providerTournamentId = season.RugbySeasons.competitionId;
 
@@ -1108,7 +1108,7 @@
                             cancellationToken);
 
                 if (fixtures == null)
-                    return;
+                    throw new NullReferenceException("Provider request failed due to timeout.");
 
                 var upcomingFixtures = RemoveFixturesThatHaveBeenCompleted(fixtures);
                 RugbyFixturesResponse oneMonthsfixtures = RemoveFixturesMoreThanAMonthFromNow(upcomingFixtures);
