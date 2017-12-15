@@ -21,6 +21,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         private readonly IBaseEntityFrameworkRepository<MotorLeague> _leagueRepository;
         private readonly IBaseEntityFrameworkRepository<MotorRace> _raceRepository;
         private readonly IBaseEntityFrameworkRepository<MotorDriverStanding> _driverStandingRepository;
+        private readonly IBaseEntityFrameworkRepository<MotorTeamStanding> _teamStandingRepository;
+
         private readonly IBaseEntityFrameworkRepository<MotorTeam> _teamsRepository;
         private readonly IBaseEntityFrameworkRepository<MotorRaceResult> _resultsRepository;
 
@@ -31,7 +33,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             IBaseEntityFrameworkRepository<MotorRace> raceRepository,
             IBaseEntityFrameworkRepository<MotorDriverStanding> driverStandingRepository,
             IBaseEntityFrameworkRepository<MotorTeam> teamsRepository,
-            IBaseEntityFrameworkRepository<MotorRaceResult> resultsRepository)
+            IBaseEntityFrameworkRepository<MotorRaceResult> resultsRepository, 
+            IBaseEntityFrameworkRepository<MotorTeamStanding> teamStandingRepository)
         {
             _statsProzoneMotorIngestService = statsProzoneMotorIngestService;
             _driverRepository = driverRepository;
@@ -40,6 +43,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             _driverStandingRepository = driverStandingRepository;
             _teamsRepository = teamsRepository;
             _resultsRepository = resultsRepository;
+            _teamStandingRepository = teamStandingRepository;
         }
 
         public async Task IngestDriversForActiveTournaments(CancellationToken cancellationToken)
@@ -263,6 +267,40 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
                 await _driverStandingRepository.SaveAsync();
             }
+        }
+
+        private async Task PersistTeamStandingsInRepository(MotorEntitiesResponse providerResponse,
+            CancellationToken cancellationToken)
+        {
+            var teams = ExtractTeamStandingsFromProviderResponse(providerResponse);
+            if (teams != null)
+            {
+                foreach (var team in teams)
+                {
+                    var teamStanding =
+                        _teamStandingRepository.FirstOrDefault(s => s.MotorTeam.ProviderTeamId == team.teamId);
+                    if (teamStanding is null)
+                    {
+                        AddNewTeamStandingToRepo(team);
+                    }
+                    else
+                    {
+                        UpdateTeamStandingInRepo(team, teamStanding);
+                    }
+                }
+
+                await _driverStandingRepository.SaveAsync();
+            }
+        }
+
+        private void UpdateTeamStandingInRepo(Team providerEntry, MotorTeamStanding teamStanding)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        private void AddNewTeamStandingToRepo(Team providerEntry)
+        {
+            throw new System.NotImplementedException();
         }
 
         private async Task PersistTournamentOwnersInRepository(MotorEntitiesResponse response)
@@ -535,9 +573,12 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             var result = response.apiResults.FirstOrDefault()
                 ?.leagues.FirstOrDefault()
-                ?.subLeague.season.eventType.FirstOrDefault()
+                ?.subLeague
+                ?.season
+                ?.eventType.FirstOrDefault()
                 ?.events.FirstOrDefault()
-                ?.boxscore.results;
+                ?.boxscore
+                ?.results;
 
             return result;
         }
@@ -559,7 +600,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             if (response.recordCount <= 0)
                 return null;
 
-            var leagues = response.apiResults.FirstOrDefault()?.leagues;
+            var leagues = response.apiResults.FirstOrDefault()
+                ?.leagues;
 
             return leagues;
         }
@@ -572,7 +614,23 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             var result = response.apiResults.FirstOrDefault()
                 ?.leagues.FirstOrDefault()
                 ?.subLeague
+                ?.season
+                ?.standings
                 ?.players;
+
+            return result;
+        }
+
+        private static IEnumerable<Team> ExtractTeamStandingsFromProviderResponse(MotorEntitiesResponse response)
+        {
+
+            if (response.recordCount <= 0)
+                return null;
+
+            var result = response.apiResults.FirstOrDefault()
+                ?.leagues.FirstOrDefault()
+                ?.subLeague
+                ?.season.standings.teams;
 
             return result;
         }
@@ -584,7 +642,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             var results = response.apiResults.FirstOrDefault()
                 ?.leagues.FirstOrDefault()
-                ?.subLeague.owners;
+                ?.subLeague
+                ?.owners;
 
             return results;
         }
@@ -592,12 +651,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         private static async Task PersistTournamentTeamsInRepository(MotorEntitiesResponse tournamentTeamsResponse)
         {
             // TODO
-        }
-
-        private static async Task PersistTeamStandingsInRepository(MotorEntitiesResponse teamStandings,
-            CancellationToken cancellationToken)
-        {
-            //TODO
         }
 
         private static async Task PersistScheduleInRepository(MotorEntitiesResponse races, CancellationToken cancellationToken)
