@@ -37,6 +37,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsPro
         public bool isActive { get; set; }
 
         public List<EventType> eventType { get; set; }
+        public Standings standings { get; set; }
     }
 
     public class EventType
@@ -253,7 +254,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsPro
         public int playerId { get; set; }
         public string firstName { get; set; }
         public string lastName { get; set; }
-        public object team { get; set; }
+        public Team team { get; set; }
         public Owner owner { get; set; }
         public int rank { get; set; }
         public int points { get; set; }
@@ -455,5 +456,41 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsPro
         public string total { get; set; }
         public string bonus { get; set; }
         public string penalty { get; set; }
+    }
+
+    public class DateThrough
+    {
+        public int year { get; set; }
+        public int month { get; set; }
+        public int date { get; set; }
+        public string full { get; set; }
+        public string dateType { get; set; }
+    }
+
+    public class LastEvent
+    {
+        public int eventId { get; set; }
+        public Race race { get; set; }
+    }
+
+    public class Team
+    {
+        public int teamId { get; set; }
+        public string name { get; set; }
+        public int rank { get; set; }
+        public int points { get; set; }
+        public Finishes finishes { get; set; }
+        public object earnings { get; set; }
+        public int starts { get; set; }
+        public int poles { get; set; }
+    }
+
+    public class Standings
+    {
+        public int weekThrough { get; set; }
+        public DateThrough dateThrough { get; set; }
+        public LastEvent lastEvent { get; set; }
+        public List<Team> teams { get; set; }
+        public List<Player> players { get; set; }
     }
 }
