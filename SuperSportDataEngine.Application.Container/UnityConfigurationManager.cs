@@ -1,6 +1,8 @@
 ﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
 using SuperSportDataEngine.Common.Caching;
 using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.UnitOfWork;
+using SuperSportDataEngine.Repository.EntityFramework.SystemSportData.UnitOfWork;
 
 namespace SuperSportDataEngine.Application.Container
 {
@@ -211,6 +213,11 @@ namespace SuperSportDataEngine.Application.Container
             container.RegisterType<IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament>, BaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament>>(
                 new HierarchicalLifetimeManager(),
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament>(container.Resolve<DbContext>(SystemSportDataRepository))));
+
+            container.RegisterType<ISystemSportDataUnitOfWork, SystemSportDataUnitOfWork>(
+                new HierarchicalLifetimeManager(),
+                new InjectionFactory((x) => new SystemSportDataUnitOfWork(
+                    container.Resolve<DbContext>(SystemSportDataRepository))));
         }
 
         private static void ApplyRegistrationsForRepositoryMongoDbPayloadData(IUnityContainer container, ApplicationScope applicationScope)

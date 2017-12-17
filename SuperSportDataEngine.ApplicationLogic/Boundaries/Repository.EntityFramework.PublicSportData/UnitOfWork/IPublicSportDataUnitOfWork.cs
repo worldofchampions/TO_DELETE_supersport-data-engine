@@ -27,5 +27,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFram
         IBaseEntityFrameworkRepository<RugbyVenue> RugbyVenues { get; set; }
 
         int SaveChanges();
+        Task<int> SaveChangesAsync();
     }
 }
