@@ -72,6 +72,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsPro
     {
         public int venueId { get; set; }
         public string name { get; set; }
+        public State state { get; set; }
         public string city { get; set; }
         public Country country { get; set; }
     }
@@ -234,7 +235,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsPro
     {
         public int eventStatusId { get; set; }
         public bool isUnderCaution { get; set; }
-        public object reason { get; set; }
+        public string reason { get; set; }
         public string name { get; set; }
     }
 
