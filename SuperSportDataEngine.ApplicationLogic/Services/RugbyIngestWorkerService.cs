@@ -428,7 +428,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 }
             }
 
-            await _publicSportDataUnitOfWork.RugbyFlatLogs.SaveAsync();
+            await _publicSportDataUnitOfWork.SaveChangesAsync();
         }
 
         private async Task PersistFixturesData(CancellationToken cancellationToken, RugbyFixturesResponse fixtures)
@@ -1207,7 +1207,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 FixturesStateHelper.GetSchedulerStateForFixture(DateTime.UtcNow, fixtureState, schedule.StartDateTime.DateTime);
             _systemSportDataUnitOfWork.SchedulerTrackingRugbyFixtures.Update(schedule);
 
-            await _systemSportDataUnitOfWork.SchedulerTrackingRugbyFixtures.SaveAsync();
+            await _systemSportDataUnitOfWork.SaveChangesAsync();
         }
 
         private async Task IngestEvents(CancellationToken cancellationToken, RugbyEventsFlowResponse eventsFlowResponse, RugbyFixture rugbyFixture)
@@ -1224,7 +1224,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 _publicSportDataUnitOfWork.RugbyMatchEvents.DeleteRange(eventsToRemove);
             }
 
-            await _publicSportDataUnitOfWork.RugbyMatchEvents.SaveAsync();
+            await _publicSportDataUnitOfWork.SaveChangesAsync();
         }
 
         private void IngestErrorEvents(CancellationToken cancellationToken, ErrorFlow errorFlow, RugbyFixture rugbyFixture, ref List<RugbyMatchEvent> eventsToRemove)
@@ -1469,7 +1469,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 }
             }
 
-            await _publicSportDataUnitOfWork.RugbyFixtures.SaveAsync();
+            await _publicSportDataUnitOfWork.SaveChangesAsync();
         }
 
         private (int teamAScore, int teamBScore) GetScoresForFixture(CancellationToken cancellationToken, RugbyMatchStatsResponse matchStatsResponse)

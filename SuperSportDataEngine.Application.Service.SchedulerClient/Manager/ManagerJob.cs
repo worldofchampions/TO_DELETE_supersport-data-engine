@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
+﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
+
+namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
 {
     using Microsoft.Practices.Unity;
     using System;
@@ -20,7 +22,7 @@
         private IUnityContainer _container;
         private IRugbyService _rugbyService;
         private IRugbyIngestWorkerService _rugbyIngestWorkerService;
-        private IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> _schedulerTrackingRugbyFixtures;
+        private ISystemSportDataUnitOfWork _systemSportDataUnitOfWork;
         private FixturesManagerJob _fixturesManagerJob;
         private LiveManagerJob _liveManagerJob;
         private LogsManagerJob _logsManagerJob;
@@ -45,7 +47,7 @@
             _recurringJobManager = _container.Resolve<IRecurringJobManager>();
             _rugbyService = _container.Resolve<IRugbyService>();
             _rugbyIngestWorkerService = _container.Resolve<IRugbyIngestWorkerService>();
-            _schedulerTrackingRugbyFixtures = _container.Resolve<IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture>>();
+            _systemSportDataUnitOfWork = _container.Resolve<ISystemSportDataUnitOfWork>();
 
             _fixturesManagerJob =
                 new FixturesManagerJob(
@@ -58,13 +60,12 @@
                 _recurringJobManager,
                 _rugbyService,
                 _rugbyIngestWorkerService,
-                _schedulerTrackingRugbyFixtures);
+                _systemSportDataUnitOfWork);
 
             _logsManagerJob =
                 new LogsManagerJob(
                     _recurringJobManager,
-                    new UnityContainer(),
-                    _logger);
+                    new UnityContainer());
         }
 
         private void ConfigureTimer()

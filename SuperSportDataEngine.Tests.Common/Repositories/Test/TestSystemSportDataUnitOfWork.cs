@@ -46,5 +46,15 @@ namespace SuperSportDataEngine.Tests.Common.Repositories.Test
         {
             return Task.FromResult(1);
         }
+
+        public void Dispose()
+        {
+            SchedulerDashboardUsers?.Dispose();
+            LegacyAuthFeedConsumers?.Dispose();
+            LegacyZoneSites?.Dispose();
+            SchedulerTrackingRugbyFixtures?.Dispose();
+            SchedulerTrackingRugbySeasons?.Dispose();
+            SchedulerTrackingRugbyTournaments?.Dispose();
+        }
     }
 }

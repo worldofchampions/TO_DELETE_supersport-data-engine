@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.ScheduledManagerTests
 {
@@ -25,7 +26,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
     {
         Mock<IRugbyService> MockRugbyService;
         Mock<IRugbyIngestWorkerService> MockRugbyIngestWorkerService;
-        Mock<TestEntityFrameworkRepository<SchedulerTrackingRugbySeason>> MockSchedulerTrackingSeasonRepository;
+        TestSystemSportDataUnitOfWork _systemSportDataUnitOfWork;
         Mock<IRecurringJobManager> MockRecurringJobManager;
         IUnityContainer MockUnityContainer;
         LogsManagerJob LogsManagerJob;
@@ -34,8 +35,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
         [SetUp]
         public void SetUp()
         {
-            MockSchedulerTrackingSeasonRepository =
-                    new Mock<TestEntityFrameworkRepository<SchedulerTrackingRugbySeason>>(new List<SchedulerTrackingRugbySeason>());
+            _systemSportDataUnitOfWork = new TestSystemSportDataUnitOfWork();
 
             MockRugbyService = new Mock<IRugbyService>();
             MockRugbyIngestWorkerService = new Mock<IRugbyIngestWorkerService>();
@@ -44,9 +44,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
 
             MockUnityContainer.RegisterType<IUnityContainer>(
                 new InjectionFactory((x) => MockUnityContainer));
-
-            MockUnityContainer.RegisterType<IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason>>(
-                new InjectionFactory((x) => MockSchedulerTrackingSeasonRepository.Object));
 
             MockUnityContainer.RegisterType<IRugbyService>(
                 new InjectionFactory((x) => MockRugbyService.Object));
@@ -59,14 +56,16 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
 
             MockLogger = new Mock<ILoggingService>();
 
+            MockUnityContainer.RegisterType<ISystemSportDataUnitOfWork>(
+                new InjectionFactory((x) => _systemSportDataUnitOfWork));
+
             MockUnityContainer.RegisterType<ILoggingService>(
                 new InjectionFactory((x) => MockLogger.Object));
 
             LogsManagerJob =
                 new LogsManagerJob(
                         MockRecurringJobManager.Object,
-                        MockUnityContainer,
-                        MockLogger.Object);
+                        MockUnityContainer);
         }
 
         [Test]
@@ -148,7 +147,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
             var tournamentId = Guid.NewGuid();
             var seasonId = Guid.NewGuid();
 
-            MockSchedulerTrackingSeasonRepository.Object.Add(
+            _systemSportDataUnitOfWork.SchedulerTrackingRugbySeasons.Add(
                 new SchedulerTrackingRugbySeason()
                 {
                     TournamentId = tournamentId,
@@ -156,8 +155,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
                     RugbySeasonStatus = RugbySeasonStatus.InProgress,
                     SchedulerStateForManagerJobPolling = SchedulerStateForManagerJobPolling.NotRunning
                 });
-
-            await MockSchedulerTrackingSeasonRepository.Object.SaveAsync();
 
             MockRugbyService.Setup(r => r.GetActiveTournamentsForMatchesInResultsState()).Returns(
                 Task.FromResult(new List<RugbyTournament>() {
@@ -172,7 +169,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
 
             await LogsManagerJob.CreateChildJobsForFetchingLogs();
 
-            var seasonEntry = MockSchedulerTrackingSeasonRepository.Object.All().FirstOrDefault();
+            var seasonEntry = _systemSportDataUnitOfWork.SchedulerTrackingRugbySeasons.All().FirstOrDefault();
 
             Assert.IsNotNull(seasonEntry);
             Assert.AreEqual(SchedulerStateForManagerJobPolling.Running, seasonEntry.SchedulerStateForManagerJobPolling);

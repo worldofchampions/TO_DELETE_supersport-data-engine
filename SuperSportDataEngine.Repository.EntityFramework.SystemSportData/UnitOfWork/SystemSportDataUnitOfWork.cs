@@ -42,5 +42,16 @@ namespace SuperSportDataEngine.Repository.EntityFramework.SystemSportData.UnitOf
         {
             return _context.SaveChangesAsync();
         }
+
+        public void Dispose()
+        {
+            _context?.Dispose();
+            SchedulerDashboardUsers?.Dispose();
+            LegacyAuthFeedConsumers?.Dispose();
+            LegacyZoneSites?.Dispose();
+            SchedulerTrackingRugbyFixtures?.Dispose();
+            SchedulerTrackingRugbySeasons?.Dispose();
+            SchedulerTrackingRugbyTournaments?.Dispose();
+        }
     }
 }
