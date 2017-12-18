@@ -15,6 +15,7 @@ using System.Linq;
 
 namespace SuperSportDataEngine.ApplicationLogic.Tests
 {
+    [Category("RugbyServiceTest")]
     public class RugbyServiceTest
     {
         RugbyService _rugbyService;

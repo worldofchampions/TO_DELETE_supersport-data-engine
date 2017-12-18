@@ -6,6 +6,7 @@ using System;
 
 namespace SuperSportDataEngine.ApplicationLogic.Tests
 {
+    [Category("HelperTest")]
     public class HelperTests
     {
         [Test]

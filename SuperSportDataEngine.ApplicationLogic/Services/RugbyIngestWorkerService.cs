@@ -189,6 +189,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             if (cancellationToken.IsCancellationRequested)
                 return;
 
+            if (entitiesResponse.Entities.venues == null)
+                return;
+
             var venuesAlreadyInDb = (await _publicSportDataUnitOfWork.RugbyVenues.AllAsync()).ToList();
 
             foreach (var venue in entitiesResponse.Entities.venues)
