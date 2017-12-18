@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,6 +25,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         private readonly IBaseEntityFrameworkRepository<MotorTeamStanding> _teamStandingRepository;
         private readonly IBaseEntityFrameworkRepository<MotorTeam> _teamsRepository;
         private readonly IBaseEntityFrameworkRepository<MotorRaceResult> _resultsRepository;
+        private readonly IBaseEntityFrameworkRepository<MotorSchedule> _scheduleRepository;
+
 
         public MotorIngestWorkerService(
             IStatsProzoneMotorIngestService statsProzoneMotorIngestService,
@@ -33,7 +36,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             IBaseEntityFrameworkRepository<MotorDriverStanding> driverStandingRepository,
             IBaseEntityFrameworkRepository<MotorTeam> teamsRepository,
             IBaseEntityFrameworkRepository<MotorRaceResult> resultsRepository,
-            IBaseEntityFrameworkRepository<MotorTeamStanding> teamStandingRepository)
+            IBaseEntityFrameworkRepository<MotorTeamStanding> teamStandingRepository,
+            IBaseEntityFrameworkRepository<MotorSchedule> scheduleRepository)
         {
             _statsProzoneMotorIngestService = statsProzoneMotorIngestService;
             _driverRepository = driverRepository;
@@ -43,6 +47,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             _teamsRepository = teamsRepository;
             _resultsRepository = resultsRepository;
             _teamStandingRepository = teamStandingRepository;
+            _scheduleRepository = scheduleRepository;
         }
 
         public async Task IngestDriversForActiveTournaments(CancellationToken cancellationToken)
@@ -341,6 +346,76 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             }
 
             await _resultsRepository.SaveAsync();
+        }
+
+        private async Task PersistScheduleInRepository(MotorEntitiesResponse response, CancellationToken cancellationToken)
+        {
+            var scheduleFromProviderResponse = ExtractScheduleFromProviderResponse(response);
+
+            if (scheduleFromProviderResponse is null)
+                return;
+
+            foreach (var providerEvent in scheduleFromProviderResponse)
+            {
+                var raceRaceId = providerEvent?.race?.raceId;
+                if (raceRaceId is null) continue;
+
+                var scheduleInRepo =
+                    _scheduleRepository.FirstOrDefault(s => s.ProviderRaceId == raceRaceId);
+
+                if (scheduleInRepo is null)
+                {
+                    AddNewScheduleToRepo(providerEvent);
+                }
+                else
+                {
+                    UpdateScheduleInRepo(scheduleInRepo, providerEvent);
+                }
+            }
+
+            await _scheduleRepository.SaveAsync();
+        }
+
+        private void UpdateScheduleInRepo(MotorSchedule scheduleInRepo, Event raceEvent)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        private void AddNewScheduleToRepo(Event raceEvent)
+        {
+            if (raceEvent is null || raceEvent.race is null)
+                return;
+
+            var date = raceEvent.startDate?.FirstOrDefault(d =>
+                string.Equals(d.dateType, "utc", StringComparison.InvariantCultureIgnoreCase))?.full;
+
+            var currentChampionProviderId = raceEvent.champions?.FirstOrDefault(c => c.championType == "current")?.playerId;
+            var currentChampionInRepo = _driverRepository.FirstOrDefault(d => d.ProviderId == currentChampionProviderId);
+             
+            var previousChampionProviderId = raceEvent.champions?.FirstOrDefault(c => c.championType == "current")?.playerId;
+            var previousChampionInRepo = _driverRepository.FirstOrDefault(d => d.ProviderId == currentChampionProviderId);
+
+            var newSchedule = new MotorSchedule
+            {
+                City = raceEvent.venue.city,
+                CountryAbbreviation = raceEvent.venue?.country?.abbreviation,
+                CountryNameFull = raceEvent.venue?.country?.name,
+                VenueName = raceEvent.venue?.name,
+                Name = raceEvent.race.nameFull,
+                ProviderRaceId = raceEvent.race.raceId,
+                StartDateTimeUtc = date,
+                CurrentChampion = _driverRepository.FirstOrDefault(d => d.ProviderId == currentChampionProviderId),
+                PreviousChampion = _driverRepository.FirstOrDefault(d => d.ProviderId == previousChampionProviderId),
+                CurrentChampionId = currentChampionInRepo.Id,
+                PreviousChampionId = previousChampionInRepo.Id
+            };
+            
+            _scheduleRepository.Add(newSchedule);
+        }
+
+        private static List<Event> ExtractScheduleFromProviderResponse(MotorEntitiesResponse response)
+        {
+            throw new System.NotImplementedException();
         }
 
         private void UpdateResultsInRepo(MotorRaceResult resultInRepo, Result result)
@@ -715,14 +790,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             return players;
         }
 
-        private static async Task PersistTournamentTeamsInRepository(MotorEntitiesResponse tournamentTeamsResponse)
+        private static async Task PersistTournamentTeamsInRepository(MotorEntitiesResponse response)
         {
             // TODO
-        }
-
-        private static async Task PersistScheduleInRepository(MotorEntitiesResponse races, CancellationToken cancellationToken)
-        {
-            //TODO
         }
 
         private static async Task PersistGridInRepository(MotorEntitiesResponse tournamentGrid, CancellationToken cancellationToken)
