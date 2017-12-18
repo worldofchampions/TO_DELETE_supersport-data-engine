@@ -378,7 +378,31 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         private void UpdateScheduleInRepo(MotorSchedule scheduleInRepo, Event raceEvent)
         {
-            throw new System.NotImplementedException();
+            if (raceEvent is null || raceEvent.race is null)
+                return;
+
+            var date = raceEvent.startDate?.FirstOrDefault(d =>
+                string.Equals(d.dateType, "utc", StringComparison.InvariantCultureIgnoreCase))?.full;
+
+            var currentChampionProviderId = raceEvent.champions?.FirstOrDefault(c => c.championType == "current")?.playerId;
+            var currentChampionInRepo = _driverRepository.FirstOrDefault(d => d.ProviderId == currentChampionProviderId);
+
+            var previousChampionProviderId = raceEvent.champions?.FirstOrDefault(c => c.championType == "current")?.playerId;
+            var previousChampionInRepo = _driverRepository.FirstOrDefault(d => d.ProviderId == currentChampionProviderId);
+
+            scheduleInRepo.City = raceEvent.venue.city;
+            scheduleInRepo.CountryAbbreviation = raceEvent.venue?.country?.abbreviation;
+            scheduleInRepo.CountryNameFull = raceEvent.venue?.country?.name;
+            scheduleInRepo.VenueName = raceEvent.venue?.name;
+            scheduleInRepo.Name = raceEvent.race.nameFull;
+            scheduleInRepo.ProviderRaceId = raceEvent.race.raceId;
+            scheduleInRepo.StartDateTimeUtc = date;
+            scheduleInRepo.CurrentChampion = _driverRepository.FirstOrDefault(d => d.ProviderId == currentChampionProviderId);
+            scheduleInRepo.PreviousChampion = _driverRepository.FirstOrDefault(d => d.ProviderId == previousChampionProviderId);
+            scheduleInRepo.CurrentChampionId = currentChampionInRepo.Id;
+            scheduleInRepo.PreviousChampionId = previousChampionInRepo.Id;
+
+            _scheduleRepository.Update(scheduleInRepo);
         }
 
         private void AddNewScheduleToRepo(Event raceEvent)
