@@ -413,11 +413,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             _scheduleRepository.Add(newSchedule);
         }
 
-        private static List<Event> ExtractScheduleFromProviderResponse(MotorEntitiesResponse response)
-        {
-            throw new System.NotImplementedException();
-        }
-
         private void UpdateResultsInRepo(MotorRaceResult resultInRepo, Result result)
         {
             resultInRepo.DriverTotalPoints = int.Parse(result.points.driver.total);
@@ -788,6 +783,23 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 ?.players;
 
             return players;
+        }
+
+        private static IEnumerable<Event> ExtractScheduleFromProviderResponse(MotorEntitiesResponse response)
+        {
+            if (response != null && response.recordCount <= 0)
+                return null;
+
+            var events = response
+                ?.apiResults
+                ?.FirstOrDefault()
+                ?.leagues.FirstOrDefault()
+                ?.subLeague
+                ?.season
+                ?.eventType.FirstOrDefault()
+                ?.events;
+
+            return events;
         }
 
         private static async Task PersistTournamentTeamsInRepository(MotorEntitiesResponse response)
