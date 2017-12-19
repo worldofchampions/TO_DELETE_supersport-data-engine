@@ -5,7 +5,6 @@ using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramewor
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
 using SuperSportDataEngine.Repository.EntityFramework.Common.Repositories.Base;
-using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
 
 namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.UnitOfWork
 {
