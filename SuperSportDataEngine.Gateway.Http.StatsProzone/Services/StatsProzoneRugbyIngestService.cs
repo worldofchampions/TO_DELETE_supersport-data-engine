@@ -1,55 +1,58 @@
-﻿namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
+﻿using SuperSportDataEngine.Gateway.Http.StatsProzone.Extensions;
+
+namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 {
     using System.IO;
     using System.Net;
     using System.Text;
     using System;
     using Newtonsoft.Json;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.ResponseModels;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
+    using ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.ResponseModels;
+    using ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
     using System.Threading;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyFixtures;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyEntities;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models;
+    using ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyFixtures;
+    using ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyEntities;
+    using ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+    using ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models;
     using System.Threading.Tasks;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyFlatLogs;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyGroupedLogs;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyMatchStats;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyEventsFlow;
-    using System.Diagnostics;
+    using ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyFlatLogs;
+    using ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyGroupedLogs;
+    using ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyMatchStats;
+    using ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyEventsFlow;
     using SuperSportDataEngine.Common.Logging;
     using System.Configuration;
 
     public class StatsProzoneRugbyIngestService : IStatsProzoneRugbyIngestService
     {
         readonly ILoggingService _logger;
-        private int _maximumSecondsForRequestWithResponse;
+        private readonly int _maximumTimeForRequestWithResponseInMilliseconds;
+        private readonly int _maximumTimeForResponseInMilliseconds;
 
         public StatsProzoneRugbyIngestService(
             ILoggingService logger)
         {
             _logger = logger;
-            _maximumSecondsForRequestWithResponse = int.Parse(ConfigurationManager.AppSettings["maximumSecondsForRequestWithResponse"]);
+            _maximumTimeForRequestWithResponseInMilliseconds = int.Parse(ConfigurationManager.AppSettings["maximumTimeForRequestWithResponseInMilliseconds"]);
+            _maximumTimeForResponseInMilliseconds = int.Parse(ConfigurationManager.AppSettings["maximumTimeForResponseInMilliseconds"]);
         }
 
-        public RugbyEntitiesResponse IngestRugbyReferenceData(CancellationToken cancellationToken)
+        public async Task<RugbyEntitiesResponse> IngestRugbyReferenceData(CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
                 return null;
 
             try
             {
-                return RugbyEntitiesResponse();
+                return await RugbyEntitiesResponse();
             }
             catch (Exception e)
             {
-                _logger.Debug(System.Reflection.MethodBase.GetCurrentMethod().Name, e.StackTrace);
+                await _logger.Debug(System.Reflection.MethodBase.GetCurrentMethod().Name, e.StackTrace);
                 return null;
             }
         }
 
-        private RugbyEntitiesResponse RugbyEntitiesResponse()
+        private async Task<RugbyEntitiesResponse> RugbyEntitiesResponse()
         {
             WebRequest request = WebRequest.Create("http://rugbyunion-api.stats.com/api/ru/configuration/entities");
             request.Method = "GET";
@@ -63,7 +66,7 @@
                     RequestTime = DateTime.Now
                 };
 
-            using (WebResponse response = request.GetResponse())
+            using (WebResponse response = await request.GetResponseAsync(_maximumTimeForResponseInMilliseconds, _logger))
             {
                 using (Stream responseStream = response.GetResponseStream())
                 {
@@ -82,23 +85,23 @@
             }
         }
 
-        public RugbyFixturesResponse IngestFixturesForTournament(RugbyTournament tournament, int seasonId, CancellationToken cancellationToken)
+        public async Task<RugbyFixturesResponse> IngestFixturesForTournament(RugbyTournament tournament, int seasonId, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
                 return null;
 
             try
             {
-                return RugbyFixturesResponse(tournament, seasonId);
+                return await RugbyFixturesResponse(tournament, seasonId);
             }
             catch (Exception e)
             {
-                _logger.Debug(System.Reflection.MethodBase.GetCurrentMethod().Name, e.StackTrace);   
+                await _logger.Debug(System.Reflection.MethodBase.GetCurrentMethod().Name, e.StackTrace);   
                 return null;
             }
         }
 
-        private RugbyFixturesResponse RugbyFixturesResponse(RugbyTournament tournament, int seasonId)
+        private async Task<RugbyFixturesResponse> RugbyFixturesResponse(RugbyTournament tournament, int seasonId)
         {
             var tournamentId = tournament.ProviderTournamentId;
 
@@ -117,7 +120,7 @@
                     RequestTime = DateTime.Now
                 };
 
-            using (WebResponse response = request.GetResponse())
+            using (WebResponse response = await request.GetResponseAsync(_maximumTimeForResponseInMilliseconds, _logger))
             {
                 using (Stream responseStream = response.GetResponseStream())
                 {
@@ -136,23 +139,23 @@
             }
         }
 
-        public RugbySeasonResponse IngestSeasonData(CancellationToken cancellationToken, int tournamentId, int tournamentYear)
+        public async Task<RugbySeasonResponse> IngestSeasonData(CancellationToken cancellationToken, int tournamentId, int tournamentYear)
         {
             if (cancellationToken.IsCancellationRequested)
                 return null;
 
             try
             {
-                return RugbySeasonResponse(tournamentId, tournamentYear);
+                return await RugbySeasonResponse(tournamentId, tournamentYear);
             }
             catch (Exception e)
             {
-                _logger.Debug(System.Reflection.MethodBase.GetCurrentMethod().Name, e.StackTrace);
+                await _logger.Debug(System.Reflection.MethodBase.GetCurrentMethod().Name, e.StackTrace);
                 return null;
             }
         }
 
-        private RugbySeasonResponse RugbySeasonResponse(int tournamentId, int tournamentYear)
+        private async Task<RugbySeasonResponse> RugbySeasonResponse(int tournamentId, int tournamentYear)
         {
             WebRequest request = WebRequest.Create("http://rugbyunion-api.stats.com/api/ru/competitions/seasons/" +
                                                    tournamentId + "/" + tournamentYear);
@@ -168,7 +171,7 @@
                     RequestTime = DateTime.Now
                 };
 
-            using (WebResponse response = request.GetResponse())
+            using (WebResponse response = await request.GetResponseAsync(_maximumTimeForResponseInMilliseconds, _logger))
             {
                 using (Stream responseStream = response.GetResponseStream())
                 {
@@ -188,26 +191,26 @@
             }
         }
 
-        public RugbyFixturesResponse IngestFixturesForTournamentSeason(int tournamentId, int seasonId, CancellationToken cancellationToken)
+        public async Task<RugbyFixturesResponse> IngestFixturesForTournamentSeason(int tournamentId, int seasonId, CancellationToken cancellationToken)
         {
             try
             {
-                return ResponseData(tournamentId, seasonId);
+                return await ResponseData(tournamentId, seasonId);
             }
             catch (Exception e)
             {
-                _logger.Debug(System.Reflection.MethodBase.GetCurrentMethod().Name, e.StackTrace);
+                await _logger.Debug(System.Reflection.MethodBase.GetCurrentMethod().Name, e.StackTrace);
                 return null;
             }
         }
 
-        private RugbyFixturesResponse ResponseData(int tournamentId, int seasonId)
+        private async Task<RugbyFixturesResponse> ResponseData(int tournamentId, int seasonId)
         {
             WebRequest request = GetWebRequestForFixturesEndpoint(tournamentId, seasonId, null);
 
             var responseData = new RugbyFixturesResponse() {RequestTime = DateTime.Now};
 
-            using (WebResponse response = request.GetResponse())
+            using (WebResponse response = await request.GetResponseAsync(_maximumTimeForResponseInMilliseconds, _logger))
             {
                 using (Stream responseStream = response.GetResponseStream())
                 {
@@ -226,26 +229,26 @@
             }
         }
 
-        public RugbyFlatLogsResponse IngestFlatLogsForTournament(int competitionId, int seasonId)
+        public async Task<RugbyFlatLogsResponse> IngestFlatLogsForTournament(int competitionId, int seasonId)
         {
             try
             {
-                return RugbyFlatLogsResponse(competitionId, seasonId);
+                return await RugbyFlatLogsResponse(competitionId, seasonId);
             }
             catch (Exception e)
             {
-                _logger.Debug(System.Reflection.MethodBase.GetCurrentMethod().Name, e.StackTrace);
+                await _logger.Debug(System.Reflection.MethodBase.GetCurrentMethod().Name, e.StackTrace);
                 return null;
             }
         }
 
-        private RugbyFlatLogsResponse RugbyFlatLogsResponse(int competitionId, int seasonId)
+        private async Task<RugbyFlatLogsResponse> RugbyFlatLogsResponse(int competitionId, int seasonId)
         {
             WebRequest request = GetWebRequestForLogsEndpoint(competitionId, seasonId);
             
             var logsResponse = new RugbyFlatLogsResponse() {RequestTime = DateTime.Now};
 
-            using (WebResponse response = request.GetResponse())
+            using (WebResponse response = await request.GetResponseAsync(_maximumTimeForResponseInMilliseconds, _logger))
             {
                 using (Stream responseStream = response.GetResponseStream())
                 {
@@ -262,13 +265,13 @@
             }
         }
 
-        public RugbyGroupedLogsResponse IngestGroupedLogsForTournament(int competitionId, int seasonId)
+        public async Task<RugbyGroupedLogsResponse> IngestGroupedLogsForTournament(int competitionId, int seasonId)
         {
             WebRequest request = GetWebRequestForLogsEndpoint(competitionId, seasonId);
 
             var logsResponse = new RugbyGroupedLogsResponse() { RequestTime = DateTime.Now };
 
-            using (WebResponse response = request.GetResponse())
+            using (WebResponse response = await request.GetResponseAsync(_maximumTimeForResponseInMilliseconds, _logger))
             {
                 using (Stream responseStream = response.GetResponseStream())
                 {
@@ -423,9 +426,9 @@
             var timeDifference = (o.ResponseTime - o.RequestTime);
             var seconds = timeDifference.TotalSeconds;
 
-            if (seconds > _maximumSecondsForRequestWithResponse)
+            if (seconds > _maximumTimeForRequestWithResponseInMilliseconds)
             {
-                _logger.Error("HTTPRequestTooLong." + request.RequestUri, 
+                _logger.Warn("HTTPRequestTooLong." + request.RequestUri, 
                     "HTTP request taking too long. " + request.RequestUri + ". Taking " + seconds + " seconds.");
             }
         }

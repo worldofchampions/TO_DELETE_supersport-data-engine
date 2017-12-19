@@ -2,7 +2,11 @@
 using StackExchange.Redis;
 using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
 using System;
+using System.CodeDom;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Converters;
+using NLog;
+using SuperSportDataEngine.Logging.NLog.Logging;
 
 namespace SuperSportDataEngine.Common.Caching
 {
@@ -75,7 +79,11 @@ namespace SuperSportDataEngine.Common.Caching
                 if ((!dict.ContainsKey("parent") && dict.ContainsKey("value")) ||
                     (dict.ContainsKey("parent") && await Database.SetContainsAsync($"{dict["parent"]}$$children", key)))
                 {
-                    return JsonConvert.DeserializeObject<T>(dict["value"]);
+                    if(typeof(T) != typeof(LogEventInfo))
+                        return JsonConvert.DeserializeObject<T>(dict["value"]);
+
+                    var value = dict["value"];
+                    return JsonConvert.DeserializeObject<T>(value, new EventInfoConverter(value));
                 }
 
                 return null;
