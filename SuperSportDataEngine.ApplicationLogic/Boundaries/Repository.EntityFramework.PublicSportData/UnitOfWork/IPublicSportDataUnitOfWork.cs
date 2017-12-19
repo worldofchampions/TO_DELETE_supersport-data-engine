@@ -10,21 +10,21 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFram
 {
     public interface IPublicSportDataUnitOfWork
     {
-        IBaseEntityFrameworkRepository<RugbyCommentary> RugbyCommentaries { get; set; }
-        IBaseEntityFrameworkRepository<RugbyEventType> RugbyEventTypes { get; set; }
-        IBaseEntityFrameworkRepository<RugbyEventTypeProviderMapping> RugbyEventTypeProviderMappings { get; set; }
-        IBaseEntityFrameworkRepository<RugbyFixture> RugbyFixtures { get; set; }
-        IBaseEntityFrameworkRepository<RugbyFlatLog> RugbyFlatLogs { get; set; }
-        IBaseEntityFrameworkRepository<RugbyGroupedLog> RugbyGroupedLogs { get; set; }
-        IBaseEntityFrameworkRepository<RugbyLogGroup> RugbyLogGroups { get; set; }
-        IBaseEntityFrameworkRepository<RugbyMatchEvent> RugbyMatchEvents { get; set; }
-        IBaseEntityFrameworkRepository<RugbyMatchStatistics> RugbyMatchStatistics { get; set; }
-        IBaseEntityFrameworkRepository<RugbyPlayer> RugbyPlayers { get; set; }
-        IBaseEntityFrameworkRepository<RugbyPlayerLineup> RugbyPlayerLineups { get; set; }
-        IBaseEntityFrameworkRepository<RugbySeason> RugbySeasons { get; set; }
-        IBaseEntityFrameworkRepository<RugbyTeam> RugbyTeams { get; set; }
-        IBaseEntityFrameworkRepository<RugbyTournament> RugbyTournaments { get; set; }
-        IBaseEntityFrameworkRepository<RugbyVenue> RugbyVenues { get; set; }
+        IBaseEntityFrameworkRepository<RugbyCommentary> RugbyCommentaries { get; }
+        IBaseEntityFrameworkRepository<RugbyEventType> RugbyEventTypes { get; }
+        IBaseEntityFrameworkRepository<RugbyEventTypeProviderMapping> RugbyEventTypeProviderMappings { get; }
+        IBaseEntityFrameworkRepository<RugbyFixture> RugbyFixtures { get; }
+        IBaseEntityFrameworkRepository<RugbyFlatLog> RugbyFlatLogs { get; }
+        IBaseEntityFrameworkRepository<RugbyGroupedLog> RugbyGroupedLogs { get; }
+        IBaseEntityFrameworkRepository<RugbyLogGroup> RugbyLogGroups { get; }
+        IBaseEntityFrameworkRepository<RugbyMatchEvent> RugbyMatchEvents { get; }
+        IBaseEntityFrameworkRepository<RugbyMatchStatistics> RugbyMatchStatistics { get; }
+        IBaseEntityFrameworkRepository<RugbyPlayer> RugbyPlayers { get; }
+        IBaseEntityFrameworkRepository<RugbyPlayerLineup> RugbyPlayerLineups { get; }
+        IBaseEntityFrameworkRepository<RugbySeason> RugbySeasons { get; }
+        IBaseEntityFrameworkRepository<RugbyTeam> RugbyTeams { get; }
+        IBaseEntityFrameworkRepository<RugbyTournament> RugbyTournaments { get; }
+        IBaseEntityFrameworkRepository<RugbyVenue> RugbyVenues { get; }
 
         int SaveChanges();
         Task<int> SaveChangesAsync();

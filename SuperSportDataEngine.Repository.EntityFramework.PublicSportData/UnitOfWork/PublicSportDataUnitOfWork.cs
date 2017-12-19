@@ -13,21 +13,21 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.UnitOf
     {
         private readonly DbContext _context;
 
-        public IBaseEntityFrameworkRepository<RugbyCommentary> RugbyCommentaries { get; set; }
-        public IBaseEntityFrameworkRepository<RugbyEventType> RugbyEventTypes { get; set; }
-        public IBaseEntityFrameworkRepository<RugbyEventTypeProviderMapping> RugbyEventTypeProviderMappings { get; set; }
-        public IBaseEntityFrameworkRepository<RugbyFixture> RugbyFixtures { get; set; }
-        public IBaseEntityFrameworkRepository<RugbyFlatLog> RugbyFlatLogs { get; set; }
-        public IBaseEntityFrameworkRepository<RugbyGroupedLog> RugbyGroupedLogs { get; set; }
-        public IBaseEntityFrameworkRepository<RugbyLogGroup> RugbyLogGroups { get; set; }
-        public IBaseEntityFrameworkRepository<RugbyMatchEvent> RugbyMatchEvents { get; set; }
-        public IBaseEntityFrameworkRepository<RugbyMatchStatistics> RugbyMatchStatistics { get; set; }
-        public IBaseEntityFrameworkRepository<RugbyPlayer> RugbyPlayers { get; set; }
-        public IBaseEntityFrameworkRepository<RugbyPlayerLineup> RugbyPlayerLineups { get; set; }
-        public IBaseEntityFrameworkRepository<RugbySeason> RugbySeasons { get; set; }
-        public IBaseEntityFrameworkRepository<RugbyTeam> RugbyTeams { get; set; }
-        public IBaseEntityFrameworkRepository<RugbyTournament> RugbyTournaments { get; set; }
-        public IBaseEntityFrameworkRepository<RugbyVenue> RugbyVenues { get; set; }
+        public IBaseEntityFrameworkRepository<RugbyCommentary> RugbyCommentaries { get; private set; }
+        public IBaseEntityFrameworkRepository<RugbyEventType> RugbyEventTypes { get; private set; }
+        public IBaseEntityFrameworkRepository<RugbyEventTypeProviderMapping> RugbyEventTypeProviderMappings { get; private set; }
+        public IBaseEntityFrameworkRepository<RugbyFixture> RugbyFixtures { get; private set; }
+        public IBaseEntityFrameworkRepository<RugbyFlatLog> RugbyFlatLogs { get; private set; }
+        public IBaseEntityFrameworkRepository<RugbyGroupedLog> RugbyGroupedLogs { get; private set; }
+        public IBaseEntityFrameworkRepository<RugbyLogGroup> RugbyLogGroups { get; private set; }
+        public IBaseEntityFrameworkRepository<RugbyMatchEvent> RugbyMatchEvents { get; private set; }
+        public IBaseEntityFrameworkRepository<RugbyMatchStatistics> RugbyMatchStatistics { get; private set; }
+        public IBaseEntityFrameworkRepository<RugbyPlayer> RugbyPlayers { get; private set; }
+        public IBaseEntityFrameworkRepository<RugbyPlayerLineup> RugbyPlayerLineups { get; private set; }
+        public IBaseEntityFrameworkRepository<RugbySeason> RugbySeasons { get; private set; }
+        public IBaseEntityFrameworkRepository<RugbyTeam> RugbyTeams { get; private set; }
+        public IBaseEntityFrameworkRepository<RugbyTournament> RugbyTournaments { get; private set; }
+        public IBaseEntityFrameworkRepository<RugbyVenue> RugbyVenues { get; private set; }
 
         public PublicSportDataUnitOfWork(
             DbContext context)

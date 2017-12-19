@@ -10,12 +10,12 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFram
 {
     public interface ISystemSportDataUnitOfWork : IDisposable
     {
-        IBaseEntityFrameworkRepository<SchedulerDashboardUser> SchedulerDashboardUsers { get; set; }
-        IBaseEntityFrameworkRepository<LegacyAuthFeedConsumer> LegacyAuthFeedConsumers { get; set; }
-        IBaseEntityFrameworkRepository<LegacyZoneSite> LegacyZoneSites { get; set; }
-        IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> SchedulerTrackingRugbyFixtures { get; set; }
-        IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> SchedulerTrackingRugbySeasons { get; set; }
-        IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> SchedulerTrackingRugbyTournaments { get; set; }
+        IBaseEntityFrameworkRepository<SchedulerDashboardUser> SchedulerDashboardUsers { get; }
+        IBaseEntityFrameworkRepository<LegacyAuthFeedConsumer> LegacyAuthFeedConsumers { get; }
+        IBaseEntityFrameworkRepository<LegacyZoneSite> LegacyZoneSites { get; }
+        IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> SchedulerTrackingRugbyFixtures { get; }
+        IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> SchedulerTrackingRugbySeasons { get; }
+        IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> SchedulerTrackingRugbyTournaments { get; }
 
         int SaveChanges();
         Task<int> SaveChangesAsync();

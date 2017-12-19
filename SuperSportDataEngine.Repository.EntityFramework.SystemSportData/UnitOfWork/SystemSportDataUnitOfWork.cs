@@ -15,12 +15,12 @@ namespace SuperSportDataEngine.Repository.EntityFramework.SystemSportData.UnitOf
     {
         private DbContext _context;
 
-        public IBaseEntityFrameworkRepository<SchedulerDashboardUser> SchedulerDashboardUsers { get; set; }
-        public IBaseEntityFrameworkRepository<LegacyAuthFeedConsumer> LegacyAuthFeedConsumers { get; set; }
-        public IBaseEntityFrameworkRepository<LegacyZoneSite> LegacyZoneSites { get; set; }
-        public IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> SchedulerTrackingRugbyFixtures { get; set; }
-        public IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> SchedulerTrackingRugbySeasons { get; set; }
-        public IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> SchedulerTrackingRugbyTournaments { get; set; }
+        public IBaseEntityFrameworkRepository<SchedulerDashboardUser> SchedulerDashboardUsers { get; private set; }
+        public IBaseEntityFrameworkRepository<LegacyAuthFeedConsumer> LegacyAuthFeedConsumers { get; private set; }
+        public IBaseEntityFrameworkRepository<LegacyZoneSite> LegacyZoneSites { get; private set; }
+        public IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> SchedulerTrackingRugbyFixtures { get; private set; }
+        public IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> SchedulerTrackingRugbySeasons { get; private set; }
+        public IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> SchedulerTrackingRugbyTournaments { get; private set; }
 
         public SystemSportDataUnitOfWork(DbContext context)
         {
