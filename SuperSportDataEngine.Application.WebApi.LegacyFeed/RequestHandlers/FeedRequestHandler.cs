@@ -1,15 +1,16 @@
-﻿using System.Web.Http;
+﻿using System.Configuration;
+using System.Web.Http;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
 {
     using Microsoft.Practices.Unity;
-    using SuperSportDataEngine.Application.Container;
-    using SuperSportDataEngine.Application.Container.Enums;
-    using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Helpers.AppSettings;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Config;
+    using Container;
+    using Container.Enums;
+    using Common.Interfaces;
+    using Helpers.AppSettings;
+    using Models.Shared;
+    using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+    using Config;
     using SuperSportDataEngine.Common.Logging;
     using System;
     using System.Net;
@@ -25,9 +26,15 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
         private ICache _cache;
         private ILoggingService _loggingService;
 
+        private readonly int _authKeyCacheExpiryInMinutes;
+        
+
         public FeedRequestHandler()
         {
             ResolveDependencies();
+
+            _authKeyCacheExpiryInMinutes = 
+                int.Parse(ConfigurationManager.AppSettings["AuthKeyCacheExpiryInMinutes"]);
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -138,7 +145,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
         {
             try
             {
-                _cache.Add($"auth/{siteId}/{auth}", authModel);
+                _cache.Add($"auth/{siteId}/{auth}", authModel, TimeSpan.FromMinutes(_authKeyCacheExpiryInMinutes));
             }
             catch (Exception exception)
             {

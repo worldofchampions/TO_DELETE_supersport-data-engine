@@ -101,10 +101,10 @@
                 return;
             
             var entitiesResponse =
-                _statsProzoneIngestService.IngestRugbyReferenceData(cancellationToken);
+                await _statsProzoneIngestService.IngestRugbyReferenceData(cancellationToken);
 
             if (entitiesResponse == null)
-                return;
+                throw new NullReferenceException("Provider request failed due to timeout.");
 
             await PersistVenuesInRepository(cancellationToken, entitiesResponse);
             await PersistTeamsInRepository(cancellationToken, entitiesResponse);
@@ -290,11 +290,11 @@
             await IngestSeason(cancellationToken, tournament, seasonId);
 
             var fixtures =
-                    _statsProzoneIngestService.IngestFixturesForTournament(
+                    await _statsProzoneIngestService.IngestFixturesForTournament(
                         tournament, seasonId, cancellationToken);
 
             if (fixtures == null)
-                return;
+                throw new NullReferenceException("Provider request failed due to timeout.");
 
             await PersistFixturesData(cancellationToken, fixtures);
 
@@ -306,9 +306,9 @@
 
         private async Task IngestSeason(CancellationToken cancellationToken, RugbyTournament tournament, int year)
         {
-            var season = _statsProzoneIngestService.IngestSeasonData(cancellationToken, tournament.ProviderTournamentId, year);
+            var season = await _statsProzoneIngestService.IngestSeasonData(cancellationToken, tournament.ProviderTournamentId, year);
             if (season == null)
-                return;
+                throw new NullReferenceException("Provider request failed due to timeout.");
 
             var providerTournamentId = season.RugbySeasons.competitionId;
 
@@ -371,7 +371,7 @@
                 var activeSeasonId = await _rugbyService.GetCurrentProviderSeasonIdForTournament(cancellationToken, tournament.Id);
 
                 var fixtures =
-                    _statsProzoneIngestService.IngestFixturesForTournament(
+                    await _statsProzoneIngestService.IngestFixturesForTournament(
                         tournament, activeSeasonId, cancellationToken);
 
                 if(fixtures == null)
@@ -811,7 +811,7 @@
                 if (logType == RugbyLogType.FlatLogs)
                 {
                     RugbyFlatLogsResponse logs =
-                        _statsProzoneIngestService.IngestFlatLogsForTournament(
+                        await _statsProzoneIngestService.IngestFlatLogsForTournament(
                             tournament.ProviderTournamentId, activeSeasonIdForTournament);
 
                     if(logs == null)
@@ -824,7 +824,7 @@
                 else
                 {
                     var logs =
-                        _statsProzoneIngestService.IngestGroupedLogsForTournament(
+                        await _statsProzoneIngestService.IngestGroupedLogsForTournament(
                             tournament.ProviderTournamentId, activeSeasonIdForTournament);
 
                     if (logs == null)
@@ -1004,7 +1004,7 @@
                     return;
 
                 var seasonId = await _rugbyService.GetCurrentProviderSeasonIdForTournament(cancellationToken, tournament.Id);
-                var results = _statsProzoneIngestService.IngestFixturesForTournament(tournament, seasonId, cancellationToken);
+                var results = await _statsProzoneIngestService.IngestFixturesForTournament(tournament, seasonId, cancellationToken);
                 if (results == null)
                     continue;
 
@@ -1022,7 +1022,7 @@
             await PersistTournamentSeasonsInRepository(cancellationToken);
 
             var fixtures =
-                _statsProzoneIngestService.IngestFixturesForTournamentSeason(
+                await _statsProzoneIngestService.IngestFixturesForTournamentSeason(
                     tournamentId, seasonId, cancellationToken);
 
             if (fixtures == null)
@@ -1060,11 +1060,11 @@
 
                 var seasonId = await _rugbyService.GetCurrentProviderSeasonIdForTournament(cancellationToken, fixture.RugbyTournament.Id);
 
-                var results = _statsProzoneIngestService.IngestFixturesForTournamentSeason(tournamentId, seasonId, cancellationToken);
+                var results = await _statsProzoneIngestService.IngestFixturesForTournamentSeason(tournamentId, seasonId, cancellationToken);
                 if (results == null)
                     continue;
 
-                await PersistRugbyFixturesToPublicSportsRepository(cancellationToken,results);
+                await PersistRugbyFixturesToPublicSportsRepository(cancellationToken, results);
             }
         }
 
@@ -1084,7 +1084,7 @@
 
                 var seasonId = await _rugbyService.GetCurrentProviderSeasonIdForTournament(cancellationToken, fixture.RugbyTournament.Id);
 
-                var results = _statsProzoneIngestService.IngestFixturesForTournamentSeason(tournamentId, seasonId, cancellationToken);
+                var results = await _statsProzoneIngestService.IngestFixturesForTournamentSeason(tournamentId, seasonId, cancellationToken);
                 if (results == null)
                     continue;
 
@@ -1102,13 +1102,13 @@
             if (tournament != null)
             {
                 var fixtures =
-                        _statsProzoneIngestService.IngestFixturesForTournamentSeason(
+                        await _statsProzoneIngestService.IngestFixturesForTournamentSeason(
                             tournament.ProviderTournamentId,
                             await _rugbyService.GetCurrentProviderSeasonIdForTournament(cancellationToken, tournament.Id),
                             cancellationToken);
 
                 if (fixtures == null)
-                    return;
+                    throw new NullReferenceException("Provider request failed due to timeout.");
 
                 var upcomingFixtures = RemoveFixturesThatHaveBeenCompleted(fixtures);
                 RugbyFixturesResponse oneMonthsfixtures = RemoveFixturesMoreThanAMonthFromNow(upcomingFixtures);
@@ -1853,7 +1853,7 @@
 
             if (logType == RugbyLogType.FlatLogs)
             {
-                var logs = _statsProzoneIngestService.IngestFlatLogsForTournament(providerTournamentId, seasonId);
+                var logs = await _statsProzoneIngestService.IngestFlatLogsForTournament(providerTournamentId, seasonId);
                 if (logs == null)
                     return;
 
@@ -1863,7 +1863,7 @@
             }
             else
             {
-                var logs = _statsProzoneIngestService.IngestGroupedLogsForTournament(providerTournamentId, seasonId);
+                var logs = await _statsProzoneIngestService.IngestGroupedLogsForTournament(providerTournamentId, seasonId);
                 if (logs == null)
                     return;
 
