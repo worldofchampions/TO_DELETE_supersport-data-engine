@@ -34,6 +34,8 @@
 
         public string Preview { get; set; }
 
+        public int PreviewId { get; set; }
+
         public string MatchType { get; set; }
 
         public string MatchTypeAbbr { get; set; }
@@ -64,6 +66,8 @@
 
         public int ReportId { get; set; }
 
+        public int MatchDayBlogId { get; set; }
+
         public string ManOfTheMatch { get; set; }
 
         public int ManOfTheMatchId { get; set; }
@@ -71,6 +75,7 @@
         public string Group { get; set; }
 
         public List<MatchEvent> Events { get; set; }
+
         public virtual List<Player> Teamsheet { get; set; }
 
         public virtual List<Player> TeamATeamsheet { get; set; }
