@@ -26,6 +26,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         private readonly IBaseEntityFrameworkRepository<MotorTeam> _teamsRepository;
         private readonly IBaseEntityFrameworkRepository<MotorRaceResult> _resultsRepository;
         private readonly IBaseEntityFrameworkRepository<MotorSchedule> _scheduleRepository;
+        private readonly IBaseEntityFrameworkRepository<MotorGrid> _gridRepository;
+
 
 
         public MotorIngestWorkerService(
@@ -37,7 +39,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             IBaseEntityFrameworkRepository<MotorTeam> teamsRepository,
             IBaseEntityFrameworkRepository<MotorRaceResult> resultsRepository,
             IBaseEntityFrameworkRepository<MotorTeamStanding> teamStandingRepository,
-            IBaseEntityFrameworkRepository<MotorSchedule> scheduleRepository)
+            IBaseEntityFrameworkRepository<MotorSchedule> scheduleRepository,
+            IBaseEntityFrameworkRepository<MotorGrid> gridRepository)
         {
             _statsProzoneMotorIngestService = statsProzoneMotorIngestService;
             _driverRepository = driverRepository;
@@ -48,6 +51,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             _resultsRepository = resultsRepository;
             _teamStandingRepository = teamStandingRepository;
             _scheduleRepository = scheduleRepository;
+            _gridRepository = gridRepository;
         }
 
         public async Task IngestDriversForActiveTournaments(CancellationToken cancellationToken)
@@ -348,6 +352,41 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             await _resultsRepository.SaveAsync();
         }
 
+        private async Task PersistGridInRepository(MotorEntitiesResponse response, CancellationToken cancellationToken)
+        {
+            var gridFromProviderResponse = ExtractRaceGridFromProviderResponse(response);
+
+            if (gridFromProviderResponse is null)
+            {
+                return;
+            }
+
+            foreach (var providerGridEntry in gridFromProviderResponse)
+            {
+                var playerId = providerGridEntry?.player?.playerId;
+                if (playerId is null) continue;
+
+                var gridInRepo =
+                    _gridRepository.FirstOrDefault(r => r.MotorDriver.ProviderId == playerId);
+
+                if (gridInRepo is null)
+                {
+                    AddNewGridEntryToRepo(providerGridEntry);
+                }
+                else
+                {
+                    UpdateGridEntryInRepo(gridInRepo, providerGridEntry);
+                }
+            }
+
+            await _gridRepository.SaveAsync();
+        }
+
+        private static IEnumerable<Result> ExtractRaceGridFromProviderResponse(MotorEntitiesResponse response)
+        {
+            return ExtractResultsFromProviderResponse(response);
+        }
+
         private async Task PersistScheduleInRepository(MotorEntitiesResponse response, CancellationToken cancellationToken)
         {
             var scheduleFromProviderResponse = ExtractScheduleFromProviderResponse(response);
@@ -415,7 +454,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             var currentChampionProviderId = raceEvent.champions?.FirstOrDefault(c => c.championType == "current")?.playerId;
             var currentChampionInRepo = _driverRepository.FirstOrDefault(d => d.ProviderId == currentChampionProviderId);
-             
+
             var previousChampionProviderId = raceEvent.champions?.FirstOrDefault(c => c.championType == "current")?.playerId;
             var previousChampionInRepo = _driverRepository.FirstOrDefault(d => d.ProviderId == currentChampionProviderId);
 
@@ -433,8 +472,37 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 CurrentChampionId = currentChampionInRepo.Id,
                 PreviousChampionId = previousChampionInRepo.Id
             };
-            
+
             _scheduleRepository.Add(newSchedule);
+        }
+
+        private void AddNewGridEntryToRepo(Result providerGridEntry)
+        {
+            var qualifyingRun = providerGridEntry?.qualifying?.qualifyingRuns?.FirstOrDefault();
+            if (qualifyingRun == null) return;
+
+            var driverInRepo = _driverRepository.FirstOrDefault(d => d.ProviderId == providerGridEntry.player.playerId);
+            if (driverInRepo is null) return;
+
+            var newGridEntry = new MotorGrid
+            {
+                MotorDriver = driverInRepo,
+                DriverId = driverInRepo.Id,
+                Position = providerGridEntry.carPosition.startingPosition,
+                QualifyingTime = new MotorTime
+                {
+                    Minutes = qualifyingRun.time.minutes,
+                    Seconds = qualifyingRun.time.seconds,
+                    Milliseconds = qualifyingRun.time.milliseconds
+                }
+            };
+
+            _gridRepository.Add(newGridEntry);
+        }
+
+        private void UpdateGridEntryInRepo(MotorGrid gridInRepo, Result providerGridEntry)
+        {
+            throw new NotImplementedException();
         }
 
         private void UpdateResultsInRepo(MotorRaceResult resultInRepo, Result result)
@@ -827,11 +895,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         }
 
         private static async Task PersistTournamentTeamsInRepository(MotorEntitiesResponse response)
-        {
-            // TODO
-        }
-
-        private static async Task PersistGridInRepository(MotorEntitiesResponse tournamentGrid, CancellationToken cancellationToken)
         {
             // TODO
         }
