@@ -428,7 +428,7 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
             if (seconds > _maximumTimeForRequestWithResponseInMilliseconds)
             {
-                _logger.Error("HTTPRequestTooLong." + request.RequestUri, 
+                _logger.Warn("HTTPRequestTooLong." + request.RequestUri, 
                     "HTTP request taking too long. " + request.RequestUri + ". Taking " + seconds + " seconds.");
             }
         }

@@ -10,17 +10,22 @@ namespace SuperSportDataEngine.Application.Container
     using Hangfire.SqlServer;
     using Microsoft.Practices.Unity;
     using MongoDB.Driver;
+    using NLog.Slack;
     using StackExchange.Redis;
     using SuperSportDataEngine.Application.Container.Enums;
     using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.DeprecatedFeed.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Services;
+    using SuperSportDataEngine.Common.Logging;
+    using SuperSportDataEngine.Gateway.Http.DeprecatedFeed.Services;
     using SuperSportDataEngine.Gateway.Http.StatsProzone.Services;
+    using SuperSportDataEngine.Logging.NLog.Logging;
     using SuperSportDataEngine.Repository.EntityFramework.Common.Repositories.Base;
     using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
     using SuperSportDataEngine.Repository.EntityFramework.SystemSportData.Context;
@@ -28,9 +33,6 @@ namespace SuperSportDataEngine.Application.Container
     using System.Configuration;
     using System.Data.Entity;
     using System.Web.Configuration;
-    using SuperSportDataEngine.Common.Logging;
-    using SuperSportDataEngine.Logging.NLog.Logging;
-    using NLog.Slack;
 
     public static class UnityConfigurationManager
     {
@@ -45,6 +47,7 @@ namespace SuperSportDataEngine.Application.Container
 
             ApplyRegistrationsForLogging(container);
             ApplyRegistrationsForApplicationLogic(container, applicationScope);
+            ApplyRegistrationsForGatewayHttpDeprecatedFeed(container, applicationScope);
             ApplyRegistrationsForGatewayHttpStatsProzone(container, applicationScope);
             ApplyRegistrationsForRepositoryEntityFrameworkPublicSportData(container);
             ApplyRegistrationsForRepositoryEntityFrameworkSystemSportData(container);
@@ -71,11 +74,15 @@ namespace SuperSportDataEngine.Application.Container
             {
                 container.RegisterType<ILegacyAuthService, LegacyAuthService>();
             }
+
+            if (applicationScope == ApplicationScope.WebApiLegacyFeed)
+            {
+                container.RegisterType<IDeprecatedFeedIntegrationService, DeprecatedFeedIntegrationService>();
+            }
         }
 
         private static void ApplyRegistrationsForGatewayHttpCommon(IUnityContainer container, ApplicationScope applicationScope)
         {
-
             try
             {
                 //if (applicationScope == ApplicationScope.WebApiLegacyFeed || applicationScope == ApplicationScope.WebApiPublicApi)
@@ -88,9 +95,17 @@ namespace SuperSportDataEngine.Application.Container
             }
             catch (System.Exception exception)
             {
-                container.RegisterType<ICache, Cache>(new ContainerControlledLifetimeManager(),new InjectionFactory((x) => null));
+                container.RegisterType<ICache, Cache>(new ContainerControlledLifetimeManager(), new InjectionFactory((x) => null));
 
                 logger.Error("NoCacheInDIContainer", exception.StackTrace);
+            }
+        }
+
+        private static void ApplyRegistrationsForGatewayHttpDeprecatedFeed(IUnityContainer container, ApplicationScope applicationScope)
+        {
+            if (applicationScope == ApplicationScope.WebApiLegacyFeed)
+            {
+                container.RegisterType<IDeprecatedFeedService, DeprecatedFeedService>(new HierarchicalLifetimeManager());
             }
         }
 
