@@ -174,6 +174,10 @@
       <Project>{cd67700a-1c91-4d24-83c0-cfcc4ce7b4d3}</Project>
       <Name>SuperSportDataEngine.Gateway.Http.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SuperSportDataEngine.Gateway.Http.DeprecatedFeed\SuperSportDataEngine.Gateway.Http.DeprecatedFeed.csproj">
+      <Project>{e1f85cf9-339f-47e2-99ca-afb021210dbf}</Project>
+      <Name>SuperSportDataEngine.Gateway.Http.DeprecatedFeed</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SuperSportDataEngine.Gateway.Http.StatsProzone\SuperSportDataEngine.Gateway.Http.StatsProzone.csproj">
       <Project>{90e43dad-2892-4438-92e1-b1966b6aaaec}</Project>
       <Name>SuperSportDataEngine.Gateway.Http.StatsProzone</Name>

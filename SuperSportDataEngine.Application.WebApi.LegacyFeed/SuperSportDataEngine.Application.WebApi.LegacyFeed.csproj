@@ -228,6 +228,7 @@
     </Compile>
     <Compile Include="Helpers\AppSettings\SuperSportDataApplicationSettingsHelper.cs" />
     <Compile Include="Models\Mappers\LegacyGroupedLogMapperProfile.cs" />
+    <Compile Include="Models\Mappers\LegacyMatchDetailsArticlesAndVideosMapperProfile.cs" />
     <Compile Include="Models\Mappers\LegacyMatchEventsMapperProfile.cs" />
     <Compile Include="Models\Mappers\LegacyMatchModelMapperProfile.cs" />
     <Compile Include="Models\Mappers\LegacyMatchDetailsMapperProfile.cs" />

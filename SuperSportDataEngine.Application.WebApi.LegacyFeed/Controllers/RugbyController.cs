@@ -1,19 +1,19 @@
-﻿using System;
-
-namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
+﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 {
     using AutoMapper;
-    using Common.Interfaces;
-    using Filters;
-    using Helpers.Extensions;
-    using Models.Mappers;
-    using Models.News;
-    using Models.Rugby;
-    using Models.Shared;
-    using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-    using ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
-    using ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+    using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Helpers.Extensions;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.News;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+    using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
     using SuperSportDataEngine.Common.Logging;
+    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
@@ -27,17 +27,20 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
     [RoutePrefix("rugby")]
     public class RugbyController : ApiController
     {
+        private readonly IDeprecatedFeedIntegrationService _deprecatedFeedIntegrationService;
         private readonly IRugbyService _rugbyService;
         private readonly ICache _cache;
         private readonly ILoggingService _logger;
 
         public RugbyController(
             IRugbyService rugbyService,
+            IDeprecatedFeedIntegrationService deprecatedFeedIntegrationService,
             ICache cache,
             ILoggingService logger)
         {
-            _cache = cache;
+            _deprecatedFeedIntegrationService = deprecatedFeedIntegrationService;
             _rugbyService = rugbyService;
+            _cache = cache;
             _logger = logger;
         }
 
@@ -58,16 +61,19 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 
             var response = matchDetailsFromCache;
 
-            if ((response != null)) return Ok(response);
-            
+            if (response != null)
+                return Ok(response);
+
             var matchDetailsFromService = await _rugbyService.GetMatchDetailsByLegacyMatchId(id, true);
 
             response = Mapper.Map<RugbyMatchDetails>(matchDetailsFromService);
 
-
             if (response != null)
             {
                 response.Events.AssignOrderingIds();
+
+                var deprecatedArticlesAndVideosEntity = await _deprecatedFeedIntegrationService.GetArticlesAndVideos("rugby", id);
+                response = Mapper.Map<DeprecatedArticlesAndVideosEntity, RugbyMatchDetails>(deprecatedArticlesAndVideosEntity, response);
 
                 PersistToCache(cacheKey, response);
             }
