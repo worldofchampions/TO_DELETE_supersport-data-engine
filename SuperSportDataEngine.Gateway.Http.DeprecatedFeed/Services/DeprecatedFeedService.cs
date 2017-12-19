@@ -53,9 +53,8 @@
             }
             catch (Exception exception)
             {
-                // TODO: [Davide] Uncomment these lines once the logging/Redis issue is sorted.
-                //var key = GetType().FullName + ".GetHighlightVideos";
-                //await _logger.Error(key, exception, $"Error requesting data from: {webRequest.RequestUri}.{Environment.NewLine}{key}{Environment.NewLine}{exception}");
+                var key = GetType().FullName + ".GetHighlightVideos";
+                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.RequestUri}.{Environment.NewLine}{key}{Environment.NewLine}{exception}");
 
                 return null;
             }
@@ -86,9 +85,8 @@
             }
             catch (Exception exception)
             {
-                // TODO: [Davide] Uncomment these lines once the logging/Redis issue is sorted.
-                //var key = GetType().FullName + ".GetLiveVideos";
-                //await _logger.Error(key, exception, $"Error requesting data from: {webRequest.RequestUri}.{Environment.NewLine}{key}{Environment.NewLine}{exception}");
+                var key = GetType().FullName + ".GetLiveVideos";
+                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.RequestUri}.{Environment.NewLine}{key}{Environment.NewLine}{exception}");
 
                 return null;
             }
@@ -119,9 +117,8 @@
             }
             catch (Exception exception)
             {
-                // TODO: [Davide] Uncomment these lines once the logging/Redis issue is sorted.
-                //var key = GetType().FullName + ".GetMatchDayBlogId";
-                //await _logger.Error(key, exception, $"Error requesting data from: {webRequest.RequestUri}.{Environment.NewLine}{key}{Environment.NewLine}{exception}");
+                var key = GetType().FullName + ".GetMatchDayBlogId";
+                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.RequestUri}.{Environment.NewLine}{key}{Environment.NewLine}{exception}");
 
                 return 0;
             }
@@ -151,9 +148,8 @@
             }
             catch (Exception exception)
             {
-                // TODO: [Davide] Uncomment these lines once the logging/Redis issue is sorted.
-                //var key = GetType().FullName + ".GetMatchPreviewId";
-                //await _logger.Error(key, exception, $"Error requesting data from: {webRequest.RequestUri}.{Environment.NewLine}{key}{Environment.NewLine}{exception}");
+                var key = GetType().FullName + ".GetMatchPreviewId";
+                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.RequestUri}.{Environment.NewLine}{key}{Environment.NewLine}{exception}");
 
                 return 0;
             }
@@ -184,9 +180,8 @@
             }
             catch (Exception exception)
             {
-                // TODO: [Davide] Uncomment these lines once the logging/Redis issue is sorted.
-                //var key = GetType().FullName + ".GetMatchReportId";
-                //await _logger.Error(key, exception, $"Error requesting data from: {webRequest.RequestUri}.{Environment.NewLine}{key}{Environment.NewLine}{exception}");
+                var key = GetType().FullName + ".GetMatchReportId";
+                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.RequestUri}.{Environment.NewLine}{key}{Environment.NewLine}{exception}");
 
                 return 0;
             }

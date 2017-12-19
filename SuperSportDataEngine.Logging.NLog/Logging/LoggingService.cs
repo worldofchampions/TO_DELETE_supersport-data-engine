@@ -3,8 +3,7 @@ using NLog.Config;
 using SuperSportDataEngine.Common.Logging;
 using System;
 using System.Threading.Tasks;
-using System.Web.Caching;
-using System.Web.Hosting;
+using Newtonsoft.Json;
 using NLog.Internal;
 using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
 
@@ -61,10 +60,18 @@ namespace SuperSportDataEngine.Logging.NLog.Logging
             }
             else
             {
-                var logEventFromCache = await Cache.GetAsync<LogEventInfo>(key);
-                if (logEventFromCache == null)
+                try
                 {
-                    Cache.Add(key, logEvent, TimeSpan.FromMinutes(cacheTtlInMinutes));
+                    object cacheObject = await Cache.GetAsync<LogEventInfo>(key);
+                    if (cacheObject == null)
+                    {
+                        Cache.Add(key, logEvent, TimeSpan.FromMinutes(cacheTtlInMinutes));
+                        Log(typeof(LoggingService), logEvent);
+                    }
+                }
+                catch (Exception)
+                {
+                    // Ignore the exception and log it anyways?
                     Log(typeof(LoggingService), logEvent);
                 }
             }
