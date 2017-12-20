@@ -10,6 +10,7 @@ using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
+using SuperSportDataEngine.Common.Logging;
 
 namespace SuperSportDataEngine.ApplicationLogic.Services
 {
@@ -17,13 +18,16 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
     {
         private readonly IStatsProzoneMotorIngestService _statsProzoneMotorIngestService;
         private readonly IPublicSportDataUnitOfWork _publicSportDataUnitOfWork;
+        private readonly ILoggingService _loggingService;
 
         public MotorIngestWorkerService(
             IStatsProzoneMotorIngestService statsProzoneMotorIngestService,
-            IPublicSportDataUnitOfWork publicSportDataUnitOfWork)
+            IPublicSportDataUnitOfWork publicSportDataUnitOfWork,
+            ILoggingService loggingService)
         {
             _statsProzoneMotorIngestService = statsProzoneMotorIngestService;
             _publicSportDataUnitOfWork = publicSportDataUnitOfWork;
+            _loggingService = loggingService;
         }
 
         public async Task IngestDriversForActiveTournaments(CancellationToken cancellationToken)
@@ -111,8 +115,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         public async Task IngestRacesForActiveTournaments(CancellationToken cancellationToken)
         {
             var motorLeagues = _publicSportDataUnitOfWork.MotorLeagues.Where(league => league.IsEnabled);
-            var repositoryHasActiveLeagues = motorLeagues != null;
-            if (repositoryHasActiveLeagues)
+            if (motorLeagues != null)
             {
                 foreach (var league in motorLeagues)
                 {
@@ -127,8 +130,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         public async Task IngestSchedulesForActiveTournaments(CancellationToken cancellationToken)
         {
             var motorLeagues = _publicSportDataUnitOfWork.MotorLeagues.Where(league => league.IsEnabled);
-            var repositoryHasActiveLeagues = motorLeagues != null;
-            if (repositoryHasActiveLeagues)
+            if (motorLeagues != null)
             {
                 foreach (var league in motorLeagues)
                 {
@@ -365,26 +367,24 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         {
             var scheduleFromProviderResponse = ExtractScheduleFromProviderResponse(response);
 
-            if (scheduleFromProviderResponse is null)
-                return;
-
-            foreach (var providerEvent in scheduleFromProviderResponse)
-            {
-                var raceRaceId = providerEvent?.race?.raceId;
-                if (raceRaceId is null) continue;
-
-                var scheduleInRepo =
-                    _publicSportDataUnitOfWork.MotorSchedules.FirstOrDefault(s => s.ProviderRaceId == raceRaceId);
-
-                if (scheduleInRepo is null)
+            if (scheduleFromProviderResponse != null)
+                foreach (var providerEvent in scheduleFromProviderResponse)
                 {
-                    AddNewScheduleToRepo(providerEvent);
+                    var raceRaceId = providerEvent?.race?.raceId;
+                    if (raceRaceId is null) continue;
+
+                    var scheduleInRepo =
+                        _publicSportDataUnitOfWork.MotorSchedules.FirstOrDefault(s => s.ProviderRaceId == raceRaceId);
+
+                    if (scheduleInRepo is null)
+                    {
+                        AddNewScheduleToRepo(providerEvent);
+                    }
+                    else
+                    {
+                        UpdateScheduleInRepo(scheduleInRepo, providerEvent);
+                    }
                 }
-                else
-                {
-                    UpdateScheduleInRepo(scheduleInRepo, providerEvent);
-                }
-            }
 
             await _publicSportDataUnitOfWork.SaveChangesAsync();
         }
