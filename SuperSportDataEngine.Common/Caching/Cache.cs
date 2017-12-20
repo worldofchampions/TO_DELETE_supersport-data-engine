@@ -88,7 +88,10 @@ namespace SuperSportDataEngine.Common.Caching
 
                 return null;
             }
-            catch (RedisServerException) { }
+            catch (Exception)
+            {
+                // ignored
+            }
 
             return null;
         }
