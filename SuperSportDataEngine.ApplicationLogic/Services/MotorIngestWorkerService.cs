@@ -7,7 +7,6 @@ using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfac
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motor;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RequestModels;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
@@ -17,11 +16,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
     public class MotorIngestWorkerService : IMotorIngestWorkerService
     {
         private readonly IStatsProzoneMotorIngestService _statsProzoneMotorIngestService;
-
-        //TODO: Get this from UnitOfWwork
-
         private readonly IPublicSportDataUnitOfWork _publicSportDataUnitOfWork;
-
 
         public MotorIngestWorkerService(
             IStatsProzoneMotorIngestService statsProzoneMotorIngestService,
@@ -490,7 +485,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             _publicSportDataUnitOfWork.MotorGrids.Add(newGridEntry);
         }
-        
+
         private void UpdateResultsInRepo(MotorRaceResult resultInRepo, Result result)
         {
             resultInRepo.DriverTotalPoints = int.Parse(result.points.driver.total);
@@ -631,6 +626,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         private void UpdateOwnerInRepo(MotorTeam ownerInRepo, Owner owner)
         {
+            if (owner is null || owner.name is null)
+                return;
+
             ownerInRepo.Name = owner.name;
 
             _publicSportDataUnitOfWork.MotortTeams.Update(ownerInRepo);
@@ -638,6 +636,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         private void AddNewOwnerToRepo(Owner owner)
         {
+            if (owner is null || owner.name is null)
+                return;
+
             var newOwner = new MotorTeam
             {
                 Name = owner.name,
@@ -716,10 +717,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             repoStanding.Top15Finishes = providerStanding.finishes.top15;
             repoStanding.Top20Finishes = providerStanding.finishes.top20;
             repoStanding.DidNotFinish = providerStanding.finishes.didNotFinish;
-
             repoStanding.Points = providerStanding.points;
             repoStanding.Rank = providerStanding.rank;
-
             repoStanding.Starts = providerStanding.starts;
             repoStanding.Poles = providerStanding.poles;
 
@@ -734,9 +733,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             var teamFromRepo = _publicSportDataUnitOfWork.MotortTeams.FirstOrDefault(t => t.ProviderTeamId == providerTeam.teamId);
 
             if (teamFromRepo is null)
-            {
-                //TODO: This team is new, persist it in repo before persisting TeamStanding
-            }
+                return;
 
             var teamStanding = new MotorTeamStanding
             {
@@ -748,10 +745,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 Top15Finishes = providerTeam.finishes.top15,
                 Top20Finishes = providerTeam.finishes.top20,
                 DidNotFinish = providerTeam.finishes.didNotFinish,
-
                 Points = providerTeam.points,
                 Rank = providerTeam.rank,
-
                 Starts = providerTeam.starts,
                 Poles = providerTeam.poles
             };
@@ -867,7 +862,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             return results;
         }
-        
+
         private static IEnumerable<Event> ExtractScheduleFromProviderResponse(MotorEntitiesResponse response)
         {
             if (response != null && response.recordCount <= 0)
