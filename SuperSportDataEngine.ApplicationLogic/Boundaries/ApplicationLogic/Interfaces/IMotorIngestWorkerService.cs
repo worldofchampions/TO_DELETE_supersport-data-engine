@@ -13,7 +13,7 @@
         Task IngestTournaments(CancellationToken cancellationToken);
         Task IngestRacesForActiveTournaments(CancellationToken cancellationToken);
         Task IngestSchedulesForActiveTournaments(CancellationToken cancellationToken);
-        Task IngestTournamentResults(MotorResultRequestEntity motorResultRequestEntity, CancellationToken cancellationToken);
-        Task IngestTournamentGrid(MotorResultRequestEntity motorResultRequestEntity, CancellationToken cancellationToken);
+        Task IngestTournamentResults(MotorResultRequestEntity requestEntity, CancellationToken cancellationToken);
+        Task IngestTournamentGrid(MotorResultRequestEntity requestEntity, CancellationToken cancellationToken);
     }
 }
