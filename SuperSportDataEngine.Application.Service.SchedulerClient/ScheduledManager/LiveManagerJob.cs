@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledManager
+﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
+
+namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledManager
 {
     using Hangfire;
     using Hangfire.Common;
@@ -21,20 +23,20 @@
         private readonly IRugbyService _rugbyService;
         private readonly IRugbyIngestWorkerService _rugbyIngestWorkerService;
         private readonly ILoggingService _logger;
-        private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> _schedulerTrackingRugbyFixtureRepository;
+        private readonly ISystemSportDataUnitOfWork _systemSportDataUnitOfWork;
 
         public LiveManagerJob(
             ILoggingService logger,
             IRecurringJobManager recurringJobManager,
             IRugbyService rugbyService,
             IRugbyIngestWorkerService rugbyIngestWorkerService,
-            IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> schedulerTrackingRugbyFixtureRepository)
+            ISystemSportDataUnitOfWork systemSportDataUnitOfWork)
         {
             _logger = logger;
             _recurringJobManager = recurringJobManager;
             _rugbyService = rugbyService;
             _rugbyIngestWorkerService = rugbyIngestWorkerService;
-            _schedulerTrackingRugbyFixtureRepository = schedulerTrackingRugbyFixtureRepository;
+            _systemSportDataUnitOfWork = systemSportDataUnitOfWork;
         }
 
         public async Task DoWorkAsync()
@@ -62,18 +64,17 @@
                 _recurringJobManager.RemoveIfExists(jobId);
 
                 var fixtureInDb =
-                    (await _schedulerTrackingRugbyFixtureRepository.AllAsync()).FirstOrDefault(f => f.FixtureId == fixture.Id);
+                    (await _systemSportDataUnitOfWork.SchedulerTrackingRugbyFixtures.AllAsync()).FirstOrDefault(f => f.FixtureId == fixture.Id);
 
                 if (fixtureInDb != null &&
                     fixtureInDb.SchedulerStateFixtures != SchedulerStateForRugbyFixturePolling.SchedulingNotYetStarted)
                 {
-                    _logger.Info("Setting SchedulerStateFixtures for " + matchName + " to SchedulingNotYetStarted.");
                     fixtureInDb.SchedulerStateFixtures = SchedulerStateForRugbyFixturePolling.SchedulingNotYetStarted;
-                    _schedulerTrackingRugbyFixtureRepository.Update(fixtureInDb);
+                    _systemSportDataUnitOfWork.SchedulerTrackingRugbyFixtures.Update(fixtureInDb);
                 }
             }
 
-            return await _schedulerTrackingRugbyFixtureRepository.SaveAsync();
+            return await _systemSportDataUnitOfWork.SaveChangesAsync();
         }
 
         private async Task<int> DeleteChildJobsForFetchingMatchDataForFixturesEnded()
@@ -92,18 +93,17 @@
                 _recurringJobManager.RemoveIfExists(jobId);
 
                 var fixtureInDb =
-                    (await _schedulerTrackingRugbyFixtureRepository.AllAsync()).FirstOrDefault(f => f.FixtureId == fixture.Id);
+                    (await _systemSportDataUnitOfWork.SchedulerTrackingRugbyFixtures.AllAsync()).FirstOrDefault(f => f.FixtureId == fixture.Id);
 
                 if (fixtureInDb != null && 
                     fixtureInDb.SchedulerStateFixtures != SchedulerStateForRugbyFixturePolling.SchedulingCompleted)
                 {
-                    _logger.Info("Setting SchedulerStateFixtures for " + matchName + " to SchedulingCompleted.");
                     fixtureInDb.SchedulerStateFixtures = SchedulerStateForRugbyFixturePolling.SchedulingCompleted;
-                    _schedulerTrackingRugbyFixtureRepository.Update(fixtureInDb);
+                    _systemSportDataUnitOfWork.SchedulerTrackingRugbyFixtures.Update(fixtureInDb);
                 }
             }
 
-            return await _schedulerTrackingRugbyFixtureRepository.SaveAsync();
+            return await _systemSportDataUnitOfWork.SaveChangesAsync();
         }
 
         private async Task<int> CreateChildJobsForFetchingLiveMatchDataForCurrentFixtures()
@@ -116,8 +116,6 @@
                 var liveFixtures =
                     (await _rugbyService.GetLiveFixturesForCurrentTournament(CancellationToken.None, tournament.Id)).ToList();
 
-                _logger.Info("There are " + liveFixtures.Count() + " live fixtures for tournament " + tournament.Name);
-
                 foreach (var fixture in liveFixtures)
                 {
                     if (fixture.TeamA == null) continue;
@@ -127,7 +125,6 @@
 
                     var jobId = ConfigurationManager.AppSettings["LiveManagerJob_LiveMatch_JobIdPrefix"] + matchName;
                     var jobCronExpression = ConfigurationManager.AppSettings["LiveManagerJob_LiveMatch_JobCronExpression"];
-                    _logger.Info(jobId + " " + jobCronExpression);
 
                     _recurringJobManager.AddOrUpdate(
                         jobId,
@@ -140,18 +137,18 @@
                         });
 
                     var fixtureInDb =
-                        (await _schedulerTrackingRugbyFixtureRepository.AllAsync()).FirstOrDefault(f => f.FixtureId == fixture.Id);
+                        (await _systemSportDataUnitOfWork.SchedulerTrackingRugbyFixtures.AllAsync()).FirstOrDefault(f => f.FixtureId == fixture.Id);
 
                     if (fixtureInDb != null && fixtureInDb.IsJobRunning != true)
                     {
                         fixtureInDb.IsJobRunning = true;
-                        _schedulerTrackingRugbyFixtureRepository.Update(fixtureInDb);
+                        _systemSportDataUnitOfWork.SchedulerTrackingRugbyFixtures.Update(fixtureInDb);
                         _recurringJobManager.Trigger(jobId);
                     }
                 }
             }
 
-            return await _schedulerTrackingRugbyFixtureRepository.SaveAsync();
+            return await _systemSportDataUnitOfWork.SaveChangesAsync();
         }
     }
 }

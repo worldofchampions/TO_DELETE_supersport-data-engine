@@ -8,24 +8,23 @@ using SuperSportDataEngine.ApplicationLogic.Entities.Legacy.Mappers;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
 
 namespace SuperSportDataEngine.ApplicationLogic.Services
 {
     public class LegacyAuthService : ILegacyAuthService
     {
-        private readonly IBaseEntityFrameworkRepository<LegacyZoneSite> _legacyZoneSiteRepository;
-        private readonly IBaseEntityFrameworkRepository<LegacyAuthFeedConsumer> _legacyAuthFeedConsumerRepository;
+        private readonly ISystemSportDataUnitOfWork _systemSportDataUnitOfWork;
 
-        public LegacyAuthService(IBaseEntityFrameworkRepository<LegacyZoneSite> legacyZoneSiteRepository,
-            IBaseEntityFrameworkRepository<LegacyAuthFeedConsumer> legacyAuthFeedConsumerRepository)
+        public LegacyAuthService(
+            ISystemSportDataUnitOfWork systemSportDataUnitOfWork)
         {
-            _legacyZoneSiteRepository = legacyZoneSiteRepository;
-            _legacyAuthFeedConsumerRepository = legacyAuthFeedConsumerRepository;
+            _systemSportDataUnitOfWork = systemSportDataUnitOfWork;
         }
 
         public bool IsAuthorised(string authKey, int siteId = 0)
         {
-            var legacyAuthFeed = _legacyAuthFeedConsumerRepository.Where(c => c.AuthKey == authKey && c.Active).FirstOrDefault();
+            var legacyAuthFeed = _systemSportDataUnitOfWork.LegacyAuthFeedConsumers.Where(c => c.AuthKey == authKey && c.Active).FirstOrDefault();
             if (legacyAuthFeed == null)
             {
                 return false;
@@ -33,7 +32,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             if (siteId != 0)
             {
-                var legacyZone = _legacyZoneSiteRepository.Where(c => c.Id == siteId).FirstOrDefault();
+                var legacyZone = _systemSportDataUnitOfWork.LegacyZoneSites.Where(c => c.Id == siteId).FirstOrDefault();
                 if (legacyZone == null)
                 {
                     return false;
@@ -47,8 +46,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         public async Task<bool> ImportZoneSiteRecords(IEnumerable<LegacyZoneSiteEntity> models)
         {
             var legacyModels = models.Select(entity => Mapper.Map<LegacyZoneSite>(entity));
-            _legacyZoneSiteRepository.AddRange(new HashSet<LegacyZoneSite>(legacyModels));
-            await _legacyZoneSiteRepository.SaveAsync();
+            _systemSportDataUnitOfWork.LegacyZoneSites.AddRange(new HashSet<LegacyZoneSite>(legacyModels));
+            await _systemSportDataUnitOfWork.SaveChangesAsync();
 
             return true;
         }
@@ -56,8 +55,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         public async Task<bool> ImportAuthFeedRecords(IEnumerable<LegacyAuthFeedConsumerEntity> models)
         {
             var legacyModels = models.Select(entity => LegacyAuthFeedConsumerMapper.MapToModel(entity));
-            _legacyAuthFeedConsumerRepository.AddRange(new HashSet<LegacyAuthFeedConsumer>(legacyModels));
-            await _legacyAuthFeedConsumerRepository.SaveAsync();
+            _systemSportDataUnitOfWork.LegacyAuthFeedConsumers.AddRange(new HashSet<LegacyAuthFeedConsumer>(legacyModels));
+            await _systemSportDataUnitOfWork.SaveChangesAsync();
 
             return true;
         }

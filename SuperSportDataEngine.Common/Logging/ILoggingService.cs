@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading.Tasks;
+using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
 
 namespace SuperSportDataEngine.Common.Logging
 {
@@ -11,23 +13,25 @@ namespace SuperSportDataEngine.Common.Logging
         bool IsTraceEnabled { get; }
         bool IsWarnEnabled { get; }
 
-        void Debug(Exception exception);
-        void Debug(string format, params object[] args);
-        void Debug(Exception exception, string format, params object[] args);
-        void Error(Exception exception);
-        void Error(string format, params object[] args);
-        void Error(Exception exception, string format, params object[] args);
-        void Fatal(Exception exception);
-        void Fatal(string format, params object[] args);
-        void Fatal(Exception exception, string format, params object[] args);
-        void Info(Exception exception);
-        void Info(string format, params object[] args);
-        void Info(Exception exception, string format, params object[] args);
-        void Trace(Exception exception);
-        void Trace(string format, params object[] args);
-        void Trace(Exception exception, string format, params object[] args);
-        void Warn(Exception exception);
-        void Warn(string format, params object[] args);
-        void Warn(Exception exception, string format, params object[] args);
+        ICache Cache { get; set; }
+
+        Task Debug(string key, Exception exception);
+        Task Debug(string key, string format, params object[] args);
+        Task Debug(string key, Exception exception, string format, params object[] args);
+        Task Error(string key, Exception exception);
+        Task Error(string key, string format, params object[] args);
+        Task Error(string key, Exception exception, string format, params object[] args);
+        Task Fatal(string key, Exception exception);
+        Task Fatal(string key, string format, params object[] args);
+        Task Fatal(string key, Exception exception, string format, params object[] args);
+        Task Info(string key, Exception exception);
+        Task Info(string key, string format, params object[] args);
+        Task Info(string key, Exception exception, string format, params object[] args);
+        Task Trace(string key, Exception exception);
+        Task Trace(string key, string format, params object[] args);
+        Task Trace(string key, Exception exception, string format, params object[] args);
+        Task Warn(string key, Exception exception);
+        Task Warn(string key, string format, params object[] args);
+        Task Warn(string key, Exception exception, string format, params object[] args);
     }
 }

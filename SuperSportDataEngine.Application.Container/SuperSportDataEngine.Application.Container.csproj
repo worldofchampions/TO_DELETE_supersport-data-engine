@@ -136,41 +136,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="NLog.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <SubType>Designer</SubType>
-      <TransformOnBuild>true</TransformOnBuild>
-    </Content>
     <None Include="app.config" />
-    <None Include="NLog.Debug.config">
-      <DependentUpon>NLog.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="NLog.Prod.config">
-      <DependentUpon>NLog.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="NLog.QA.config">
-      <DependentUpon>NLog.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="NLog.Release.config">
-      <DependentUpon>NLog.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="NLog.Staging.config">
-      <DependentUpon>NLog.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="NLog.xsd">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
@@ -207,6 +173,10 @@
     <ProjectReference Include="..\SuperSportDataEngine.Gateway.Http.Common\SuperSportDataEngine.Gateway.Http.Common.csproj">
       <Project>{cd67700a-1c91-4d24-83c0-cfcc4ce7b4d3}</Project>
       <Name>SuperSportDataEngine.Gateway.Http.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SuperSportDataEngine.Gateway.Http.DeprecatedFeed\SuperSportDataEngine.Gateway.Http.DeprecatedFeed.csproj">
+      <Project>{e1f85cf9-339f-47e2-99ca-afb021210dbf}</Project>
+      <Name>SuperSportDataEngine.Gateway.Http.DeprecatedFeed</Name>
     </ProjectReference>
     <ProjectReference Include="..\SuperSportDataEngine.Gateway.Http.StatsProzone\SuperSportDataEngine.Gateway.Http.StatsProzone.csproj">
       <Project>{90e43dad-2892-4438-92e1-b1966b6aaaec}</Project>

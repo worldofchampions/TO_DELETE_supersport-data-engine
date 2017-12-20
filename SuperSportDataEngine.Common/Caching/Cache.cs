@@ -2,22 +2,20 @@
 using StackExchange.Redis;
 using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
 using System;
-using System.Linq;
+using System.CodeDom;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Converters;
+using NLog;
+using SuperSportDataEngine.Logging.NLog.Logging;
 
-namespace SuperSportDataEngine.Application.WebApi.Common.Caching
+namespace SuperSportDataEngine.Common.Caching
 {
     public class Cache : ICache
     {
         private readonly ConnectionMultiplexer _redisConnection;
+        private readonly object _lock = new object();
 
-        private IDatabase Database
-        {
-            get
-            {
-                return _redisConnection.GetDatabase();
-            }
-        }
+        private IDatabase Database => _redisConnection.GetDatabase();
 
         public Cache(ConnectionMultiplexer redisConnection)
         {
@@ -41,8 +39,8 @@ namespace SuperSportDataEngine.Application.WebApi.Common.Caching
                 {
                     t.HashSetAsync(key,
                         new HashEntry[] {
-                        new HashEntry("value", JsonConvert.SerializeObject(cacheObject)),
-                        new HashEntry("parent", parentKey)
+                            new HashEntry("value", JsonConvert.SerializeObject(cacheObject)),
+                            new HashEntry("parent", parentKey)
                         },
                         CommandFlags.FireAndForget);
                 }
@@ -50,7 +48,7 @@ namespace SuperSportDataEngine.Application.WebApi.Common.Caching
                 {
                     t.HashSetAsync(key,
                         new HashEntry[] {
-                        new HashEntry("value", JsonConvert.SerializeObject(cacheObject))
+                            new HashEntry("value", JsonConvert.SerializeObject(cacheObject))
                         },
                         CommandFlags.FireAndForget);
                 }
@@ -81,7 +79,11 @@ namespace SuperSportDataEngine.Application.WebApi.Common.Caching
                 if ((!dict.ContainsKey("parent") && dict.ContainsKey("value")) ||
                     (dict.ContainsKey("parent") && await Database.SetContainsAsync($"{dict["parent"]}$$children", key)))
                 {
-                    return JsonConvert.DeserializeObject<T>(dict["value"]);
+                    if(typeof(T) != typeof(LogEventInfo))
+                        return JsonConvert.DeserializeObject<T>(dict["value"]);
+
+                    var value = dict["value"];
+                    return JsonConvert.DeserializeObject<T>(value, new EventInfoConverter(value));
                 }
 
                 return null;
@@ -96,11 +98,22 @@ namespace SuperSportDataEngine.Application.WebApi.Common.Caching
             Database.KeyExpireAsync($"{parentKey}$$children", ttl, CommandFlags.FireAndForget);
         }
 
-        private bool ExecuteTransaction(Action<ITransaction> command)
+        private void ExecuteTransaction(Action<ITransaction> command)
         {
-            var transaction = _redisConnection.GetDatabase().CreateTransaction();
-            command(transaction);
-            return transaction.Execute();
+            lock (_lock)
+            {
+                var transaction = Database.CreateTransaction();
+                command(transaction);
+
+                try
+                {
+                    transaction.Execute();
+                }
+                catch (Exception)
+                {
+                    // ignored 
+                }
+            }
         }
     }
 }

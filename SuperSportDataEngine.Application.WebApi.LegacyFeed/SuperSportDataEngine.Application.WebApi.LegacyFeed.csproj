@@ -185,6 +185,7 @@
     <Compile Include="Config\LegacyFeedConfig.cs" />
     <Compile Include="Filters\LegacyExceptionFilter.cs" />
     <Compile Include="Filters\LogTimeFilter.cs" />
+    <Compile Include="Handlers\BufferedNonStreamedContentHandler.cs" />
     <Compile Include="Helpers\Extensions\ResponseModelsExtensions.cs" />
     <Compile Include="Models\Mappers\LegacyFeedConstants.cs" />
     <Compile Include="Models\Mappers\LegacyCommentaryAsEventMapperProfile.cs" />
@@ -227,6 +228,7 @@
     </Compile>
     <Compile Include="Helpers\AppSettings\SuperSportDataApplicationSettingsHelper.cs" />
     <Compile Include="Models\Mappers\LegacyGroupedLogMapperProfile.cs" />
+    <Compile Include="Models\Mappers\LegacyMatchDetailsArticlesAndVideosMapperProfile.cs" />
     <Compile Include="Models\Mappers\LegacyMatchEventsMapperProfile.cs" />
     <Compile Include="Models\Mappers\LegacyMatchModelMapperProfile.cs" />
     <Compile Include="Models\Mappers\LegacyMatchDetailsMapperProfile.cs" />
@@ -504,8 +506,4 @@
   </Target>
   <Target Name="AfterBuild">
   </Target> -->
-  <Target Name="AfterBuild">
-    <Copy SourceFiles="..\SuperSportDataEngine.Application.Container\bin\$(Configuration)\NLog.config"
-          DestinationFolder="$(TargetDir)" />
-  </Target>
 </Project>

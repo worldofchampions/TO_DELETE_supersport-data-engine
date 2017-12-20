@@ -1,7 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-
-namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
+﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 {
     using AutoMapper;
     using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
@@ -14,10 +11,11 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+    using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
     using SuperSportDataEngine.Common.Logging;
+    using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Net.Http;
     using System.Threading.Tasks;
     using System.Web.Http;
     using System.Web.Http.Description;
@@ -29,17 +27,20 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
     [RoutePrefix("rugby")]
     public class RugbyController : ApiController
     {
+        private readonly IDeprecatedFeedIntegrationService _deprecatedFeedIntegrationService;
         private readonly IRugbyService _rugbyService;
         private readonly ICache _cache;
         private readonly ILoggingService _logger;
 
         public RugbyController(
             IRugbyService rugbyService,
+            IDeprecatedFeedIntegrationService deprecatedFeedIntegrationService,
             ICache cache,
             ILoggingService logger)
         {
-            _cache = cache;
+            _deprecatedFeedIntegrationService = deprecatedFeedIntegrationService;
             _rugbyService = rugbyService;
+            _cache = cache;
             _logger = logger;
         }
 
@@ -60,16 +61,19 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 
             var response = matchDetailsFromCache;
 
-            if ((response != null)) return Ok(response);
-            
+            if (response != null)
+                return Ok(response);
+
             var matchDetailsFromService = await _rugbyService.GetMatchDetailsByLegacyMatchId(id, true);
 
             response = Mapper.Map<RugbyMatchDetails>(matchDetailsFromService);
 
-
             if (response != null)
             {
                 response.Events.AssignOrderingIds();
+
+                var deprecatedArticlesAndVideosEntity = await _deprecatedFeedIntegrationService.GetArticlesAndVideos("rugby", id);
+                response = Mapper.Map<DeprecatedArticlesAndVideosEntity, RugbyMatchDetails>(deprecatedArticlesAndVideosEntity, response);
 
                 PersistToCache(cacheKey, response);
             }
@@ -359,11 +363,9 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             {
                 _cache?.Add(cacheKey, cacheData);
             }
-            catch (System.Exception exception)
+            catch (Exception exception)
             {
-                var loggerService = ActionContext.Request.GetDependencyScope().GetService(typeof(ILoggingService)) as ILoggingService;
-
-                loggerService?.Error(exception.Message + exception.StackTrace);
+                _logger?.Error("PersistToCache." + cacheKey, "key = " + cacheKey + " " + exception.Message + exception.StackTrace);
             }
         }
 
@@ -378,11 +380,9 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 
                 return null;
             }
-            catch (System.Exception exception)
+            catch (Exception exception)
             {
-                var loggerService = ActionContext.Request.GetDependencyScope().GetService(typeof(ILoggingService)) as ILoggingService;
-
-                loggerService?.Error(exception.Message + exception.StackTrace);
+                _logger?.Error("GetFromCacheAsync." + key, "key = " + key + " " + exception.Message + exception.StackTrace);
 
                 return null;
             }

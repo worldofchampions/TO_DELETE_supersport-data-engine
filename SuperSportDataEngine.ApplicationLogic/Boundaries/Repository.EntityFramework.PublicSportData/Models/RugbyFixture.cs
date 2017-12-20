@@ -47,6 +47,13 @@
         /// </summary>
         public bool IsDisabledOutbound { get; set; }
 
+        /// <summary>
+        /// A CMS driven value to indicate that a fixture should not be queried from the provider, e.g.
+        /// the provider has deleted this fixture from their database. This field has an impact on the
+        /// ingest process.
+        /// </summary>
+        public bool IsDisabledInbound { get; set; }
+
         /// <summary> A CMS driven value to indicate if a fixture is live scored. </summary>
         public bool IsLiveScored { get; set; }
 
@@ -60,5 +67,7 @@
         /// - TeamBScore 
         /// </summary> 
         public bool CmsOverrideModeIsActive { get; set; }
+
+        public int GameTimeInSeconds { get; set; }
     }
 }

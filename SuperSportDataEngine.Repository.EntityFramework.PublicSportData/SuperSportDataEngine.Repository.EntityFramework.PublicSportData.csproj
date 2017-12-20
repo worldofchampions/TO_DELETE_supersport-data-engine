@@ -220,11 +220,20 @@
     <Compile Include="Migrations\201711280810482_Add_HasLogs_To_Rugby_Tournament.Designer.cs">
       <DependentUpon>201711280810482_Add_HasLogs_To_Rugby_Tournament.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201712080828316_Add_GameTimeInSeconds_To_RugbyFixture.cs" />
+    <Compile Include="Migrations\201712080828316_Add_GameTimeInSeconds_To_RugbyFixture.Designer.cs">
+      <DependentUpon>201712080828316_Add_GameTimeInSeconds_To_RugbyFixture.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201712151055520_Added_IsDisabledInbound_To_RugbyFixture.cs" />
+    <Compile Include="Migrations\201712151055520_Added_IsDisabledInbound_To_RugbyFixture.Designer.cs">
+      <DependentUpon>201712151055520_Added_IsDisabledInbound_To_RugbyFixture.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypeProviderMappings.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypes.cs" />
     <Compile Include="Migrations\Seed\SeedTeams.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UnitOfWork\PublicSportDataUnitOfWork.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SuperSportDataEngine.ApplicationLogic\SuperSportDataEngine.ApplicationLogic.csproj">
@@ -345,6 +354,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201711280810482_Add_HasLogs_To_Rugby_Tournament.resx">
       <DependentUpon>201711280810482_Add_HasLogs_To_Rugby_Tournament.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201712080828316_Add_GameTimeInSeconds_To_RugbyFixture.resx">
+      <DependentUpon>201712080828316_Add_GameTimeInSeconds_To_RugbyFixture.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201712151055520_Added_IsDisabledInbound_To_RugbyFixture.resx">
+      <DependentUpon>201712151055520_Added_IsDisabledInbound_To_RugbyFixture.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

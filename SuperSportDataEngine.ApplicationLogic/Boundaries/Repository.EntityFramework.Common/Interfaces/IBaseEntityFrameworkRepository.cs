@@ -27,8 +27,6 @@
 
         void RollBackPendingChanges();
 
-        Task<int> SaveAsync();
-
         void Update(T item);
 
         IEnumerable<T> Where(Expression<Func<T, bool>> predicate);

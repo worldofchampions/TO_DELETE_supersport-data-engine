@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context
+﻿using System;
+
+namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context
 {
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
     using SuperSportDataEngine.Repository.EntityFramework.Common.Database;
