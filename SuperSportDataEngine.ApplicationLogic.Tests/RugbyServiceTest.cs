@@ -173,6 +173,32 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
         }
 
         [Test]
+        public async Task LiveGame_LiveGameCount_OneFixtureDisabledInbound()
+        {
+            Guid fixtureGuid = Guid.NewGuid();
+            DateTime fixtureStartDate = DateTime.UtcNow - TimeSpan.FromMinutes(1);
+
+            _publicSportDataUnitOfWork.RugbyFixtures.Add(
+                new RugbyFixture()
+                {
+                    Id = fixtureGuid,
+                    RugbyFixtureStatus = RugbyFixtureStatus.PreMatch,
+                    StartDateTime = fixtureStartDate,
+                    IsDisabledInbound = true
+                });
+
+            _systemSportDataUnitOfWork.SchedulerTrackingRugbyFixtures.Add(
+                new SchedulerTrackingRugbyFixture()
+                {
+                    FixtureId = fixtureGuid,
+                    RugbyFixtureStatus = RugbyFixtureStatus.PreMatch,
+                    SchedulerStateFixtures = SchedulerStateForRugbyFixturePolling.PreLivePolling
+                });
+
+            Assert.AreEqual(0, await _rugbyService.GetLiveFixturesCount(CancellationToken.None));
+        }
+
+        [Test]
         public async Task LiveGame_LiveGames_Getter_Count()
         {
             Guid tournamentGuid = Guid.NewGuid();
@@ -211,6 +237,48 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
             var liveGames = await _rugbyService.GetLiveFixturesForCurrentTournament(CancellationToken.None, tournamentGuid);
 
             Assert.AreEqual(1, liveGames.Count());
+        }
+
+        [Test]
+        public async Task LiveGame_LiveGames_Getter_Count_OneFixtureDisabledInbound()
+        {
+            Guid tournamentGuid = Guid.NewGuid();
+
+            var testTournament = new RugbyTournament()
+            {
+                Id = tournamentGuid,
+                Name = "testTournament",
+                IsEnabled = true
+            };
+
+            _publicSportDataUnitOfWork.RugbyTournaments.Add(
+                testTournament);
+
+            Guid fixtureGuid = Guid.NewGuid();
+            DateTime fixtureStartDate = DateTime.UtcNow - TimeSpan.FromMinutes(1);
+
+            _publicSportDataUnitOfWork.RugbyFixtures.Add(
+                new RugbyFixture()
+                {
+                    Id = fixtureGuid,
+                    RugbyTournament = testTournament,
+                    RugbyFixtureStatus = RugbyFixtureStatus.PreMatch,
+                    StartDateTime = fixtureStartDate,
+                    IsDisabledInbound = true
+                });
+
+            _systemSportDataUnitOfWork.SchedulerTrackingRugbyFixtures.Add(
+                new SchedulerTrackingRugbyFixture()
+                {
+                    FixtureId = fixtureGuid,
+                    TournamentId = tournamentGuid,
+                    RugbyFixtureStatus = RugbyFixtureStatus.PreMatch,
+                    SchedulerStateFixtures = SchedulerStateForRugbyFixturePolling.PreLivePolling
+                });
+
+            var liveGames = await _rugbyService.GetLiveFixturesForCurrentTournament(CancellationToken.None, tournamentGuid);
+
+            Assert.AreEqual(0, liveGames.Count());
         }
 
         [Test]
