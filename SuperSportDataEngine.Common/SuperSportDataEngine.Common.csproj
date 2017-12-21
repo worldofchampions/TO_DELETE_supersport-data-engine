@@ -81,6 +81,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Caching\Cache.cs" />
+    <Compile Include="Extentions\WebRequestExtentions.cs" />
     <Compile Include="Interfaces\ICache.cs" />
     <Compile Include="Logging\EventInfoConverter.cs" />
     <Compile Include="Logging\ILoggingService.cs" />
