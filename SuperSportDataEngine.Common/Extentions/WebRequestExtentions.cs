@@ -4,11 +4,28 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using SuperSportDataEngine.Common.Logging;
 
 namespace SuperSportDataEngine.Common.Extentions
 {
     public static class WebRequestExtentions
     {
+        public static async Task<WebResponse> GetResponseAsync(this WebRequest request, int timeoutInMilliseconds, ILoggingService logger)
+        {
+            var requestTask = Task.Factory.FromAsync(request.BeginGetResponse, request.EndGetResponse, null);
+            var timeOutTask = Task.Delay(timeoutInMilliseconds);
+
+            var result = await Task.WhenAny(requestTask, timeOutTask).ConfigureAwait(false);
+
+            if (result != timeOutTask) return requestTask.Result;
+
+            request.Abort();
+
+            await logger.Error("HTTPRequestTimedOut." + request.GetBaseUri(), "Request timed out. " + request.RequestUri, WebExceptionStatus.Timeout);
+
+            return null;
+        }
+
         public static string GetBaseUri(this WebRequest webRequest)
         {
             var requestUriString = webRequest.RequestUri.ToString();
