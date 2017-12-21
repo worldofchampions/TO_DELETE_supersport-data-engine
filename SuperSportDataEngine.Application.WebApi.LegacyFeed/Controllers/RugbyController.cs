@@ -3,17 +3,17 @@
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 {
     using AutoMapper;
-    using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Helpers.Extensions;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.News;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-    using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
+    using Common.Interfaces;
+    using Filters;
+    using Helpers.Extensions;
+    using Models.Mappers;
+    using Models.News;
+    using Models.Rugby;
+    using Models.Shared;
+    using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+    using ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
+    using ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+    using ApplicationLogic.Entities.Legacy;
     using SuperSportDataEngine.Common.Logging;
     using System;
     using System.Collections.Generic;
@@ -33,6 +33,8 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         private readonly IRugbyService _rugbyService;
         private readonly ICache _cache;
         private readonly ILoggingService _logger;
+
+        private const string CacheKeyNamespacePrefixForFeed = "LegacyFeed:";
 
         public RugbyController(
             IRugbyService rugbyService,
@@ -57,7 +59,8 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         [LogTimeFilter]
         public async Task<IHttpActionResult> GetMatchDetails(int id)
         {
-            var cacheKey = $"rugby/matchdetails/{id}";
+            const string cachePrefix = "MATCHDETAILS:";
+            var cacheKey = cachePrefix + $"rugby/matchdetails/{id}";
 
             var matchDetailsFromCache = await GetFromCacheAsync<RugbyMatchDetails>(cacheKey);
 
@@ -125,7 +128,8 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         [ResponseType(typeof(Match))]
         public async Task<IHttpActionResult> GetTodayFixtures()
         {
-            const string cacheKey = "rugby/live/today";
+            const string cachePrefix = "LIVE:";
+            const string cacheKey = cachePrefix + "rugby/live/today";
 
             var fixtures = await GetFromCacheAsync<IEnumerable<Match>>(cacheKey);
 
@@ -152,7 +156,8 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         [ResponseType(typeof(List<Fixture>))]
         public async Task<IHttpActionResult> GetFixtures(string category)
         {
-            var cacheKey = $"rugby/{category}/fixtures";
+            const string cachePrefix = "FIXTURES:";
+            var cacheKey = cachePrefix + $"rugby/{category}/fixtures";
 
             var fixtures = await GetFromCacheAsync<IEnumerable<Fixture>>(cacheKey);
 
@@ -177,7 +182,8 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         [ResponseType(typeof(List<Fixture>))]
         public async Task<IHttpActionResult> GetFixturesByStatus(string category)
         {
-            var cacheKey = $"rugby/{category}/fixtures/excludeinactive";
+            const string cachePrefix = "FIXTURES:";
+            var cacheKey = cachePrefix + $"rugby/{category}/fixtures/excludeinactive";
 
             var fixtures = await GetFromCacheAsync<IEnumerable<Fixture>>(cacheKey);
 
@@ -213,7 +219,8 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         [ResponseType(typeof(List<Result>))]
         public async Task<IHttpActionResult> GetResults(string category)
         {
-            var cacheKey = $"rugby/{category}/results";
+            const string cachePrefix = "RESULTS:";
+            var cacheKey = cachePrefix + $"rugby/{category}/results";
 
             var results = await GetFromCacheAsync<IEnumerable<Result>>(cacheKey);
 
@@ -238,7 +245,8 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         [ResponseType(typeof(List<Result>))]
         public async Task<IHttpActionResult> GetResultsByStatus(string category)
         {
-            var cacheKey = $"rugby/{category}/results/excludeinactive";
+            const string cachePrefix = "RESULTS:";
+            var cacheKey = cachePrefix + $"rugby/{category}/results/excludeinactive";
 
             var results = await GetFromCacheAsync<IEnumerable<Result>>(cacheKey);
 
@@ -274,7 +282,8 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         [ResponseType(typeof(List<Log>))]
         public async Task<IHttpActionResult> GetLogs(string category)
         {
-            var flatLogsCacheKey = $"rugby/flatLogs/{category}";
+            const string flatLogsCacheKeyPrefix = "FLATLOGS:";
+            var flatLogsCacheKey = flatLogsCacheKeyPrefix + $"rugby/flatLogs/{category}";
 
             var flatLogsCache = await GetFromCacheAsync<IEnumerable<Log>>(flatLogsCacheKey);
 
@@ -283,7 +292,8 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
                 return Ok(flatLogsCache);
             }
 
-            var groupedLogsCacheKey = $"rugby/groupedLogs/{category}";
+            const string groupedLogsCacheKeyPrefix = "GROUPEDLOGS:";
+            var groupedLogsCacheKey = groupedLogsCacheKeyPrefix + $"rugby/groupedLogs/{category}";
 
             var groupedLogsCache = await GetFromCacheAsync<IEnumerable<Log>>(groupedLogsCacheKey);
 
@@ -330,7 +340,8 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 
             if (logsFromService.Count() > emptyCollectionCount)
             {
-                var flatLogsCacheKey = $"rugby/flatLogs/{category}";
+                const string flatLogsCacheKeyPrefix = "FLATLOGS:";
+                var flatLogsCacheKey = flatLogsCacheKeyPrefix + $"rugby/flatLogs/{category}";
 
                 var flatLogsCache = logsFromService.Select(Mapper.Map<Log>);
 
@@ -350,7 +361,8 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
                 return Ok(Enumerable.Empty<Log>());
             }
 
-            var groupedLogsCacheKey = $"rugby/groupedLogs/{category}";
+            const string groupedLogsCacheKeyPrefix = "GROUPEDLOGS:";
+            var groupedLogsCacheKey = groupedLogsCacheKeyPrefix + $"rugby/groupedLogs/{category}";
 
             var groupedLogsCache = rugbyGroupedLogs.Select(Mapper.Map<Log>).ToList();
 
@@ -363,11 +375,11 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         {
             try
             {
-                _cache?.Add(cacheKey, cacheData);
+                _cache?.Add(CacheKeyNamespacePrefixForFeed + cacheKey, cacheData);
             }
             catch (Exception exception)
             {
-                _logger?.Error("PersistToCache." + cacheKey, "key = " + cacheKey + " " + exception.Message + exception.StackTrace);
+                _logger?.Error("LOGGING:PersistToCache." + cacheKey, "key = " + cacheKey + " " + exception.Message + exception.StackTrace);
             }
         }
 
@@ -384,7 +396,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             }
             catch (Exception exception)
             {
-                _logger?.Error("GetFromCacheAsync." + key, "key = " + key + " " + exception.Message + exception.StackTrace);
+                _logger?.Error("LOGGING:GetFromCacheAsync." + key, "key = " + key + " " + exception.Message + exception.StackTrace);
 
                 return null;
             }

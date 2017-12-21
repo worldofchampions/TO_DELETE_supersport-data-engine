@@ -27,7 +27,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
         private ILoggingService _loggingService;
 
         private readonly int _authKeyCacheExpiryInMinutes;
-        
+        private const string CacheKeyPrefix = "LegacyFeed:"; 
 
         public FeedRequestHandler()
         {
@@ -145,7 +145,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
         {
             try
             {
-                _cache.Add($"auth/{siteId}/{auth}", authModel, TimeSpan.FromMinutes(_authKeyCacheExpiryInMinutes));
+                _cache.Add(CacheKeyPrefix + "AUTH:" + $"auth/{siteId}/{auth}", authModel, TimeSpan.FromMinutes(_authKeyCacheExpiryInMinutes));
             }
             catch (Exception exception)
             {
