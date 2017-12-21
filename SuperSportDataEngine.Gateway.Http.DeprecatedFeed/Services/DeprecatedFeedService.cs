@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.Gateway.Http.DeprecatedFeed.Services
+﻿using SuperSportDataEngine.Common.Extentions;
+
+namespace SuperSportDataEngine.Gateway.Http.DeprecatedFeed.Services
 {
     using Newtonsoft.Json;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.DeprecatedFeed.Interfaces;
@@ -54,7 +56,7 @@
             catch (Exception exception)
             {
                 var key = GetType().FullName + ".GetHighlightVideos";
-                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.RequestUri}.{Environment.NewLine}{key}{Environment.NewLine}{exception}");
+                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.GetBaseUri()}.{Environment.NewLine}{key}{Environment.NewLine}{exception}");
 
                 return null;
             }
@@ -86,7 +88,7 @@
             catch (Exception exception)
             {
                 var key = GetType().FullName + ".GetLiveVideos";
-                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.RequestUri}.{Environment.NewLine}{key}{Environment.NewLine}{exception}");
+                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.GetBaseUri()}.{Environment.NewLine}{key}{Environment.NewLine}{exception}");
 
                 return null;
             }
@@ -118,7 +120,7 @@
             catch (Exception exception)
             {
                 var key = GetType().FullName + ".GetMatchDayBlogId";
-                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.RequestUri}.{Environment.NewLine}{key}{Environment.NewLine}{exception}");
+                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.GetBaseUri()}.{Environment.NewLine}{key}{Environment.NewLine}{exception}");
 
                 return 0;
             }
@@ -149,7 +151,7 @@
             catch (Exception exception)
             {
                 var key = GetType().FullName + ".GetMatchPreviewId";
-                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.RequestUri}.{Environment.NewLine}{key}{Environment.NewLine}{exception}");
+                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.GetBaseUri()}.{Environment.NewLine}{key}{Environment.NewLine}{exception}");
 
                 return 0;
             }
@@ -181,7 +183,7 @@
             catch (Exception exception)
             {
                 var key = GetType().FullName + ".GetMatchReportId";
-                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.RequestUri}.{Environment.NewLine}{key}{Environment.NewLine}{exception}");
+                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.GetBaseUri()}.{Environment.NewLine}{key}{Environment.NewLine}{exception}");
 
                 return 0;
             }
@@ -191,10 +193,10 @@
         {
             var durationMilliseconds = (responseTime - requestTime).TotalMilliseconds;
 
-            if (durationMilliseconds > _requestDurationWarningMilliseconds)
+            //if (durationMilliseconds > _requestDurationWarningMilliseconds)
             {
                 _logger.Warn($"HTTPRequestTooLong.{request.RequestUri}",
-                    $"HTTP request taking too long. {request.RequestUri}. Warning level is {_requestDurationWarningMilliseconds / 1000.0} seconds; took " + durationMilliseconds / 1000.0 + " seconds.");
+                    $"HTTP request taking too long. {request.GetBaseUri()}. Warning level is {_requestDurationWarningMilliseconds / 1000.0} seconds; took " + durationMilliseconds / 1000.0 + " seconds.");
             }
         }
     }
