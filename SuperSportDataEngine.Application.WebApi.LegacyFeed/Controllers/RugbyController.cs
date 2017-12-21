@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
+﻿using System.Net;
+
+namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 {
     using AutoMapper;
     using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
@@ -60,7 +62,7 @@
             var matchDetailsFromCache = await GetFromCacheAsync<RugbyMatchDetails>(cacheKey);
 
             var response = matchDetailsFromCache;
-
+            
             if (response != null)
                 return Ok(response);
 
