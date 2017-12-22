@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RequestModels;
 
 namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 {
@@ -20,7 +21,7 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             _statsApiBaseUrl = statsApiBaseUrl;
         }
 
-        public WebRequest GetRequestForDrivers(string providerSlug)
+        public WebRequest GetRequestForDrivers(string providerSlug, int? seasonId = null)
         {
             var driversUrl = $"/v1/stats/motor/{providerSlug}/participants/";
 
@@ -122,13 +123,14 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             return requestForTournamentSchedule;
         }
 
-        public WebRequest GetRequestRaceResults(string providerSlug, int providerSeasonId, int raceId)
+        public WebRequest GetRequestRaceResults(MotorResultRequestParams requestParams)
         {
-            var raceResultsUrl = $"/v1/stats/motor/{providerSlug}/events/";
+            var raceResultsUrl = $"/v1/stats/motor/{requestParams.Slug}/events/";
 
             var requestSignature = GetRequestSignature();
 
-            var queryString = $"?box=true&season={providerSeasonId}&raceId={raceId}&api_key={_statsApiKey}&sig={requestSignature}";
+            var queryString =
+                $"?box=true&season={requestParams.SeasonId}&raceId={requestParams.RaceId}&api_key={_statsApiKey}&sig={requestSignature}";
 
             var requestUriString = _statsApiBaseUrl + raceResultsUrl + queryString;
 

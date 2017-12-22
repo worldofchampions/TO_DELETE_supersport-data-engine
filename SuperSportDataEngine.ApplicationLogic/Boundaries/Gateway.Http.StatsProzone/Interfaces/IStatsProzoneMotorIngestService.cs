@@ -4,7 +4,7 @@
     using Models.RequestModels;
     public interface IStatsProzoneMotorIngestService
     {
-        MotorEntitiesResponse IngestTournamentDrivers(string providerSlug);
+        MotorEntitiesResponse IngestTournamentDrivers(MotorDriverRequestEntity motorDriverRequestEntity);
         MotorEntitiesResponse IngestTournamentTeams(string providerSlug);
         MotorEntitiesResponse IngestTournamentOwners(string providerSlug);
         MotorEntitiesResponse IngestDriverStandings(string providerSlug);
@@ -12,7 +12,7 @@
         MotorEntitiesResponse IngestTournaments();
         MotorEntitiesResponse IngestTournamentRaces(string providerSlug);
         MotorEntitiesResponse IngestTournamentSchedule(string providerSlug, int providerSeasonId);
-        MotorEntitiesResponse IngestTournamentResults(MotorResultRequestEntity motorResultRequestEntity);
-        MotorEntitiesResponse IngestTournamentGrid(MotorResultRequestEntity motorResultRequestEntity);
+        MotorEntitiesResponse IngestTournamentResults(MotorResultRequestParams motorResultRequestParams);
+        MotorEntitiesResponse IngestTournamentGrid(MotorResultRequestParams motorResultRequestParams);
     }
 }

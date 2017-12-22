@@ -82,9 +82,10 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             return tournamentSchedule;
         }
 
-        public MotorEntitiesResponse IngestTournamentResults(MotorResultRequestEntity motorResultRequestEntity)
+        public MotorEntitiesResponse IngestTournamentResults(MotorResultRequestParams motorResultRequestParams)
         {
-            var raceResultsRequest = _prozoneMotorWebRequest.GetRequestRaceResults(motorResultRequestEntity.ProviderSlug, motorResultRequestEntity.ProviderSeasonId, motorResultRequestEntity.ProviderRaceId);
+            var raceResultsRequest = 
+                _prozoneMotorWebRequest.GetRequestRaceResults(motorResultRequestParams);
 
             MotorEntitiesResponse raceResultsResponse;
 
@@ -103,14 +104,14 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             return raceResultsResponse;
         }
 
-        public MotorEntitiesResponse IngestTournamentGrid(MotorResultRequestEntity motorResultRequestEntity)
+        public MotorEntitiesResponse IngestTournamentGrid(MotorResultRequestParams motorResultRequestParams)
         {
-            return IngestTournamentResults(motorResultRequestEntity);
+            return IngestTournamentResults(motorResultRequestParams);
         }
 
-        public MotorEntitiesResponse IngestTournamentDrivers(string providerSlug)
+        public MotorEntitiesResponse IngestTournamentDrivers(MotorDriverRequestEntity driverRequestEntity)
         {
-            var webRequestForDriverIngest = _prozoneMotorWebRequest.GetRequestForDrivers(providerSlug);
+            var webRequestForDriverIngest = _prozoneMotorWebRequest.GetRequestForDrivers(driverRequestEntity.ProviderSlug);
 
             MotorEntitiesResponse tournamentDrivers;
 
@@ -185,7 +186,7 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             return teamStandings;
         }
 
-        public MotorEntitiesResponse IngestStandings(string providerSlug, string standingsTypeId)
+        private MotorEntitiesResponse IngestStandings(string providerSlug, string standingsTypeId)
         {
             var webRequestForStandingsIngest = _prozoneMotorWebRequest.GetRequestForStandings(providerSlug, standingsTypeId);
 

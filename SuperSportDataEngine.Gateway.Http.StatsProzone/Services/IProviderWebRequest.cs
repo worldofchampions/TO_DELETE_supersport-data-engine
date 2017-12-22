@@ -1,15 +1,17 @@
 ﻿using System.Net;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RequestModels;
+
 namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 {
     public interface IProviderWebRequest
     {
-        WebRequest GetRequestForDrivers(string providerSlug);
+        WebRequest GetRequestForDrivers(string providerSlug, int? seasonId = null);
         WebRequest GetRequestForTeams(string providerSlug);
         WebRequest GetRequestForStandings(string providerSlug, string standingsTypeId);
         WebRequest GetRequestForTournaments();
         WebRequest GetRequestForRaces(string providerSlug);
         WebRequest GetRequestForSchedule(string providerSlug, int providerSeasonId);
-        WebRequest GetRequestRaceResults(string providerSlug, int providerSeasonId, int providerRaceId);
+        WebRequest GetRequestRaceResults(MotorResultRequestParams requestParams);
         WebRequest GetRequestForOwners(string providerSlug);
     }
 }

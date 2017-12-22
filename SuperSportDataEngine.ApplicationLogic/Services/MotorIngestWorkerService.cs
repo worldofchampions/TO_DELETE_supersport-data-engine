@@ -30,19 +30,10 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             _loggingService = loggingService;
         }
 
-        public async Task IngestDriversForActiveTournaments(CancellationToken cancellationToken)
+        public async Task IngestDriversForActiveTournaments(MotorDriverRequestEntity motorDriverRequestEntity, CancellationToken cancellationToken)
         {
-            var motorLeagues = _publicSportDataUnitOfWork.MotorLeagues.Where(league => league.IsEnabled);
-            if (motorLeagues != null)
-            {
-                foreach (var league in motorLeagues)
-                {
-                    if (league.ProviderSlug is null) continue;
-
-                    var tournamentDrivers = _statsProzoneMotorIngestService.IngestTournamentDrivers(league.ProviderSlug);
-                    await PersistTournamentDriversInRepository(tournamentDrivers);
-                }
-            }
+            var tournamentDrivers = _statsProzoneMotorIngestService.IngestTournamentDrivers(motorDriverRequestEntity);
+            await PersistTournamentDriversInRepository(tournamentDrivers);
         }
 
         public async Task IngestTeamsForActiveTournaments(CancellationToken cancellationToken)
@@ -143,16 +134,16 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             }
         }
 
-        public async Task IngestTournamentResults(MotorResultRequestEntity requestEntity, CancellationToken cancellationToken)
+        public async Task IngestTournamentResults(MotorResultRequestParams requestParams, CancellationToken cancellationToken)
         {
-            var raceResults = _statsProzoneMotorIngestService.IngestTournamentResults(requestEntity);
+            var raceResults = _statsProzoneMotorIngestService.IngestTournamentResults(requestParams);
 
             await PersistResultsInRepository(raceResults, cancellationToken);
         }
 
-        public async Task IngestTournamentGrid(MotorResultRequestEntity requestEntity, CancellationToken cancellationToken)
+        public async Task IngestTournamentGrid(MotorResultRequestParams requestParams, CancellationToken cancellationToken)
         {
-            var tournamentGrid = _statsProzoneMotorIngestService.IngestTournamentGrid(requestEntity);
+            var tournamentGrid = _statsProzoneMotorIngestService.IngestTournamentGrid(requestParams);
 
             await PersistGridInRepository(tournamentGrid, cancellationToken);
         }
