@@ -178,6 +178,7 @@
     <Compile Include="Services\DeprecatedFeedIntegrationService.cs" />
     <Compile Include="Services\LegacyAuthService.cs" />
     <Compile Include="Services\MotorIngestWorkerService.cs" />
+    <Compile Include="Services\MotorService.cs" />
     <Compile Include="Services\RugbyIngestWorkerService.cs" />
     <Compile Include="Services\RugbyService.cs" />
     <Compile Include="Services\SchedulerClientService.cs" />

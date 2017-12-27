@@ -68,6 +68,8 @@ namespace SuperSportDataEngine.Application.Container
         {
             container.RegisterType<ITemporaryExampleService, TemporaryExampleService>();
             container.RegisterType<IRugbyService, RugbyService>(new HierarchicalLifetimeManager());
+            container.RegisterType<IMotorService, MotorService>(new HierarchicalLifetimeManager());
+
 
             if (applicationScope == ApplicationScope.WebApiLegacyFeed ||
                 applicationScope == ApplicationScope.WebApiSystemApi)

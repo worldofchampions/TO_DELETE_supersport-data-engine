@@ -26,6 +26,8 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
         private FixturesManagerJob _fixturesManagerJob;
         private LiveManagerJob _liveManagerJob;
         private LogsManagerJob _logsManagerJob;
+        private MotorDriversManagerJob _driversManagerJob;
+
 
         public ManagerJob()
         {
@@ -49,6 +51,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
             _rugbyIngestWorkerService = _container.Resolve<IRugbyIngestWorkerService>();
             _systemSportDataUnitOfWork = _container.Resolve<ISystemSportDataUnitOfWork>();
 
+
             _fixturesManagerJob =
                 new FixturesManagerJob(
                     _recurringJobManager,
@@ -66,6 +69,11 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
                 new LogsManagerJob(
                     _recurringJobManager,
                     new UnityContainer());
+
+            _driversManagerJob = 
+                new MotorDriversManagerJob(
+                _recurringJobManager, 
+                new UnityContainer());
         }
 
         private void ConfigureTimer()
@@ -89,9 +97,10 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
             ConfigureDepenencies();
             try
             {
-                await _liveManagerJob.DoWorkAsync();
-                await _fixturesManagerJob.DoWorkAsync();
-                await _logsManagerJob.DoWorkAsync();
+                await _driversManagerJob.DoWorkAsync();
+                //await _liveManagerJob.DoWorkAsync();
+                //await _fixturesManagerJob.DoWorkAsync();
+                //await _logsManagerJob.DoWorkAsync();
             }
             catch (Exception exception)
             {
