@@ -9,6 +9,13 @@
     {
         internal static void ApplyFluentApiConfigurations(DbModelBuilder modelBuilder)
         {
+            ApplyRugbyConfiguration(modelBuilder);
+
+            ApplyMotorSportConfiguration(modelBuilder);
+        }
+
+        private static void ApplyRugbyConfiguration(DbModelBuilder modelBuilder)
+        {
             modelBuilder.Entity<RugbyCommentary>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
             modelBuilder.Entity<RugbyCommentary>().Property(x => x.GameTimeDisplayHoursMinutesSeconds).IsRequired();
             modelBuilder.Entity<RugbyCommentary>().Property(x => x.GameTimeDisplayMinutesSeconds).IsRequired();
@@ -63,6 +70,14 @@
             modelBuilder.Entity<RugbyVenue>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
             modelBuilder.Entity<RugbyVenue>().Property(x => x.ProviderVenueId).HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Seek_ProviderVenueId")));
             modelBuilder.Entity<RugbyVenue>().Property(x => x.Name).IsRequired();
+        }
+
+        private static void ApplyMotorSportConfiguration(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<MotorLeague>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+            modelBuilder.Entity<MotorLeague>().Property(x => x.LegacyLeagueId).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+            modelBuilder.Entity<MotorLeague>().Property(x => x.Name).IsRequired();
+            modelBuilder.Entity<MotorLeague>().Property(x => x.ProviderSlug).IsRequired();
         }
     }
 }

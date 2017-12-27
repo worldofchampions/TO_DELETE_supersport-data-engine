@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
 
 namespace SuperSportDataEngine.Tests.Common.Repositories.Test
@@ -27,6 +28,8 @@ namespace SuperSportDataEngine.Tests.Common.Repositories.Test
             set;
         }
 
+        public IBaseEntityFrameworkRepository<SchedulerTrackingMotorSeason> SchedulerTrackingMotorSeasons { get; }
+
         public TestSystemSportDataUnitOfWork()
         {
             SchedulerDashboardUsers = new TestEntityFrameworkRepository<SchedulerDashboardUser>(new List<SchedulerDashboardUser>());        
@@ -35,6 +38,7 @@ namespace SuperSportDataEngine.Tests.Common.Repositories.Test
             LegacyZoneSites = new TestEntityFrameworkRepository<LegacyZoneSite>(new List<LegacyZoneSite>());
             SchedulerTrackingRugbySeasons = new TestEntityFrameworkRepository<SchedulerTrackingRugbySeason>(new List<SchedulerTrackingRugbySeason>());
             SchedulerTrackingRugbyTournaments = new TestEntityFrameworkRepository<SchedulerTrackingRugbyTournament>(new List<SchedulerTrackingRugbyTournament>());
+            SchedulerTrackingMotorSeasons = new TestEntityFrameworkRepository<SchedulerTrackingMotorSeason>(new List<SchedulerTrackingMotorSeason>());
         }
 
         public int SaveChanges()
@@ -55,6 +59,7 @@ namespace SuperSportDataEngine.Tests.Common.Repositories.Test
             SchedulerTrackingRugbyFixtures?.Dispose();
             SchedulerTrackingRugbySeasons?.Dispose();
             SchedulerTrackingRugbyTournaments?.Dispose();
+            SchedulerTrackingMotorSeasons?.Dispose();
         }
     }
 }

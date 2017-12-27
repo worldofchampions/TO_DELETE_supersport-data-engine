@@ -23,6 +23,13 @@
             modelBuilder.Entity<SchedulerTrackingRugbyTournament>().HasKey(x => new { x.TournamentId, x.SeasonId });
 
             modelBuilder.Entity<SchedulerDashboardUser>().HasKey(x => new { x.Username });
+
+            ApplyMotorSportConfigurations(modelBuilder);
+        }
+
+        private static void ApplyMotorSportConfigurations(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<SchedulerTrackingMotorSeason>().HasKey(x => new { SeasoId = x.SeasonId, x.LeagueId });
         }
     }
 }

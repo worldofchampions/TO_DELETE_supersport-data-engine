@@ -26,18 +26,24 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<IEnumerable<MotorLeague>> GetActiveLeagues()
         {
+            //TODO
             var res = await _publicSportDataUnitOfWork.MotorLeagues.WhereAsync(l => l.IsEnabled);
-            return new List<MotorLeague> {new MotorLeague()};
+            return new List<MotorLeague> {new MotorLeague
+            {
+                Name = "Test-F1",
+                IsEnabled = true,
+                ProviderSlug = "f1",
+            }};
         }
 
-        public Task<int> GetCurrentProviderSeasonIdForLeague(Guid leagueId, CancellationToken cancellationToken)
+        public async Task<int> GetCurrentProviderSeasonIdForLeague(Guid leagueId, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            return await Task.FromResult(2017);
         }
 
-        public Task<SchedulerStateForManagerJobPolling> GetSchedulerStateForManagerJobPolling(Guid leagueId)
+        public async Task<SchedulerStateForManagerJobPolling> GetSchedulerStateForManagerJobPolling(Guid leagueId)
         {
-            throw new NotImplementedException();
+            return await  Task.FromResult(SchedulerStateForManagerJobPolling.NotRunning);
         }
     }
 }

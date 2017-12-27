@@ -145,7 +145,10 @@
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyTournament.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyVenue.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\UnitOfWork\IPublicSportDataUnitOfWork.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\Motor\MotorSeasonStatus.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\Motor\SchedulerStateForMotorDriverPolling.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\UnitOfWork\ISystemSportDataUnitOfWork.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\Motor\SchedulerTrackingMotorSeason.cs" />
     <Compile Include="Entities\Legacy\DeprecatedArticlesAndVideosEntity.cs" />
     <Compile Include="Entities\Legacy\LegacyRugbyMatchEventEntity.cs" />
     <Compile Include="Entities\Legacy\LegacyRugbyScorerEntity.cs" />

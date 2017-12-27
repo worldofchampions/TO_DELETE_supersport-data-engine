@@ -47,30 +47,34 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
 
                     if (await _childContainer.Resolve<IMotorService>().GetSchedulerStateForManagerJobPolling(league.Id) == SchedulerStateForManagerJobPolling.NotRunning)
                     {
-                        var jobId = ConfigurationManager.AppSettings["ScheduleManagerJob_Logs_CurrentTournaments_JobIdPrefix"] + league.Name;
-                        var jobCronExpression = ConfigurationManager.AppSettings["ScheduleManagerJob_Logs_CurrentTournaments_JobCronExpression_OneMinute"];
+                        var jobId = ConfigurationManager.AppSettings["ScheduleManagerJob_Drivers_CurrentLeagues_JobIdPrefix"] + league.Name;
+                        var jobCronExpression = ConfigurationManager.AppSettings["ScheduleManagerJob_Drivers_CurrentLeagues_JobCronExpression_OneMinute"];
 
                         AddOrUpdateHangfireJob(league.ProviderSlug, seasonId, jobId, jobCronExpression);
 
-                        //QueueJobForLowFrequencyPolling(tournament.Id, tournament.ProviderTournamentId, seasonId, jobId);
+                        QueueJobForLowFrequencyPolling(league.Id, league.ProviderLeagueId, seasonId, jobId);
 
                         var season =
-                            (await unitOfWork.SchedulerTrackingRugbySeasons.AllAsync())
+                            (await unitOfWork.SchedulerTrackingMotorSeasons.AllAsync())
                             .FirstOrDefault(s =>
-                                s.RugbySeasonStatus == RugbySeasonStatus.InProgress &&
-                                s.TournamentId == league.Id &&
+                                s.MotorSeasonStatus == MotorSeasonStatus.InProgress &&
+                                s.LeagueId == league.Id &&
                                 s.SchedulerStateForManagerJobPolling == SchedulerStateForManagerJobPolling.NotRunning);
 
-                        if (season != null)
-                        {
-                            season.SchedulerStateForManagerJobPolling = SchedulerStateForManagerJobPolling.Running;
-                            unitOfWork.SchedulerTrackingRugbySeasons.Update(season);
-                        }
+                        if (season == null) continue;
+
+                        season.SchedulerStateForManagerJobPolling = SchedulerStateForManagerJobPolling.Running;
+                        unitOfWork.SchedulerTrackingMotorSeasons.Update(season);
                     }
                 }
 
                 return await unitOfWork.SaveChangesAsync();
             }
+        }
+
+        private void QueueJobForLowFrequencyPolling(Guid leagueId, int leagueProviderLeagueId, int seasonId, string jobId)
+        {
+            //TODO 
         }
 
         private void ConfigureDependencies()

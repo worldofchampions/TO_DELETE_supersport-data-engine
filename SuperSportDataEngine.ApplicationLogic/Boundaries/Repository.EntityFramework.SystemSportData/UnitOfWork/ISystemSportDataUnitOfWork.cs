@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
 
 namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork
 {
@@ -13,6 +14,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFram
         IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> SchedulerTrackingRugbyFixtures { get; }
         IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> SchedulerTrackingRugbySeasons { get; }
         IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> SchedulerTrackingRugbyTournaments { get; }
+        IBaseEntityFrameworkRepository<SchedulerTrackingMotorSeason> SchedulerTrackingMotorSeasons { get; }
 
         int SaveChanges();
         Task<int> SaveChangesAsync();

@@ -14,6 +14,7 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
         private const string DriverStandingsTypeId = "1"; //TODO Move to STATS constants
 
         private readonly IProviderWebRequest _prozoneMotorWebRequest;
+
         public StatsProzoneMotorIngestService(IProviderWebRequest prozoneMotorWebRequest)
         {
             _prozoneMotorWebRequest = prozoneMotorWebRequest;

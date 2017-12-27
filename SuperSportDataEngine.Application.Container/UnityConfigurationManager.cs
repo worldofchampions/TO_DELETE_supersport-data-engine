@@ -118,6 +118,11 @@ namespace SuperSportDataEngine.Application.Container
             {
                 container.RegisterType<IStatsProzoneRugbyIngestService, StatsProzoneRugbyIngestService>(
                     new HierarchicalLifetimeManager());
+
+                var temp = new StatsProzoneMotorWebRequest("http://api.stats.com", "ta3dprpc4sn79ecm2wg7tqbg", "JDgQnhPVZQ");
+                container.RegisterType<IStatsProzoneMotorIngestService, StatsProzoneMotorIngestService>(
+                    new HierarchicalLifetimeManager(),
+                    new InjectionConstructor(temp));
             }
         }
 
@@ -167,6 +172,8 @@ namespace SuperSportDataEngine.Application.Container
                 container.RegisterType<IMongoDbRugbyRepository, MongoDbRugbyRepository>();
 
                 container.RegisterType<IRugbyIngestWorkerService, RugbyIngestWorkerService>(new HierarchicalLifetimeManager());
+
+                container.RegisterType<IMotorIngestWorkerService, MotorIngestWorkerService>(new HierarchicalLifetimeManager());
 
                 container.RegisterType<ITemporaryExampleMongoDbRepository, TemporaryExampleMongoDbRepository>();
 
