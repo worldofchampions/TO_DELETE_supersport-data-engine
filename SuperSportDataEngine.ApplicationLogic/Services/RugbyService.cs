@@ -87,7 +87,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         {
             var liveGames = (await _publicSportDataUnitOfWork.RugbyFixtures.AllAsync())
                     .Where(IsFixtureLive)
-                    .Where(fixture => fixture.RugbyTournament != null && fixture.RugbyTournament.Id == tournamentId);
+                    .Where(fixture => fixture.RugbyTournament != null && fixture.RugbyTournament.Id == tournamentId)
+                    .Where(f => f.IsDisabledInbound == false);
 
             return liveGames;
         }
@@ -107,7 +108,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         public async Task<int> GetLiveFixturesCount(CancellationToken cancellationToken)
         {
             var liveGames = (await _publicSportDataUnitOfWork.RugbyFixtures.AllAsync())
-                                .Where(IsFixtureLive);
+                .Where(IsFixtureLive)
+                .Where(f => f.IsDisabledInbound == false);
 
             return liveGames.Count();
         }
@@ -203,7 +205,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             if (tournament == null) return fixtures;
 
-            fixtures = _publicSportDataUnitOfWork.RugbyFixtures.Where(t => t.RugbyTournament.Id == tournament.Id && t.RugbyFixtureStatus != RugbyFixtureStatus.Result).OrderBy(f => f.StartDateTime);
+            fixtures = _publicSportDataUnitOfWork.RugbyFixtures.Where(t => t.IsDisabledInbound == false && t.RugbyTournament.Id == tournament.Id && t.RugbyFixtureStatus != RugbyFixtureStatus.Result).OrderBy(f => f.StartDateTime);
 
             return await Task.FromResult(fixtures.ToList());
         }

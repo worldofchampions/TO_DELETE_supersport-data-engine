@@ -1,4 +1,4 @@
-﻿using SuperSportDataEngine.Gateway.Http.StatsProzone.Extensions;
+﻿using SuperSportDataEngine.Common.Extentions;
 
 namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 {

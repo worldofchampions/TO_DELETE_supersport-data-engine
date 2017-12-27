@@ -1,11 +1,14 @@
-﻿using System.Net;
-using System.Threading;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 using SuperSportDataEngine.Common.Logging;
 
-namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Extensions
+namespace SuperSportDataEngine.Common.Extentions
 {
-    public static class WebExtensions
+    public static class WebRequestExtentions
     {
         public static async Task<WebResponse> GetResponseAsync(this WebRequest request, int timeoutInMilliseconds, ILoggingService logger)
         {
@@ -17,10 +20,16 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Extensions
             if (result != timeOutTask) return requestTask.Result;
 
             request.Abort();
-            
-            await logger.Error("HTTPRequestTimedOut." + request.RequestUri, "Request timed out. " + request.RequestUri, WebExceptionStatus.Timeout);
+
+            await logger.Error("HTTPRequestTimedOut." + request.GetBaseUri(), "Request timed out. " + request.RequestUri, WebExceptionStatus.Timeout);
 
             return null;
+        }
+
+        public static string GetBaseUri(this WebRequest webRequest)
+        {
+            var requestUriString = webRequest.RequestUri.ToString();
+            return requestUriString.Substring(0, requestUriString.IndexOf("?", StringComparison.Ordinal));
         }
     }
 }
