@@ -74,10 +74,13 @@
 
         private static void ApplyMotorSportConfiguration(DbModelBuilder modelBuilder)
         {
+            //MotorLeague
             modelBuilder.Entity<MotorLeague>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
             modelBuilder.Entity<MotorLeague>().Property(x => x.LegacyLeagueId).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+            modelBuilder.Entity<MotorLeague>().Property(x => x.ProviderLeagueId).IsRequired();
             modelBuilder.Entity<MotorLeague>().Property(x => x.Name).IsRequired();
             modelBuilder.Entity<MotorLeague>().Property(x => x.ProviderSlug).IsRequired();
+            modelBuilder.Entity<MotorLeague>().Property(x => x.Slug).HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Unique_Slug") { IsUnique = true }));
         }
     }
 }
