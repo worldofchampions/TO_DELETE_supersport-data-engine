@@ -68,6 +68,9 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
             using (WebResponse response = await request.GetResponseAsync(_maximumTimeForResponseInMilliseconds, _logger))
             {
+                if (response == null)
+                    return null;
+
                 using (Stream responseStream = response.GetResponseStream())
                 {
                     StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
@@ -122,6 +125,9 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
             using (WebResponse response = await request.GetResponseAsync(_maximumTimeForResponseInMilliseconds, _logger))
             {
+                if (response == null)
+                    return null;
+
                 using (Stream responseStream = response.GetResponseStream())
                 {
                     StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
@@ -173,6 +179,9 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
             using (WebResponse response = await request.GetResponseAsync(_maximumTimeForResponseInMilliseconds, _logger))
             {
+                if (response == null)
+                    return null;
+
                 using (Stream responseStream = response.GetResponseStream())
                 {
                     StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
@@ -212,6 +221,9 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
             using (WebResponse response = await request.GetResponseAsync(_maximumTimeForResponseInMilliseconds, _logger))
             {
+                if (response == null)
+                    return null;
+
                 using (Stream responseStream = response.GetResponseStream())
                 {
                     var reader = new StreamReader(responseStream, Encoding.UTF8);
@@ -250,6 +262,9 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
             using (WebResponse response = await request.GetResponseAsync(_maximumTimeForResponseInMilliseconds, _logger))
             {
+                if (response == null)
+                    return null;
+
                 using (Stream responseStream = response.GetResponseStream())
                 {
                     StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
@@ -273,6 +288,9 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
             using (WebResponse response = await request.GetResponseAsync(_maximumTimeForResponseInMilliseconds, _logger))
             {
+                if (response == null)
+                    return null;
+
                 using (Stream responseStream = response.GetResponseStream())
                 {
                     StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
@@ -336,6 +354,9 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             
             using (WebResponse response = await request.GetResponseAsync())
             {
+                if (response == null)
+                    return null;
+
                 using (Stream responseStream = response.GetResponseStream())
                 {
                     StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
@@ -387,6 +408,9 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
             using (WebResponse response = await request.GetResponseAsync())
             {
+                if (response == null)
+                    return null;
+
                 using (Stream responseStream = response.GetResponseStream())
                 {
                     StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
