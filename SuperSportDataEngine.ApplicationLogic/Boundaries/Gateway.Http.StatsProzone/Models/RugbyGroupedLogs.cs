@@ -75,6 +75,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsPro
         public OverallStandings overallStandings { get; set; }
         public GroupStandings groupStandings { get; set; }
         public SecondaryGroupStandings secondaryGroupStandings { get; set; }
+        // This is added to treat Sevens tournament as a grouped log.
+        public List<Ladderposition> ladderposition { get; set; }
         public int seasonId { get; set; }
     }
 }

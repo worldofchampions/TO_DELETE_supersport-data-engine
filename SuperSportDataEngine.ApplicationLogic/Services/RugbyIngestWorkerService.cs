@@ -853,9 +853,16 @@
                     return;
 
                 var teamId = ladder.teamId;
-
                 var rugbyTeam = (await _rugbyTeamRepository.AllAsync()).FirstOrDefault(t => t.ProviderTeamId == teamId);
-                var rugbyLogGroup = (await _rugbyLogGroupRepository.AllAsync()).FirstOrDefault(g => g.ProviderLogGroupId == ladder.group && g.GroupName == ladder.groupName);
+
+                if (rugbySeason == null) continue;
+                if (rugbyTeam == null) continue;
+                if (rugbyTournament == null) continue;
+
+                var rugbyLogGroup = (await _rugbyLogGroupRepository.AllAsync()).FirstOrDefault(g => 
+                                            g.RugbySeason.Id == rugbySeason.Id &&
+                                            g.ProviderLogGroupId == ladder.group && 
+                                            g.GroupName == ladder.groupName);
 
                 // This means the RugbyLogGroup is not in the db.
                 // Should be added to the db via CMS or manually.
@@ -869,10 +876,6 @@
                                                          g.RugbyTournament.ProviderTournamentId == tournamentId &&
                                                          g.RugbySeason.ProviderSeasonId == seasonId &&
                                                          g.RugbyTeam.ProviderTeamId == teamId);
-
-                if (rugbySeason == null) continue;
-                if (rugbyTeam == null) continue;
-                if (rugbyTournament == null) continue;
 
                 var newLogEntry = new RugbyGroupedLog()
                 {
@@ -926,9 +929,22 @@
 
         private async Task PersistGroupedLogs(CancellationToken cancellationToken, RugbyGroupedLogsResponse logs)
         {
-            await IngestStandings(cancellationToken, logs, logs.RugbyGroupedLogs.overallStandings.ladderposition);
-            await IngestStandings(cancellationToken, logs, logs.RugbyGroupedLogs.groupStandings.ladderposition);
-            await IngestStandings(cancellationToken, logs, logs.RugbyGroupedLogs.secondaryGroupStandings.ladderposition);
+            if (logs.RugbyGroupedLogs.overallStandings == null &&
+                logs.RugbyGroupedLogs.groupStandings == null &&
+                logs.RugbyGroupedLogs.secondaryGroupStandings == null)
+            {
+                await IngestStandings(cancellationToken, logs, logs.RugbyGroupedLogs.ladderposition);
+            }
+
+            if (logs.RugbyGroupedLogs.overallStandings != null)
+                await IngestStandings(cancellationToken, logs, logs.RugbyGroupedLogs.overallStandings.ladderposition);
+
+            if (logs.RugbyGroupedLogs.groupStandings != null)
+                await IngestStandings(cancellationToken, logs, logs.RugbyGroupedLogs.groupStandings.ladderposition);
+
+            if (logs.RugbyGroupedLogs.secondaryGroupStandings != null)
+                await IngestStandings(cancellationToken, logs,
+                    logs.RugbyGroupedLogs.secondaryGroupStandings.ladderposition);
 
             await _rugbyGroupedLogsRepository.SaveAsync();
         }

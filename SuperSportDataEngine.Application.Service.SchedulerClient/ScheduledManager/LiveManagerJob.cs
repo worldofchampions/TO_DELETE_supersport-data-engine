@@ -49,8 +49,6 @@
             var postponedFixtures =
                     (await _rugbyService.GetPostponedFixtures()).ToList();
 
-            var postponedGames = postponedFixtures.ToList();
-
             foreach (var fixture in postponedFixtures)
             {
                 if (fixture.TeamA == null) continue;
