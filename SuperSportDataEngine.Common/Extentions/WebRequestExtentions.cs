@@ -12,18 +12,25 @@ namespace SuperSportDataEngine.Common.Extentions
     {
         public static async Task<WebResponse> GetResponseAsync(this WebRequest request, int timeoutInMilliseconds, ILoggingService logger)
         {
-            var requestTask = Task.Factory.FromAsync(request.BeginGetResponse, request.EndGetResponse, null);
-            var timeOutTask = Task.Delay(timeoutInMilliseconds);
+            try
+            {
+                var requestTask = Task.Factory.FromAsync(request.BeginGetResponse, request.EndGetResponse, null);
+                var timeOutTask = Task.Delay(timeoutInMilliseconds);
 
-            var result = await Task.WhenAny(requestTask, timeOutTask).ConfigureAwait(false);
+                var result = await Task.WhenAny(requestTask, timeOutTask).ConfigureAwait(false);
 
-            if (result != timeOutTask) return requestTask.Result;
+                if (result != timeOutTask) return requestTask.Result;
 
-            request.Abort();
+                request.Abort();
 
-            await logger.Error("HTTPRequestTimedOut." + request.GetBaseUri(), "Request timed out. " + request.RequestUri, WebExceptionStatus.Timeout);
+                await logger.Error("HTTPRequestTimedOut." + request.GetBaseUri(), "Request timed out. " + request.RequestUri, WebExceptionStatus.Timeout);
 
-            return null;
+                return null;
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
         }
 
         public static string GetBaseUri(this WebRequest webRequest)
