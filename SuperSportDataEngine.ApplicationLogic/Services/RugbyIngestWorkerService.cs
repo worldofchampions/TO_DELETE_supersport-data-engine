@@ -926,9 +926,15 @@
 
         private async Task PersistGroupedLogs(CancellationToken cancellationToken, RugbyGroupedLogsResponse logs)
         {
-            await IngestStandings(cancellationToken, logs, logs.RugbyGroupedLogs.overallStandings.ladderposition);
-            await IngestStandings(cancellationToken, logs, logs.RugbyGroupedLogs.groupStandings.ladderposition);
-            await IngestStandings(cancellationToken, logs, logs.RugbyGroupedLogs.secondaryGroupStandings.ladderposition);
+            if (logs.RugbyGroupedLogs.overallStandings != null)
+                await IngestStandings(cancellationToken, logs, logs.RugbyGroupedLogs.overallStandings.ladderposition);
+
+            if (logs.RugbyGroupedLogs.groupStandings != null)
+                await IngestStandings(cancellationToken, logs, logs.RugbyGroupedLogs.groupStandings.ladderposition);
+
+            if (logs.RugbyGroupedLogs.secondaryGroupStandings != null)
+                await IngestStandings(cancellationToken, logs,
+                    logs.RugbyGroupedLogs.secondaryGroupStandings.ladderposition);
 
             await _rugbyGroupedLogsRepository.SaveAsync();
         }
