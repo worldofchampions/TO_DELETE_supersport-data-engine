@@ -29,6 +29,8 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Contex
         public DbSet<RugbyTeam> RugbyTeams { get; set; }
         public DbSet<RugbyTournament> RugbyTournaments { get; set; }
         public DbSet<RugbyVenue> RugbyVenues { get; set; }
+        public DbSet<MotorDriver> MotorDrivers { get; set; }
+
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
