@@ -82,6 +82,10 @@
             modelBuilder.Entity<MotorLeague>().Property(x => x.Slug).IsRequired();
 
             modelBuilder.Entity<MotorGrid>().HasKey(x => new { x.RaceId, x.DriverId});
+
+            modelBuilder.Entity<MotorCar>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+            modelBuilder.Entity<MotorCar>().Property(x => x.ProviderCarId).IsRequired();
+            modelBuilder.Entity<MotorCar>().Property(x => x.CarNumber).IsRequired();
         }
     }
 }
