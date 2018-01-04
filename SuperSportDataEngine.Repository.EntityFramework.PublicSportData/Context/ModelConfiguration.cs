@@ -74,7 +74,6 @@
 
         private static void ApplyMotorSportConfiguration(DbModelBuilder modelBuilder)
         {
-            //MotorLeague
             modelBuilder.Entity<MotorLeague>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
             modelBuilder.Entity<MotorLeague>().Property(x => x.LegacyLeagueId).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
             modelBuilder.Entity<MotorLeague>().Property(x => x.ProviderLeagueId).IsRequired();
