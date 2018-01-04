@@ -37,7 +37,8 @@ namespace SuperSportDataEngine.Common.Extentions
         public static string GetBaseUri(this WebRequest webRequest)
         {
             var requestUriString = webRequest.RequestUri.ToString();
-            return requestUriString.Substring(0, requestUriString.IndexOf("?", StringComparison.Ordinal));
+            var indexOf = requestUriString.IndexOf("?", StringComparison.Ordinal);
+            return requestUriString.Substring(0, indexOf == -1 ? requestUriString.Length : indexOf );
         }
     }
 }
