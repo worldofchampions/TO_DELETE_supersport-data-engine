@@ -168,7 +168,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         public async Task<IEnumerable<RugbyTournament>> GetActiveTournamentsForMatchesInResultsState()
         {
             var tournamentsThatHaveFixturesInResultState = await Task.FromResult(_rugbyFixturesRepository
-                        .Where(f => f.RugbyFixtureStatus == RugbyFixtureStatus.Result)
+                        .Where(f => f.RugbyFixtureStatus == RugbyFixtureStatus.Result && f.RugbyTournament.IsEnabled)
                         .Select(f => f.RugbyTournament).ToList());
 
             return tournamentsThatHaveFixturesInResultState;
