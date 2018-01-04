@@ -31,6 +31,8 @@
         public DbSet<MotorCar> MotorCars { get; set; }
         public DbSet<MotorRace> MotorRaces { get; set; }
         public DbSet<MotorGrid> MotorGrids { get; set; }
+        public DbSet<MotorRaceResult> MotorRaceResults { get; set; }
+
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

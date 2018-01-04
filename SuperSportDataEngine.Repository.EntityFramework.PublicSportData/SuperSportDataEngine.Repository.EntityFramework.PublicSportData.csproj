@@ -252,6 +252,10 @@
     <Compile Include="Migrations\201801041440084_Adding_MotorRaces_Table.Designer.cs">
       <DependentUpon>201801041440084_Adding_MotorRaces_Table.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201801041446500_Adding_MotorResults_Table.cs" />
+    <Compile Include="Migrations\201801041446500_Adding_MotorResults_Table.Designer.cs">
+      <DependentUpon>201801041446500_Adding_MotorResults_Table.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypeProviderMappings.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypes.cs" />
@@ -402,6 +406,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201801041440084_Adding_MotorRaces_Table.resx">
       <DependentUpon>201801041440084_Adding_MotorRaces_Table.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801041446500_Adding_MotorResults_Table.resx">
+      <DependentUpon>201801041446500_Adding_MotorResults_Table.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

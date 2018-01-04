@@ -94,6 +94,9 @@
             modelBuilder.Entity<MotorRace>().Property(x => x.Slug).IsRequired();
             modelBuilder.Entity<MotorRace>().Property(x => x.Slug).HasMaxLength(450);
             modelBuilder.Entity<MotorRace>().Property(x => x.Slug).HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Unique_Slug") { IsUnique = true }));
+
+            modelBuilder.Entity<MotorRaceResult>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+            modelBuilder.Entity<MotorRaceResult>().Property(x => x.DriverId).IsRequired();
         }
     }
 }
