@@ -29,7 +29,7 @@ namespace SuperSportDataEngine.Common.Extentions
             }
             catch (Exception e)
             {
-                await logger.Error("PROVIDERCALLS:EXCEPTION:" + request.GetBaseUri(), "Provider throwing exception for request to " + request.GetBaseUri() + ": " + e.StackTrace);
+                await logger.Error("PROVIDERCALLS:EXCEPTION:" + request.GetBaseUri().Replace(":", ""), "Provider throwing exception for request to " + request.GetBaseUri() + ": " + e.StackTrace);
                 return null;
             }
         }
