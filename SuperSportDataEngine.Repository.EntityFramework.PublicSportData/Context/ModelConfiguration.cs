@@ -80,7 +80,7 @@
             modelBuilder.Entity<MotorLeague>().Property(x => x.ProviderLeagueId).IsRequired();
             modelBuilder.Entity<MotorLeague>().Property(x => x.Name).IsRequired();
             modelBuilder.Entity<MotorLeague>().Property(x => x.ProviderSlug).IsRequired();
-            modelBuilder.Entity<MotorLeague>().Property(x => x.Slug).HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Unique_Slug") { IsUnique = true }));
+            modelBuilder.Entity<MotorLeague>().Property(x => x.Slug).IsRequired();
         }
     }
 }

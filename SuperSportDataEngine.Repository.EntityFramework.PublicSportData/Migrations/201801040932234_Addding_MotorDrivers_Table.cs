@@ -33,13 +33,10 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                         TimestampUpdated = c.DateTimeOffset(nullable: false, precision: 7),
                     })
                 .PrimaryKey(t => t.Id);
-            
-            CreateIndex("dbo.MotorLeagues", "Slug", unique: true, name: "Unique_Slug");
         }
         
         public override void Down()
         {
-            DropIndex("dbo.MotorLeagues", "Unique_Slug");
             DropTable("dbo.MotorDrivers");
         }
     }
