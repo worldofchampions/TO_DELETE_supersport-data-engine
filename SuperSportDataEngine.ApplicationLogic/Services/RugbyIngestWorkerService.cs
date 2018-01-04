@@ -845,7 +845,9 @@
             var seasonId = logs.RugbyGroupedLogs.seasonId;
 
             var rugbyTournament = (await _rugbyTournamentRepository.AllAsync()).FirstOrDefault(t => t.ProviderTournamentId == tournamentId);
-            var rugbySeason = (await _rugbySeasonRepository.AllAsync()).FirstOrDefault(s => s.ProviderSeasonId == seasonId);
+            if (rugbyTournament == null) return;
+
+            var rugbySeason = (await _rugbySeasonRepository.AllAsync()).FirstOrDefault(s => s.RugbyTournament.ProviderTournamentId == tournamentId && s.ProviderSeasonId == seasonId);
 
             foreach (var ladder in ladderPositions)
             {
@@ -857,12 +859,10 @@
 
                 if (rugbySeason == null) continue;
                 if (rugbyTeam == null) continue;
-                if (rugbyTournament == null) continue;
 
                 var rugbyLogGroup = (await _rugbyLogGroupRepository.AllAsync()).FirstOrDefault(g => 
                                             g.RugbySeason.Id == rugbySeason.Id &&
-                                            g.ProviderLogGroupId == ladder.group && 
-                                            g.GroupName == ladder.groupName);
+                                            g.ProviderLogGroupId == ladder.group);
 
                 // This means the RugbyLogGroup is not in the db.
                 // Should be added to the db via CMS or manually.
@@ -933,7 +933,14 @@
                 logs.RugbyGroupedLogs.groupStandings == null &&
                 logs.RugbyGroupedLogs.secondaryGroupStandings == null)
             {
-                await IngestStandings(cancellationToken, logs, logs.RugbyGroupedLogs.ladderposition);
+                // If we get to this point then it means we are ingesting Sevens logs.
+                // Or something went wrong with the provider response for logs and ingesting another tournament's logs with all the
+                // object's as nulls.
+                //logs.RugbyGroupedLogs.ladders.ForEach( async (ladder) =>
+                foreach(var ladder in logs.RugbyGroupedLogs.ladders)
+                {
+                    await IngestStandings(cancellationToken, logs, ladder);
+                };
             }
 
             if (logs.RugbyGroupedLogs.overallStandings != null)
