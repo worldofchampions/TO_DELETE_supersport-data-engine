@@ -943,8 +943,7 @@
                 await IngestStandings(cancellationToken, logs, logs.RugbyGroupedLogs.groupStandings.ladderposition);
 
             if (logs.RugbyGroupedLogs.secondaryGroupStandings != null)
-                await IngestStandings(cancellationToken, logs,
-                    logs.RugbyGroupedLogs.secondaryGroupStandings.ladderposition);
+                await IngestStandings(cancellationToken, logs, logs.RugbyGroupedLogs.secondaryGroupStandings.ladderposition);
 
             await _rugbyGroupedLogsRepository.SaveAsync();
         }

@@ -51,7 +51,7 @@ namespace SuperSportDataEngine.Logging.NLog.Logging
         private async Task LogWithCache(string key, LogEventInfo logEvent)
         {
             // Add a namespace to the Redis key.
-            key = key.Replace(":", "");
+            //key = key.Replace(":", "");
             key = $"LoggingService:{key}";
 
             if (Cache == null)

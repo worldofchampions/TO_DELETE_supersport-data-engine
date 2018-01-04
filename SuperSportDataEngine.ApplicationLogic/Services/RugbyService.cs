@@ -3,13 +3,13 @@ using SuperSportDataEngine.Common.Logging;
 
 namespace SuperSportDataEngine.ApplicationLogic.Services
 {
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
-    using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
+    using Boundaries.ApplicationLogic.Interfaces;
+    using Boundaries.Repository.EntityFramework.Common.Interfaces;
+    using Boundaries.Repository.EntityFramework.Common.Models.Enums;
+    using Boundaries.Repository.EntityFramework.PublicSportData.Models;
+    using Boundaries.Repository.EntityFramework.SystemSportData.Models;
+    using Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
+    using Entities.Legacy;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -168,7 +168,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         public async Task<IEnumerable<RugbyTournament>> GetActiveTournamentsForMatchesInResultsState()
         {
             var tournamentsThatHaveFixturesInResultState = await Task.FromResult(_rugbyFixturesRepository
-                        .Where(f => f.RugbyFixtureStatus == RugbyFixtureStatus.Result)
+                        .Where(f => f.RugbyFixtureStatus == RugbyFixtureStatus.Result && f.RugbyTournament.IsEnabled)
                         .Select(f => f.RugbyTournament).ToList());
 
             return tournamentsThatHaveFixturesInResultState;
