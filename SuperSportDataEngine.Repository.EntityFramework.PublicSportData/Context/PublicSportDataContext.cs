@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context
+﻿namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context
 {
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
     using SuperSportDataEngine.Repository.EntityFramework.Common.Database;
@@ -32,7 +30,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Contex
         public DbSet<MotorDriver> MotorDrivers { get; set; }
         public DbSet<MotorCar> MotorCars { get; set; }
         public DbSet<MotorRace> MotorRaces { get; set; }
-
+        public DbSet<MotorGrid> MotorGrids { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

@@ -5,8 +5,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFram
 {
     public class MotorGrid: BaseModel
     {
-        public Guid Id { get; set; }
-
         public Guid RaceId { get; set; }    
 
         public Guid DriverId { get; set; }

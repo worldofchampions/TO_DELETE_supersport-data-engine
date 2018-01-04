@@ -80,6 +80,8 @@
             modelBuilder.Entity<MotorLeague>().Property(x => x.Name).IsRequired();
             modelBuilder.Entity<MotorLeague>().Property(x => x.ProviderSlug).IsRequired();
             modelBuilder.Entity<MotorLeague>().Property(x => x.Slug).IsRequired();
+
+            modelBuilder.Entity<MotorGrid>().HasKey(x => new { x.RaceId, x.DriverId});
         }
     }
 }
