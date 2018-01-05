@@ -1,4 +1,5 @@
-﻿using SuperSportDataEngine.Common.Extentions;
+﻿using System.Collections.Generic;
+using SuperSportDataEngine.Common.Extentions;
 
 namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 {
@@ -256,7 +257,7 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
         private async Task<RugbyFlatLogsResponse> RugbyFlatLogsResponse(int competitionId, int seasonId)
         {
-            WebRequest request = GetWebRequestForLogsEndpoint(competitionId, seasonId);
+            WebRequest request = GetWebRequestForLogsEndpoint(competitionId, seasonId, null);
             
             var logsResponse = new RugbyFlatLogsResponse() {RequestTime = DateTime.Now};
 
@@ -280,9 +281,21 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             }
         }
 
-        public async Task<RugbyGroupedLogsResponse> IngestGroupedLogsForTournament(int competitionId, int seasonId)
+        public async Task<RugbyGroupedLogsResponse> IngestGroupedLogsForTournament(int competitionId, int seasonId, int numberOfRounds)
         {
-            WebRequest request = GetWebRequestForLogsEndpoint(competitionId, seasonId);
+            // Ronald: Going to hack the response model returned to the ingest service for the Sevens tournament.
+            // We need to return a list of ladders, such that each item (list of ladder positions), have a group id
+            // set to the round number.
+            // The reasoning behind this is that each round for Sevens is played in a different location,
+            // With the same teams. So we group each log based on the round number.
+
+            // This is the competition id for Sevens
+            if (competitionId == 831)
+            {
+                return await GetSevensGroupedLogs(competitionId, seasonId, numberOfRounds);
+            }
+
+            WebRequest request = GetWebRequestForLogsEndpoint(competitionId, seasonId, numberOfRounds);
 
             var logsResponse = new RugbyGroupedLogsResponse() { RequestTime = DateTime.Now };
 
@@ -299,6 +312,64 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
                         JsonConvert.DeserializeObject<RugbyGroupedLogs>(s);
 
                     logsResponse.ResponseTime = DateTime.Now;
+                    CheckIfRequestTakingTooLong(request, logsResponse);
+
+                    return logsResponse;
+                }
+            }
+        }
+
+        private async Task<RugbyGroupedLogsResponse> GetSevensGroupedLogs(int competitionId, int seasonId, int numberOfRounds)
+        {
+            WebRequest request = GetWebRequestForLogsEndpoint(competitionId, seasonId, numberOfRounds);
+
+            var ladders = new List<List<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyGroupedLogs.Ladderposition>>();
+
+            var response = await GetSevensLogsResponse(request);
+            ladders.AddRange(response.RugbyGroupedLogs.ladders);
+
+            while (numberOfRounds > 1)
+            {
+                numberOfRounds--;
+                var req = GetWebRequestForLogsEndpoint(competitionId, seasonId, numberOfRounds);
+                var res = await GetSevensLogsResponse(req);
+
+                ladders.AddRange(res.RugbyGroupedLogs.ladders);
+            }
+
+            response.RugbyGroupedLogs.ladders = ladders;
+
+            return response;
+        }
+
+        private async Task<RugbyGroupedLogsResponse> GetSevensLogsResponse(WebRequest request)
+        {
+            var ladders = new List<List<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyGroupedLogs.Ladderposition>>();
+
+            var logsResponse = new RugbyGroupedLogsResponse() { RequestTime = DateTime.Now };
+
+            using (WebResponse response = await request.GetResponseAsync(_maximumTimeForResponseInMilliseconds, _logger))
+            {
+                if (response == null)
+                    return null;
+
+                using (Stream responseStream = response.GetResponseStream())
+                {
+                    StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
+                    string s = reader.ReadToEnd();
+                    var groupedLogs = JsonConvert.DeserializeObject<RugbyGroupedLogs>(s);
+                    groupedLogs.ladderposition.ForEach((l) =>
+                    {
+                        l.group = groupedLogs.roundNumber;
+                    });
+
+                    ladders.Add(
+                        groupedLogs.ladderposition);
+
+                    logsResponse.RugbyGroupedLogs = groupedLogs;
+                    logsResponse.RugbyGroupedLogs.ladders = ladders;
+                    logsResponse.ResponseTime = DateTime.Now;
+
                     CheckIfRequestTakingTooLong(request, logsResponse);
 
                     return logsResponse;
@@ -430,11 +501,11 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             }
         }
 
-        private static WebRequest GetWebRequestForLogsEndpoint(int competitionId, int seasonId)
+        private static WebRequest GetWebRequestForLogsEndpoint(int competitionId, int seasonId, int? numberOfRounds)
         {
             var baseUrl = "http://rugbyunion-api.stats.com/api/RU/competitions/ladder/";
 
-            var request = WebRequest.Create(baseUrl + competitionId + "/" + seasonId);
+            var request = WebRequest.Create(baseUrl + competitionId + "/" + seasonId + "/" + (numberOfRounds != null ? numberOfRounds.ToString() : ""));
 
             request.Method = "GET";
 
