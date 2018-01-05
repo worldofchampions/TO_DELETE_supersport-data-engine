@@ -31,7 +31,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
         {
             CreateContainer();
             ConfigureDependencies();
-
             await CreateChildJobsForFetchingRaceDrivers();
         }
 
@@ -43,7 +42,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
 
                 foreach (var league in leagues)
                 {
-                    var seasonId = await _childContainer.Resolve<IMotorService>().GetCurrentProviderSeasonIdForLeague(league.Id, CancellationToken.None);
+                    var seasonId = await _childContainer.Resolve<IMotorService>().GetProviderSeasonIdForLeague(league.Id, CancellationToken.None);
 
                     if (await _childContainer.Resolve<IMotorService>().GetSchedulerStateForManagerJobPolling(league.Id) == SchedulerStateForManagerJobPolling.NotRunning)
                     {
@@ -72,9 +71,33 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
             }
         }
 
-        private void QueueJobForLowFrequencyPolling(Guid leagueId, int leagueProviderLeagueId, int seasonId, string jobId)
+        private void QueueJobForLowFrequencyPolling(Guid leagueId, int providerLeagueId, int seasonId, string jobId)
         {
-            //TODO 
+            var highFreqExpiryFromConfig = ConfigurationManager.AppSettings["ScheduleManagerJob_Logs_CurrentTournaments_HighFrequencyPolling_ExpiryInMinutes"];
+
+            var udpateJobFrequencyOnThisMinute = int.Parse(highFreqExpiryFromConfig);
+
+            var timer = new System.Timers.Timer
+            {
+                AutoReset = false,
+                Interval = TimeSpan.FromMinutes(udpateJobFrequencyOnThisMinute).TotalMilliseconds
+            };
+
+            timer.Elapsed += delegate
+            {
+                var jobExpiryFromConfig = ConfigurationManager.AppSettings["ScheduleManagerJob_Logs_CurrentTournaments_LowFrequencyPolling_ExpiryInMinutes"];
+                var jobCronExpression = ConfigurationManager.AppSettings["ScheduleManagerJob_Logs_CurrentTournaments_LowFrequencyPolling_CronExpression"];
+
+                var deleteJobOnThisMinute = int.Parse(jobExpiryFromConfig);
+
+                AddOrUpdateHangfireJob(providerLeagueId.ToString(), seasonId, jobId, jobCronExpression);
+
+                //TODO: Queue Job for ceanup job
+
+                timer.Stop();
+            };
+
+            timer.Start();
         }
 
         private void ConfigureDependencies()
@@ -85,7 +108,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
         private void CreateContainer()
         {
             _childContainer?.Dispose();
-
             _childContainer = new UnityContainer();
             UnityConfigurationManager.RegisterTypes(_childContainer, Container.Enums.ApplicationScope.ServiceSchedulerClient);
         }
@@ -93,15 +115,12 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
 
         private void AddOrUpdateHangfireJob(string providerSlug, int providerSeasonId, string jobId, string jobCronExpression)
         {
-            var jobInvokedMethod = _childContainer.Resolve<IMotorIngestWorkerService>()
-                .IngestDriversForActiveTournaments(new MotorDriverRequestEntity(providerSlug, providerSeasonId), CancellationToken.None);
-
             _recurringJobManager.AddOrUpdate(
                 jobId,
                 Job.FromExpression(() => _childContainer.Resolve<IMotorIngestWorkerService>()
                     .IngestDriversForActiveTournaments(new MotorDriverRequestEntity(providerSlug, providerSeasonId), CancellationToken.None)),
                 jobCronExpression,
-                new RecurringJobOptions()
+                new RecurringJobOptions
                 {
                     TimeZone = TimeZoneInfo.Local,
                     QueueName = HangfireQueueConfiguration.HighPriority

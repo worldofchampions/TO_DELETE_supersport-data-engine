@@ -13,7 +13,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Inte
     public interface IMotorService
     {
         Task<IEnumerable<MotorLeague>> GetActiveLeagues();
-        Task<int> GetCurrentProviderSeasonIdForLeague(Guid leagueId, CancellationToken cancellationToken);
+        Task<int> GetProviderSeasonIdForLeague(Guid leagueId, CancellationToken cancellationToken);
         Task<SchedulerStateForManagerJobPolling> GetSchedulerStateForManagerJobPolling(Guid leagueId);
     }
 }

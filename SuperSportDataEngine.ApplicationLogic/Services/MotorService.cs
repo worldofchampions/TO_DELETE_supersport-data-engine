@@ -36,7 +36,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             }};
         }
 
-        public async Task<int> GetCurrentProviderSeasonIdForLeague(Guid leagueId, CancellationToken cancellationToken)
+        public async Task<int> GetProviderSeasonIdForLeague(Guid leagueId, CancellationToken cancellationToken)
         {
             return await Task.FromResult(2017);
         }

@@ -98,7 +98,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
             ConfigureDepenencies();
             try
             {
-                await _driversManagerJob.DoWorkAsync();
+                //await _driversManagerJob.DoWorkAsync();
                 //await _liveManagerJob.DoWorkAsync();
                 //await _fixturesManagerJob.DoWorkAsync();
                 //await _logsManagerJob.DoWorkAsync();

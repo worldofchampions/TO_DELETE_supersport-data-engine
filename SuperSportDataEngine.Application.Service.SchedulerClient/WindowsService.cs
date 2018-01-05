@@ -19,6 +19,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
     {
         private readonly UnityContainer _container;
         private readonly FixedScheduledJob _fixedManagerJob;
+        private readonly MotorFixedScheduledJob _motorFixedScheduledJob;
         private readonly ManagerJob _jobManager;
         private ILoggingService _logger;
 
@@ -28,8 +29,8 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
             _logger = container.Resolve<ILoggingService>();
 
             _fixedManagerJob = new FixedScheduledJob(_container.CreateChildContainer());
-            _jobManager = 
-                new ManagerJob();
+            _motorFixedScheduledJob = new MotorFixedScheduledJob(_container.CreateChildContainer());
+            _jobManager = new ManagerJob();
         }
 
         public void StartService()
@@ -46,7 +47,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
             options.Urls.Add(ConfigurationManager.AppSettings["HangfireDashboardUrl"]);
             options.Urls.Add("http://localhost:9622");
             options.Urls.Add("http://127.0.0.1:9622");
-            options.Urls.Add(string.Format("http://{0}:9622", Environment.MachineName));
+            options.Urls.Add($"http://{Environment.MachineName}:9622");
 
             using (WebApp.Start<StartUp>(options))
             {
@@ -57,12 +58,12 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
                     try
                     {
                         _fixedManagerJob.UpdateRecurringJobDefinitions();
+                        _motorFixedScheduledJob.UpdateRecurringJobDefinitions();
                     }
                     catch (Exception e)
                     {
                         _logger.Info("UpdateRecurringJobDefinitions.ThrowsException", e.StackTrace);
                     }
-                    
 
                     Thread.Sleep(2000);
                 }

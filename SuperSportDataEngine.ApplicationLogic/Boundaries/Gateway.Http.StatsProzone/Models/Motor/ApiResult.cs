@@ -18,17 +18,30 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsPro
         public string path { get; set; }
     }
 
-    public class League
+    public class League2
     {
         public int leagueId { get; set; }
         public string name { get; set; }
         public string abbreviation { get; set; }
         public string displayName { get; set; }
         public SubLeague subLeague { get; set; }
-        public List<UriPath> uriPaths { get; set; }
+       // public List<UriPath> uriPaths { get; set; }
         public Season season { get; set; }
         public List<Race> races { get; set; }
+        public List<UriPath2> uriPaths { get; set; }
     }
+
+    public class UriPath2
+    {
+        public int pathSequence { get; set; }
+        public string path { get; set; }
+    }
+
+    public class League
+    {
+        public League2 league { get; set; }
+    }
+
 
     public class Season
     {

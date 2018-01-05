@@ -78,7 +78,7 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
             var requestSignature = GetRequestSignature();
 
-            var queryString = $"?api_key={_statsApiKey}&sig={requestSignature}";
+            var queryString = $"?accept=json&api_key={_statsApiKey}&sig={requestSignature}";
 
             var requestUriString = _statsApiBaseUrl + statsMotorLeaguesUrl + queryString;
 

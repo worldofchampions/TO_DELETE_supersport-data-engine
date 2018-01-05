@@ -16,5 +16,6 @@
         Task IngestSchedulesForActiveTournaments(CancellationToken cancellationToken);
         Task IngestTournamentResults(MotorResultRequestParams requestParams, CancellationToken cancellationToken);
         Task IngestTournamentGrid(MotorResultRequestParams requestParams, CancellationToken cancellationToken);
+        Task IngestReferenceData(CancellationToken cancellationToken);
     }
 }
