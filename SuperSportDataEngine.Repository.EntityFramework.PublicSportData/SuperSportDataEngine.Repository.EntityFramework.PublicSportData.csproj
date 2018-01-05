@@ -228,6 +228,10 @@
     <Compile Include="Migrations\201712151055520_Added_IsDisabledInbound_To_RugbyFixture.Designer.cs">
       <DependentUpon>201712151055520_Added_IsDisabledInbound_To_RugbyFixture.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201801050821442_Adding_CurrentRoundNumber_To_RugbySeason.cs" />
+    <Compile Include="Migrations\201801050821442_Adding_CurrentRoundNumber_To_RugbySeason.Designer.cs">
+      <DependentUpon>201801050821442_Adding_CurrentRoundNumber_To_RugbySeason.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypeProviderMappings.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypes.cs" />
@@ -359,6 +363,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201712151055520_Added_IsDisabledInbound_To_RugbyFixture.resx">
       <DependentUpon>201712151055520_Added_IsDisabledInbound_To_RugbyFixture.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801050821442_Adding_CurrentRoundNumber_To_RugbySeason.resx">
+      <DependentUpon>201801050821442_Adding_CurrentRoundNumber_To_RugbySeason.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

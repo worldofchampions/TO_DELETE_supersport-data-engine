@@ -1,8 +1,8 @@
 ﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces
 {
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.ResponseModels;
+    using ResponseModels;
     using System.Threading;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+    using Repository.EntityFramework.PublicSportData.Models;
     using System.Threading.Tasks;
 
     public interface IStatsProzoneRugbyIngestService
@@ -13,7 +13,7 @@
         Task<RugbyFixturesResponse> IngestFixturesForTournamentSeason(int tournamentId, int seasonId, CancellationToken cancellationToken);
         Task<RugbyMatchStatsResponse> IngestMatchStatsForFixtureAsync(CancellationToken cancellationToken, long providerFixtureId);
         Task<RugbyFlatLogsResponse> IngestFlatLogsForTournament(int competitionId, int seasonId);
-        Task<RugbyGroupedLogsResponse> IngestGroupedLogsForTournament(int competitionId, int seasonId);
+        Task<RugbyGroupedLogsResponse> IngestGroupedLogsForTournament(int competitionId, int seasonId, int numberOfRounds);
         Task<RugbyEventsFlowResponse> IngestEventsFlow(CancellationToken cancellationToken, long providerFixtureId);
     }
 }
