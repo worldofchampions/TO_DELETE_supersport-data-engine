@@ -4,8 +4,10 @@ using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramewor
 namespace SuperSportDataEngine.ApplicationLogic.Services
 {
     using Boundaries.ApplicationLogic.Interfaces;
+    using Boundaries.Repository.EntityFramework.Common.Interfaces;
     using Boundaries.Repository.EntityFramework.Common.Models.Enums;
     using Boundaries.Repository.EntityFramework.PublicSportData.Models;
+    using Boundaries.Repository.EntityFramework.SystemSportData.Models;
     using Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
     using Entities.Legacy;
     using System;
@@ -141,7 +143,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         public async Task<IEnumerable<RugbyTournament>> GetActiveTournamentsForMatchesInResultsState()
         {
             var tournamentsThatHaveFixturesInResultState = await Task.FromResult(_publicSportDataUnitOfWork.RugbyFixtures
-                        .Where(f => f.RugbyFixtureStatus == RugbyFixtureStatus.Result)
+                        .Where(f => f.RugbyFixtureStatus == RugbyFixtureStatus.Result && f.RugbyTournament.IsEnabled)
                         .Select(f => f.RugbyTournament).ToList());
 
             return tournamentsThatHaveFixturesInResultState;
@@ -286,7 +288,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             if (tournament != null && tournament.HasLogs)
             {
                 logs = _publicSportDataUnitOfWork.RugbyGroupedLogs
-                    .Where(t => t.RugbyTournament.IsEnabled && t.RugbyTournamentId == tournament.Id)
+                    .Where(t => t.RugbyTournament.IsEnabled && 
+                                t.RugbyTournamentId == tournament.Id && 
+                                t.RugbySeason.IsCurrent)
                     .OrderBy(g => g.RugbyLogGroup.Id).ThenBy(t => t.LogPosition);
 
                 return await Task.FromResult(logs.ToList());
