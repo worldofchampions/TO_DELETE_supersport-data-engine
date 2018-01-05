@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
 using SuperSportDataEngine.Repository.EntityFramework.Common.Repositories.Base;
 
@@ -10,7 +9,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.SystemSportData.UnitOf
 {
     public class SystemSportDataUnitOfWork : ISystemSportDataUnitOfWork
     {
-        private DbContext _context;
+        private readonly DbContext _context;
 
         public IBaseEntityFrameworkRepository<SchedulerDashboardUser> SchedulerDashboardUsers { get; private set; }
         public IBaseEntityFrameworkRepository<LegacyAuthFeedConsumer> LegacyAuthFeedConsumers { get; private set; }
@@ -51,6 +50,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.SystemSportData.UnitOf
             SchedulerTrackingRugbyFixtures?.Dispose();
             SchedulerTrackingRugbySeasons?.Dispose();
             SchedulerTrackingRugbyTournaments?.Dispose();
+            SchedulerTrackingMotorSeasons?.Dispose();
         }
     }
 }

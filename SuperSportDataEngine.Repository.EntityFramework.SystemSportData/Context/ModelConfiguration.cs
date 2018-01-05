@@ -31,7 +31,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.SystemSportData.Contex
 
         private static void ApplyMotorSportConfigurations(DbModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<SchedulerTrackingMotorSeason>().HasKey(x => new { SeasoId = x.SeasonId, x.LeagueId });
+            modelBuilder.Entity<SchedulerTrackingMotorSeason>().HasKey(x => new { x.SeasonId, x.LeagueId });
         }
     }
 }
