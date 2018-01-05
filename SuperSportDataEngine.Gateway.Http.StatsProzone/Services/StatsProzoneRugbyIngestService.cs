@@ -257,7 +257,7 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
         private async Task<RugbyFlatLogsResponse> RugbyFlatLogsResponse(int competitionId, int seasonId)
         {
-            WebRequest request = GetWebRequestForLogsEndpoint(competitionId, seasonId);
+            WebRequest request = GetWebRequestForLogsEndpoint(competitionId, seasonId, null);
             
             var logsResponse = new RugbyFlatLogsResponse() {RequestTime = DateTime.Now};
 
@@ -281,7 +281,7 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             }
         }
 
-        public async Task<RugbyGroupedLogsResponse> IngestGroupedLogsForTournament(int competitionId, int seasonId)
+        public async Task<RugbyGroupedLogsResponse> IngestGroupedLogsForTournament(int competitionId, int seasonId, int numberOfRounds)
         {
             // Ronald: Going to hack the response model returned to the ingest service for the Sevens tournament.
             // We need to return a list of ladders, such that each item (list of ladder positions), have a group id
@@ -292,10 +292,10 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             // This is the competition id for Sevens
             if (competitionId == 831)
             {
-                return await GetSevensGroupedLogs(competitionId, seasonId);
+                return await GetSevensGroupedLogs(competitionId, seasonId, numberOfRounds);
             }
 
-            WebRequest request = GetWebRequestForLogsEndpoint(competitionId, seasonId);
+            WebRequest request = GetWebRequestForLogsEndpoint(competitionId, seasonId, numberOfRounds);
 
             var logsResponse = new RugbyGroupedLogsResponse() { RequestTime = DateTime.Now };
 
@@ -319,13 +319,34 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             }
         }
 
-        private async Task<RugbyGroupedLogsResponse> GetSevensGroupedLogs(int competitionId, int seasonId)
+        private async Task<RugbyGroupedLogsResponse> GetSevensGroupedLogs(int competitionId, int seasonId, int numberOfRounds)
         {
-            WebRequest request = GetWebRequestForLogsEndpoint(competitionId, seasonId);
-
-            var logsResponse = new RugbyGroupedLogsResponse() { RequestTime = DateTime.Now };
+            WebRequest request = GetWebRequestForLogsEndpoint(competitionId, seasonId, numberOfRounds);
 
             var ladders = new List<List<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyGroupedLogs.Ladderposition>>();
+
+            var response = await GetSevensLogsResponse(request);
+            ladders.AddRange(response.RugbyGroupedLogs.ladders);
+
+            while (numberOfRounds > 1)
+            {
+                numberOfRounds--;
+                var req = GetWebRequestForLogsEndpoint(competitionId, seasonId, numberOfRounds);
+                var res = await GetSevensLogsResponse(req);
+
+                ladders.AddRange(res.RugbyGroupedLogs.ladders);
+            }
+
+            response.RugbyGroupedLogs.ladders = ladders;
+
+            return response;
+        }
+
+        private async Task<RugbyGroupedLogsResponse> GetSevensLogsResponse(WebRequest request)
+        {
+            var ladders = new List<List<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyGroupedLogs.Ladderposition>>();
+
+            var logsResponse = new RugbyGroupedLogsResponse() { RequestTime = DateTime.Now };
 
             using (WebResponse response = await request.GetResponseAsync(_maximumTimeForResponseInMilliseconds, _logger))
             {
@@ -480,11 +501,11 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             }
         }
 
-        private static WebRequest GetWebRequestForLogsEndpoint(int competitionId, int seasonId)
+        private static WebRequest GetWebRequestForLogsEndpoint(int competitionId, int seasonId, int? numberOfRounds)
         {
             var baseUrl = "http://rugbyunion-api.stats.com/api/RU/competitions/ladder/";
 
-            var request = WebRequest.Create(baseUrl + competitionId + "/" + seasonId);
+            var request = WebRequest.Create(baseUrl + competitionId + "/" + seasonId + "/" + (numberOfRounds != null ? numberOfRounds.ToString() : ""));
 
             request.Method = "GET";
 

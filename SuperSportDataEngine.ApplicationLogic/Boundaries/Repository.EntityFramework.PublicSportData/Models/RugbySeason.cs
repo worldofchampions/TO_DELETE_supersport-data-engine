@@ -30,6 +30,8 @@
 
         public DataProvider DataProvider { get; set; }
 
+        public int CurrentRoundNumber { get; set; }
+
         public virtual RugbyTournament RugbyTournament { get; set; }
     }
 }

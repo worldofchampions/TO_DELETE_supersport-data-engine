@@ -318,6 +318,9 @@
             var providerSeasonId = season.RugbySeasons.season.First().id;
 
             var isSeasonCurrentlyActive = season.RugbySeasons.season.First().currentSeason;
+            var rounds = season.RugbySeasons.season.First().rounds;
+            var currentRound = rounds.Where(r => r.matches > 0).OrderByDescending(r => r.roundNumber).First();
+            var currentRoundNumber = currentRound == null ? 0 : currentRound.roundNumber;
 
             var seasonsInDb = _rugbySeasonRepository.All().ToList();
 
@@ -333,7 +336,8 @@
                 RugbyTournament = tournamentInDb,
                 IsCurrent = isSeasonCurrentlyActive,
                 Name = season.RugbySeasons.season.First().name,
-                DataProvider = DataProvider.StatsProzone
+                DataProvider = DataProvider.StatsProzone,
+                CurrentRoundNumber = currentRoundNumber
             };
 
             // Not in repo?
@@ -346,6 +350,7 @@
                 seasonEntry.StartDateTime = newEntry.StartDateTime;
                 seasonEntry.Name = newEntry.Name;
                 seasonEntry.IsCurrent = newEntry.IsCurrent;
+                seasonEntry.CurrentRoundNumber = currentRoundNumber;
 
                 _rugbySeasonRepository.Update(seasonEntry);
             }
@@ -807,6 +812,7 @@
                                                  s.RugbyTournament.ProviderTournamentId == tournament.ProviderTournamentId);
 
                 if (season == null) continue;
+                var numberOfRounds = season.CurrentRoundNumber;
 
                 var logType = season.RugbyLogType;
 
@@ -827,7 +833,7 @@
                 {
                     var logs =
                         await _statsProzoneIngestService.IngestGroupedLogsForTournament(
-                            tournament.ProviderTournamentId, activeSeasonIdForTournament);
+                            tournament.ProviderTournamentId, activeSeasonIdForTournament, numberOfRounds);
 
                     if (logs == null)
                         continue;
@@ -872,7 +878,6 @@
                 // Does an entry in the db exist for this tournament-season-team?
                 var entryInDb = (await _rugbyGroupedLogsRepository.AllAsync())
                                     .FirstOrDefault(g => g.RugbyLogGroup.ProviderLogGroupId == ladder.group &&
-                                                         g.RugbyLogGroup.GroupName == ladder.groupName &&
                                                          g.RugbyTournament.ProviderTournamentId == tournamentId &&
                                                          g.RugbySeason.ProviderSeasonId == seasonId &&
                                                          g.RugbyTeam.ProviderTeamId == teamId);
@@ -1873,6 +1878,7 @@
             if (!season.Any())
                 return;
 
+            var numberOfRounds = season.First().CurrentRoundNumber;
             var logType = season.First().RugbyLogType;
 
             if (logType == RugbyLogType.FlatLogs)
@@ -1887,7 +1893,7 @@
             }
             else
             {
-                var logs = await _statsProzoneIngestService.IngestGroupedLogsForTournament(providerTournamentId, seasonId);
+                var logs = await _statsProzoneIngestService.IngestGroupedLogsForTournament(providerTournamentId, seasonId, numberOfRounds);
                 if (logs == null)
                     return;
 
