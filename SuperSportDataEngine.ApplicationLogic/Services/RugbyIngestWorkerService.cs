@@ -1277,6 +1277,7 @@
             IngestScoreEvents(cancellationToken, eventsFlowResponse.RugbyEventsFlow.scoreFlow, rugbyFixture, ref eventsToRemove);
             IngestPenaltyEvents(cancellationToken, eventsFlowResponse.RugbyEventsFlow.penaltyFlow, rugbyFixture, ref eventsToRemove);
             IngestErrorEvents(cancellationToken, eventsFlowResponse.RugbyEventsFlow.errorFlow, rugbyFixture, ref eventsToRemove);
+            IngestInterchangeEvents(cancellationToken, eventsFlowResponse.RugbyEventsFlow.interchangeFlow, rugbyFixture, ref eventsToRemove);
 
             var count = eventsToRemove.Count;
             if (count > 0)
@@ -1285,6 +1286,61 @@
             }
 
             await _rugbyMatchEventsRepository.SaveAsync();
+        }
+
+        private void IngestInterchangeEvents(CancellationToken cancellationToken, InterchangeFlow interchangeFlow, RugbyFixture rugbyFixture, ref List<RugbyMatchEvent> eventsToRemove)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return;
+
+            var substitutionIn =
+                _rugbyEventTypeMappingRepository.FirstOrDefault(e => e.ProviderEventName == "Substitution-In");
+
+            var events = _rugbyMatchEventsRepository.Where(e => 
+                                        e.RugbyFixture.Id == rugbyFixture.Id && 
+                                         e.RugbyEventTypeId == substitutionIn.RugbyEventTypeId).ToList();
+
+            foreach (var team in interchangeFlow.teams)
+            {
+                var teamObject = rugbyFixture.TeamA.ProviderTeamId == team.teamId
+                    ? rugbyFixture.TeamA
+                    : rugbyFixture.TeamB;
+
+                var playersForTeam = _rugbyPlayerLineupsRepository.Where(l => l.RugbyFixtureId == rugbyFixture.Id).Select(l => l.RugbyPlayer).ToList();
+
+                foreach (var interchange in team.interchanges)
+                {
+                    var eventInDb = events.FirstOrDefault(e =>
+                        e.RugbyEventTypeId == substitutionIn.RugbyEventTypeId &&
+                        e.RugbyPlayer1.ProviderPlayerId == interchange.on.playerId);
+
+                    var newEvent = new RugbyMatchEvent()
+                    {
+                        EventValue = substitutionIn.ProviderEventTypeId,
+                        GameTimeInSeconds = interchange.gameSeconds,
+                        GameTimeInMinutes = interchange.gameSeconds / 60,
+                        RugbyFixture = rugbyFixture,
+                        RugbyFixtureId = rugbyFixture.Id,
+                        RugbyPlayer1 = playersForTeam.FirstOrDefault(p => p.ProviderPlayerId == interchange.on.playerId),
+                        RugbyPlayer2 = playersForTeam.FirstOrDefault(p => p.ProviderPlayerId == interchange.off.playerId),
+                        RugbyTeam = teamObject,
+                        RugbyTeamId = teamObject.Id,
+                        RugbyEventTypeId = substitutionIn.RugbyEventTypeId
+                    };
+
+                    if (eventInDb == null)
+                    {
+                        _rugbyMatchEventsRepository.Add(newEvent);
+                    }
+                    else
+                    {
+                        _rugbyMatchEventsRepository.Update(eventInDb);
+                        eventsToRemove.Remove(eventInDb);
+                    }
+                }
+            }
+
+            return;
         }
 
         private void IngestErrorEvents(CancellationToken cancellationToken, ErrorFlow errorFlow, RugbyFixture rugbyFixture, ref List<RugbyMatchEvent> eventsToRemove)
