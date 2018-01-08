@@ -1263,9 +1263,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 return;
 
             var substitutionIn =
-                _rugbyEventTypeMappingRepository.FirstOrDefault(e => e.ProviderEventName == "Substitution-In");
+                _publicSportDataUnitOfWork.RugbyEventTypeProviderMappings.FirstOrDefault(e => e.ProviderEventName == "Substitution-In");
 
-            var events = _rugbyMatchEventsRepository.Where(e => 
+            var events = _publicSportDataUnitOfWork.RugbyMatchEvents.Where(e => 
                                         e.RugbyFixture.Id == rugbyFixture.Id && 
                                          e.RugbyEventTypeId == substitutionIn.RugbyEventTypeId).ToList();
 
@@ -1275,7 +1275,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                     ? rugbyFixture.TeamA
                     : rugbyFixture.TeamB;
 
-                var playersForTeam = _rugbyPlayerLineupsRepository.Where(l => l.RugbyFixtureId == rugbyFixture.Id).Select(l => l.RugbyPlayer).ToList();
+                var playersForTeam = _publicSportDataUnitOfWork.RugbyPlayerLineups.Where(l => l.RugbyFixtureId == rugbyFixture.Id).Select(l => l.RugbyPlayer).ToList();
 
                 foreach (var interchange in team.interchanges)
                 {
@@ -1299,11 +1299,11 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
                     if (eventInDb == null)
                     {
-                        _rugbyMatchEventsRepository.Add(newEvent);
+                        _publicSportDataUnitOfWork.RugbyMatchEvents.Add(newEvent);
                     }
                     else
                     {
-                        _rugbyMatchEventsRepository.Update(eventInDb);
+                        _publicSportDataUnitOfWork.RugbyMatchEvents.Update(eventInDb);
                         eventsToRemove.Remove(eventInDb);
                     }
                 }
