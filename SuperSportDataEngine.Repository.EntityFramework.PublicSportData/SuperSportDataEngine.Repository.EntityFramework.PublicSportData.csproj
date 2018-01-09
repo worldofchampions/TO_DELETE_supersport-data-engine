@@ -233,6 +233,7 @@
       <DependentUpon>201801050821442_Adding_CurrentRoundNumber_To_RugbySeason.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Migrations\Seed\SeedRugbyEnabledTournaments.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypeProviderMappings.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypes.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyTournamentNames.cs" />
