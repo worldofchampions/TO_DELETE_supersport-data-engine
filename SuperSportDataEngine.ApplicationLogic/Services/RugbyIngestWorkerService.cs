@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.ApplicationLogic.Services
+﻿using System.Configuration;
+
+namespace SuperSportDataEngine.ApplicationLogic.Services
 {
     using Boundaries.Gateway.Http.StatsProzone.Models.RugbyGroupedLogs;
     using Boundaries.Gateway.Http.StatsProzone.ResponseModels;
@@ -1776,7 +1778,7 @@
                 return;
 
             var now = DateTime.UtcNow;
-            var nowPlusTwoDays = DateTime.UtcNow + TimeSpan.FromDays(2);
+            var numberOfDays = DateTime.UtcNow + TimeSpan.FromDays(int.Parse(ConfigurationManager.AppSettings["NumberOfDaysForUpcomingLineups"]));
 
             var gamesInTheNext2Days =
                     (await _rugbyFixturesRepository.AllAsync())
@@ -1784,7 +1786,7 @@
                             fixture => fixture.RugbyTournament != null &&
                                        fixture.RugbyTournament.IsEnabled &&
                                        fixture.StartDateTime >= now &&
-                                       fixture.StartDateTime <= nowPlusTwoDays).ToList();
+                                       fixture.StartDateTime <= numberOfDays).ToList();
 
             await IngestLineUpsForFixtures(cancellationToken, gamesInTheNext2Days);
         }
@@ -1966,7 +1968,7 @@
                 return;
 
             var now = DateTime.UtcNow;
-            var nowMinus30Days = DateTime.UtcNow - TimeSpan.FromDays(30);
+            var numberOfPastDays = DateTime.UtcNow - TimeSpan.FromDays(int.Parse(ConfigurationManager.AppSettings["NumberOfDaysForPastLineups"]));
 
             var gamesInPastDay =
                     (await _rugbyFixturesRepository.AllAsync())
@@ -1974,7 +1976,7 @@
                             fixture => fixture.RugbyTournament != null &&
                                        fixture.RugbyTournament.IsEnabled &&
                                        fixture.StartDateTime < now &&
-                                       fixture.StartDateTime >= nowMinus30Days &&
+                                       fixture.StartDateTime >= numberOfPastDays &&
                                        (fixture.RugbyFixtureStatus == RugbyFixtureStatus.Result));
 
             await IngestLineUpsForFixtures(cancellationToken, gamesInPastDay);
@@ -1989,7 +1991,7 @@
 
         public async Task IngestLiveMatchDataForPastFewDaysFixtures(CancellationToken cancellationToken)
         {
-            var pastFixtures = (await _rugbyService.GetPastDaysFixtures(4)).ToList();
+            var pastFixtures = (await _rugbyService.GetPastDaysFixtures(int.Parse(ConfigurationManager.AppSettings["NumberOfDaysForPastFixtures"]))).ToList();
 
             await IngestPastLiveData(cancellationToken, pastFixtures);
         }
