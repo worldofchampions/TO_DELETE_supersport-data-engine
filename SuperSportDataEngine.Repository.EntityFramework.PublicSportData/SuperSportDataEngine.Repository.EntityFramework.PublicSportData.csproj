@@ -235,6 +235,7 @@
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypeProviderMappings.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypes.cs" />
+    <Compile Include="Migrations\Seed\SeedRugbyTournamentSlugs.cs" />
     <Compile Include="Migrations\Seed\SeedTeams.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
