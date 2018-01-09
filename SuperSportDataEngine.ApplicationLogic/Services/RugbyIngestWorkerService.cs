@@ -1342,8 +1342,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                     }
                 }
             }
-
-            return;
         }
 
         private void IngestErrorEvents(CancellationToken cancellationToken, ErrorFlow errorFlow, RugbyFixture rugbyFixture, ref List<RugbyMatchEvent> eventsToRemove)
