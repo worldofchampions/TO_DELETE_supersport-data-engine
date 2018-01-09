@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.ApplicationLogic.Services
+﻿using System.Configuration;
+
+namespace SuperSportDataEngine.ApplicationLogic.Services
 {
     using Boundaries.Gateway.Http.StatsProzone.Models.RugbyGroupedLogs;
     using Boundaries.Gateway.Http.StatsProzone.ResponseModels;
@@ -1277,6 +1279,7 @@
             IngestScoreEvents(cancellationToken, eventsFlowResponse.RugbyEventsFlow.scoreFlow, rugbyFixture, ref eventsToRemove);
             IngestPenaltyEvents(cancellationToken, eventsFlowResponse.RugbyEventsFlow.penaltyFlow, rugbyFixture, ref eventsToRemove);
             IngestErrorEvents(cancellationToken, eventsFlowResponse.RugbyEventsFlow.errorFlow, rugbyFixture, ref eventsToRemove);
+            IngestInterchangeEvents(cancellationToken, eventsFlowResponse.RugbyEventsFlow.interchangeFlow, rugbyFixture, ref eventsToRemove);
 
             var count = eventsToRemove.Count;
             if (count > 0)
@@ -1285,6 +1288,60 @@
             }
 
             await _rugbyMatchEventsRepository.SaveAsync();
+        }
+
+        private void IngestInterchangeEvents(CancellationToken cancellationToken, InterchangeFlow interchangeFlow, RugbyFixture rugbyFixture, ref List<RugbyMatchEvent> eventsToRemove)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return;
+
+            var substitutionIn =
+                _rugbyEventTypeMappingRepository.FirstOrDefault(e => e.ProviderEventName == "Substitution-In");
+
+            var events = _rugbyMatchEventsRepository.Where(e => 
+                                        e.RugbyFixture.Id == rugbyFixture.Id && 
+                                         e.RugbyEventTypeId == substitutionIn.RugbyEventTypeId).ToList();
+
+            foreach (var team in interchangeFlow.teams)
+            {
+                var teamObject = rugbyFixture.TeamA.ProviderTeamId == team.teamId
+                    ? rugbyFixture.TeamA
+                    : rugbyFixture.TeamB;
+
+                var playersForTeam = _rugbyPlayerLineupsRepository.Where(l => l.RugbyFixtureId == rugbyFixture.Id).Select(l => l.RugbyPlayer).ToList();
+
+                foreach (var interchange in team.interchanges)
+                {
+                    var eventInDb = events.FirstOrDefault(e =>
+                        e.RugbyEventTypeId == substitutionIn.RugbyEventTypeId &&
+                        e.RugbyPlayer1.ProviderPlayerId == interchange.off.playerId &&
+                        e.RugbyPlayer2.ProviderPlayerId == interchange.on.playerId);
+
+                    var newEvent = new RugbyMatchEvent()
+                    {
+                        EventValue = substitutionIn.ProviderEventTypeId,
+                        GameTimeInSeconds = interchange.gameSeconds,
+                        GameTimeInMinutes = interchange.gameSeconds / 60,
+                        RugbyFixture = rugbyFixture,
+                        RugbyFixtureId = rugbyFixture.Id,
+                        RugbyPlayer1 = playersForTeam.FirstOrDefault(p => p.ProviderPlayerId == interchange.off.playerId),
+                        RugbyPlayer2 = playersForTeam.FirstOrDefault(p => p.ProviderPlayerId == interchange.on.playerId),
+                        RugbyTeam = teamObject,
+                        RugbyTeamId = teamObject.Id,
+                        RugbyEventTypeId = substitutionIn.RugbyEventTypeId
+                    };
+
+                    if (eventInDb == null)
+                    {
+                        _rugbyMatchEventsRepository.Add(newEvent);
+                    }
+                    else
+                    {
+                        _rugbyMatchEventsRepository.Update(eventInDb);
+                        eventsToRemove.Remove(eventInDb);
+                    }
+                }
+            }
         }
 
         private void IngestErrorEvents(CancellationToken cancellationToken, ErrorFlow errorFlow, RugbyFixture rugbyFixture, ref List<RugbyMatchEvent> eventsToRemove)
@@ -1719,7 +1776,7 @@
                 return;
 
             var now = DateTime.UtcNow;
-            var nowPlusTwoDays = DateTime.UtcNow + TimeSpan.FromDays(2);
+            var numberOfDays = DateTime.UtcNow + TimeSpan.FromDays(int.Parse(ConfigurationManager.AppSettings["NumberOfDaysForUpcomingLineups"]));
 
             var gamesInTheNext2Days =
                     (await _rugbyFixturesRepository.AllAsync())
@@ -1727,7 +1784,7 @@
                             fixture => fixture.RugbyTournament != null &&
                                        fixture.RugbyTournament.IsEnabled &&
                                        fixture.StartDateTime >= now &&
-                                       fixture.StartDateTime <= nowPlusTwoDays).ToList();
+                                       fixture.StartDateTime <= numberOfDays).ToList();
 
             await IngestLineUpsForFixtures(cancellationToken, gamesInTheNext2Days);
         }
@@ -1909,7 +1966,7 @@
                 return;
 
             var now = DateTime.UtcNow;
-            var nowMinus30Days = DateTime.UtcNow - TimeSpan.FromDays(30);
+            var numberOfPastDays = DateTime.UtcNow - TimeSpan.FromDays(int.Parse(ConfigurationManager.AppSettings["NumberOfDaysForPastLineups"]));
 
             var gamesInPastDay =
                     (await _rugbyFixturesRepository.AllAsync())
@@ -1917,7 +1974,7 @@
                             fixture => fixture.RugbyTournament != null &&
                                        fixture.RugbyTournament.IsEnabled &&
                                        fixture.StartDateTime < now &&
-                                       fixture.StartDateTime >= nowMinus30Days &&
+                                       fixture.StartDateTime >= numberOfPastDays &&
                                        (fixture.RugbyFixtureStatus == RugbyFixtureStatus.Result));
 
             await IngestLineUpsForFixtures(cancellationToken, gamesInPastDay);
@@ -1932,7 +1989,7 @@
 
         public async Task IngestLiveMatchDataForPastFewDaysFixtures(CancellationToken cancellationToken)
         {
-            var pastFixtures = (await _rugbyService.GetPastDaysFixtures(4)).ToList();
+            var pastFixtures = (await _rugbyService.GetPastDaysFixtures(int.Parse(ConfigurationManager.AppSettings["NumberOfDaysForPastFixtures"]))).ToList();
 
             await IngestPastLiveData(cancellationToken, pastFixtures);
         }
