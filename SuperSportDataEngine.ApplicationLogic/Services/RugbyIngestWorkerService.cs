@@ -1312,7 +1312,8 @@
                 {
                     var eventInDb = events.FirstOrDefault(e =>
                         e.RugbyEventTypeId == substitutionIn.RugbyEventTypeId &&
-                        e.RugbyPlayer1.ProviderPlayerId == interchange.on.playerId);
+                        e.RugbyPlayer1.ProviderPlayerId == interchange.off.playerId &&
+                        e.RugbyPlayer2.ProviderPlayerId == interchange.on.playerId);
 
                     var newEvent = new RugbyMatchEvent()
                     {
@@ -1321,8 +1322,8 @@
                         GameTimeInMinutes = interchange.gameSeconds / 60,
                         RugbyFixture = rugbyFixture,
                         RugbyFixtureId = rugbyFixture.Id,
-                        RugbyPlayer1 = playersForTeam.FirstOrDefault(p => p.ProviderPlayerId == interchange.on.playerId),
-                        RugbyPlayer2 = playersForTeam.FirstOrDefault(p => p.ProviderPlayerId == interchange.off.playerId),
+                        RugbyPlayer1 = playersForTeam.FirstOrDefault(p => p.ProviderPlayerId == interchange.off.playerId),
+                        RugbyPlayer2 = playersForTeam.FirstOrDefault(p => p.ProviderPlayerId == interchange.on.playerId),
                         RugbyTeam = teamObject,
                         RugbyTeamId = teamObject.Id,
                         RugbyEventTypeId = substitutionIn.RugbyEventTypeId
