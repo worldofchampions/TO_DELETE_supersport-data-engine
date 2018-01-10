@@ -1,8 +1,8 @@
 ﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
 {
     using AutoMapper;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+    using Shared;
+    using ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
 
     public class LegacyLogMapperProfile : Profile
     {

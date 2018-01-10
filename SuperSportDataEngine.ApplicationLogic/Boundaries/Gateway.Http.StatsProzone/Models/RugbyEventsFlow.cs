@@ -21,8 +21,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsPro
         public double statValue { get; set; }
         public int vidRef { get; set; }
         public int homeScore { get; set; }
-        public int phaseNum { get; set; }
         public int? awayScore { get; set; }
+        public object commentary { get; set; }
+        public int phaseNum { get; set; }
     }
 
     public class Team2
@@ -33,15 +34,20 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsPro
         public int penaltyGoals { get; set; }
         public int points { get; set; }
         public List<StatScoringEvent> statScoringEvent { get; set; }
+        public object team { get; set; }
         public int teamId { get; set; }
         public string teamName { get; set; }
         public string teamAbbrv { get; set; }
         public int tries { get; set; }
         public int period1Tries { get; set; }
         public int period2Tries { get; set; }
+        public int extraTimeTries { get; set; }
+        public int period1Conversions { get; set; }
         public int period2Conversions { get; set; }
+        public int extraTimeConversions { get; set; }
         public int period1PenaltyGoals { get; set; }
         public int period2PenaltyGoals { get; set; }
+        public int extraTimePenaltyGoals { get; set; }
     }
 
     public class Team
@@ -113,8 +119,47 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsPro
         public ErrorEvent errorEvent { get; set; }
     }
 
+    public class On
+    {
+        public int playerId { get; set; }
+        public int shirtNum { get; set; }
+        public string playerName { get; set; }
+        public object commentary { get; set; }
+    }
+
+    public class Off
+    {
+        public int playerId { get; set; }
+        public int shirtNum { get; set; }
+        public string playerName { get; set; }
+        public object commentary { get; set; }
+    }
+
+    public class Interchange
+    {
+        public int interchangeNumber { get; set; }
+        public int gameStateId { get; set; }
+        public string gameState { get; set; }
+        public string gameTime { get; set; }
+        public int gameSeconds { get; set; }
+        public string GameMinutes { get; set; }
+        public object reason { get; set; }
+        public bool sca { get; set; }
+        public On on { get; set; }
+        public Off off { get; set; }
+    }
+
+    public class Team3
+    {
+        public bool isHomeTeam { get; set; }
+        public int teamId { get; set; }
+        public string teamName { get; set; }
+        public List<Interchange> interchanges { get; set; }
+    }
+
     public class InterchangeFlow
     {
+        public List<Team3> teams { get; set; }
     }
 
     public class CommentaryEvent

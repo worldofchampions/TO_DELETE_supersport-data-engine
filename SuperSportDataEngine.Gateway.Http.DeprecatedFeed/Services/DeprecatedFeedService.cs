@@ -193,7 +193,7 @@ namespace SuperSportDataEngine.Gateway.Http.DeprecatedFeed.Services
         {
             var durationMilliseconds = (responseTime - requestTime).TotalMilliseconds;
 
-            //if (durationMilliseconds > _requestDurationWarningMilliseconds)
+            if (durationMilliseconds > _requestDurationWarningMilliseconds)
             {
                 _logger.Warn($"HTTPRequestTooLong.{request.RequestUri}",
                     $"HTTP request taking too long. {request.GetBaseUri()}. Warning level is {_requestDurationWarningMilliseconds / 1000.0} seconds; took " + durationMilliseconds / 1000.0 + " seconds.");

@@ -1,12 +1,11 @@
-﻿using System.Data.Entity.Migrations;
-using System.Linq;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
-
-namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed
+﻿namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed
 {
-    static class SeedTeams
+    using System.Data.Entity.Migrations;
+    using System.Linq;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+    using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
+
+    public static class SeedRugbyTeams
     {
         private const int TbcProviderTeamId = 0;
         private const string TbcTeamName = "TBC";
