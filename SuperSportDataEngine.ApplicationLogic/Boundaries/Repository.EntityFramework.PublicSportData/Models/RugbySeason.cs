@@ -16,6 +16,7 @@
         /// <summary> A provider driven value. </summary>
         public string Name { get; set; }
 
+        // TODO: [davide] Consider changing this from a Provider driven to a CMS driven field? Discuss implications with Milo.
         /// <summary> A provider driven value. </summary>
         public bool IsCurrent { get; set; }
 
