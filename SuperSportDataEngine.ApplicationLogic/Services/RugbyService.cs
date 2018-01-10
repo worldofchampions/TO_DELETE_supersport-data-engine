@@ -313,7 +313,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             if (tournament != null && tournament.HasLogs)
             {
                 logs = _rugbyGroupedLogsRepository
-                    .Where(t => t.RugbyTournament.IsEnabled && t.RugbyTournamentId == tournament.Id)
+                    .Where(t => t.RugbyTournament.IsEnabled && 
+                                t.RugbyTournamentId == tournament.Id && 
+                                t.RugbySeason.IsCurrent)
                     .OrderBy(g => g.RugbyLogGroup.Id).ThenBy(t => t.LogPosition);
 
                 return await Task.FromResult(logs.ToList());

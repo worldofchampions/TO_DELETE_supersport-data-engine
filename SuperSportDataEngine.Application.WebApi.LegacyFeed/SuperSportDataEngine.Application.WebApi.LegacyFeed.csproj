@@ -506,4 +506,19 @@
   </Target>
   <Target Name="AfterBuild">
   </Target> -->
+  <PropertyGroup>
+    <PipelineCopyAllFilesToOneFolderForMsdeployDependsOn>
+      IncludePluginFilesForMsdeploy;
+      $(PipelineCopyAllFilesToOneFolderForMsdeployDependsOn);
+    </PipelineCopyAllFilesToOneFolderForMsdeployDependsOn>
+  </PropertyGroup>
+  <Target Name="IncludePluginFilesForMsdeploy">
+    <ItemGroup>
+      <FileWrites Include="$(MSBuildProjectDirectory)\secrets.config" />
+      <_CustomFiles Include="$(MSBuildProjectDirectory)\secrets.config" />
+      <FilesForPackagingFromProject Include="%(_CustomFiles.Identity)">
+        <DestinationRelativePath>%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
+      </FilesForPackagingFromProject>
+    </ItemGroup>
+  </Target>
 </Project>
