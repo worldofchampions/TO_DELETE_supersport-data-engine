@@ -1,0 +1,73 @@
+﻿namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed
+{
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+    using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
+    using System;
+    using System.Data.Entity.Migrations;
+    using System.Linq;
+
+    public static class SeedRugbyLogGroupsForTournamentSuperRugby2017
+    {
+        private const int ProviderTournamentIdSuperRugby = 181;
+        private const int ProviderSeasonId = 2017;
+        private const string SlugHierarchyLevel0Overall = "SuperRugby-2017-HL0-OverallStandings";
+        private const string SlugHierarchyLevel1Australasian = "SuperRugby-2017-HL1-SecondaryGroupStandings-AustralasianConference";
+        private const string SlugHierarchyLevel1SouthAfrican = "SuperRugby-2017-HL1-SecondaryGroupStandings-SouthAfricanConference";
+        private const string SlugHierarchyLevel2Australian = "SuperRugby-2017-HL2-GroupStandings-AustralianConference";
+        private const string SlugHierarchyLevel2Zealand = "SuperRugby-2017-HL2-GroupStandings-NewZealandConference";
+        private const string SlugHierarchyLevel2Africa1 = "SuperRugby-2017-HL2-GroupStandings-Africa1Conference";
+        private const string SlugHierarchyLevel2Africa2 = "SuperRugby-2017-HL2-GroupStandings-Africa2Conference";
+
+        public static void Seed(PublicSportDataContext context)
+        {
+            try
+            {
+                var rugbyTournament = context.RugbyTournaments.Single(x =>
+                    x.DataProvider == DataProvider.StatsProzone &&
+                    x.ProviderTournamentId == ProviderTournamentIdSuperRugby);
+
+                var rugbySeason = context.RugbySeasons.Single(x =>
+                    x.DataProvider == DataProvider.StatsProzone &&
+                    x.RugbyTournament.Id == rugbyTournament.Id &&
+                    x.ProviderSeasonId == ProviderSeasonId);
+
+                // TODO: [davide] Finalize values for 'GroupName' + 'GroupShortName' as per existing feed / check with Milo.
+                // Create log groups.
+                context.RugbyLogGroups.AddOrUpdate(
+                    x => x.Slug,
+                    // LogGroups for "OverallStandings", GroupHierarchyLevel: 0.
+                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 0, IsConference = false, Slug = SlugHierarchyLevel0Overall, ProviderLogGroupId = 0, ProviderGroupName = null, GroupName = "X SuperRugby 2017 Overall Standings", GroupShortName = "X Overall Standings" },
+                    // LogGroups for "SecondaryGroupStandings", GroupHierarchyLevel: 1.
+                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = false, Slug = SlugHierarchyLevel1Australasian, ProviderLogGroupId = 3, ProviderGroupName = "Australasian Conference", GroupName = "X Australasian Conference", GroupShortName = "X Australasian Conf" },
+                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = false, Slug = SlugHierarchyLevel1SouthAfrican, ProviderLogGroupId = 4, ProviderGroupName = "South African Conference", GroupName = "X South African Conference", GroupShortName = "X South African Conf" },
+                    // LogGroups for "GroupStandings", GroupHierarchyLevel: 2.
+                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 2, IsConference = true, Slug = SlugHierarchyLevel2Australian, ProviderLogGroupId = 1, ProviderGroupName = "Australian Conference", GroupName = "X Australian Conference", GroupShortName = "X Australian Conf" },
+                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 2, IsConference = true, Slug = SlugHierarchyLevel2Zealand, ProviderLogGroupId = 2, ProviderGroupName = "New Zealand Conference", GroupName = "X New Zealand Conference", GroupShortName = "X New Zealand Conf" },
+                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 2, IsConference = true, Slug = SlugHierarchyLevel2Africa1, ProviderLogGroupId = 3, ProviderGroupName = "Africa 1 Conference", GroupName = "X Africa 1 Conference", GroupShortName = "X Africa 1 Conf" },
+                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 2, IsConference = true, Slug = SlugHierarchyLevel2Africa2, ProviderLogGroupId = 4, ProviderGroupName = "Africa 2 Conference", GroupName = "X Africa 2 Conference", GroupShortName = "X Africa 2 Conf" }
+                );
+
+                context.SaveChanges();
+
+                // Assign log groups parent-child relationships (hierarchy).
+                // Relationships for "SecondaryGroupStandings", GroupHierarchyLevel: 1.
+                context.RugbyLogGroups.Single(x => x.Slug == SlugHierarchyLevel1Australasian).ParentRugbyLogGroup = context.RugbyLogGroups.Single(x => x.Slug == SlugHierarchyLevel0Overall);
+                context.RugbyLogGroups.Single(x => x.Slug == SlugHierarchyLevel1SouthAfrican).ParentRugbyLogGroup = context.RugbyLogGroups.Single(x => x.Slug == SlugHierarchyLevel0Overall);
+                // Relationships for "GroupStandings", GroupHierarchyLevel: 2.
+                context.RugbyLogGroups.Single(x => x.Slug == SlugHierarchyLevel2Australian).ParentRugbyLogGroup = context.RugbyLogGroups.Single(x => x.Slug == SlugHierarchyLevel1Australasian);
+                context.RugbyLogGroups.Single(x => x.Slug == SlugHierarchyLevel2Zealand).ParentRugbyLogGroup = context.RugbyLogGroups.Single(x => x.Slug == SlugHierarchyLevel1Australasian);
+                context.RugbyLogGroups.Single(x => x.Slug == SlugHierarchyLevel2Africa1).ParentRugbyLogGroup = context.RugbyLogGroups.Single(x => x.Slug == SlugHierarchyLevel1SouthAfrican);
+                context.RugbyLogGroups.Single(x => x.Slug == SlugHierarchyLevel2Africa2).ParentRugbyLogGroup = context.RugbyLogGroups.Single(x => x.Slug == SlugHierarchyLevel1SouthAfrican);
+
+                context.SaveChanges();
+            }
+            catch (Exception exception)
+            {
+                // TODO: Add logging.
+                Console.WriteLine(exception);
+                return;
+            }
+        }
+    }
+}

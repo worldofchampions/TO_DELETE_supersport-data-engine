@@ -232,13 +232,18 @@
     <Compile Include="Migrations\201801050821442_Adding_CurrentRoundNumber_To_RugbySeason.Designer.cs">
       <DependentUpon>201801050821442_Adding_CurrentRoundNumber_To_RugbySeason.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201801100154222_Added_Slug_and_ProviderGroupName_to_RugbyLogGroups.cs" />
+    <Compile Include="Migrations\201801100154222_Added_Slug_and_ProviderGroupName_to_RugbyLogGroups.Designer.cs">
+      <DependentUpon>201801100154222_Added_Slug_and_ProviderGroupName_to_RugbyLogGroups.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEnabledTournaments.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypeProviderMappings.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypes.cs" />
+    <Compile Include="Migrations\Seed\SeedRugbyLogGroupsForTournamentSuperRugby2017.cs" />
+    <Compile Include="Migrations\Seed\SeedRugbyTeams.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyTournamentNames.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyTournamentSlugs.cs" />
-    <Compile Include="Migrations\Seed\SeedTeams.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -369,6 +374,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201801050821442_Adding_CurrentRoundNumber_To_RugbySeason.resx">
       <DependentUpon>201801050821442_Adding_CurrentRoundNumber_To_RugbySeason.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801100154222_Added_Slug_and_ProviderGroupName_to_RugbyLogGroups.resx">
+      <DependentUpon>201801100154222_Added_Slug_and_ProviderGroupName_to_RugbyLogGroups.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
