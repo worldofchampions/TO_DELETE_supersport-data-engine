@@ -16,6 +16,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
             SeedRugbyTournamentSlugs.Seed(context);
             SeedRugbyTournamentNames.Seed(context);
             SeedRugbyEnabledTournaments.Seed(context);
+            SeedRugbyHasLogsTournaments.Seed(context);
             SeedRugbyEventTypes.Seed(context);
             SeedRugbyEventTypeProviderMappings.Seed(context);
             SeedRugbyTeams.Seed(context);
