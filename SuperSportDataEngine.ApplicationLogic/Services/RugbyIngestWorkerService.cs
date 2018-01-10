@@ -350,7 +350,6 @@
             {
                 seasonEntry.StartDateTime = newEntry.StartDateTime;
                 seasonEntry.Name = newEntry.Name;
-                seasonEntry.IsCurrent = newEntry.IsCurrent;
                 seasonEntry.CurrentRoundNumber = currentRoundNumber;
 
                 _rugbySeasonRepository.Update(seasonEntry);
