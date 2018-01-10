@@ -16,7 +16,7 @@
         /// <summary> A provider driven value. </summary>
         public string Name { get; set; }
 
-        /// <summary> A provider driven value. </summary>
+        /// <summary> A CMS driven value to set whether the season is current. </summary>
         public bool IsCurrent { get; set; }
 
         /// <summary> A provider driven value. </summary>
