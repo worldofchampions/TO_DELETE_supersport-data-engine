@@ -1,8 +1,8 @@
 ﻿namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed
 {
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-    using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
+    using ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
+    using ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+    using Context;
     using System;
     using System.Data.Entity.Migrations;
     using System.Linq;
@@ -37,15 +37,15 @@
                 context.RugbyLogGroups.AddOrUpdate(
                     x => x.Slug,
                     // LogGroups for "OverallStandings", GroupHierarchyLevel: 0.
-                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 0, IsConference = false, Slug = SlugHierarchyLevel0Overall, ProviderLogGroupId = 0, ProviderGroupName = null, GroupName = "X SuperRugby 2017 Overall Standings", GroupShortName = "X Overall Standings" },
+                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 0, IsConference = false, Slug = SlugHierarchyLevel0Overall, ProviderLogGroupId = 0, ProviderGroupName = null, GroupName = "X SuperRugby 2017 Overall Standings", GroupShortName = "X Overall Standings", IsCoreGroup = true },
                     // LogGroups for "SecondaryGroupStandings", GroupHierarchyLevel: 1.
-                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = false, Slug = SlugHierarchyLevel1Australasian, ProviderLogGroupId = 3, ProviderGroupName = "Australasian Conference", GroupName = "X Australasian Conference", GroupShortName = "X Australasian Conf" },
-                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = false, Slug = SlugHierarchyLevel1SouthAfrican, ProviderLogGroupId = 4, ProviderGroupName = "South African Conference", GroupName = "X South African Conference", GroupShortName = "X South African Conf" },
+                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = false, Slug = SlugHierarchyLevel1Australasian, ProviderLogGroupId = 3, ProviderGroupName = "Australasian Conference", GroupName = "X Australasian Conference", GroupShortName = "X Australasian Conf", IsCoreGroup = true },
+                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = false, Slug = SlugHierarchyLevel1SouthAfrican, ProviderLogGroupId = 4, ProviderGroupName = "South African Conference", GroupName = "X South African Conference", GroupShortName = "X South African Conf", IsCoreGroup = true },
                     // LogGroups for "GroupStandings", GroupHierarchyLevel: 2.
-                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 2, IsConference = true, Slug = SlugHierarchyLevel2Australian, ProviderLogGroupId = 1, ProviderGroupName = "Australian Conference", GroupName = "X Australian Conference", GroupShortName = "X Australian Conf" },
-                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 2, IsConference = true, Slug = SlugHierarchyLevel2Zealand, ProviderLogGroupId = 2, ProviderGroupName = "New Zealand Conference", GroupName = "X New Zealand Conference", GroupShortName = "X New Zealand Conf" },
-                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 2, IsConference = true, Slug = SlugHierarchyLevel2Africa1, ProviderLogGroupId = 3, ProviderGroupName = "Africa 1 Conference", GroupName = "X Africa 1 Conference", GroupShortName = "X Africa 1 Conf" },
-                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 2, IsConference = true, Slug = SlugHierarchyLevel2Africa2, ProviderLogGroupId = 4, ProviderGroupName = "Africa 2 Conference", GroupName = "X Africa 2 Conference", GroupShortName = "X Africa 2 Conf" }
+                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 2, IsConference = true, Slug = SlugHierarchyLevel2Australian, ProviderLogGroupId = 1, ProviderGroupName = "Australian Conference", GroupName = "X Australian Conference", GroupShortName = "X Australian Conf", IsCoreGroup = true },
+                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 2, IsConference = true, Slug = SlugHierarchyLevel2Zealand, ProviderLogGroupId = 2, ProviderGroupName = "New Zealand Conference", GroupName = "X New Zealand Conference", GroupShortName = "X New Zealand Conf", IsCoreGroup = true },
+                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 2, IsConference = true, Slug = SlugHierarchyLevel2Africa1, ProviderLogGroupId = 3, ProviderGroupName = "Africa 1 Conference", GroupName = "X Africa 1 Conference", GroupShortName = "X Africa 1 Conf", IsCoreGroup = true },
+                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 2, IsConference = true, Slug = SlugHierarchyLevel2Africa2, ProviderLogGroupId = 4, ProviderGroupName = "Africa 2 Conference", GroupName = "X Africa 2 Conference", GroupShortName = "X Africa 2 Conf", IsCoreGroup = true }
                 );
 
                 context.SaveChanges();

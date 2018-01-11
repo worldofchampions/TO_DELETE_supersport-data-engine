@@ -236,9 +236,14 @@
     <Compile Include="Migrations\201801100154222_Added_Slug_and_ProviderGroupName_to_RugbyLogGroups.Designer.cs">
       <DependentUpon>201801100154222_Added_Slug_and_ProviderGroupName_to_RugbyLogGroups.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201801111001084_Added_IsCoreGroup_To_RugbyLogGroup.cs" />
+    <Compile Include="Migrations\201801111001084_Added_IsCoreGroup_To_RugbyLogGroup.Designer.cs">
+      <DependentUpon>201801111001084_Added_IsCoreGroup_To_RugbyLogGroup.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypeProviderMappings.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypes.cs" />
+    <Compile Include="Migrations\Seed\SeedRugbyLogGroupsForTournamentSevens2017.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyLogGroupsForTournamentSuperRugby2017.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyTeams.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -374,6 +379,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201801100154222_Added_Slug_and_ProviderGroupName_to_RugbyLogGroups.resx">
       <DependentUpon>201801100154222_Added_Slug_and_ProviderGroupName_to_RugbyLogGroups.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801111001084_Added_IsCoreGroup_To_RugbyLogGroup.resx">
+      <DependentUpon>201801111001084_Added_IsCoreGroup_To_RugbyLogGroup.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
