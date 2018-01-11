@@ -30,7 +30,6 @@
 
         public DataProvider DataProvider { get; set; }
 
-        /// <summary> A CMS driven value to set the current round number for the season. </summary>
         public int CurrentRoundNumber { get; set; }
 
         public virtual RugbyTournament RugbyTournament { get; set; }

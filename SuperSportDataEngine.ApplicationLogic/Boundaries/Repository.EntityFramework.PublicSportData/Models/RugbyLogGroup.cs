@@ -32,9 +32,6 @@
         /// <summary> A CMS driven value. </summary>
         public bool IsConference { get; set; }
 
-        /// <summary> A CMS driven value indicating if this group contains core teams. </summary>
-        public bool IsCoreGroup { get; set; }
-
         /// <summary> A CMS driven value. </summary>
         public RugbyLogGroup ParentRugbyLogGroup { get; set; }
 
