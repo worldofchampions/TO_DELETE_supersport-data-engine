@@ -322,28 +322,32 @@
         {
             WebRequest request = GetWebRequestForLogsEndpoint(competitionId, seasonId, numberOfRounds);
 
-            var ladders = new List<List<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyGroupedLogs.Ladderposition>>();
+            //var ladders = new List<List<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyGroupedLogs.Ladderposition>>();
 
             var response = await GetSevensLogsResponse(request);
-            ladders.AddRange(response.RugbyGroupedLogs.ladders);
-
-            while (numberOfRounds > 1)
-            {
-                numberOfRounds--;
-                var req = GetWebRequestForLogsEndpoint(competitionId, seasonId, numberOfRounds);
-                var res = await GetSevensLogsResponse(req);
-
-                ladders.AddRange(res.RugbyGroupedLogs.ladders);
-            }
-
-            response.RugbyGroupedLogs.ladders = ladders;
 
             return response;
+
+            // This might not be needed anymore. Made a few assumptions that may not be valid anymore.
+            //ladders.AddRange(response.RugbyGroupedLogs.ladders);
+
+            //while (numberOfRounds > 1)
+            //{
+            //    numberOfRounds--;
+            //    var req = GetWebRequestForLogsEndpoint(competitionId, seasonId, numberOfRounds);
+            //    var res = await GetSevensLogsResponse(req);
+
+            //    ladders.AddRange(res.RugbyGroupedLogs.ladders);
+            //}
+
+            //response.RugbyGroupedLogs.ladders = ladders;
+
+            //return response;
         }
 
         private async Task<RugbyGroupedLogsResponse> GetSevensLogsResponse(WebRequest request)
         {
-            var ladders = new List<List<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyGroupedLogs.Ladderposition>>();
+            //var ladders = new List<List<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyGroupedLogs.Ladderposition>>();
 
             var logsResponse = new RugbyGroupedLogsResponse() { RequestTime = DateTime.Now };
 
@@ -357,16 +361,16 @@
                     StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
                     string s = reader.ReadToEnd();
                     var groupedLogs = JsonConvert.DeserializeObject<RugbyGroupedLogs>(s);
-                    groupedLogs.ladderposition.ForEach((l) =>
-                    {
-                        l.group = groupedLogs.roundNumber;
-                    });
+                    //groupedLogs.ladderposition.ForEach((l) =>
+                    //{
+                    //    l.group = groupedLogs.roundNumber;
+                    //});
 
-                    ladders.Add(
-                        groupedLogs.ladderposition);
+                    //ladders.Add(
+                    //    groupedLogs.ladderposition);
 
                     logsResponse.RugbyGroupedLogs = groupedLogs;
-                    logsResponse.RugbyGroupedLogs.ladders = ladders;
+                    //logsResponse.RugbyGroupedLogs.ladders = ladders;
                     logsResponse.ResponseTime = DateTime.Now;
 
                     CheckIfRequestTakingTooLong(request, logsResponse);
