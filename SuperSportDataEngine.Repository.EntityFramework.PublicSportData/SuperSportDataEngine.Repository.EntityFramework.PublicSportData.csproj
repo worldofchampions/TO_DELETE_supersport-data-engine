@@ -237,6 +237,7 @@
       <DependentUpon>201801100154222_Added_Slug_and_ProviderGroupName_to_RugbyLogGroups.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Migrations\Seed\SeedCmsTeamNames.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEnabledTournaments.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypeProviderMappings.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypes.cs" />
