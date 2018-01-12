@@ -350,7 +350,12 @@
             {
                 seasonEntry.StartDateTime = newEntry.StartDateTime;
                 seasonEntry.Name = newEntry.Name;
-                seasonEntry.CurrentRoundNumber = currentRoundNumber;
+
+                // Is this tournament not Sevens?
+                if (tournament.ProviderTournamentId != 831)
+                {
+                    seasonEntry.CurrentRoundNumber = currentRoundNumber;
+                }
 
                 _rugbySeasonRepository.Update(seasonEntry);
             }
