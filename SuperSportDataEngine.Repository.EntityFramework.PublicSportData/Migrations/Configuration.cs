@@ -13,6 +13,12 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
 
         protected override void Seed(PublicSportDataContext context)
         {
+            SeedRugbyTournamentSlugs.Seed(context);
+            SeedRugbyTournamentNames.Seed(context);
+            SeedRugbyEnabledTournaments.Seed(context);
+            SeedRugbyHasLogsTournaments.Seed(context);
+            SeedRugbyLiveScoredTournaments.Seed(context);
+            SeedCmsTeamNames.Seed(context);
             SeedRugbyEventTypes.Seed(context);
             SeedRugbyEventTypeProviderMappings.Seed(context);
             SeedRugbyTeams.Seed(context);
