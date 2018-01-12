@@ -241,11 +241,17 @@
       <DependentUpon>201801111001084_Added_IsCoreGroup_To_RugbyLogGroup.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Migrations\Seed\SeedCmsTeamNames.cs" />
+    <Compile Include="Migrations\Seed\SeedRugbyEnabledTournaments.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypeProviderMappings.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypes.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyLogGroupsForTournamentSevens2017.cs" />
+    <Compile Include="Migrations\Seed\SeedRugbyHasLogsTournaments.cs" />
+    <Compile Include="Migrations\Seed\SeedRugbyLiveScoredTournaments.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyLogGroupsForTournamentSuperRugby2017.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyTeams.cs" />
+    <Compile Include="Migrations\Seed\SeedRugbyTournamentNames.cs" />
+    <Compile Include="Migrations\Seed\SeedRugbyTournamentSlugs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
