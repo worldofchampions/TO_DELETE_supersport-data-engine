@@ -1428,8 +1428,10 @@
                     var eventInDb = events.FirstOrDefault(e =>
                         interchange?.off != null && 
                         interchange.@on != null && 
-                        e.RugbyEventTypeId == substitutionIn.RugbyEventTypeId && 
-                        e.RugbyPlayer1.ProviderPlayerId == interchange.off.playerId && 
+                        e.RugbyEventTypeId == substitutionIn.RugbyEventTypeId &&
+                        e.RugbyPlayer1 != null &&
+                        e.RugbyPlayer1.ProviderPlayerId == interchange.off.playerId &&
+                        e.RugbyPlayer2 != null &&
                         e.RugbyPlayer2.ProviderPlayerId == interchange.@on.playerId);
 
                     var newEvent = new RugbyMatchEvent()
