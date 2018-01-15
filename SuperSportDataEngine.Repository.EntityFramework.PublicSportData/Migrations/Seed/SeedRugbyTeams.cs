@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed
+﻿using System;
+
+namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed
 {
     using System.Data.Entity.Migrations;
     using System.Linq;
@@ -14,20 +16,29 @@
 
         public static void Seed(PublicSportDataContext context)
         {
-            if (context.RugbyTeams.FirstOrDefault(t => t.ProviderTeamId == TbcProviderTeamId) != null)
+            try
+            {
+                if (context.RugbyTeams.FirstOrDefault(t => t.ProviderTeamId == TbcProviderTeamId) != null)
+                    return;
+
+                context.RugbyTeams.AddOrUpdate(
+                    t => t.Id,
+                    new RugbyTeam
+                    {
+                        Name = TbcTeamName,
+                        ProviderTeamId = TbcProviderTeamId,
+                        LogoUrl = TbcTeamLogoUrl,
+                        Abbreviation = TbcTeamNameAbbreviation
+                    });
+
+                context.SaveChanges();
+            }
+            catch (Exception exception)
+            {
+                // TODO: Add logging.
+                Console.WriteLine(exception);
                 return;
-
-            context.RugbyTeams.AddOrUpdate(
-                t => t.Id,
-                new RugbyTeam
-                {
-                    Name = TbcTeamName,
-                    ProviderTeamId = TbcProviderTeamId,
-                    LogoUrl = TbcTeamLogoUrl,
-                    Abbreviation = TbcTeamNameAbbreviation
-                });
-
-            context.SaveChanges();
+            }
         }
     }
 }

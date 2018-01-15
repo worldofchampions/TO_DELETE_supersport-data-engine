@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity.Migrations;
 using System.Linq;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
@@ -11,23 +12,32 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
     {
         public static void Seed(PublicSportDataContext context)
         {
-            var rugbyTournaments = GetSeedingNamesForStatsTournaments();
-
-            foreach (var tournament in rugbyTournaments)
+            try
             {
-                var dbTournament = context.RugbyTournaments.FirstOrDefault(
-                    t => t.ProviderTournamentId == tournament.ProviderTournamentId
-                         && t.DataProvider == DataProvider.StatsProzone
-                         && t.Name != tournament.Name);
+                var rugbyTournaments = GetSeedingNamesForStatsTournaments();
 
-                if (dbTournament == null) continue;
+                foreach (var tournament in rugbyTournaments)
+                {
+                    var dbTournament = context.RugbyTournaments.FirstOrDefault(
+                        t => t.ProviderTournamentId == tournament.ProviderTournamentId
+                             && t.DataProvider == DataProvider.StatsProzone
+                             && t.Name != tournament.Name);
 
-                dbTournament.NameCmsOverride = tournament.NameCmsOverride;
+                    if (dbTournament == null) continue;
 
-                context.RugbyTournaments.AddOrUpdate(dbTournament);
+                    dbTournament.NameCmsOverride = tournament.NameCmsOverride;
+
+                    context.RugbyTournaments.AddOrUpdate(dbTournament);
+                }
+
+                context.SaveChanges();
             }
-
-            context.SaveChanges();
+            catch (Exception exception)
+            {
+                // TODO: Add logging.
+                Console.WriteLine(exception);
+                return;
+            }
         }
 
         private static IEnumerable<RugbyTournament> GetSeedingNamesForStatsTournaments()

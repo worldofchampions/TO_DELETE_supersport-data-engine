@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
 using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
@@ -9,19 +10,28 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
     {
         public static void Seed(PublicSportDataContext context)
         {
-            var teamsToUpdate = GetTeamsToUpdate();
-
-            foreach (var team in teamsToUpdate)
+            try
             {
-                var dbTeam =
-                    context.RugbyTeams.FirstOrDefault(t => t.ProviderTeamId == team.ProviderTeamId);
+                var teamsToUpdate = GetTeamsToUpdate();
 
-                if(dbTeam is null) continue;
+                foreach (var team in teamsToUpdate)
+                {
+                    var dbTeam =
+                        context.RugbyTeams.FirstOrDefault(t => t.ProviderTeamId == team.ProviderTeamId);
 
-                dbTeam.NameCmsOverride = team.NameCmsOverride;
+                    if (dbTeam is null) continue;
+
+                    dbTeam.NameCmsOverride = team.NameCmsOverride;
+                }
+
+                context.SaveChanges();
             }
-
-            context.SaveChanges();
+            catch (Exception exception)
+            {
+                // TODO: Add logging.
+                Console.WriteLine(exception);
+                return;
+            }
         }
 
         private static IEnumerable<RugbyTeam> GetTeamsToUpdate()
