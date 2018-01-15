@@ -351,6 +351,12 @@
                 seasonEntry.StartDateTime = newEntry.StartDateTime;
                 seasonEntry.Name = newEntry.Name;
 
+                // Is this tournament not Sevens?
+                if (tournament.ProviderTournamentId != 831)
+                {
+                    seasonEntry.CurrentRoundNumber = currentRoundNumber;
+                }
+
                 _rugbySeasonRepository.Update(seasonEntry);
             }
 
@@ -1045,12 +1051,13 @@
 
         private async Task PersistGroupedLogs(CancellationToken cancellationToken, RugbyGroupedLogsResponse logs)
         {
-            if (logs.RugbyGroupedLogs.overallStandings == null &&
-                logs.RugbyGroupedLogs.groupStandings == null &&
-                logs.RugbyGroupedLogs.secondaryGroupStandings == null)
-            {
-                await IngestStandingsForSevens(cancellationToken, 2, logs, logs.RugbyGroupedLogs.ladderposition);
-            }
+            //TODO [ronald] Fix the ingest for Sevens when the provider fixes the response schema on their side
+            //if (logs.RugbyGroupedLogs.overallStandings == null &&
+            //    logs.RugbyGroupedLogs.groupStandings == null &&
+            //    logs.RugbyGroupedLogs.secondaryGroupStandings == null)
+            //{
+            //    await IngestStandingsForSevens(cancellationToken, 2, logs, logs.RugbyGroupedLogs.ladderposition);
+            //}
             // SuperRugby specific processing hereon...
 
             // "OverallStandings" are GroupHierarchyLevel: 0.
@@ -1419,8 +1426,12 @@
                 foreach (var interchange in team.interchanges)
                 {
                     var eventInDb = events.FirstOrDefault(e =>
+                        interchange?.off != null && 
+                        interchange.on != null && 
                         e.RugbyEventTypeId == substitutionIn.RugbyEventTypeId &&
+                        e.RugbyPlayer1 != null &&
                         e.RugbyPlayer1.ProviderPlayerId == interchange.off.playerId &&
+                        e.RugbyPlayer2 != null &&
                         e.RugbyPlayer2.ProviderPlayerId == interchange.on.playerId);
 
                     var newEvent = new RugbyMatchEvent()

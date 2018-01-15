@@ -232,7 +232,10 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             if (tournament == null) return fixtures;
 
-            fixtures = _rugbyFixturesRepository.Where(t => t.IsDisabledInbound == false && t.RugbyTournament.Id == tournament.Id && t.RugbyFixtureStatus != RugbyFixtureStatus.Result).OrderBy(f => f.StartDateTime);
+            fixtures = _rugbyFixturesRepository.Where(t => 
+                    t.IsDisabledInbound == false && 
+                    t.RugbyTournament.Id == tournament.Id && 
+                    t.RugbyFixtureStatus != RugbyFixtureStatus.Result).OrderBy(f => f.StartDateTime);
 
             return await Task.FromResult(fixtures.ToList());
         }
@@ -343,7 +346,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         public async Task<List<RugbyFixture>> GetCurrentDayFixturesForActiveTournaments()
         {
             var today = DateTime.UtcNow.Date;
-            var todayFixtures = _rugbyFixturesRepository.Where(f => f.StartDateTime == today && f.RugbyTournament.IsEnabled).OrderBy(f => f.StartDateTime);
+            var todayFixtures = (await _rugbyFixturesRepository.AllAsync()).Where(f => f.StartDateTime.Date == today && f.RugbyTournament.IsEnabled).OrderBy(f => f.StartDateTime);
 
             return await Task.FromResult(todayFixtures.ToList());
         }
