@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity.Migrations;
 using System.Linq;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
@@ -10,22 +11,31 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
     {
         public static void Seed(PublicSportDataContext context)
         {
-            var notLiveScoredTournaments = GetNotLiveScoredTournaments();
-
-            foreach (var tournament in notLiveScoredTournaments)
+            try
             {
-                var dbTournament =
-                    context.RugbyTournaments.FirstOrDefault(t =>
-                        t.ProviderTournamentId == tournament.ProviderTournamentId);
+                var notLiveScoredTournaments = GetNotLiveScoredTournaments();
 
-                if (dbTournament is null) continue;
+                foreach (var tournament in notLiveScoredTournaments)
+                {
+                    var dbTournament =
+                        context.RugbyTournaments.FirstOrDefault(t =>
+                            t.ProviderTournamentId == tournament.ProviderTournamentId);
 
-                dbTournament.IsLiveScored = true;
+                    if (dbTournament is null) continue;
 
-                context.RugbyTournaments.AddOrUpdate(dbTournament);
+                    dbTournament.IsLiveScored = true;
+
+                    context.RugbyTournaments.AddOrUpdate(dbTournament);
+                }
+
+                context.SaveChanges();
             }
-
-            context.SaveChanges();
+            catch (Exception exception)
+            {
+                // TODO: Add logging.
+                Console.WriteLine(exception);
+                return;
+            }
         }
 
         private static IEnumerable<RugbyTournament> GetNotLiveScoredTournaments()
