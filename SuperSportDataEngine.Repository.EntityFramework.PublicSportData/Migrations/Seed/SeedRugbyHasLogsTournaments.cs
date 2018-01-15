@@ -1,4 +1,5 @@
-﻿using System.Data.Entity.Migrations;
+﻿using System;
+using System.Data.Entity.Migrations;
 using System.Linq;
 using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
 
@@ -8,18 +9,27 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
     {
         public static void Seed(PublicSportDataContext context)
         {
-            const int internationalsProviderTournamentId = 810;
-
-            var nonInternationalsBbTournaments =
-                context.RugbyTournaments.Where(t => t.ProviderTournamentId != internationalsProviderTournamentId);
-
-            foreach (var tournament in nonInternationalsBbTournaments)
+            try
             {
-                tournament.HasLogs = true;
-                context.RugbyTournaments.AddOrUpdate(tournament);
-            }
+                const int internationalsProviderTournamentId = 810;
 
-            context.SaveChanges();
+                var nonInternationalsBbTournaments =
+                    context.RugbyTournaments.Where(t => t.ProviderTournamentId != internationalsProviderTournamentId).ToList();
+
+                foreach (var tournament in nonInternationalsBbTournaments)
+                {
+                    tournament.HasLogs = true;
+                    context.RugbyTournaments.AddOrUpdate(tournament);
+                }
+
+                context.SaveChanges();
+            }
+            catch (Exception exception)
+            {
+                // TODO: Add logging.
+                Console.WriteLine(exception);
+                return;
+            }
         }
     }
 }
