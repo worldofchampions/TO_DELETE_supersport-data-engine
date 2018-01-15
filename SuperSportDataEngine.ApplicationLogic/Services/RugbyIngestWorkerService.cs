@@ -1426,9 +1426,11 @@
                 foreach (var interchange in team.interchanges)
                 {
                     var eventInDb = events.FirstOrDefault(e =>
-                        e.RugbyEventTypeId == substitutionIn.RugbyEventTypeId &&
-                        e.RugbyPlayer1.ProviderPlayerId == interchange.off.playerId &&
-                        e.RugbyPlayer2.ProviderPlayerId == interchange.on.playerId);
+                        interchange?.off != null && 
+                        interchange.@on != null && 
+                        e.RugbyEventTypeId == substitutionIn.RugbyEventTypeId && 
+                        e.RugbyPlayer1.ProviderPlayerId == interchange.off.playerId && 
+                        e.RugbyPlayer2.ProviderPlayerId == interchange.@on.playerId);
 
                     var newEvent = new RugbyMatchEvent()
                     {
