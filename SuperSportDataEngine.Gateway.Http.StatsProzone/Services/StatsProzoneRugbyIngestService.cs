@@ -11,10 +11,10 @@
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyMatchStats;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.ResponseModels;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+    using SuperSportDataEngine.ApplicationLogic.Constants.Providers;
     using SuperSportDataEngine.Common.Extentions;
     using SuperSportDataEngine.Common.Logging;
     using System;
-    using System.Collections.Generic;
     using System.Configuration;
     using System.IO;
     using System.Net;
@@ -288,8 +288,7 @@
             // The reasoning behind this is that each round for Sevens is played in a different location,
             // With the same teams. So we group each log based on the round number.
 
-            // This is the competition id for Sevens
-            if (competitionId == 831)
+            if (competitionId == RugbyStatsProzoneConstants.ProviderTournamentIdSevensRugby)
             {
                 return await GetSevensGroupedLogs(competitionId, seasonId, numberOfRounds);
             }
