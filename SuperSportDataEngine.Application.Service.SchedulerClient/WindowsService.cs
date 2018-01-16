@@ -92,9 +92,9 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
                 var errorThresholdInMinutes =
                     int.Parse(ConfigurationManager.AppSettings["ErrorThresholdForJobsTakingTooLongInMinutes"]);
 
-                if (timespanDuration > TimeSpan.FromHours(errorThresholdInMinutes))
+                if (timespanDuration > TimeSpan.FromMinutes(errorThresholdInMinutes))
                     _logger.Error(key, message);
-                else if (timespanDuration > TimeSpan.FromHours(warningThresholdInMinutes))
+                else if (timespanDuration > TimeSpan.FromMinutes(warningThresholdInMinutes))
                     _logger.Warn(key, message);
             }
 #endif
