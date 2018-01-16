@@ -14,6 +14,7 @@
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Constants;
+    using SuperSportDataEngine.ApplicationLogic.Constants.Providers;
     using SuperSportDataEngine.ApplicationLogic.Extensions;
     using SuperSportDataEngine.ApplicationLogic.Helpers;
     using SuperSportDataEngine.Common.Logging;
@@ -351,8 +352,7 @@
                 seasonEntry.StartDateTime = newEntry.StartDateTime;
                 seasonEntry.Name = newEntry.Name;
 
-                // Is this tournament not Sevens?
-                if (tournament.ProviderTournamentId != 831)
+                if (tournament.ProviderTournamentId != RugbyStatsProzoneConstants.ProviderTournamentIdSevensRugby)
                 {
                     seasonEntry.CurrentRoundNumber = currentRoundNumber;
                 }
@@ -884,13 +884,13 @@
                         g.ProviderLogGroupId == ladder.group &&
                         g.ProviderGroupName == ladder.groupName);
 
-                    // Does an entry in the db exist for this tournament-season-team?
+                    // Does an entry in the db exist for this tournament-season-round-team?
                     var entryInDb = (await _rugbyGroupedLogsRepository.AllAsync())
                                         .FirstOrDefault(g => g.RugbyLogGroup.ProviderLogGroupId == ladder.group &&
                                                              g.RugbyTournament.ProviderTournamentId == tournamentId &&
                                                              g.RugbySeason.ProviderSeasonId == seasonId &&
-                                                             g.RugbyTeam.ProviderTeamId == teamId &&
-                                                             g.RoundNumber == g.RugbySeason.CurrentRoundNumber);
+                                                             g.RoundNumber == logs.RugbyGroupedLogs.roundNumber &&
+                                                             g.RugbyTeam.ProviderTeamId == teamId);
 
                     var newLogEntry = new RugbyGroupedLog()
                     {
@@ -1051,26 +1051,52 @@
 
         private async Task PersistGroupedLogs(CancellationToken cancellationToken, RugbyGroupedLogsResponse logs)
         {
-            //TODO [ronald] Fix the ingest for Sevens when the provider fixes the response schema on their side
-            //if (logs.RugbyGroupedLogs.overallStandings == null &&
-            //    logs.RugbyGroupedLogs.groupStandings == null &&
-            //    logs.RugbyGroupedLogs.secondaryGroupStandings == null)
-            //{
-            //    await IngestStandingsForSevens(cancellationToken, 2, logs, logs.RugbyGroupedLogs.ladderposition);
-            //}
-            // SuperRugby specific processing hereon...
+            var competitionId = logs.RugbyGroupedLogs.competitionId;
+            var seasonId = logs.RugbyGroupedLogs.seasonId;
 
-            // "OverallStandings" are GroupHierarchyLevel: 0.
-            if (logs.RugbyGroupedLogs.overallStandings != null)
-                await IngestStandingsForSuperRugby(cancellationToken, 0, logs, logs.RugbyGroupedLogs.overallStandings.ladderposition);
+            if (competitionId == RugbyStatsProzoneConstants.ProviderTournamentIdSevensRugby)
+            {
+                //TODO [ronald] Fix the ingest for Sevens when the provider fixes the response schema on their side
+                //if (logs.RugbyGroupedLogs.overallStandings == null &&
+                //    logs.RugbyGroupedLogs.groupStandings == null &&
+                //    logs.RugbyGroupedLogs.secondaryGroupStandings == null)
+                //{
+                //    await IngestStandingsForSevens(cancellationToken, 2, logs, logs.RugbyGroupedLogs.ladderposition);
+                //}
+            }
 
-            // "SecondaryGroupStandings" are GroupHierarchyLevel: 1.
-            if (logs.RugbyGroupedLogs.secondaryGroupStandings != null)
-                await IngestStandingsForSuperRugby(cancellationToken, 1, logs, logs.RugbyGroupedLogs.secondaryGroupStandings.ladderposition);
+            if (competitionId == RugbyStatsProzoneConstants.ProviderTournamentIdSuperRugby)
+            {
+                // Structure for 2017 season.
+                if (seasonId == RugbyStatsProzoneConstants.ProviderTournamentSeasonId2017)
+                {
+                    // "OverallStandings" are GroupHierarchyLevel: 0.
+                    if (logs.RugbyGroupedLogs.overallStandings != null)
+                        await IngestStandingsForSuperRugby(cancellationToken, 0, logs, logs.RugbyGroupedLogs.overallStandings.ladderposition);
 
-            // "GroupStandings" are GroupHierarchyLevel: 2.
-            if (logs.RugbyGroupedLogs.groupStandings != null)
-                await IngestStandingsForSuperRugby(cancellationToken, 2, logs, logs.RugbyGroupedLogs.groupStandings.ladderposition);
+                    // "SecondaryGroupStandings" are GroupHierarchyLevel: 1.
+                    if (logs.RugbyGroupedLogs.secondaryGroupStandings != null)
+                        await IngestStandingsForSuperRugby(cancellationToken, 1, logs, logs.RugbyGroupedLogs.secondaryGroupStandings.ladderposition);
+
+                    // "GroupStandings" are GroupHierarchyLevel: 2.
+                    if (logs.RugbyGroupedLogs.groupStandings != null)
+                        await IngestStandingsForSuperRugby(cancellationToken, 2, logs, logs.RugbyGroupedLogs.groupStandings.ladderposition);
+                }
+                else
+                {
+                    // Structure for 2018 season (and onwards...!).
+                    // Should this structure change in the future, apply further explicit checks for relevant seasons:
+                    // e.g. "if (seasonId == RugbyStatsProzoneConstants.ProviderTournamentSeasonId2018)" etc.
+
+                    // "OverallStandings" are GroupHierarchyLevel: 0.
+                    if (logs.RugbyGroupedLogs.overallStandings != null)
+                        await IngestStandingsForSuperRugby(cancellationToken, 0, logs, logs.RugbyGroupedLogs.overallStandings.ladderposition);
+
+                    // "GroupStandings" are GroupHierarchyLevel: 1.
+                    if (logs.RugbyGroupedLogs.groupStandings != null)
+                        await IngestStandingsForSuperRugby(cancellationToken, 1, logs, logs.RugbyGroupedLogs.groupStandings.ladderposition);
+                }
+            }
 
             await _rugbyGroupedLogsRepository.SaveAsync();
         }
@@ -1426,8 +1452,8 @@
                 foreach (var interchange in team.interchanges)
                 {
                     var eventInDb = events.FirstOrDefault(e =>
-                        interchange?.off != null && 
-                        interchange.on != null && 
+                        interchange?.off != null &&
+                        interchange.on != null &&
                         e.RugbyEventTypeId == substitutionIn.RugbyEventTypeId &&
                         e.RugbyPlayer1 != null &&
                         e.RugbyPlayer1.ProviderPlayerId == interchange.off.playerId &&
