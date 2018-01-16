@@ -31,7 +31,7 @@
         public DataProvider DataProvider { get; set; }
 
         /// <summary> 
-        /// A provider driven value for the current round numebr for the season.
+        /// A provider driven value for the current round number for the season.
         /// The exception for this being in a Sevens tournament,
         /// the CurrentRoundNumber is CMS driven.
         /// </summary>
