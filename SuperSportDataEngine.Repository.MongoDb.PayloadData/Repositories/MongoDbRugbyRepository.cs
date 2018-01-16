@@ -60,7 +60,9 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 
                 if (!isMongoLive)
                 {
+#if (!DEBUG)
                     _logger.Error("MongoDbCannotConnect", "Unable to connect to MongoDB.");
+#endif
                     return;
                 }
             }
@@ -99,7 +101,9 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 
                 if (!isMongoLive)
                 {
+#if(!DEBUG)
                     _logger.Error("MongoDbCannotConnect" ,"Unable to connect to MongoDB.");
+#endif
                     return;
                 }
             }
@@ -140,7 +144,9 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 
                 if (!isMongoLive)
                 {
+#if (!DEBUG)
                     _logger.Error("MongoDbCannotConnect", "Unable to connect to MongoDB.");
+#endif
                     return;
                 }
             }
@@ -181,7 +187,9 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 
                 if (!isMongoLive)
                 {
+#if (!DEBUG)
                     _logger.Error("MongoDbCannotConnect", "Unable to connect to MongoDB.");
+#endif
                     return;
                 }
             }
@@ -222,7 +230,9 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 
                 if (!isMongoLive)
                 {
+#if (!DEBUG)
                     _logger.Error("MongoDbCannotConnect", "Unable to connect to MongoDB.");
+#endif
                     return;
                 }
             }
@@ -263,7 +273,9 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 
                 if (!isMongoLive)
                 {
+#if (!DEBUG)
                     _logger.Error("MongoDbCannotConnect", "Unable to connect to MongoDB.");
+#endif
                     return;
                 }
             }
