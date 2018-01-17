@@ -1,4 +1,7 @@
-﻿namespace SuperSportDataEngine.Application.Service.SchedulerIngestServer
+﻿using System.Threading.Tasks;
+using SuperSportDataEngine.Common.Logging;
+
+namespace SuperSportDataEngine.Application.Service.SchedulerIngestServer
 {
     using Hangfire;
     using Hangfire.Logging;
@@ -13,13 +16,21 @@
     {
         private readonly UnityContainer _container;
         private BackgroundJobServer _jobServer;
+        private ILoggingService _logger;
 
         public WindowsService(UnityContainer container)
         {
             _container = container;
+
+            _logger = _container.Resolve<ILoggingService>();
         }
 
         public void StartService()
+        {
+            Task.Run(() => { DoServiceWork(); });
+        }
+
+        private void DoServiceWork()
         {
             GlobalConfiguration.Configuration.UseStorage(HangfireConfiguration.JobStorage);
             GlobalConfiguration.Configuration.UseUnityActivator(_container);
@@ -27,7 +38,7 @@
             ApplyCustomRetryFilterAttribute();
 
             _jobServer = new BackgroundJobServer(HangfireConfiguration.JobServerOptions);
-            
+
             // Disable logging for internal Hangfire code.
             // This will NOT prevent our own logging from happening.
             LogProvider.SetCurrentLogProvider(null);
