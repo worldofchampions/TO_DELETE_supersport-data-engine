@@ -321,8 +321,14 @@
 
             var isSeasonCurrentlyActive = season.RugbySeasons.season.First().currentSeason;
             var rounds = season.RugbySeasons.season.First().rounds;
-            var currentRound = rounds.Where(r => r.matches > 0).OrderByDescending(r => r.roundNumber).First();
-            var currentRoundNumber = currentRound == null ? 0 : currentRound.roundNumber;
+            var activeRound = rounds.FirstOrDefault(r => r.currentRound);
+
+            var currentRoundNumber = -1;
+
+            if (activeRound != null)
+            {
+                currentRoundNumber = activeRound.roundNumber;
+            }
 
             var seasonsInDb = _rugbySeasonRepository.All().ToList();
 
@@ -339,8 +345,12 @@
                 IsCurrent = isSeasonCurrentlyActive,
                 Name = season.RugbySeasons.season.First().name,
                 DataProvider = DataProvider.StatsProzone,
-                CurrentRoundNumber = currentRoundNumber
             };
+
+            if (currentRoundNumber != -1)
+            {
+                newEntry.CurrentRoundNumber = currentRoundNumber;
+            }
 
             // Not in repo?
             if (seasonEntry == null)
@@ -354,7 +364,8 @@
 
                 if (tournament.ProviderTournamentId != RugbyStatsProzoneConstants.ProviderTournamentIdSevensRugby)
                 {
-                    seasonEntry.CurrentRoundNumber = currentRoundNumber;
+                    if(currentRoundNumber != -1)
+                        seasonEntry.CurrentRoundNumber = currentRoundNumber;
                 }
 
                 _rugbySeasonRepository.Update(seasonEntry);
