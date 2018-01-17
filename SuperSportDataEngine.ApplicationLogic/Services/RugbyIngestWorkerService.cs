@@ -1464,7 +1464,7 @@
                     {
                         EventValue = substitutionIn.ProviderEventTypeId,
                         GameTimeInSeconds = interchange.gameSeconds,
-                        GameTimeInMinutes = interchange.gameSeconds / 60,
+                        GameTimeInMinutes = (int)Math.Round(interchange.gameSeconds / 60.0),
                         RugbyFixture = rugbyFixture,
                         RugbyFixtureId = rugbyFixture.Id,
                         RugbyPlayer1 = playersForTeam.FirstOrDefault(p => p.ProviderPlayerId == interchange.off.playerId),
