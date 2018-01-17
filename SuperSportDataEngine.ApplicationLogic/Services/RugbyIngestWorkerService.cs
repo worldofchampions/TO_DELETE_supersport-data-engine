@@ -1515,7 +1515,7 @@
                 {
                     EventValue = error.statValue,
                     GameTimeInSeconds = error.gameSeconds,
-                    GameTimeInMinutes = error.gameSeconds / 60,
+                    GameTimeInMinutes = (int)Math.Round(error.gameSeconds / 60.0),
                     RugbyFixture = rugbyFixture,
                     RugbyFixtureId = rugbyFixture.Id,
                     RugbyPlayer1 = null,
@@ -1577,7 +1577,7 @@
                 {
                     EventValue = penaltyEvent.statValue,
                     GameTimeInSeconds = penaltyEvent.gameSeconds,
-                    GameTimeInMinutes = penaltyEvent.gameSeconds / 60,
+                    GameTimeInMinutes = (int)Math.Round(penaltyEvent.gameSeconds / 60.0),
                     RugbyFixture = rugbyFixture,
                     RugbyFixtureId = rugbyFixture.Id,
                     RugbyPlayer1 = null,
@@ -1649,7 +1649,7 @@
                     {
                         EventValue = (float)scoreEvent.statValue,
                         GameTimeInSeconds = scoreEvent.gameSeconds,
-                        GameTimeInMinutes = scoreEvent.gameSeconds / 60,
+                        GameTimeInMinutes = (int)Math.Round(scoreEvent.gameSeconds / 60.0),
                         RugbyFixture = rugbyFixture,
                         RugbyFixtureId = rugbyFixture.Id,
                         RugbyPlayer1 = player,
