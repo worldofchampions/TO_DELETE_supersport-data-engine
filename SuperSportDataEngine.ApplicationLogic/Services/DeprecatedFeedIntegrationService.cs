@@ -20,36 +20,26 @@
 
             var taskHighlightVideos = Task.Run(async () =>
             {
-                // TODO: [Davide] Remove this temporary "legacyFixtureId" override after we have done frontend integration testing. This provides a temporary test dataset.
-                legacyFixtureId = 75249116;
                 result.HighlightVideosResponse = await _deprecatedFeedService.GetHighlightVideos(sportName, legacyFixtureId);
             });
 
             var taskLiveVideos = Task.Run(async () =>
             {
-                // TODO: [Davide] Remove this temporary "legacyFixtureId" override after we have done frontend integration testing. This provides a temporary test dataset.
-                legacyFixtureId = 000007;
                 result.LiveVideosResponse = await _deprecatedFeedService.GetLiveVideos(sportName, legacyFixtureId);
             });
 
             var taskMatchDayBlog = Task.Run(async () =>
             {
-                // TODO: [Davide] Remove this temporary "legacyFixtureId" override after we have done frontend integration testing. This provides a temporary test dataset.
-                legacyFixtureId = 75250273;
                 result.MatchDayBlogId = await _deprecatedFeedService.GetMatchDayBlogId(sportName, legacyFixtureId).ConfigureAwait(false);
             });
 
             var taskMatchPreview = Task.Run(async () =>
             {
-                // TODO: [Davide] Remove this temporary "legacyFixtureId" override after we have done frontend integration testing. This provides a temporary test dataset.
-                legacyFixtureId = 75249959;
                 result.MatchPreviewId = await _deprecatedFeedService.GetMatchPreviewId(sportName, legacyFixtureId);
             });
 
             var taskMatchReport = Task.Run(async () =>
             {
-                // TODO: [Davide] Remove this temporary "legacyFixtureId" override after we have done frontend integration testing. This provides a temporary test dataset.
-                legacyFixtureId = 3025352;
                 result.MatchReportId = await _deprecatedFeedService.GetMatchReportId(sportName, legacyFixtureId);
             });
 

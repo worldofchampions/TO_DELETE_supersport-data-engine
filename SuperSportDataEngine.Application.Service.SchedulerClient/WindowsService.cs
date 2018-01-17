@@ -17,19 +17,16 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
 
     internal class WindowsService : IWindowsServiceContract
     {
-        private readonly UnityContainer _container;
         private readonly FixedScheduledJob _fixedManagerJob;
         private readonly ManagerJob _jobManager;
-        private ILoggingService _logger;
+        private readonly ILoggingService _logger;
 
-        public WindowsService(UnityContainer container)
+        public WindowsService(IUnityContainer container)
         {
-            _container = container;
             _logger = container.Resolve<ILoggingService>();
 
-            _fixedManagerJob = new FixedScheduledJob(_container.CreateChildContainer());
-            _jobManager = 
-                new ManagerJob();
+            _fixedManagerJob = new FixedScheduledJob(container.CreateChildContainer());
+            _jobManager = new ManagerJob();
         }
 
         public void StartService()
@@ -46,7 +43,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
             options.Urls.Add(ConfigurationManager.AppSettings["HangfireDashboardUrl"]);
             options.Urls.Add("http://localhost:9622");
             options.Urls.Add("http://127.0.0.1:9622");
-            options.Urls.Add(string.Format("http://{0}:9622", Environment.MachineName));
+            options.Urls.Add($"http://{Environment.MachineName}:9622");
 
             using (WebApp.Start<StartUp>(options))
             {
@@ -62,11 +59,45 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
                     {
                         _logger.Info("UpdateRecurringJobDefinitions.ThrowsException", e.StackTrace);
                     }
-                    
+
+                    LogProcessingJobsTakingTooLong();
 
                     Thread.Sleep(2000);
                 }
             }
+        }
+
+        private void LogProcessingJobsTakingTooLong()
+        {
+            // This will only run if DEBUG is not defined.
+            // Won't run for Debug builds (development)
+            // Runs on QA, Staging and Production.
+#if (!DEBUG)
+            var monitorApi = JobStorage.Current.GetMonitoringApi();
+            var processingJobs = monitorApi.ProcessingJobs(0, (int) monitorApi.ProcessingCount());
+
+            foreach (var job in processingJobs)
+            {
+                if (job.Value.StartedAt == null)
+                    continue;
+
+                var timespanDuration = DateTime.UtcNow - job.Value.StartedAt;
+                var key = job.Value.Job.Method + "HangfireJobProcessingTime";
+                var jobName = monitorApi.JobDetails(job.Key).Properties["RecurringJobId"];
+                var message = jobName + "is taking too long to process. Taking " +
+                              timespanDuration.Value.TotalMinutes + " minutes.";
+
+                var warningThresholdInMinutes =
+                    int.Parse(ConfigurationManager.AppSettings["WarningThresholdForJobsTakingTooLongInMinutes"]);
+                var errorThresholdInMinutes =
+                    int.Parse(ConfigurationManager.AppSettings["ErrorThresholdForJobsTakingTooLongInMinutes"]);
+
+                if (timespanDuration > TimeSpan.FromMinutes(errorThresholdInMinutes))
+                    _logger.Error(key, message);
+                else if (timespanDuration > TimeSpan.FromMinutes(warningThresholdInMinutes))
+                    _logger.Warn(key, message);
+            }
+#endif
         }
 
         public void StopService()
