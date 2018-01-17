@@ -32,7 +32,7 @@ namespace SuperSportDataEngine.Gateway.Http.DeprecatedFeed.Services
 
         public async Task<IEnumerable<HighlightVideosResponse>> GetHighlightVideos(string sportName, int legacyFixtureId)
         {
-            var webRequest = WebRequest.Create($"{_host}/{sportName}/video/highlight/{legacyFixtureId}?format=json&auth={_authKey}");
+            var webRequest = WebRequest.Create($"{_host}/{sportName}/match/video/highlight/{legacyFixtureId}?format=json&auth={_authKey}");
             webRequest.Method = WebRequestMethods.Http.Get;
             var requestTime = DateTime.Now;
 
@@ -64,7 +64,7 @@ namespace SuperSportDataEngine.Gateway.Http.DeprecatedFeed.Services
 
         public async Task<IEnumerable<LiveVideosResponse>> GetLiveVideos(string sportName, int legacyFixtureId)
         {
-            var webRequest = WebRequest.Create($"{_host}/{sportName}/live/match/video/{legacyFixtureId}?format=json&auth={_authKey}");
+            var webRequest = WebRequest.Create($"{_host}/{sportName}/match/video/live/{legacyFixtureId}?format=json&auth={_authKey}");
             webRequest.Method = WebRequestMethods.Http.Get;
             var requestTime = DateTime.Now;
 
