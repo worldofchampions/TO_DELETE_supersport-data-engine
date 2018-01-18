@@ -26,6 +26,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
             SeedRugbyLogGroupsForTournamentSuperRugby2017.Seed(context);
             SeedRugbyLogGroupsForTournamentSuperRugby2018.Seed(context);
             SeedRugbyLogGroupsForChampionsCup2018.Seed(context);
+            SeedRugbyLogGroupsForPro142018.Seed(context);
         }
     }
 }
