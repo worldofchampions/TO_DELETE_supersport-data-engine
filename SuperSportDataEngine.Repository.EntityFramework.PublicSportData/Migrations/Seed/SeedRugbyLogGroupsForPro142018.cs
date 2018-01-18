@@ -14,8 +14,8 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
     public static class SeedRugbyLogGroupsForPro142018
     {
         private const string SlugHierarchyLevel0Pro14 = "Pro14-2018-HL0-Pro14";
-        private const string SlugHierarchyLevel1ConferenceA = "Pro14-2018-HL0-ConferenceA";
-        private const string SlugHierarchyLevel1ConferenceB = "Pro14-2018-HL0-ConferenceB";
+        private const string SlugHierarchyLevel1ConferenceA = "Pro14-2018-HL1-ConferenceA";
+        private const string SlugHierarchyLevel1ConferenceB = "Pro14-2018-HL1-ConferenceB";
 
         public static void Seed(PublicSportDataContext context)
         {
