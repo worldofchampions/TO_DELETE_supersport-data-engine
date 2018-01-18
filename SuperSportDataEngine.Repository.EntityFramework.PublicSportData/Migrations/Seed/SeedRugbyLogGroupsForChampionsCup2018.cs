@@ -14,11 +14,11 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
     public static class SeedRugbyLogGroupsForChampionsCup2018
     {
         private const string SlugHierachyLevel0ChampionsCup = "ChampionsCup-2018-HL0-ChampionsCup";
-        private const string SlugHierachyLevel1Pool1 = "ChampionsCup-2018-HL0-Pool1";
-        private const string SlugHierachyLevel1Pool2 = "ChampionsCup-2018-HL0-Pool2";
-        private const string SlugHierachyLevel1Pool3 = "ChampionsCup-2018-HL0-Pool3";
-        private const string SlugHierachyLevel1Pool4 = "ChampionsCup-2018-HL0-Pool4";
-        private const string SlugHierachyLevel1Pool5 = "ChampionsCup-2018-HL0-Pool5";
+        private const string SlugHierachyLevel1Pool1 = "ChampionsCup-2018-HL1-Pool1";
+        private const string SlugHierachyLevel1Pool2 = "ChampionsCup-2018-HL1-Pool2";
+        private const string SlugHierachyLevel1Pool3 = "ChampionsCup-2018-HL1-Pool3";
+        private const string SlugHierachyLevel1Pool4 = "ChampionsCup-2018-HL1-Pool4";
+        private const string SlugHierachyLevel1Pool5 = "ChampionsCup-2018-HL1-Pool5";
 
         public static void Seed(PublicSportDataContext context)
         {
