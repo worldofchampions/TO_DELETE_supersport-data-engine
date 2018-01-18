@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledManager
+﻿using SuperSportDataEngine.Application.Container.Enums;
+
+namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledManager
 {
     using Hangfire;
     using Hangfire.Common;
@@ -54,6 +56,7 @@
 
             _childContainer = new UnityContainer();
             UnityConfigurationManager.RegisterTypes(_childContainer, Container.Enums.ApplicationScope.ServiceSchedulerClient);
+            UnityConfigurationManager.RegisterApiGlobalTypes(_childContainer, ApplicationScope.ServiceSchedulerClient);
         }
 
         public async Task<int> CreateChildJobsForFetchingLogs()
