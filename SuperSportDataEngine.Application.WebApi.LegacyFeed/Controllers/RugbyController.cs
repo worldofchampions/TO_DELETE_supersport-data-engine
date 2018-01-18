@@ -147,6 +147,36 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         }
 
         /// <summary>
+        /// Get Today fixtures for a tournament
+        /// </summary>
+        /// <param name="category"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("{category}/live")]
+        [ResponseType(typeof(List<Match>))]
+        public async Task<IHttpActionResult> GetTodayFixturesForTournament(string category)
+        {
+            const string cachePrefix = "LIVE:";
+            var cacheKey = $"{cachePrefix}rugby/{category}live";
+
+            var fixtures = await GetFromCacheAsync<IEnumerable<Match>>(cacheKey);
+
+            if (fixtures != null) return Ok(fixtures.ToList());
+
+            fixtures = (await _rugbyService.GetCurrentDayFixturesForTournament(category))
+                .Where(x => !x.IsDisabledOutbound)
+                .Select(Mapper.Map<Match>).ToList();
+
+            if (!fixtures.Any()) return ReplyWithGeneralResponseModel();
+
+            var cacheData = (IList<Match>) fixtures;
+
+            PersistToCache(cacheKey, cacheData);
+
+            return Ok(cacheData.ToList());
+        }
+
+        /// <summary>
         /// Get Fixtures for Tournament
         /// </summary>
         /// <param name="category"></param>

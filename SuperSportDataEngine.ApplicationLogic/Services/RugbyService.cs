@@ -351,6 +351,23 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             return await Task.FromResult(todayFixtures.ToList());
         }
 
+        public async Task<IEnumerable<RugbyFixture>> GetCurrentDayFixturesForTournament(string tournamentSlug)
+        {
+            var tournament = await GetTournamentBySlug(tournamentSlug);
+
+            if(tournament is null) return Enumerable.Empty<RugbyFixture>();
+
+            var today = DateTime.UtcNow.Date;
+
+            var todayFixtures = (await _rugbyFixturesRepository.AllAsync())
+                .Where(f => f.StartDateTime.Date == today &&
+                f.RugbyTournament.IsEnabled &&
+                f.RugbyTournament.Id == tournament.Id)
+                .OrderBy(f => f.StartDateTime);
+
+            return await Task.FromResult(todayFixtures.ToList());
+        }
+
         public async Task<RugbyMatchDetailsEntity> GetMatchDetailsByLegacyMatchId(int legacyMatchId, bool omitDisabledFixtures)
         {
             var fixture = GetRugbyFixtureByLegacyMatchId(legacyMatchId);
