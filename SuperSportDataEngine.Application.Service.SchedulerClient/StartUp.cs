@@ -17,6 +17,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
         {
             var container = new UnityContainer();
             UnityConfigurationManager.RegisterTypes(container, ApplicationScope.ServiceSchedulerClient);
+            UnityConfigurationManager.RegisterApiGlobalTypes(container, ApplicationScope.ServiceSchedulerClient);
 
             var options = new HangfireDashboardConfiguration(container).GetDashboardOptions();
             app.UseHangfireDashboard("/Hangfire", options);
