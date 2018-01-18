@@ -300,7 +300,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             if (groupedLogsCache != null)
             {
                 if (groupName != null)
-                    groupedLogsCache = groupedLogsCache.Where(g => g.GroupName == groupName);
+                    groupedLogsCache = groupedLogsCache.Where(g => String.Equals(g.GroupName, groupName, StringComparison.CurrentCultureIgnoreCase));
 
                 return Ok(groupedLogsCache);
             }
@@ -372,7 +372,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             PersistToCache(groupedLogsCacheKey, groupedLogsCache);
 
             if (groupName != null)
-                groupedLogsCache = groupedLogsCache.Where(g => g.GroupName == groupName).ToList();
+                groupedLogsCache = groupedLogsCache.Where(g => String.Equals(g.GroupName, groupName, StringComparison.CurrentCultureIgnoreCase)).ToList();
 
             return Ok(groupedLogsCache);
         }
