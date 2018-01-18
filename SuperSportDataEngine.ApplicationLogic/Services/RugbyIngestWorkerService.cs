@@ -1051,7 +1051,7 @@
                 }
                 catch (Exception exception)
                 {
-                    var key = GetType().FullName + ".IngestStandingsForSuperRugby" + ". Season=" + seasonId;
+                    var key = GetType().FullName + ".IngestStandingsForChampionsCup" + ". Season=" + seasonId;
                     var message = $"Error processing RugbyLogGroup for ladderId={ladder.group}, groupName={ladder.groupName}. Check that the RugbyLogGroup entry is configured in the DB.";
                     await _logger.Error(key, exception, $"{message}{Environment.NewLine}{key}{Environment.NewLine}{exception}");
                     continue;
@@ -1150,7 +1150,7 @@
                 }
                 catch (Exception exception)
                 {
-                    var key = GetType().FullName + ".IngestStandingsForSuperRugby" + ". Season=" + seasonId;
+                    var key = GetType().FullName + ".IngestStandingsForPro14" + ". Season=" + seasonId;
                     var message = $"Error processing RugbyLogGroup for ladderId={ladder.group}, groupName={ladder.groupName}. Check that the RugbyLogGroup entry is configured in the DB.";
                     await _logger.Error(key, exception, $"{message}{Environment.NewLine}{key}{Environment.NewLine}{exception}");
                     continue;
@@ -1249,7 +1249,7 @@
                 }
                 catch (Exception exception)
                 {
-                    var key = GetType().FullName + ".IngestStandingsForSuperRugby" + ". Season=" + seasonId;
+                    var key = GetType().FullName + ".IngestStandingsForMitreCup" + ". Season=" + seasonId;
                     var message = $"Error processing RugbyLogGroup for ladderId={ladder.group}, groupName={ladder.groupName}. Check that the RugbyLogGroup entry is configured in the DB.";
                     await _logger.Error(key, exception, $"{message}{Environment.NewLine}{key}{Environment.NewLine}{exception}");
                     continue;
