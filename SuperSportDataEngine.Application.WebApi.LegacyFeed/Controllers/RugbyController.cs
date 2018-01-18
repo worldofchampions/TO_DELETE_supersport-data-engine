@@ -278,9 +278,9 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         /// <param name="category"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("{category}/logs")]
+        [Route("{category}/logs/{groupName?}")]
         [ResponseType(typeof(List<Log>))]
-        public async Task<IHttpActionResult> GetLogs(string category)
+        public async Task<IHttpActionResult> GetLogs(string category, string groupName = null)
         {
             const string flatLogsCacheKeyPrefix = "FLATLOGS:";
             var flatLogsCacheKey = flatLogsCacheKeyPrefix + $"rugby/flatLogs/{category}";
@@ -299,10 +299,13 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 
             if (groupedLogsCache != null)
             {
+                if (groupName != null)
+                    groupedLogsCache = groupedLogsCache.Where(g => String.Equals(g.GroupName, groupName, StringComparison.CurrentCultureIgnoreCase));
+
                 return Ok(groupedLogsCache);
             }
 
-            return await GetLogsFromService(category);
+            return await GetLogsFromService(category, groupName);
         }
 
         /// <summary>
@@ -330,7 +333,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             return Ok();
         }
 
-        private async Task<IHttpActionResult> GetLogsFromService(string category)
+        private async Task<IHttpActionResult> GetLogsFromService(string category, string groupName)
         {
             var flatLogsFromService = await _rugbyService.GetFlatLogs(category);
 
@@ -348,7 +351,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
                 var logsCache = flatLogsCache as IList<Log> ?? flatLogsCache.ToList();
 
                 PersistToCache(flatLogsCacheKey, logsCache);
-
+                
                 return Ok(logsCache);
             }
 
@@ -367,6 +370,9 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             var groupedLogsCache = rugbyGroupedLogs.Select(Mapper.Map<Log>).ToList();
 
             PersistToCache(groupedLogsCacheKey, groupedLogsCache);
+
+            if (groupName != null)
+                groupedLogsCache = groupedLogsCache.Where(g => String.Equals(g.GroupName, groupName, StringComparison.CurrentCultureIgnoreCase)).ToList();
 
             return Ok(groupedLogsCache);
         }

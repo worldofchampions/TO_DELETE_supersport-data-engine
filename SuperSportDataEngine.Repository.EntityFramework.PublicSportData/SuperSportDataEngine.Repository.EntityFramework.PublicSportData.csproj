@@ -245,6 +245,8 @@
     <Compile Include="Migrations\Seed\SeedRugbyEnabledTournaments.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypeProviderMappings.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypes.cs" />
+    <Compile Include="Migrations\Seed\SeedRugbyLogGroupsForChampionsCup2018.cs" />
+    <Compile Include="Migrations\Seed\SeedRugbyLogGroupsForPro142018.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyLogGroupsForTournamentSevens2017.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyHasLogsTournaments.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyLiveScoredTournaments.cs" />
