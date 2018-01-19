@@ -21,7 +21,7 @@
 
         public static int PreMatchStatusId = 0;
 
-        public const string PreMatchDescription = _emptyString;
+        public const string PreMatchDescription = null;
 
         public const int FirstHalfStatusId = 4;
 
