@@ -2480,44 +2480,53 @@
         {
             foreach (var fixture in pastFixtures)
             {
-                if (cancellationToken.IsCancellationRequested)
-                    return;
+                try
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                        return;
 
-                Stopwatch provider = Stopwatch.StartNew();
+                    Stopwatch provider = Stopwatch.StartNew();
 
-                var providerFixtureId = fixture.ProviderFixtureId;
+                    var providerFixtureId = fixture.ProviderFixtureId;
 
-                var matchStatsResponse =
-                    await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, providerFixtureId);
+                    var matchStatsResponse =
+                        await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, providerFixtureId);
 
-                if (matchStatsResponse == null)
-                    continue;
+                    if (matchStatsResponse == null)
+                        continue;
 
-                var eventsFlowResponse =
-                    await _statsProzoneIngestService.IngestEventsFlow(cancellationToken, providerFixtureId);
+                    var eventsFlowResponse =
+                        await _statsProzoneIngestService.IngestEventsFlow(cancellationToken, providerFixtureId);
 
-                if (eventsFlowResponse == null)
-                    continue;
+                    if (eventsFlowResponse == null)
+                        continue;
 
-                provider.Stop();
+                    provider.Stop();
 
-                Stopwatch s = Stopwatch.StartNew();
+                    Stopwatch s = Stopwatch.StartNew();
 
-                await IngestLineUpsForFixtures(cancellationToken, new List<RugbyFixture>() { fixture }, matchStatsResponse);
+                    await IngestLineUpsForFixtures(cancellationToken, new List<RugbyFixture>() { fixture }, matchStatsResponse);
 
-                var playersForFixture = _rugbyPlayerLineupsRepository.Where(l => l.RugbyFixture.ProviderFixtureId == fixture.ProviderFixtureId).Select(l => l.RugbyPlayer).ToList();
-                await IngestGameTime(cancellationToken, matchStatsResponse, fixture);
-                await IngestCommentary(cancellationToken, eventsFlowResponse.RugbyEventsFlow.commentaryFlow, fixture, playersForFixture);
-                await IngestMatchStatisticsData(cancellationToken, matchStatsResponse, providerFixtureId);
-                await IngestScoreData(cancellationToken, matchStatsResponse);
-                await IngestFixtureStatusData(cancellationToken, matchStatsResponse, fixture);
-                await UpdateSchedulerTrackingFixtureToSchedulingCompleted(cancellationToken, fixture.Id, matchStatsResponse.RugbyMatchStats.gameState);
-                await IngestEvents(cancellationToken, eventsFlowResponse, fixture);
+                    var playersForFixture = _rugbyPlayerLineupsRepository.Where(l => l.RugbyFixture.ProviderFixtureId == fixture.ProviderFixtureId).Select(l => l.RugbyPlayer).ToList();
+                    await IngestGameTime(cancellationToken, matchStatsResponse, fixture);
+                    await IngestCommentary(cancellationToken, eventsFlowResponse.RugbyEventsFlow.commentaryFlow, fixture, playersForFixture);
+                    await IngestMatchStatisticsData(cancellationToken, matchStatsResponse, providerFixtureId);
+                    await IngestScoreData(cancellationToken, matchStatsResponse);
+                    await IngestFixtureStatusData(cancellationToken, matchStatsResponse, fixture);
+                    await UpdateSchedulerTrackingFixtureToSchedulingCompleted(cancellationToken, fixture.Id, matchStatsResponse.RugbyMatchStats.gameState);
+                    await IngestEvents(cancellationToken, eventsFlowResponse, fixture);
 
-                _mongoDbRepository.Save(matchStatsResponse);
-                _mongoDbRepository.Save(eventsFlowResponse);
+                    _mongoDbRepository.Save(matchStatsResponse);
+                    _mongoDbRepository.Save(eventsFlowResponse);
 
-                s.Stop();
+                    s.Stop();
+                }
+                catch (Exception)
+                {
+                    await _logger.Warn($"IngestPastFixtures.{fixture.LegacyFixtureId}",
+                        $"Exception occured while ingesting fixture {fixture.LegacyFixtureId}");
+                }
+                
             }
         }
 
