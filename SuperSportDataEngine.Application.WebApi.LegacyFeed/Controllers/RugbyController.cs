@@ -425,7 +425,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             {
                 if (_cache != null)
                 {
-                    return await _cache.GetAsync<T>(key);
+                    return await _cache.GetAsync<T>(CacheKeyNamespacePrefixForFeed + key);
                 }
 
                 return null;
