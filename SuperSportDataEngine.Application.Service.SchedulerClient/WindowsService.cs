@@ -82,8 +82,8 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
                     continue;
 
                 var timespanDuration = DateTime.UtcNow - job.Value.StartedAt;
-                var key = job.Value.Job.Method + "HangfireJobProcessingTime";
                 var jobName = monitorApi.JobDetails(job.Key).Properties["RecurringJobId"];
+                var key =  "HangfireJobProcessingTime." + jobName;
                 var message = jobName + "is taking too long to process. Taking " +
                               timespanDuration.Value.TotalMinutes + " minutes.";
 
