@@ -2326,6 +2326,13 @@
 
                 var playersForFixture = (await _rugbyPlayerRepository.AllAsync()).Where(p => players.Any(player => player.playerId.Equals(p.ProviderPlayerId))).ToList();
 
+                var teamId = squad.teamId;
+                //var dbTeam = fixture.TeamA != null && fixture.TeamA.ProviderTeamId == teamId ? fixture.TeamA : fixture.TeamB;
+                var dbTeam = _rugbyTeamRepository.FirstOrDefault(p => p.ProviderTeamId == teamId);
+
+                if (dbTeam == null || dbTeam.ProviderTeamId == 0)
+                    continue;
+
                 foreach (var player in players)
                 {
                     var playerId = player.playerId;
@@ -2340,12 +2347,6 @@
                         dbPlayer.LastName = player.playerLastName;
                         _rugbyPlayerRepository.Update(dbPlayer);
                     }
-
-                    var teamId = squad.teamId;
-                    var dbTeam = fixture.TeamA != null && fixture.TeamA.ProviderTeamId == teamId ? fixture.TeamA : fixture.TeamB;
-
-                    if (dbTeam == null || dbTeam.ProviderTeamId == 0)
-                        continue;
 
                     var shirtNumber = player.shirtNum;
                     var positionName = player.playerPosition;
