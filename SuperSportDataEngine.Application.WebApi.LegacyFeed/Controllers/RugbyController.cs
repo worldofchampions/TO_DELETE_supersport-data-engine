@@ -176,6 +176,36 @@
         }
 
         /// <summary>
+        /// Get Fixtures for Rugby (all tournaments)
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("fixtures")]
+        [ResponseType(typeof(List<Fixture>))]
+        public async Task<IHttpActionResult> GetFixtures()
+        {
+            const string cachePrefix = "FIXTURES:";
+            var cacheKey = cachePrefix + $"rugby/fixtures";
+
+            var fixtures = await GetFromCacheAsync<IEnumerable<Fixture>>(cacheKey);
+
+            if (fixtures != null)
+            {
+                return Ok(fixtures.ToList());
+            }
+
+            // TODO: [davide-100] WIP
+            fixtures = (await _rugbyService.GetUpcomingFixtures())
+                .Select(Mapper.Map<Fixture>);
+
+            var cacheData = fixtures as IList<Fixture> ?? fixtures.ToList();
+
+            PersistToCache(cacheKey, cacheData);
+
+            return Ok(cacheData);
+        }
+
+        /// <summary>
         /// Get Fixtures for Tournament
         /// </summary>
         /// <param name="category"></param>

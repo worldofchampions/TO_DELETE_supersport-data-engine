@@ -284,6 +284,17 @@
             return fixturesInResultsState;
         }
 
+        public async Task<IEnumerable<RugbyFixture>> GetUpcomingFixtures()
+        {
+            var fixtures = _rugbyFixturesRepository.Where(t =>
+                t.IsDisabledInbound == false &&
+                t.RugbyTournament.IsEnabled == true &&
+                t.RugbyFixtureStatus != RugbyFixtureStatus.Result)
+                .OrderBy(f => f.StartDateTime);
+
+            return await Task.FromResult(fixtures.ToList());
+        }
+
         private static bool IsNationalTeamSlug(string slug)
         {
             var result = slug.Equals("springboks", StringComparison.CurrentCultureIgnoreCase);
