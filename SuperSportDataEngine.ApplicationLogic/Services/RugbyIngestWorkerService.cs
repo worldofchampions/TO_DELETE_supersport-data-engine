@@ -364,7 +364,7 @@
 
                 if (tournament.ProviderTournamentId != RugbyStatsProzoneConstants.ProviderTournamentIdSevensRugby)
                 {
-                    if(currentRoundNumber != -1)
+                    if (currentRoundNumber != -1)
                         seasonEntry.CurrentRoundNumber = currentRoundNumber;
                 }
 
@@ -1378,7 +1378,7 @@
                     logs.RugbyGroupedLogs.groupStandings == null &&
                     logs.RugbyGroupedLogs.secondaryGroupStandings == null)
                 {
-                    if(seasonId == RugbyStatsProzoneConstants.ProviderTournamentSeasonId2017)
+                    if (seasonId == RugbyStatsProzoneConstants.ProviderTournamentSeasonId2017)
                         await IngestStandingsForMitreCup(cancellationToken, 1, logs, logs.RugbyGroupedLogs.ladderposition);
                 }
             }
@@ -2327,7 +2327,6 @@
                 var playersForFixture = (await _rugbyPlayerRepository.AllAsync()).Where(p => players.Any(player => player.playerId.Equals(p.ProviderPlayerId))).ToList();
 
                 var teamId = squad.teamId;
-                //var dbTeam = fixture.TeamA != null && fixture.TeamA.ProviderTeamId == teamId ? fixture.TeamA : fixture.TeamB;
                 var dbTeam = _rugbyTeamRepository.FirstOrDefault(p => p.ProviderTeamId == teamId);
 
                 if (dbTeam == null || dbTeam.ProviderTeamId == 0)
@@ -2527,7 +2526,7 @@
                     await _logger.Warn($"IngestPastFixtures.{fixture.LegacyFixtureId}",
                         $"Exception occured while ingesting fixture {fixture.LegacyFixtureId}");
                 }
-                
+
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using SuperSportDataEngine.Common.Logging;
+﻿using System.Timers;
+using SuperSportDataEngine.Common.Logging;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient
 {
@@ -20,6 +21,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
         private readonly FixedScheduledJob _fixedManagerJob;
         private readonly ManagerJob _jobManager;
         private readonly ILoggingService _logger;
+        private System.Timers.Timer _timer;
 
         public WindowsService(IUnityContainer container)
         {
@@ -49,6 +51,10 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
             {
                 JobStorage.Current = HangfireConfiguration.JobStorage;
 
+#if (!DEBUG)
+                ConfigureTimer();
+#endif
+
                 while (true)
                 {
                     try
@@ -60,14 +66,24 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
                         _logger.Info("UpdateRecurringJobDefinitions.ThrowsException", e.StackTrace);
                     }
 
-                    LogProcessingJobsTakingTooLong();
-
                     Thread.Sleep(2000);
                 }
             }
         }
 
-        private void LogProcessingJobsTakingTooLong()
+        private void ConfigureTimer()
+        {
+            _timer = new System.Timers.Timer
+            {
+                AutoReset = false,
+                Interval = TimeSpan.FromMinutes(20).TotalMilliseconds
+            };
+
+            _timer.Elapsed += LogProcessingJobsTakingTooLong;
+            _timer.Start();
+        }
+
+        private void LogProcessingJobsTakingTooLong(object o, EventArgs args)
         {
             // This will only run if DEBUG is not defined.
             // Won't run for Debug builds (development)
@@ -84,12 +100,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
                 var timespanDuration = DateTime.UtcNow - job.Value.StartedAt;
                 var jobName = monitorApi.JobDetails(job.Key).Properties["RecurringJobId"];
                 
-                if(jobName == "Rugby→StatsProzone→FixedManagerJob→IngestPastDataForFixtures")
-                    continue;
-
-                var key =  "HangfireJobProcessingTime." + jobName;
-                var message = jobName + "is taking too long to process. Taking " +
-                              timespanDuration.Value.TotalMinutes + " minutes.";
+                var key = "HangfireJobProcessingTime." + jobName;
 
                 var warningThresholdInMinutes =
                     int.Parse(ConfigurationManager.AppSettings["WarningThresholdForJobsTakingTooLongInMinutes"]);
@@ -97,16 +108,17 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
                     int.Parse(ConfigurationManager.AppSettings["ErrorThresholdForJobsTakingTooLongInMinutes"]);
 
                 if (timespanDuration > TimeSpan.FromMinutes(errorThresholdInMinutes))
-                    _logger.Error(key, message);
+                    _logger.Error(key, jobName + "is taking too long to process. Error duration in minutes is " + errorThresholdInMinutes + ". Taking " + timespanDuration.Value.TotalMinutes + " minutes.");
                 else if (timespanDuration > TimeSpan.FromMinutes(warningThresholdInMinutes))
-                    _logger.Warn(key, message);
+                    _logger.Error(key, jobName + "is taking too long to process. Warning duration in minutes is " + warningThresholdInMinutes + ". Taking " + timespanDuration.Value.TotalMinutes + " minutes.");
             }
+
+            _timer.Start();
 #endif
         }
 
         public void StopService()
         {
-            // TODO: Implement resource disposal/clean-up here.
         }
     }
 }
