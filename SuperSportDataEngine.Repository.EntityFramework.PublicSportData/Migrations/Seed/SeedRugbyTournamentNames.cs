@@ -24,6 +24,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                              && t.Name != tournament.Name);
 
                     if (dbTournament == null) continue;
+                    if (!string.IsNullOrEmpty(dbTournament.NameCmsOverride)) continue;
 
                     dbTournament.NameCmsOverride = tournament.NameCmsOverride;
 
@@ -48,7 +49,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                 new RugbyTournament {NameCmsOverride = "Mitre 10 Cup", ProviderTournamentId = 101},
                 new RugbyTournament {NameCmsOverride = "French Top 14", ProviderTournamentId = 241},
                 new RugbyTournament {NameCmsOverride = "Rugby Championship", ProviderTournamentId = 191},
-                new RugbyTournament {NameCmsOverride = "HSBC Sevens World Series Dubai", ProviderTournamentId = 831},
+                new RugbyTournament {NameCmsOverride = "HSBC Sevens World Series Sydney", ProviderTournamentId = 831},
                 new RugbyTournament {NameCmsOverride = "Champions Cup", ProviderTournamentId = 291},
                 new RugbyTournament {NameCmsOverride = "Guinness Pro14", ProviderTournamentId = 293},
                 new RugbyTournament {NameCmsOverride = "RBS Six Nations", ProviderTournamentId = 301}
