@@ -36,8 +36,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
 
         private void ConfigureDepenencies()
         {
-            if (_container != null)
-                _container.Dispose();
+            _container?.Dispose();
 
             _container = new UnityContainer();
 
