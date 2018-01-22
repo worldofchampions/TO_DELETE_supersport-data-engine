@@ -214,7 +214,13 @@
 
         public async Task<IEnumerable<RugbyFixture>> GetTournamentFixtures(Guid tournamentId, RugbyFixtureStatus fixtureStatus)
         {
-            return await Task.FromResult(_rugbyFixturesRepository.Where(t => t.IsDisabledInbound == false && t.RugbyTournament.Id == tournamentId && t.RugbyFixtureStatus == fixtureStatus).OrderByDescending(f => f.StartDateTime));
+            var today = DateTime.UtcNow;
+
+            return await Task.FromResult(_rugbyFixturesRepository.Where(t => 
+                        t.IsDisabledInbound == false && 
+                        t.RugbyTournament.Id == tournamentId && 
+                        t.RugbyFixtureStatus == fixtureStatus &&
+                        t.StartDateTime >= today).OrderByDescending(f => f.StartDateTime));
         }
 
         public async Task<IEnumerable<RugbyFixture>> GetTournamentFixtures(string tournamentSlug)
@@ -230,10 +236,13 @@
 
             if (tournament == null) return fixtures;
 
+            var today = DateTime.UtcNow;
+
             fixtures = _rugbyFixturesRepository.Where(t =>
                     t.IsDisabledInbound == false &&
                     t.RugbyTournament.Id == tournament.Id &&
-                    t.RugbyFixtureStatus != RugbyFixtureStatus.Result).OrderBy(f => f.StartDateTime);
+                    t.RugbyFixtureStatus != RugbyFixtureStatus.Result &&
+                    t.StartDateTime >= today).OrderBy(f => f.StartDateTime);
 
             return await Task.FromResult(fixtures.ToList());
         }
@@ -284,6 +293,20 @@
             return fixturesInResultsState;
         }
 
+        public async Task<IEnumerable<RugbyFixture>> GetUpcomingFixtures()
+        {
+            var today = DateTime.UtcNow;
+
+            var fixtures = _rugbyFixturesRepository.Where(t =>
+                t.IsDisabledInbound == false &&
+                t.RugbyTournament.IsEnabled == true &&
+                t.RugbyFixtureStatus != RugbyFixtureStatus.Result &&
+                t.StartDateTime >= today)
+                .OrderBy(f => f.StartDateTime);
+
+            return await Task.FromResult(fixtures.ToList());
+        }
+
         private static bool IsNationalTeamSlug(string slug)
         {
             var result = slug.Equals("springboks", StringComparison.CurrentCultureIgnoreCase);
@@ -307,11 +330,13 @@
         private async Task<IEnumerable<RugbyFixture>> GetNationalTeamFixtures()
         {
             const string nationalTeamName = "South Africa";
+            var today = DateTime.UtcNow;
 
             var fixtures = _rugbyFixturesRepository.Where(f =>
                     ((f.TeamA != null && f.TeamA.Name.Equals(nationalTeamName, StringComparison.InvariantCultureIgnoreCase)) ||
                      (f.TeamB != null && f.TeamB.Name.Equals(nationalTeamName, StringComparison.InvariantCultureIgnoreCase))) &&
-                    f.RugbyFixtureStatus != RugbyFixtureStatus.Result)
+                    f.RugbyFixtureStatus != RugbyFixtureStatus.Result &&
+                    f.StartDateTime >= today)
                     .OrderBy(f => f.StartDateTime);
 
             return await Task.FromResult(fixtures.ToList());
