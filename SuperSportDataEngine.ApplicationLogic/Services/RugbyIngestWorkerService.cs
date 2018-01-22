@@ -2521,12 +2521,11 @@
 
                     s.Stop();
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
                     await _logger.Warn($"IngestPastFixtures.{fixture.LegacyFixtureId}",
-                        $"Exception occured while ingesting fixture {fixture.LegacyFixtureId}");
+                        $"Exception occured while ingesting fixture {fixture.LegacyFixtureId}. \n" + e.StackTrace);
                 }
-
             }
         }
 
