@@ -364,8 +364,11 @@
 
                 if (tournament.ProviderTournamentId != RugbyStatsProzoneConstants.ProviderTournamentIdSevensRugby)
                 {
-                    if (currentRoundNumber != -1)
+                    if (currentRoundNumber != -1 &&
+                        seasonEntry.CurrentRoundNumber <= currentRoundNumber)
+                    {
                         seasonEntry.CurrentRoundNumber = currentRoundNumber;
+                    }
                 }
 
                 _rugbySeasonRepository.Update(seasonEntry);
