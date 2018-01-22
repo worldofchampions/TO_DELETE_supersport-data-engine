@@ -194,7 +194,6 @@
                 return Ok(fixtures.ToList());
             }
 
-            // TODO: [davide-100] WIP
             fixtures = (await _rugbyService.GetUpcomingFixtures())
                 .Select(Mapper.Map<Fixture>);
 
