@@ -617,11 +617,18 @@
                     if (isFixtureTbc && !isFixturePartOfAFinal)
                         continue;
 
+                    var venue = fixture.venueName == null ? null :
+                        allVenues.FirstOrDefault(v => v.ProviderVenueId == fixture.venueId);
+
+                    //if (venue == null)
+                    //    await _logger.Warn("UnconfirmedVenue." + fixture.gameId, 
+                    //        "Ingesting fixture " + fixture.gameId + " with venue unconfirmed.");
+
                     var newFixture = new RugbyFixture()
                     {
                         ProviderFixtureId = fixtureId,
                         StartDateTime = startTime,
-                        RugbyVenue = allVenues.FirstOrDefault(v => v.ProviderVenueId == fixture.venueId),
+                        RugbyVenue = venue,
                         RugbyTournament = tournament,
                         TeamA = teamA,
                         TeamB = teamB,
