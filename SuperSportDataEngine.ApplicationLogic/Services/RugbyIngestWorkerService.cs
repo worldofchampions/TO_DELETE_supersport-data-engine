@@ -619,6 +619,10 @@
 
                     var venue = allVenues.FirstOrDefault(v => v.ProviderVenueId == fixture.venueId);
 
+                    if (venue == null)
+                        await _logger.Warn("UnconfirmedVenue." + fixture.gameId, 
+                            "Ingesting fixture " + fixture.gameId + " with venue unconfirmed.");
+
                     var newFixture = new RugbyFixture()
                     {
                         ProviderFixtureId = fixtureId,
