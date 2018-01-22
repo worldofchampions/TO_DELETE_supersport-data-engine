@@ -364,7 +364,7 @@
 
                 if (tournament.ProviderTournamentId != RugbyStatsProzoneConstants.ProviderTournamentIdSevensRugby)
                 {
-                    if(currentRoundNumber != -1)
+                    if (currentRoundNumber != -1)
                         seasonEntry.CurrentRoundNumber = currentRoundNumber;
                 }
 
@@ -1051,7 +1051,7 @@
                 }
                 catch (Exception exception)
                 {
-                    var key = GetType().FullName + ".IngestStandingsForSuperRugby" + ". Season=" + seasonId;
+                    var key = GetType().FullName + ".IngestStandingsForChampionsCup" + ". Season=" + seasonId;
                     var message = $"Error processing RugbyLogGroup for ladderId={ladder.group}, groupName={ladder.groupName}. Check that the RugbyLogGroup entry is configured in the DB.";
                     await _logger.Error(key, exception, $"{message}{Environment.NewLine}{key}{Environment.NewLine}{exception}");
                     continue;
@@ -1150,7 +1150,7 @@
                 }
                 catch (Exception exception)
                 {
-                    var key = GetType().FullName + ".IngestStandingsForSuperRugby" + ". Season=" + seasonId;
+                    var key = GetType().FullName + ".IngestStandingsForPro14" + ". Season=" + seasonId;
                     var message = $"Error processing RugbyLogGroup for ladderId={ladder.group}, groupName={ladder.groupName}. Check that the RugbyLogGroup entry is configured in the DB.";
                     await _logger.Error(key, exception, $"{message}{Environment.NewLine}{key}{Environment.NewLine}{exception}");
                     continue;
@@ -1249,7 +1249,7 @@
                 }
                 catch (Exception exception)
                 {
-                    var key = GetType().FullName + ".IngestStandingsForSuperRugby" + ". Season=" + seasonId;
+                    var key = GetType().FullName + ".IngestStandingsForMitreCup" + ". Season=" + seasonId;
                     var message = $"Error processing RugbyLogGroup for ladderId={ladder.group}, groupName={ladder.groupName}. Check that the RugbyLogGroup entry is configured in the DB.";
                     await _logger.Error(key, exception, $"{message}{Environment.NewLine}{key}{Environment.NewLine}{exception}");
                     continue;
@@ -1378,7 +1378,7 @@
                     logs.RugbyGroupedLogs.groupStandings == null &&
                     logs.RugbyGroupedLogs.secondaryGroupStandings == null)
                 {
-                    if(seasonId == RugbyStatsProzoneConstants.ProviderTournamentSeasonId2017)
+                    if (seasonId == RugbyStatsProzoneConstants.ProviderTournamentSeasonId2017)
                         await IngestStandingsForMitreCup(cancellationToken, 1, logs, logs.RugbyGroupedLogs.ladderposition);
                 }
             }
@@ -2327,7 +2327,6 @@
                 var playersForFixture = (await _rugbyPlayerRepository.AllAsync()).Where(p => players.Any(player => player.playerId.Equals(p.ProviderPlayerId))).ToList();
 
                 var teamId = squad.teamId;
-                //var dbTeam = fixture.TeamA != null && fixture.TeamA.ProviderTeamId == teamId ? fixture.TeamA : fixture.TeamB;
                 var dbTeam = _rugbyTeamRepository.FirstOrDefault(p => p.ProviderTeamId == teamId);
 
                 if (dbTeam == null || dbTeam.ProviderTeamId == 0)
@@ -2527,7 +2526,7 @@
                     await _logger.Warn($"IngestPastFixtures.{fixture.LegacyFixtureId}",
                         $"Exception occured while ingesting fixture {fixture.LegacyFixtureId}");
                 }
-                
+
             }
         }
 
