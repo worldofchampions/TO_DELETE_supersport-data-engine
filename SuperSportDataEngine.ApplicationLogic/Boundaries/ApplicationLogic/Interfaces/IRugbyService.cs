@@ -25,6 +25,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Inte
         Task<IEnumerable<RugbyTournament>> GetActiveTournamentsForMatchesInResultsState();
         Task<RugbyMatchDetailsEntity> GetMatchDetailsByLegacyMatchId(int matchId, bool omitDisabledFixtures);
         Task CleanupSchedulerTrackingTables(CancellationToken none);
+        Task<IEnumerable<RugbyFixture>> GetRecentResultsFixtures(int maxCount);
         Task<IEnumerable<RugbyFixture>> GetTournamentFixtures(Guid tournamentId, RugbyFixtureStatus fixtureStatus);
         Task<IEnumerable<RugbyFixture>> GetTournamentFixtures(string tournamentName);
         Task<IEnumerable<RugbyFixture>> GetTournamentResults(string tournamentSlug);

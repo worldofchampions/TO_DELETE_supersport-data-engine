@@ -1,22 +1,21 @@
-﻿using System.Net;
-
-namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
+﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 {
     using AutoMapper;
-    using Common.Interfaces;
-    using Filters;
-    using Helpers.Extensions;
-    using Models.Mappers;
-    using Models.News;
-    using Models.Rugby;
-    using Models.Shared;
-    using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-    using ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
-    using ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-    using ApplicationLogic.Entities.Legacy;
+    using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Helpers.Extensions;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.News;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+    using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
     using SuperSportDataEngine.Common.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Configuration;
     using System.Linq;
     using System.Threading.Tasks;
     using System.Web.Http;
@@ -65,7 +64,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             var matchDetailsFromCache = await GetFromCacheAsync<RugbyMatchDetails>(cacheKey);
 
             var response = matchDetailsFromCache;
-            
+
             if (response != null)
                 return Ok(response);
 
@@ -169,7 +168,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 
             if (!fixtures.Any()) return ReplyWithGeneralResponseModel();
 
-            var cacheData = (IList<Match>) fixtures;
+            var cacheData = (IList<Match>)fixtures;
 
             PersistToCache(cacheKey, cacheData);
 
@@ -233,6 +232,37 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
                 .Select(Mapper.Map<Fixture>);
 
             var cacheData = fixtures as IList<Fixture> ?? fixtures.ToList();
+
+            PersistToCache(cacheKey, cacheData);
+
+            return Ok(cacheData);
+        }
+
+        /// <summary>
+        /// Get Results for Rugby (all tournaments)
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("results")]
+        [ResponseType(typeof(List<Result>))]
+        public async Task<IHttpActionResult> GetRugbyResults()
+        {
+            const string cachePrefix = "RESULTS:";
+            var cacheKey = cachePrefix + $"rugby/results";
+
+            var results = await GetFromCacheAsync<IEnumerable<Result>>(cacheKey);
+
+            if (results != null)
+            {
+                return Ok(results);
+            }
+
+            var maxCount = int.Parse(ConfigurationManager.AppSettings["MaxResponseCount.RugbyRecentFixtures"]);
+
+            results = (await _rugbyService.GetRecentResultsFixtures(maxCount))
+                .Select(Mapper.Map<Result>);
+
+            var cacheData = results as IList<Result> ?? results.ToList();
 
             PersistToCache(cacheKey, cacheData);
 
@@ -381,7 +411,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
                 var logsCache = flatLogsCache as IList<Log> ?? flatLogsCache.ToList();
 
                 PersistToCache(flatLogsCacheKey, logsCache);
-                
+
                 return Ok(logsCache);
             }
 
