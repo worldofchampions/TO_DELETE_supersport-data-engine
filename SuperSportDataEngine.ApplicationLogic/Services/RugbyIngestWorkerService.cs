@@ -2524,7 +2524,7 @@
                 catch (Exception e)
                 {
                     await _logger.Warn($"IngestPastFixtures.{fixture.LegacyFixtureId}",
-                        $"Exception occured while ingesting fixture {fixture.LegacyFixtureId}. \n" + e.StackTrace);
+                        $"Exception occured while ingesting legacy fixture {fixture.LegacyFixtureId} / provider fixture id {fixture.ProviderFixtureId}. \n" + e.StackTrace);
                 }
             }
         }
