@@ -617,11 +617,13 @@
                     if (isFixtureTbc && !isFixturePartOfAFinal)
                         continue;
 
+                    var venue = allVenues.FirstOrDefault(v => v.ProviderVenueId == fixture.venueId);
+
                     var newFixture = new RugbyFixture()
                     {
                         ProviderFixtureId = fixtureId,
                         StartDateTime = startTime,
-                        RugbyVenue = allVenues.FirstOrDefault(v => v.ProviderVenueId == fixture.venueId),
+                        RugbyVenue = venue,
                         RugbyTournament = tournament,
                         TeamA = teamA,
                         TeamB = teamB,
