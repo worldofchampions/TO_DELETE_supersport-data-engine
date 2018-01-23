@@ -108,9 +108,9 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
                     int.Parse(ConfigurationManager.AppSettings["ErrorThresholdForJobsTakingTooLongInMinutes"]);
 
                 if (timespanDuration > TimeSpan.FromMinutes(errorThresholdInMinutes))
-                    _logger.Error(key, jobName + "is taking too long to process. Error duration in minutes is " + errorThresholdInMinutes + ". Taking " + timespanDuration.Value.TotalMinutes + " minutes.");
+                    _logger.Error(key, jobName + "is taking too long to process. Error threshold is " + errorThresholdInMinutes + minutes". Taking " + timespanDuration.Value.TotalMinutes + " minutes.");
                 else if (timespanDuration > TimeSpan.FromMinutes(warningThresholdInMinutes))
-                    _logger.Error(key, jobName + "is taking too long to process. Warning duration in minutes is " + warningThresholdInMinutes + ". Taking " + timespanDuration.Value.TotalMinutes + " minutes.");
+                    _logger.Warn(key, jobName + "is taking too long to process. Warning threshold is " + warningThresholdInMinutes + minutes". Taking " + timespanDuration.Value.TotalMinutes + " minutes.");
             }
 
             _timer.Start();
