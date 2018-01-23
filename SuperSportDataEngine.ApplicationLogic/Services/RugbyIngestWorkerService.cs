@@ -2221,7 +2221,7 @@
 
                 var commentText = comment.commentary;
                 var commentTimeInSeconds = comment.gameSeconds;
-                var commentaryTimeInMinutes = commentTimeInSeconds / 60;
+                var commentaryTimeInMinutes = (int)Math.Round(commentTimeInSeconds / 60.0);
                 var gameTimeDisplayHoursMinutesSeconds = comment.gameTime;
                 var gameTimeDisplayMinutesSeconds = comment.GameMinutes;
 
