@@ -309,8 +309,13 @@
         private async Task IngestSeason(CancellationToken cancellationToken, RugbyTournament tournament, int year)
         {
             var season = await _statsProzoneIngestService.IngestSeasonData(cancellationToken, tournament.ProviderTournamentId, year);
+
             if (season == null)
-                throw new NullReferenceException("Provider request failed due to timeout.");
+            {
+                await _logger.Error("IngestSeason." + tournament.ProviderTournamentId + "." + year, 
+                    "Provider returning null for season data. Tournament = "+ tournament.Name + " Season = " + year);
+                return;
+            }
 
             var providerTournamentId = season.RugbySeasons.competitionId;
 
