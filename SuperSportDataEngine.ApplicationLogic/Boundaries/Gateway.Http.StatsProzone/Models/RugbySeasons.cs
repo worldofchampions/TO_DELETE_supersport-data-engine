@@ -11,6 +11,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsPro
         public int id { get; set; }
         public int roundNumber { get; set; }
         public bool? final { get; set; }
+        public bool currentRound { get; set; }
     }
 
     public class Club

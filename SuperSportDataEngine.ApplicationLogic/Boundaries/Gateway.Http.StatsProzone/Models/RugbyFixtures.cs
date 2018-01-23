@@ -27,7 +27,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsPro
         public int gameNumber { get; set; }
         public string startTime { get; set; }
         public string startTimeUTC { get; set; }
-        public int venueId { get; set; }
+        public int? venueId { get; set; }
         public string venueName { get; set; }
         public string venueTimezone { get; set; }
         public int groundConditionId { get; set; }

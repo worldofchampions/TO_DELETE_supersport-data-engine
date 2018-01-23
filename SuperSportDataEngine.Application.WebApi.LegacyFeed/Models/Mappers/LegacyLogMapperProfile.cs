@@ -1,8 +1,8 @@
 ﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
 {
+    using ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
     using AutoMapper;
     using Shared;
-    using ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
 
     public class LegacyLogMapperProfile : Profile
     {
@@ -11,7 +11,7 @@
             CreateMap<RugbyFlatLog, Log>()
 
                 .ForMember(dest => dest.LeagueName, expression => expression.MapFrom(
-                    src => src.RugbyTournament.Name))
+                    src => src.RugbyTournament.NameCmsOverride ?? src.RugbyTournament.Name))
 
                 .ForMember(dest => dest.GroupName, src => src.UseValue(string.Empty))
 

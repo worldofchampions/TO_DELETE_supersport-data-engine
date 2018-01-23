@@ -27,7 +27,7 @@
                     src => (src.TeamAIsHomeTeam ? src.TeamBScore : src.TeamAScore)))
 
                 .ForMember(dest => dest.Location, expression => expression.MapFrom(
-                    src => src.RugbyVenue.Name))
+                    src => src.RugbyVenue != null ? src.RugbyVenue.Name : "TBC"))
 
                 .ForMember(dest => dest.Preview, src => src.Ignore())
 

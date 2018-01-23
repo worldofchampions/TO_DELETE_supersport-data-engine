@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
+﻿using SuperSportDataEngine.Application.Container.Enums;
+
+namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
 {
     using Microsoft.Practices.Unity;
     using System;
@@ -34,12 +36,12 @@
 
         private void ConfigureDepenencies()
         {
-            if (_container != null)
-                _container.Dispose();
+            _container?.Dispose();
 
             _container = new UnityContainer();
 
             UnityConfigurationManager.RegisterTypes(_container, Container.Enums.ApplicationScope.ServiceSchedulerClient);
+            UnityConfigurationManager.RegisterApiGlobalTypes(_container, ApplicationScope.ServiceSchedulerClient);
 
             _logger = _container.Resolve<ILoggingService>();
             _recurringJobManager = _container.Resolve<IRecurringJobManager>();

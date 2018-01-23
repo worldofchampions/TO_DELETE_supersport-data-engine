@@ -4,7 +4,6 @@
     using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
     using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
-    using System.Linq;
 
     public class LegacyMatchDetailsMapperProfile : Profile
     {
@@ -19,10 +18,10 @@
 
                 .ForMember(dest => dest.TeamAName, exp => exp.MapFrom(src => src.RugbyFixture.TeamA.Name))
 
-                .ForMember(dest => dest.TeamAShortName, src =>src.UseValue(LegacyFeedConstants.EmptyTeamName))
+                .ForMember(dest => dest.TeamAShortName, src => src.UseValue(LegacyFeedConstants.EmptyTeamName))
 
                 .ForMember(dest => dest.TeamAScore, exp => exp.MapFrom(src => src.RugbyFixture.TeamAScore))
-                
+
                 .ForMember(dest => dest.TeamAId, exp => exp.MapFrom(src => src.RugbyFixture.TeamA.LegacyTeamId))
 
                 .ForMember(dest => dest.TeamATeamsheet, exp => exp.MapFrom(src => src.TeamALineup))

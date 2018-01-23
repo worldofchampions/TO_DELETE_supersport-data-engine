@@ -1,15 +1,13 @@
-﻿using System.Diagnostics;
-using SuperSportDataEngine.Common.Logging;
-
-namespace SuperSportDataEngine.ApplicationLogic.Services
+﻿namespace SuperSportDataEngine.ApplicationLogic.Services
 {
-    using Boundaries.ApplicationLogic.Interfaces;
-    using Boundaries.Repository.EntityFramework.Common.Interfaces;
-    using Boundaries.Repository.EntityFramework.Common.Models.Enums;
-    using Boundaries.Repository.EntityFramework.PublicSportData.Models;
-    using Boundaries.Repository.EntityFramework.SystemSportData.Models;
-    using Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
-    using Entities.Legacy;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
+    using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
+    using SuperSportDataEngine.Common.Logging;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -216,7 +214,17 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<IEnumerable<RugbyFixture>> GetTournamentFixtures(Guid tournamentId, RugbyFixtureStatus fixtureStatus)
         {
-            return await Task.FromResult(_rugbyFixturesRepository.Where(t => t.IsDisabledInbound == false && t.RugbyTournament.Id == tournamentId && t.RugbyFixtureStatus == fixtureStatus).OrderByDescending(f => f.StartDateTime));
+            var today = DateTime.UtcNow;
+
+            var fixtures = await Task.FromResult(_rugbyFixturesRepository.Where(t => 
+                        t.IsDisabledInbound == false && 
+                        t.RugbyTournament.Id == tournamentId && 
+                        t.RugbyFixtureStatus == fixtureStatus).OrderByDescending(f => f.StartDateTime));
+
+            if (fixtureStatus == RugbyFixtureStatus.Result)
+                return fixtures;
+
+            return fixtures.Where(t => t.StartDateTime >= today);
         }
 
         public async Task<IEnumerable<RugbyFixture>> GetTournamentFixtures(string tournamentSlug)
@@ -232,10 +240,13 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             if (tournament == null) return fixtures;
 
-            fixtures = _rugbyFixturesRepository.Where(t => 
-                    t.IsDisabledInbound == false && 
-                    t.RugbyTournament.Id == tournament.Id && 
-                    t.RugbyFixtureStatus != RugbyFixtureStatus.Result).OrderBy(f => f.StartDateTime);
+            var today = DateTime.UtcNow;
+
+            fixtures = _rugbyFixturesRepository.Where(t =>
+                    t.IsDisabledInbound == false &&
+                    t.RugbyTournament.Id == tournament.Id &&
+                    t.RugbyFixtureStatus != RugbyFixtureStatus.Result &&
+                    t.StartDateTime >= today).OrderBy(f => f.StartDateTime);
 
             return await Task.FromResult(fixtures.ToList());
         }
@@ -255,6 +266,18 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             return await Task.FromResult(_rugbyTournamentRepository.FirstOrDefault(f => f.Slug.Equals(tournamentSlug, StringComparison.InvariantCultureIgnoreCase)));
         }
 
+        public async Task<IEnumerable<RugbyFixture>> GetRecentResultsFixtures(int maxCount)
+        {
+            var recentFixturesInResultsState = await Task.FromResult(_rugbyFixturesRepository.Where(
+                x => x.IsDisabledInbound == false &&
+                x.RugbyFixtureStatus == RugbyFixtureStatus.Result &&
+                x.RugbyTournament.IsEnabled)
+                .OrderByDescending(f => f.StartDateTime)
+                .Take(maxCount));
+
+            return recentFixturesInResultsState;
+        }
+
         public async Task<IEnumerable<RugbyFixture>> GetTournamentResults(string tournamentSlug)
         {
             if (IsNationalTeamSlug(tournamentSlug))
@@ -272,6 +295,20 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             }
 
             return fixturesInResultsState;
+        }
+
+        public async Task<IEnumerable<RugbyFixture>> GetUpcomingFixtures()
+        {
+            var today = DateTime.UtcNow;
+
+            var fixtures = _rugbyFixturesRepository.Where(t =>
+                t.IsDisabledInbound == false &&
+                t.RugbyTournament.IsEnabled == true &&
+                t.RugbyFixtureStatus != RugbyFixtureStatus.Result &&
+                t.StartDateTime >= today)
+                .OrderBy(f => f.StartDateTime);
+
+            return await Task.FromResult(fixtures.ToList());
         }
 
         private static bool IsNationalTeamSlug(string slug)
@@ -297,11 +334,13 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         private async Task<IEnumerable<RugbyFixture>> GetNationalTeamFixtures()
         {
             const string nationalTeamName = "South Africa";
+            var today = DateTime.UtcNow;
 
             var fixtures = _rugbyFixturesRepository.Where(f =>
                     ((f.TeamA != null && f.TeamA.Name.Equals(nationalTeamName, StringComparison.InvariantCultureIgnoreCase)) ||
                      (f.TeamB != null && f.TeamB.Name.Equals(nationalTeamName, StringComparison.InvariantCultureIgnoreCase))) &&
-                    f.RugbyFixtureStatus != RugbyFixtureStatus.Result)
+                    f.RugbyFixtureStatus != RugbyFixtureStatus.Result &&
+                    f.StartDateTime >= today)
                     .OrderBy(f => f.StartDateTime);
 
             return await Task.FromResult(fixtures.ToList());
@@ -316,8 +355,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             if (tournament != null && tournament.HasLogs)
             {
                 logs = _rugbyGroupedLogsRepository
-                    .Where(t => t.RugbyTournament.IsEnabled && 
-                                t.RugbyTournamentId == tournament.Id && 
+                    .Where(t => t.RugbyTournament.IsEnabled &&
+                                t.RugbyTournamentId == tournament.Id &&
                                 t.RugbySeason.IsCurrent &&
                                 t.RoundNumber == t.RugbySeason.CurrentRoundNumber &&
                                 t.RugbyLogGroup.IsCoreGroup)
@@ -347,6 +386,23 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         {
             var today = DateTime.UtcNow.Date;
             var todayFixtures = (await _rugbyFixturesRepository.AllAsync()).Where(f => f.StartDateTime.Date == today && f.RugbyTournament.IsEnabled).OrderBy(f => f.StartDateTime);
+
+            return await Task.FromResult(todayFixtures.ToList());
+        }
+
+        public async Task<IEnumerable<RugbyFixture>> GetCurrentDayFixturesForTournament(string tournamentSlug)
+        {
+            var tournament = await GetTournamentBySlug(tournamentSlug);
+
+            if (tournament is null) return Enumerable.Empty<RugbyFixture>();
+
+            var today = DateTime.UtcNow.Date;
+
+            var todayFixtures = (await _rugbyFixturesRepository.AllAsync())
+                .Where(f => f.StartDateTime.Date == today &&
+                f.RugbyTournament.IsEnabled &&
+                f.RugbyTournament.Id == tournament.Id)
+                .OrderBy(f => f.StartDateTime);
 
             return await Task.FromResult(todayFixtures.ToList());
         }
@@ -384,7 +440,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             matchDetails.MatchEvents = events.OrderByDescending(e => e.GameTimeInSeconds).ThenByDescending(e => e.TimestampCreated).ToList();
             matchDetails.TeamAScorers = scorersForFixture.Where(s => s.RugbyTeamId == (fixture.TeamA?.Id ?? Guid.Empty)).ToList();
             matchDetails.TeamBScorers = scorersForFixture.Where(s => s.RugbyTeamId == (fixture.TeamB?.Id ?? Guid.Empty)).ToList();
-            
+
             return matchDetails;
         }
 
@@ -457,7 +513,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         private async Task<List<RugbyMatchStatistics>> GetMatchStatsForFixture(Guid fixtureId)
         {
-            return await Task.FromResult( _rugbyMatchStatisticsRepository.Where(s => s.RugbyFixture.Id == fixtureId).ToList());
+            return await Task.FromResult(_rugbyMatchStatisticsRepository.Where(s => s.RugbyFixture.Id == fixtureId).ToList());
         }
 
         private async Task<List<RugbyPlayerLineup>> GetLineupForFixture(Guid fixtureId)
