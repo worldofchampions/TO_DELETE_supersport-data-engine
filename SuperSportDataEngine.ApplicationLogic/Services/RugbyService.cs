@@ -216,11 +216,15 @@
         {
             var today = DateTime.UtcNow;
 
-            return await Task.FromResult(_rugbyFixturesRepository.Where(t => 
+            var fixtures = await Task.FromResult(_rugbyFixturesRepository.Where(t => 
                         t.IsDisabledInbound == false && 
                         t.RugbyTournament.Id == tournamentId && 
-                        t.RugbyFixtureStatus == fixtureStatus &&
-                        t.StartDateTime >= today).OrderByDescending(f => f.StartDateTime));
+                        t.RugbyFixtureStatus == fixtureStatus).OrderByDescending(f => f.StartDateTime));
+
+            if (fixtureStatus == RugbyFixtureStatus.Result)
+                return fixtures;
+
+            return fixtures.Where(t => t.StartDateTime >= today);
         }
 
         public async Task<IEnumerable<RugbyFixture>> GetTournamentFixtures(string tournamentSlug)
