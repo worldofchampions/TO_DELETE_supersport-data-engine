@@ -31,6 +31,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
         Mock<TestEntityFrameworkRepository<RugbyPlayerLineup>> _mockLineupRepository;
         Mock<TestEntityFrameworkRepository<RugbyMatchStatistics>> _mockMatchStatisticsRepository;
         Mock<TestEntityFrameworkRepository<RugbyMatchEvent>> _mockMatchEventsRepository;
+        Mock<TestEntityFrameworkRepository<RugbyPlayer>> _mockPlayerRepository;
         Mock<ILoggingService> _mockLogger;
 
         [SetUp]
@@ -77,6 +78,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
             _mockLogger =
                     new Mock<ILoggingService>();
 
+            _mockPlayerRepository =
+                new Mock<TestEntityFrameworkRepository<RugbyPlayer>>(new List<RugbyPlayer>());
+
             _rugbyService = new RugbyService(
                 _mockMatchEventsRepository.Object,
                 _mockMatchStatisticsRepository.Object,
@@ -90,6 +94,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
                 _mockFixtureRepository.Object,
                 _mockSchedulerTrackingTournamentsRepository.Object,
                 _mockSchedulerTrackingFixtureRepository.Object,
+                _mockPlayerRepository.Object,
                 _mockLogger.Object);
         }
 

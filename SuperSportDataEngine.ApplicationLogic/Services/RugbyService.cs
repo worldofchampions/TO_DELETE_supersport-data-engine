@@ -28,6 +28,8 @@
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> _schedulerTrackingRugbySeasonRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyFixture> _rugbyFixturesRepository;
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> _schedulerTrackingRugbyFixtureRepository;
+        private readonly IBaseEntityFrameworkRepository<RugbyPlayer> _rugbyPlayerRepository;
+
         private readonly ILoggingService _logger;
 
         public RugbyService(
@@ -43,9 +45,11 @@
             IBaseEntityFrameworkRepository<RugbyFixture> rugbyFixturesRepository,
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> schedulerTrackingRugbyTournamentRepository,
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> schedulerTrackingRugbyFixtureRepository,
+            IBaseEntityFrameworkRepository<RugbyPlayer> rugbyPlayerRepository,
             ILoggingService logger)
         {
             _logger = logger;
+            _rugbyPlayerRepository = rugbyPlayerRepository;
             _rugbyMatchEventsRepository = rugbyMatchEventsRepository;
             _rugbyMatchStatisticsRepository = rugbyMatchStatisticsRepository;
             _rugbyPlayerLineupsRepository = rugbyPlayerLineupsRepository;
@@ -585,6 +589,22 @@
             var fixtures = _rugbyFixturesRepository.Where(f => f.StartDateTime < today && f.StartDateTime >= fewDaysAgo);
 
             return await Task.FromResult(fixtures.ToList());
+        }
+
+        public async Task<IEnumerable<RugbyPlayer>> GetTournamentTryScorers(string tournamentSlug)
+        {
+            var tournamentId = await GetTournamentId(tournamentSlug);
+
+            const int tryEventCode = 2;
+
+            var players = _rugbyMatchEventsRepository
+                .Where(matchEvent => matchEvent.RugbyFixture.RugbyTournament.Id == tournamentId
+                && matchEvent.RugbyFixture.RugbyTournament.IsEnabled
+                && matchEvent.RugbyEventType.EventCode == tryEventCode).Select(p => p.RugbyPlayer1);
+
+            var results = await Task.FromResult(players.ToList());
+
+            return results;
         }
     }
 }
