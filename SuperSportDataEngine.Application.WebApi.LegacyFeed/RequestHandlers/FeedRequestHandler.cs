@@ -94,9 +94,8 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
             int.TryParse(queryDictionary.Get("site"), out var siteId);
 
             var auth = queryDictionary.Get("auth");
-
             var authModel = await GetAuthModelFromCache(siteId, auth);
-
+            
             if (authModel == null)
             {
                 authModel = new AuthModel
@@ -122,7 +121,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
             throw new HttpResponseException(msg);
         }
 
-        private Task<AuthModel> GetAuthModelFromCache(int siteId, string auth)
+        private async Task<AuthModel> GetAuthModelFromCache(int siteId, string auth)
         {
             try
             {
@@ -131,11 +130,11 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
                     return null;
                 }
 
-                return _cache.GetAsync<AuthModel>($"auth/{siteId}/{auth}");
+                return await _cache.GetAsync<AuthModel>($"auth/{siteId}/{auth}");
             }
             catch (Exception exception)
             {
-                _loggingService.Fatal("GetAuthModelFromCache", exception.Message + exception.StackTrace);
+                await _loggingService.Fatal("GetAuthModelFromCache", exception.Message + exception.StackTrace);
 
                 return null;
             }
