@@ -2568,5 +2568,11 @@
 
             await _schedulerTrackingRugbyFixtureRepository.SaveAsync();
         }
+
+        public async Task IngestPlayerStatsForCurrentTournaments(CancellationToken cancellationToken)
+        {
+            //TODO: @thobani
+            var response = await _statsProzoneIngestService.IngestPlayerStatsForTournament(141, 2018, cancellationToken);
+        }
     }
 }
