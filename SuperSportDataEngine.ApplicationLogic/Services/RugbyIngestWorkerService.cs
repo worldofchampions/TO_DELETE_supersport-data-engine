@@ -312,8 +312,8 @@
 
             if (season == null)
             {
-                await _logger.Error("IngestSeason." + tournament.ProviderTournamentId + "." + year, 
-                    "Provider returning null for season data. Tournament = "+ tournament.Name + " Season = " + year);
+                await _logger.Error("IngestSeason." + tournament.ProviderTournamentId + "." + year,
+                    "Provider returning null for season data. Tournament = " + tournament.Name + " Season = " + year);
                 return;
             }
 
@@ -2572,7 +2572,17 @@
         public async Task IngestPlayerStatsForCurrentTournaments(CancellationToken cancellationToken)
         {
             //TODO: @thobani
-            var response = await _statsProzoneIngestService.IngestPlayerStatsForTournament(141, 2018, cancellationToken);
+            if (cancellationToken.IsCancellationRequested)
+                return;
+
+            var currentTournaments =
+                _rugbyTournamentRepository.Where(t => t.IsEnabled);
+            foreach (var tournament in currentTournaments)
+            {
+                var providerSeasonId = _rugbySeasonRepository.FirstOrDefault(s => s.RugbyTournament.Id == tournament.Id).ProviderSeasonId;
+
+                var response = await _statsProzoneIngestService.IngestPlayerStatsForTournament(tournament.ProviderTournamentId, providerSeasonId, cancellationToken);
+            }
         }
     }
 }

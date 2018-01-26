@@ -122,6 +122,7 @@
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyMatchStatistics.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyPlayer.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyPlayerLineup.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyPlayerStatistics.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbySeason.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyTeam.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyTournament.cs" />
