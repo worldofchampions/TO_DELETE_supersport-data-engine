@@ -282,20 +282,9 @@
 
         public async Task<RugbyGroupedLogsResponse> IngestGroupedLogsForTournament(int competitionId, int seasonId, int numberOfRounds)
         {
-            // Ronald: Going to hack the response model returned to the ingest service for the Sevens tournament.
-            // We need to return a list of ladders, such that each item (list of ladder positions), have a group id
-            // set to the round number.
-            // The reasoning behind this is that each round for Sevens is played in a different location,
-            // With the same teams. So we group each log based on the round number.
-
-            if (competitionId == RugbyStatsProzoneConstants.ProviderTournamentIdSevensRugby)
-            {
-                return await GetSevensGroupedLogs(competitionId, seasonId, numberOfRounds);
-            }
-
             if (competitionId == RugbyStatsProzoneConstants.ProviderTournamentIdPro14)
             {
-                return await GetSevensGroupedLogs(competitionId, seasonId, numberOfRounds);
+                return await GetPro14GroupedLogs(competitionId, seasonId, numberOfRounds);
             }
 
             WebRequest request = GetWebRequestForLogsEndpoint(competitionId, seasonId);
@@ -322,9 +311,17 @@
             }
         }
 
-        private async Task<RugbyGroupedLogsResponse> GetSevensGroupedLogs(int competitionId, int seasonId, int numberOfRounds)
+        private async Task<RugbyGroupedLogsResponse> GetPro14GroupedLogs(int competitionId, int seasonId, int numberOfRounds)
         {
             WebRequest request = GetWebRequestForLogsEndpoint(competitionId, seasonId, numberOfRounds);
+
+            var response = await GetSevensLogsResponse(request);
+            return response;
+        }
+
+        private async Task<RugbyGroupedLogsResponse> GetSevensGroupedLogs(int competitionId, int seasonId, int numberOfRounds)
+        {
+            WebRequest request = GetWebRequestForLogsEndpoint(competitionId, seasonId);
 
             var response = await GetSevensLogsResponse(request);
             return response;
@@ -489,7 +486,7 @@
 
             request.Headers["Authorization"] = "Basic U3VwZXJTcG9ydF9NZWRpYTpTdTkzUjdyMFA1";
 
-            request.ContentType = "application/json; charset=UTF-8";
+            request.ContentType = "application/xml; charset=UTF-8";
 
             return request;
         }
