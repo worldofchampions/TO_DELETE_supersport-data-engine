@@ -52,7 +52,7 @@
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet, HttpHead]
         [Route("matchdetails/{id:int}")]
         [ResponseType(typeof(RugbyMatchDetails))]
         [LogTimeFilter]
@@ -110,7 +110,7 @@
         /// DO NOT REMOVE. THIS HAS TO BE HERE SO WE CAN REDIRECT REQUESTS TO OLD FEED.
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet, HttpHead]
         [Route("news")]
         [ResponseType(typeof(NewsModel))]
         public IHttpActionResult GetNews()
@@ -122,7 +122,7 @@
         /// Get News for Rugby
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet, HttpHead]
         [Route("live")]
         [ResponseType(typeof(Match))]
         public async Task<IHttpActionResult> GetTodayFixtures()
@@ -150,7 +150,7 @@
         /// </summary>
         /// <param name="category"></param>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet, HttpHead]
         [Route("{category}/live")]
         [ResponseType(typeof(List<Match>))]
         public async Task<IHttpActionResult> GetTodayFixturesForTournament(string category)
@@ -179,7 +179,7 @@
         /// Get Fixtures for Rugby (all tournaments)
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet, HttpHead]
         [Route("fixtures")]
         [ResponseType(typeof(List<Fixture>))]
         public async Task<IHttpActionResult> GetFixtures()
@@ -209,7 +209,7 @@
         /// </summary>
         /// <param name="category"></param>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet, HttpHead]
         [Route("{category}/fixtures")]
         [ResponseType(typeof(List<Fixture>))]
         public async Task<IHttpActionResult> GetFixtures(string category)
@@ -235,7 +235,7 @@
             return Ok(cacheData);
         }
 
-        [HttpGet]
+        [HttpGet, HttpHead]
         [Route("{category}/fixtures/excludeinactive")]
         [ResponseType(typeof(List<Fixture>))]
         public async Task<IHttpActionResult> GetFixturesByStatus(string category)
@@ -271,7 +271,7 @@
         /// Get Results for Rugby (all tournaments)
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet, HttpHead]
         [Route("results")]
         [ResponseType(typeof(List<Result>))]
         public async Task<IHttpActionResult> GetRugbyResults()
@@ -303,7 +303,7 @@
         /// </summary>
         /// <param name="category"></param>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet, HttpHead]
         [Route("{category}/results")]
         [ResponseType(typeof(List<Result>))]
         public async Task<IHttpActionResult> GetResults(string category)
@@ -329,7 +329,7 @@
             return Ok(cacheData);
         }
 
-        [HttpGet]
+        [HttpGet, HttpHead]
         [Route("{category}/results/excludeinactive")]
         [ResponseType(typeof(List<Result>))]
         public async Task<IHttpActionResult> GetResultsByStatus(string category)
@@ -366,7 +366,7 @@
         /// </summary>
         /// <param name="category"></param>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet, HttpHead]
         [Route("{category}/logs/{groupName?}")]
         [ResponseType(typeof(List<Log>))]
         public async Task<IHttpActionResult> GetLogs(string category, string groupName = null)
@@ -401,7 +401,7 @@
         /// Get Tournament News
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet, HttpHead]
         [Route("{category}/news")]
         [ResponseType(typeof(NewsModel))]
         public IHttpActionResult GetTournamentNews()
@@ -414,7 +414,7 @@
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet, HttpHead]
         [Route("{category}/news/{id:int}")]
         [ResponseType(typeof(NewsModel))]
         public IHttpActionResult GetTournamentNews(int id)
