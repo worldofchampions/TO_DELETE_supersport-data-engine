@@ -58,42 +58,27 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
             UnityConfigurationManager.RegisterApiGlobalTypes(_childContainer, ApplicationScope.ServiceSchedulerClient);
         }
 
-        public async Task<int> CreateChildJobsForFetchingLogs()
+        private async Task CreateChildJobsForFetchingLogs()
         {
-            var schedulerTrackingRugbySeasonRepository =
-                            _childContainer.Resolve<IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason>>();
+            var today = DateTime.UtcNow.Date;
+            var now = DateTime.UtcNow;
 
-            var activeTournaments = await _childContainer.Resolve<IRugbyService>().GetActiveTournamentsForMatchesInResultsState();
+            var todayTournaments =
+                (await _childContainer.Resolve<IRugbyService>().GetRecentResultsFixtures(30))
+                .Where(f => f.StartDateTime.Date == today && f.StartDateTime > now - TimeSpan.FromHours(3))
+                .Select(f => f.RugbyTournament)
+                .ToList();
 
-            foreach (var tournament in activeTournaments)
+            foreach (var tournament in todayTournaments)
             {
-                int seasonId = await _childContainer.Resolve<IRugbyService>().GetCurrentProviderSeasonIdForTournament(CancellationToken.None, tournament.Id);
+                var seasonId = await _childContainer.Resolve<IRugbyService>().GetCurrentProviderSeasonIdForTournament(CancellationToken.None, tournament.Id);
+                var jobId = ConfigurationManager.AppSettings["ScheduleManagerJob_Logs_CurrentTournaments_JobIdPrefix"];
+                var cronExpression =
+                    ConfigurationManager.AppSettings[
+                        "ScheduleManagerJob_Logs_CurrentTournaments_JobCronExpression_OneMinute"];
 
-                if (await _childContainer.Resolve<IRugbyService>().GetSchedulerStateForManagerJobPolling(tournament.Id) == SchedulerStateForManagerJobPolling.NotRunning)
-                {
-                    var jobId = ConfigurationManager.AppSettings["ScheduleManagerJob_Logs_CurrentTournaments_JobIdPrefix"] + tournament.Name;
-                    var jobCronExpression = ConfigurationManager.AppSettings["ScheduleManagerJob_Logs_CurrentTournaments_JobCronExpression_OneMinute"];
-
-                    AddOrUpdateHangfireJob(tournament.ProviderTournamentId, seasonId, jobId, jobCronExpression);
-
-                    QueueJobForLowFrequencyPolling(tournament.Id, tournament.ProviderTournamentId, seasonId, jobId);
-
-                    var season =
-                            (await schedulerTrackingRugbySeasonRepository.AllAsync())
-                                .FirstOrDefault(s => 
-                                        s.RugbySeasonStatus == RugbySeasonStatus.InProgress &&
-                                        s.TournamentId == tournament.Id &&
-                                        s.SchedulerStateForManagerJobPolling == SchedulerStateForManagerJobPolling.NotRunning);
-
-                    if (season != null)
-                    {
-                        season.SchedulerStateForManagerJobPolling = SchedulerStateForManagerJobPolling.Running;
-                        schedulerTrackingRugbySeasonRepository.Update(season);
-                    }
-                }
+                AddOrUpdateHangfireJob(tournament.ProviderTournamentId, seasonId, jobId, cronExpression);
             }
-
-            return await schedulerTrackingRugbySeasonRepository.SaveAsync();
         }
 
         private void AddOrUpdateHangfireJob(int providerTournamentId, int seasonId, string jobId, string jobCronExpression)
@@ -107,35 +92,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
                     TimeZone = TimeZoneInfo.Local,
                     QueueName = HangfireQueueConfiguration.HighPriority
                 });
-        }
-
-        private void QueueJobForLowFrequencyPolling(Guid tournamentId, int providerTournamentId, int seasonId, string jobId)
-        {
-            string highFreqExpiryFromConfig = ConfigurationManager.AppSettings["ScheduleManagerJob_Logs_CurrentTournaments_HighFrequencyPolling_ExpiryInMinutes"];
-
-            int udpateJobFrequencyOnThisMinute = int.Parse(highFreqExpiryFromConfig);
-
-            var timer = new System.Timers.Timer
-            {
-                AutoReset = false,
-                Interval = TimeSpan.FromMinutes(udpateJobFrequencyOnThisMinute).TotalMilliseconds
-            };
-
-            timer.Elapsed += delegate
-            {
-                var jobExpiryFromConfig = ConfigurationManager.AppSettings["ScheduleManagerJob_Logs_CurrentTournaments_LowFrequencyPolling_ExpiryInMinutes"];
-                var jobCronExpression = ConfigurationManager.AppSettings["ScheduleManagerJob_Logs_CurrentTournaments_LowFrequencyPolling_CronExpression"];
-
-                var deleteJobOnThisMinute = int.Parse(jobExpiryFromConfig);
-
-                AddOrUpdateHangfireJob(providerTournamentId, seasonId, jobId, jobCronExpression);
-
-                LogsJobCleanupManager.QueueJobForDeletion(tournamentId, jobId, deleteJobOnThisMinute);
-
-                timer.Stop();
-            };
-
-            timer.Start();
         }
     }
 }
