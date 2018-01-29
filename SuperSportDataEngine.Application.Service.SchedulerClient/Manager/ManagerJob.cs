@@ -65,7 +65,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
             _logsManagerJob =
                 new LogsManagerJob(
                     _recurringJobManager,
-                    new UnityContainer(),
+                    _container,
                     _logger);
         }
 
@@ -77,7 +77,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
                 Interval = TimeSpan.FromMinutes(1).TotalMilliseconds
             };
 
-            _timer.Elapsed += new ElapsedEventHandler(UpdateManagerJobs);
+            _timer.Elapsed += UpdateManagerJobs;
             _timer.Start();
         }
 

@@ -58,7 +58,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
             _childContainer?.Dispose();
 
             _childContainer = new UnityContainer();
-            UnityConfigurationManager.RegisterTypes(_childContainer, Container.Enums.ApplicationScope.ServiceSchedulerClient);
+            UnityConfigurationManager.RegisterTypes(_childContainer, ApplicationScope.ServiceSchedulerClient);
             UnityConfigurationManager.RegisterApiGlobalTypes(_childContainer, ApplicationScope.ServiceSchedulerClient);
         }
 
