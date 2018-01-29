@@ -5,13 +5,13 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
     using Hangfire;
     using Hangfire.Common;
     using Microsoft.Practices.Unity;
-    using SuperSportDataEngine.Application.Container;
-    using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
-    using SuperSportDataEngine.ApplicationLogic.Services;
+    using Container;
+    using Common.Hangfire.Configuration;
+    using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+    using ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
+    using ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
+    using ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
+    using ApplicationLogic.Services;
     using SuperSportDataEngine.Common.Logging;
     using System;
     using System.Configuration;
@@ -54,13 +54,13 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
             _childContainer?.Dispose();
 
             _childContainer = new UnityContainer();
-            UnityConfigurationManager.RegisterTypes(_childContainer, Container.Enums.ApplicationScope.ServiceSchedulerClient);
+            UnityConfigurationManager.RegisterTypes(_childContainer, ApplicationScope.ServiceSchedulerClient);
             UnityConfigurationManager.RegisterApiGlobalTypes(_childContainer, ApplicationScope.ServiceSchedulerClient);
         }
 
         public async Task<int> CreateChildJobsForFetchingLogs()
         {
-            var _schedulerTrackingRugbySeasonRepository =
+            var schedulerTrackingRugbySeasonRepository =
                             _childContainer.Resolve<IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason>>();
 
             var activeTournaments = await _childContainer.Resolve<IRugbyService>().GetActiveTournamentsForMatchesInResultsState();
@@ -79,7 +79,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
                     QueueJobForLowFrequencyPolling(tournament.Id, tournament.ProviderTournamentId, seasonId, jobId);
 
                     var season =
-                            (await _schedulerTrackingRugbySeasonRepository.AllAsync())
+                            (await schedulerTrackingRugbySeasonRepository.AllAsync())
                                 .FirstOrDefault(s => 
                                         s.RugbySeasonStatus == RugbySeasonStatus.InProgress &&
                                         s.TournamentId == tournament.Id &&
@@ -88,12 +88,12 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
                     if (season != null)
                     {
                         season.SchedulerStateForManagerJobPolling = SchedulerStateForManagerJobPolling.Running;
-                        _schedulerTrackingRugbySeasonRepository.Update(season);
+                        schedulerTrackingRugbySeasonRepository.Update(season);
                     }
                 }
             }
 
-            return await _schedulerTrackingRugbySeasonRepository.SaveAsync();
+            return await schedulerTrackingRugbySeasonRepository.SaveAsync();
         }
 
         private void AddOrUpdateHangfireJob(int providerTournamentId, int seasonId, string jobId, string jobCronExpression)

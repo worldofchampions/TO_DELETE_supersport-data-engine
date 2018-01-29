@@ -1514,8 +1514,8 @@
             {
                 if (seasonId == RugbyStatsProzoneConstants.ProviderTournamentSeasonId2018)
                 {
-                    //if (logs.RugbyGroupedLogs.secondaryStandings != null)
-                    //    await IngestStandingsForSevens2018(cancellationToken, 1, logs, logs.RugbyGroupedLogs.secondaryStandings.ladderposition);
+                    if (logs.RugbyGroupedLogs.secondaryStandings != null)
+                        await IngestStandingsForSevens2018(cancellationToken, 1, logs, logs.RugbyGroupedLogs.secondaryStandings.ladderposition);
 
                     if (logs.RugbyGroupedLogs.groupStandings != null)
                         await IngestStandingsForSevens(cancellationToken, 2, logs, logs.RugbyGroupedLogs.groupStandings.ladderposition);
