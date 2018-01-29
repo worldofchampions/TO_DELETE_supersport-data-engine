@@ -11,6 +11,7 @@
         {
             var container = new UnityContainer();
             UnityConfigurationManager.RegisterTypes(container, ApplicationScope.ServiceSchedulerIngestServer);
+            UnityConfigurationManager.RegisterApiGlobalTypes(container, ApplicationScope.ServiceSchedulerIngestServer);
 
             HostFactory.Run(hostConfigurator =>
             {
