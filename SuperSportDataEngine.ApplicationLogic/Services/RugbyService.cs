@@ -240,6 +240,7 @@
 
             if (tournament == null) return fixtures;
 
+            
             var today = DateTime.UtcNow;
 
             fixtures = _rugbyFixturesRepository.Where(t =>
@@ -247,6 +248,17 @@
                     t.RugbyTournament.Id == tournament.Id &&
                     t.RugbyFixtureStatus != RugbyFixtureStatus.Result &&
                     t.StartDateTime >= today).OrderBy(f => f.StartDateTime);
+
+            if (!tournamentSlug.Equals("sevens")) return await Task.FromResult(fixtures.ToList());
+
+            var season =
+                _rugbySeasonRepository.FirstOrDefault(s => 
+                    s.IsCurrent && 
+                    s.RugbyTournament.Id == tournament.Id);
+
+            fixtures = fixtures.Where(f => 
+                        season != null && 
+                        season.CurrentRoundNumber == f.RoundNumber);
 
             return await Task.FromResult(fixtures.ToList());
         }
@@ -293,6 +305,17 @@
             {
                 fixturesInResultsState = await GetTournamentFixtures(tournament.Id, RugbyFixtureStatus.Result);
             }
+
+            if (!tournamentSlug.Equals("sevens")) return await Task.FromResult(fixturesInResultsState.ToList());
+
+            var season =
+                _rugbySeasonRepository.FirstOrDefault(s =>
+                    s.IsCurrent &&
+                    s.RugbyTournament.Id == tournament.Id);
+
+            fixturesInResultsState = fixturesInResultsState.Where(f =>
+                season != null &&
+                season.CurrentRoundNumber == f.RoundNumber);
 
             return fixturesInResultsState;
         }
