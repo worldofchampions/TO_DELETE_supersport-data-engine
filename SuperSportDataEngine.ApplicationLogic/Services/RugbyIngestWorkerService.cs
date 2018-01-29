@@ -46,6 +46,7 @@
         private readonly IBaseEntityFrameworkRepository<RugbyPlayerLineup> _rugbyPlayerLineupsRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyCommentary> _rugbyCommentaryRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyMatchStatistics> _rugbyMatchStatisticsRepository;
+        private readonly IBaseEntityFrameworkRepository<RugbyPlayerStatistics> _rugbyPlayerStatisticsRepository;
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> _schedulerTrackingRugbyTournamentRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyMatchEvent> _rugbyMatchEventsRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyEventTypeProviderMapping> _rugbyEventTypeMappingRepository;
@@ -69,6 +70,7 @@
             IBaseEntityFrameworkRepository<RugbyPlayerLineup> rugbyPlayerLineupsRepository,
             IBaseEntityFrameworkRepository<RugbyCommentary> rugbyCommentaryRepository,
             IBaseEntityFrameworkRepository<RugbyMatchStatistics> rugbyMatchStatisticsRepository,
+            IBaseEntityFrameworkRepository<RugbyPlayerStatistics> rugbyPlayerStatisticsRepository,
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> schedulerTrackingRugbyTournamentRepository,
             IBaseEntityFrameworkRepository<RugbyMatchEvent> rugbyMatchEventsRepository,
             IBaseEntityFrameworkRepository<RugbyEventTypeProviderMapping> rugbyEventTypeMappingRepository,
@@ -91,6 +93,7 @@
             _rugbyPlayerLineupsRepository = rugbyPlayerLineupsRepository;
             _rugbyCommentaryRepository = rugbyCommentaryRepository;
             _rugbyMatchStatisticsRepository = rugbyMatchStatisticsRepository;
+            _rugbyPlayerStatisticsRepository = rugbyPlayerStatisticsRepository;
             _schedulerTrackingRugbyTournamentRepository = schedulerTrackingRugbyTournamentRepository;
             _rugbyMatchEventsRepository = rugbyMatchEventsRepository;
             _rugbyEventTypeMappingRepository = rugbyEventTypeMappingRepository;
@@ -2674,18 +2677,71 @@
 
         public async Task IngestPlayerStatsForCurrentTournaments(CancellationToken cancellationToken)
         {
-            //TODO: @thobani
+            // TODO: @thobani  
+            // Think about how to handle ranking since STATS does not provide this info.
             if (cancellationToken.IsCancellationRequested)
                 return;
 
-            var currentTournaments =
-                _rugbyTournamentRepository.Where(t => t.IsEnabled);
+            var currentTournaments = _rugbyTournamentRepository.Where(t => t.IsEnabled);
+
             foreach (var tournament in currentTournaments)
             {
-                var providerSeasonId = _rugbySeasonRepository.FirstOrDefault(s => s.RugbyTournament.Id == tournament.Id).ProviderSeasonId;
+                var providerSeasonId = 
+                    _rugbySeasonRepository.FirstOrDefault(s => s.RugbyTournament.Id == tournament.Id).ProviderSeasonId;
 
-                var response = await _statsProzoneIngestService.IngestPlayerStatsForTournament(tournament.ProviderTournamentId, providerSeasonId, cancellationToken);
+                var response = 
+                    await _statsProzoneIngestService.IngestPlayerStatsForTournament(tournament.ProviderTournamentId, providerSeasonId, cancellationToken);
+
+                foreach (var player in response.RugbyPlayerStats.players)
+                {
+                    var playerInDb = _rugbyPlayerRepository.FirstOrDefault(p => p.ProviderPlayerId == player.playerId);
+                    var teamInDb = _rugbyTeamRepository.FirstOrDefault(t => t.ProviderTeamId == player.teamId);
+                    var seasonInDb = _rugbySeasonRepository.FirstOrDefault(s => s.ProviderSeasonId == providerSeasonId);
+
+                    var conversions = player?.playerSeasonStats?.Stat?.FirstOrDefault(s => s.StatTypeID == 2)?.totalValue;
+                    var tries = player?.playerSeasonStats?.Stat?.FirstOrDefault(s => s.StatTypeID == 5)?.totalValue;
+
+                    // STATS combines these values :( "Number of Penalty Shots/Conversions/Drop Goals Made"
+                    var dropGoals = player?.playerSeasonStats?.Stat?.FirstOrDefault(s => s.StatTypeID == 2050)?.totalValue;
+                    var penalties = dropGoals;
+
+                    RugbyPlayerStatistics playerStatistics = null;
+                    if (conversions != null && tries != null && dropGoals != null)
+                    {
+                        playerStatistics = new RugbyPlayerStatistics
+                        {
+                            RugbyTournament = tournament,
+                            RugbyTournamentId = tournament.Id,
+                            RugbyPlayer = playerInDb,
+                            RugbyPlayerId = playerInDb.Id,
+                            RugbyTeam = teamInDb,
+                            RugbyTeamId = teamInDb.Id,
+                            RugbySeason = seasonInDb,
+                            RugbySeasonId = seasonInDb.Id,
+                            TriesScored = (int)tries,
+                            ConversionsScored = (int)conversions,
+                            DropGoalsScored = (int)dropGoals,
+                            PenaltiesScored = (int)penalties
+                        };
+                    }
+
+                    var statInRepo = _rugbyPlayerStatisticsRepository
+                        .Where(s => s.RugbyPlayerId == playerStatistics.RugbyPlayerId
+                        && s.RugbySeasonId == playerStatistics.RugbySeasonId
+                        && s.RugbyTournamentId == playerStatistics.RugbyTournamentId);
+
+                    if (statInRepo != null)
+                    {
+                        _rugbyPlayerStatisticsRepository.Update(playerStatistics);
+                    }
+                    else
+                    {
+                        _rugbyPlayerStatisticsRepository.Add(playerStatistics);
+                    }
+                }
             }
+
+            await _rugbyPlayerStatisticsRepository.SaveAsync();
         }
     }
 }
