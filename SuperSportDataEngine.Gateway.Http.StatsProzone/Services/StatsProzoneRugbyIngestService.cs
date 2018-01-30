@@ -306,6 +306,12 @@
                     logsResponse.ResponseTime = DateTime.Now;
                     CheckIfRequestTakingTooLong(request, logsResponse);
 
+                    if (competitionId == RugbyStatsProzoneConstants.ProviderTournamentIdSevensRugby &&
+                        numberOfRounds == 4)
+                    {
+                        logsResponse.RugbyGroupedLogs.roundNumber = 4;
+                    }
+
                     return logsResponse;
                 }
             }
