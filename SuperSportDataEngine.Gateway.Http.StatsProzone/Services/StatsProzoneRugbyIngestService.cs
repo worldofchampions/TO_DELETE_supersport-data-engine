@@ -444,12 +444,6 @@
 
             try
             {
-                //TODO: I @thobani will remove this  
-                // This is a temporary test code to see how long will a job run for.
-                // Hence I'm hardcoding the values 
-                providerTournamentId = 241; //Top-14
-                providerSeasonId = 2018;
-
                 var webRequest = GetWebRequestForPlayerStatsEndpoint(providerTournamentId, providerSeasonId);
 
                 using (var response = await webRequest.GetResponseAsync())

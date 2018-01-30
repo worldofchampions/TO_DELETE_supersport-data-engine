@@ -2682,57 +2682,74 @@
             if (cancellationToken.IsCancellationRequested)
                 return;
 
-            var currentTournaments = _rugbyTournamentRepository.Where(t => t.IsEnabled);
+            var currentTournaments = _rugbyTournamentRepository.Where(t => t.IsEnabled).ToList();
 
             foreach (var tournament in currentTournaments)
             {
-                var providerSeasonId = 
-                    _rugbySeasonRepository.FirstOrDefault(s => s.RugbyTournament.Id == tournament.Id).ProviderSeasonId;
+                var season =
+                    _rugbySeasonRepository.FirstOrDefault(s => s.RugbyTournament.Id == tournament.Id);
 
-                var response = 
-                    await _statsProzoneIngestService.IngestPlayerStatsForTournament(tournament.ProviderTournamentId, providerSeasonId, cancellationToken);
+                if (tournament == null || season == null) continue;
+
+                var response =
+                    await _statsProzoneIngestService.IngestPlayerStatsForTournament(tournament.ProviderTournamentId, season.ProviderSeasonId, cancellationToken);
 
                 foreach (var player in response.RugbyPlayerStats.players)
                 {
-                    var playerInDb = _rugbyPlayerRepository.FirstOrDefault(p => p.ProviderPlayerId == player.playerId);
-                    var teamInDb = _rugbyTeamRepository.FirstOrDefault(t => t.ProviderTeamId == player.teamId);
-                    var seasonInDb = _rugbySeasonRepository.FirstOrDefault(s => s.ProviderSeasonId == providerSeasonId);
+                    var playerInDb = 
+                        _rugbyPlayerRepository.FirstOrDefault(p => p.ProviderPlayerId == player.playerId);
 
-                    var conversions = player?.playerSeasonStats?.Stat?.FirstOrDefault(s => s.StatTypeID == 2)?.totalValue;
-                    var tries = player?.playerSeasonStats?.Stat?.FirstOrDefault(s => s.StatTypeID == 5)?.totalValue;
+                    var teamInDb = 
+                        _rugbyTeamRepository.FirstOrDefault(t => t.ProviderTeamId == player.teamId);
 
+                    var seasonInDb =
+                        _rugbySeasonRepository.FirstOrDefault(s => s.ProviderSeasonId == season.ProviderSeasonId);
+
+                    var conversions =
+                        player?.playerSeasonStats?.Stat?.FirstOrDefault(s => s.StatTypeID == 2)?.totalValue;
+                    if (conversions is null) conversions = 0;
+
+                    var tries =
+                        player?.playerSeasonStats?.Stat?.FirstOrDefault(s => s.StatTypeID == 5)?.totalValue;
+                    if (tries is null) tries = 0;
+                    
                     // STATS combines these values :( "Number of Penalty Shots/Conversions/Drop Goals Made"
-                    var dropGoals = player?.playerSeasonStats?.Stat?.FirstOrDefault(s => s.StatTypeID == 2050)?.totalValue;
+                    var dropGoals =
+                        player?.playerSeasonStats?.Stat?.FirstOrDefault(s => s.StatTypeID == 2050)?.totalValue;
+
+                    if (dropGoals is null) dropGoals = 0;
+
                     var penalties = dropGoals;
 
-                    RugbyPlayerStatistics playerStatistics = null;
-                    if (conversions != null && tries != null && dropGoals != null)
+                    var playerStatistics = new RugbyPlayerStatistics
                     {
-                        playerStatistics = new RugbyPlayerStatistics
-                        {
-                            RugbyTournament = tournament,
-                            RugbyTournamentId = tournament.Id,
-                            RugbyPlayer = playerInDb,
-                            RugbyPlayerId = playerInDb.Id,
-                            RugbyTeam = teamInDb,
-                            RugbyTeamId = teamInDb.Id,
-                            RugbySeason = seasonInDb,
-                            RugbySeasonId = seasonInDb.Id,
-                            TriesScored = (int)tries,
-                            ConversionsScored = (int)conversions,
-                            DropGoalsScored = (int)dropGoals,
-                            PenaltiesScored = (int)penalties
-                        };
-                    }
+                        RugbyTournament = tournament,
+                        RugbyTournamentId = tournament.Id,
+                        RugbyPlayer = playerInDb,
+                        RugbyPlayerId = playerInDb.Id,
+                        RugbyTeam = teamInDb,
+                        RugbyTeamId = teamInDb.Id,
+                        RugbySeason = seasonInDb,
+                        RugbySeasonId = seasonInDb.Id,
+                        TriesScored = (int)tries,
+                        ConversionsScored = (int)conversions,
+                        DropGoalsScored = (int)dropGoals,
+                        PenaltiesScored = (int)penalties
+                    };
 
                     var statInRepo = _rugbyPlayerStatisticsRepository
-                        .Where(s => s.RugbyPlayerId == playerStatistics.RugbyPlayerId
-                        && s.RugbySeasonId == playerStatistics.RugbySeasonId
-                        && s.RugbyTournamentId == playerStatistics.RugbyTournamentId);
+                        .FirstOrDefault(s => s.RugbyPlayerId == playerStatistics.RugbyPlayerId
+                                    && s.RugbySeasonId == playerStatistics.RugbySeasonId
+                                    && s.RugbyTournamentId == playerStatistics.RugbyTournamentId);
 
                     if (statInRepo != null)
                     {
-                        _rugbyPlayerStatisticsRepository.Update(playerStatistics);
+                        statInRepo.TriesScored = playerStatistics.TriesScored;
+                        statInRepo.ConversionsScored = playerStatistics.ConversionsScored;
+                        statInRepo.DropGoalsScored = playerStatistics.DropGoalsScored;
+                        statInRepo.PenaltiesScored = playerStatistics.PenaltiesScored;
+
+                        _rugbyPlayerStatisticsRepository.Update(statInRepo);
                     }
                     else
                     {

@@ -240,6 +240,10 @@
     <Compile Include="Migrations\201801111001084_Added_IsCoreGroup_To_RugbyLogGroup.Designer.cs">
       <DependentUpon>201801111001084_Added_IsCoreGroup_To_RugbyLogGroup.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201801291222185_Add_PlayerStats_Model.cs" />
+    <Compile Include="Migrations\201801291222185_Add_PlayerStats_Model.Designer.cs">
+      <DependentUpon>201801291222185_Add_PlayerStats_Model.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Seed\SeedCmsTeamNames.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEnabledTournaments.cs" />
@@ -393,6 +397,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201801111001084_Added_IsCoreGroup_To_RugbyLogGroup.resx">
       <DependentUpon>201801111001084_Added_IsCoreGroup_To_RugbyLogGroup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801291222185_Add_PlayerStats_Model.resx">
+      <DependentUpon>201801291222185_Add_PlayerStats_Model.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

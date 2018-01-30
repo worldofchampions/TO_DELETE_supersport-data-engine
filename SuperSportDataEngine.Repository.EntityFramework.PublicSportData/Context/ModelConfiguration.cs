@@ -66,6 +66,8 @@
             modelBuilder.Entity<RugbyVenue>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
             modelBuilder.Entity<RugbyVenue>().Property(x => x.ProviderVenueId).HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Seek_ProviderVenueId")));
             modelBuilder.Entity<RugbyVenue>().Property(x => x.Name).IsRequired();
+
+            modelBuilder.Entity<RugbyPlayerStatistics>().HasKey(x => new { x.RugbyTournamentId, x.RugbySeasonId, x.RugbyTeamId, x.RugbyPlayerId });
         }
     }
 }
