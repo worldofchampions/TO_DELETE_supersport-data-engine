@@ -307,9 +307,9 @@
                     CheckIfRequestTakingTooLong(request, logsResponse);
 
                     if (competitionId == RugbyStatsProzoneConstants.ProviderTournamentIdSevensRugby &&
-                        numberOfRounds == 4)
+                        numberOfRounds != logsResponse.RugbyGroupedLogs.roundNumber)
                     {
-                        logsResponse.RugbyGroupedLogs.roundNumber = 4;
+                        logsResponse.RugbyGroupedLogs.roundNumber = numberOfRounds;
                     }
 
                     return logsResponse;
