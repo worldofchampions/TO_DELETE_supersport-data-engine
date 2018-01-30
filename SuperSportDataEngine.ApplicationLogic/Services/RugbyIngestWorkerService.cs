@@ -1399,8 +1399,8 @@
                 if (rugbySeason == null) continue;
                 if (rugbyTeam == null) continue;
 
-                //if (ladder.roundNumber != rugbySeason.CurrentRoundNumber)
-                //    continue;
+                if (ladder.roundNumber != rugbySeason.CurrentRoundNumber)
+                    continue;
 
                 try
                 {
