@@ -646,7 +646,8 @@
                         DataProvider = DataProvider.StatsProzone,
                         IsLiveScored = tournament != null && tournament.IsLiveScored,
                         TeamAScore = null,
-                        TeamBScore = null
+                        TeamBScore = null,
+                        RoundNumber = roundFixture.roundId
                     };
 
                     // Should we set the scores of the new fixture?
@@ -685,6 +686,7 @@
                         fixtureInDb.TeamAIsHomeTeam = newFixture.TeamAIsHomeTeam;
                         fixtureInDb.TeamBIsHomeTeam = newFixture.TeamBIsHomeTeam;
                         fixtureInDb.RugbyTournament = newFixture.RugbyTournament;
+                        fixtureInDb.RoundNumber = roundFixture.roundId;
 
                         // Do not update the isLiveScored property here.
                         // It will be updated by the CMS.
@@ -1517,8 +1519,8 @@
             {
                 if (seasonId == RugbyStatsProzoneConstants.ProviderTournamentSeasonId2018)
                 {
-                    //if (logs.RugbyGroupedLogs.secondaryStandings != null)
-                    //    await IngestStandingsForSevens2018(cancellationToken, 1, logs, logs.RugbyGroupedLogs.secondaryStandings.ladderposition);
+                    if (logs.RugbyGroupedLogs.secondaryStandings != null)
+                        await IngestStandingsForSevens2018(cancellationToken, 1, logs, logs.RugbyGroupedLogs.secondaryStandings.ladderposition);
 
                     if (logs.RugbyGroupedLogs.groupStandings != null)
                         await IngestStandingsForSevens(cancellationToken, 2, logs, logs.RugbyGroupedLogs.groupStandings.ladderposition);

@@ -11,7 +11,7 @@ using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
 
 namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed
 {
-    public static class SeedRugbyLogGroupsForSevens2018
+    public static class SeedRugbyLogGroupsForSydneySevens2018
     {
         private const string SlugHierachyLevel0Sevens2018 = "Sevens-2018-HL0-Sevens2018";
         private const string SlugHierachyLevel1SydneySevens2018 = "Sevens-2018-HL1-SydneySevens";
@@ -38,7 +38,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                 new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 0, IsConference = false, IsCoreGroup = true, Slug = SlugHierachyLevel0Sevens2018, ProviderLogGroupId = 0, ProviderGroupName = null, GroupName = "Sevens 2018", GroupShortName = "Sevens 2018" },
 
                 // LogGroups for "SecondaryStandings" GroupHierachyLevel: 1
-                new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = true, IsCoreGroup = true, Slug = SlugHierachyLevel1SydneySevens2018, ProviderLogGroupId = 0, ProviderGroupName = "Sydney 2018", GroupName = "Sydney 2018", GroupShortName = "Sydney 2018" },
+                new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = true, IsCoreGroup = true, Slug = SlugHierachyLevel1SydneySevens2018, ProviderLogGroupId = null, ProviderGroupName = "Sydney 2018", GroupName = "Sydney 2018", GroupShortName = "Sydney 2018" },
 
                 // LogGroups for "groupStandings" GroupHierachyLevel: 2
                 new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 2, IsConference = false, IsCoreGroup = true, Slug = SlugHierachyLevel2SydneySevens2018PoolA, ProviderLogGroupId = 1, ProviderGroupName = "Sydney 2018 Group A", GroupName = "Sydney 2018 Group A", GroupShortName = "Sydney 2018 Group A" },
