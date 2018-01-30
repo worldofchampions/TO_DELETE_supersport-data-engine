@@ -399,7 +399,11 @@
 
             if (tournament != null && tournament.HasLogs)
             {
-                flatLogs = _rugbyFlatLogsRepository.Where(t => t.RugbyTournament.IsEnabled && t.RugbyTournamentId == tournament.Id && t.RugbySeason.IsCurrent).OrderBy(t => t.LogPosition);
+                flatLogs = _rugbyFlatLogsRepository.Where(t => 
+                        t.RugbyTournament.IsEnabled && 
+                        t.RugbyTournamentId == tournament.Id && 
+                        t.RugbySeason.IsCurrent &&
+                        t.RugbySeason.CurrentRoundNumber == t.RoundNumber).OrderBy(t => t.LogPosition);
             }
 
             return await Task.FromResult(flatLogs.ToList());
