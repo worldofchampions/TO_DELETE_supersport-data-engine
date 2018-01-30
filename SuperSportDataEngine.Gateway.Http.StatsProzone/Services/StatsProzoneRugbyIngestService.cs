@@ -508,13 +508,14 @@
 
         private void CheckIfRequestTakingTooLong(WebRequest request, dynamic o)
         {
-            var timeDifference = (o.ResponseTime - o.RequestTime);
-            var seconds = timeDifference.TotalSeconds;
+            TimeSpan timeDifference = (o.ResponseTime - o.RequestTime);
+            var milliseconds = timeDifference.TotalMilliseconds;
 
-            if (seconds > _maximumTimeForRequestWithResponseInMilliseconds)
+            if (milliseconds > _maximumTimeForRequestWithResponseInMilliseconds)
             {
-                _logger.Warn("HTTPRequestTooLong." + request.RequestUri,
-                    "HTTP request taking too long. " + request.RequestUri + ". Taking " + seconds + " seconds.");
+                _logger.Warn($"HTTPRequestTooLong.{request.RequestUri}",
+                    $"HTTP request taking too long. {request.GetBaseUri()}. Warning level is {_maximumTimeForRequestWithResponseInMilliseconds / 1000.0} seconds; took " +
+                    milliseconds / 1000.0 + " seconds.");
             }
         }
     }
