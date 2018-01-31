@@ -72,7 +72,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
             foreach (var tournament in todayTournaments)
             {
                 var seasonId = await _childContainer.Resolve<IRugbyService>().GetCurrentProviderSeasonIdForTournament(CancellationToken.None, tournament.Id);
-                var jobId = ConfigurationManager.AppSettings["ScheduleManagerJob_Logs_CurrentTournaments_JobIdPrefix"];
+                var jobId = ConfigurationManager.AppSettings["ScheduleManagerJob_Logs_CurrentTournaments_JobIdPrefix"] + tournament.Name;
                 var cronExpression =
                     ConfigurationManager.AppSettings[
                         "ScheduleManagerJob_Logs_CurrentTournaments_JobCronExpression_OneMinute"];
