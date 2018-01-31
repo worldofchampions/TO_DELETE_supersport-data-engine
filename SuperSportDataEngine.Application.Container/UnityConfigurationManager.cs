@@ -68,7 +68,7 @@ namespace SuperSportDataEngine.Application.Container
             if (applicationScope == ApplicationScope.WebApiLegacyFeed ||
                 applicationScope == ApplicationScope.WebApiSystemApi)
             {
-                container.RegisterType<ILegacyAuthService, LegacyAuthService>();
+                container.RegisterType<ILegacyAuthService, LegacyAuthService>(new HierarchicalLifetimeManager());
             }
 
             if (applicationScope == ApplicationScope.WebApiLegacyFeed)

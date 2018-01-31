@@ -16,7 +16,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         private readonly IBaseEntityFrameworkRepository<LegacyZoneSite> _legacyZoneSiteRepository;
         private readonly IBaseEntityFrameworkRepository<LegacyAuthFeedConsumer> _legacyAuthFeedConsumerRepository;
 
-        public LegacyAuthService(IBaseEntityFrameworkRepository<LegacyZoneSite> legacyZoneSiteRepository,
+        public LegacyAuthService(
+            IBaseEntityFrameworkRepository<LegacyZoneSite> legacyZoneSiteRepository,
             IBaseEntityFrameworkRepository<LegacyAuthFeedConsumer> legacyAuthFeedConsumerRepository)
         {
             _legacyZoneSiteRepository = legacyZoneSiteRepository;
@@ -25,7 +26,10 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public bool IsAuthorised(string authKey, int siteId = 0)
         {
-            var legacyAuthFeed = _legacyAuthFeedConsumerRepository.Where(c => c.AuthKey == authKey && c.Active).FirstOrDefault();
+            var legacyAuthFeed = 
+                    _legacyAuthFeedConsumerRepository.FirstOrDefault(c => 
+                            c.AuthKey == authKey && c.Active);
+
             if (legacyAuthFeed == null)
             {
                 return false;
