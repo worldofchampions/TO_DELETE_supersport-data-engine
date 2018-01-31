@@ -450,7 +450,8 @@
                 {
                     if (response == null)
                         return null;
-                    var playerStatsResponse = new RugbyPlayerStatsResponse();
+
+                    var playerStatsResponse = new RugbyPlayerStatsResponse { RequestTime = DateTime.Now };
 
                     using (var responseStream = response.GetResponseStream())
                     {
