@@ -26,10 +26,10 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
         private FixturesManagerJob _fixturesManagerJob;
         private LiveManagerJob _liveManagerJob;
         private LogsManagerJob _logsManagerJob;
+        private PlayerStatisticsManagerJob _playerStatisticsManagerJob;
 
         public ManagerJob()
         {
-
             ConfigureTimer();
             ConfigureDepenencies();
         }
@@ -40,7 +40,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
 
             _container = new UnityContainer();
 
-            UnityConfigurationManager.RegisterTypes(_container, Container.Enums.ApplicationScope.ServiceSchedulerClient);
+            UnityConfigurationManager.RegisterTypes(_container, ApplicationScope.ServiceSchedulerClient);
             UnityConfigurationManager.RegisterApiGlobalTypes(_container, ApplicationScope.ServiceSchedulerClient);
 
             _logger = _container.Resolve<ILoggingService>();
@@ -49,24 +49,14 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
             _rugbyIngestWorkerService = _container.Resolve<IRugbyIngestWorkerService>();
             _schedulerTrackingRugbyFixtures = _container.Resolve<IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture>>();
 
-            _fixturesManagerJob =
-                new FixturesManagerJob(
-                    _recurringJobManager,
-                    _container,
-                    _logger);
+            _fixturesManagerJob = new FixturesManagerJob(_recurringJobManager, _container, _logger);
 
-            _liveManagerJob = new LiveManagerJob(
-                _logger,
-                _recurringJobManager,
-                _rugbyService,
-                _rugbyIngestWorkerService,
-                _schedulerTrackingRugbyFixtures);
+            _liveManagerJob =
+                new LiveManagerJob(_logger, _recurringJobManager, _rugbyService, _rugbyIngestWorkerService, _schedulerTrackingRugbyFixtures);
 
-            _logsManagerJob =
-                new LogsManagerJob(
-                    _recurringJobManager,
-                    _container,
-                    _logger);
+            _logsManagerJob = new LogsManagerJob(_recurringJobManager, _container, _logger);
+
+            _playerStatisticsManagerJob = new PlayerStatisticsManagerJob(_recurringJobManager, _container, _logger);
         }
 
         private void ConfigureTimer()
@@ -93,6 +83,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
                 await _liveManagerJob.DoWorkAsync();
                 await _fixturesManagerJob.DoWorkAsync();
                 await _logsManagerJob.DoWorkAsync();
+                await _playerStatisticsManagerJob.DoWorkAsync();
             }
             catch (Exception exception)
             {

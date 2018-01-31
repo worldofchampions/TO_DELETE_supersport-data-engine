@@ -22,6 +22,6 @@
         Task IngestLiveMatchDataForPastFixtures(CancellationToken none);
         Task IngestPastSeasonsForActiveTournaments(CancellationToken none);
         Task IngestLiveMatchDataForPastFewDaysFixtures(CancellationToken none);
-        Task IngestPlayerStatsForCurrentTournaments(CancellationToken cancellationToken);
+        Task IngestPlayerStatsForCurrentTournaments(int providerTournamentId, int providerSeasonId, CancellationToken cancellationToken);
     }
 }

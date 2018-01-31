@@ -229,15 +229,18 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
 
         private void UpdateRecurringJobDefinition_PlayerStatsForCurrentTournaments()
         {
-            _recurringJobManager.AddOrUpdate(
-                ConfigurationManager.AppSettings["FixedScheduledJob_PlayerStatsData_CurrentTournaments_JobId"],
-                Job.FromExpression(() => (_container.Resolve<IRugbyIngestWorkerService>()).IngestPlayerStatsForCurrentTournaments(CancellationToken.None)),
-                ConfigurationManager.AppSettings["FixedScheduledJob_PlayerStatsData_CurrentTournaments_JobCronExpression"],
-                new RecurringJobOptions()
-                {
-                    TimeZone = TimeZoneInfo.Local,
-                    QueueName = HangfireQueueConfiguration.HighPriority
-                });
+            //TODO: @thobani
+            // Decide if we should have a nightly job for polling player stats for all active tournaments.
+
+            //_recurringJobManager.AddOrUpdate(
+            //    ConfigurationManager.AppSettings["FixedScheduledJob_PlayerStatsData_CurrentTournaments_JobId"],
+            //    Job.FromExpression(() => (_container.Resolve<IRugbyIngestWorkerService>()).IngestPlayerStatsForCurrentTournaments(CancellationToken.None)),
+            //    ConfigurationManager.AppSettings["FixedScheduledJob_PlayerStatsData_CurrentTournaments_JobCronExpression"],
+            //    new RecurringJobOptions()
+            //    {
+            //        TimeZone = TimeZoneInfo.Local,
+            //        QueueName = HangfireQueueConfiguration.HighPriority
+            //    });
         }
     }
 }
