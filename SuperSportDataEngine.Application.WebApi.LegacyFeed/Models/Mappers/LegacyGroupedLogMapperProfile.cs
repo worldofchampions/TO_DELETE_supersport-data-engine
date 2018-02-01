@@ -20,7 +20,7 @@
                     src => src.RugbyTournament.NameCmsOverride ?? src.RugbyTournament.Name))
 
                 .ForMember(dest => dest.Team, expression => expression.MapFrom(
-                    src => src.RugbyTeam.Name))
+                    src => (src.RugbyTeam.NameCmsOverride ?? src.RugbyTeam.Name)))
 
                 .ForMember(dest => dest.TeamID, expression => expression.MapFrom(
                     src => src.RugbyTeam.LegacyTeamId))
