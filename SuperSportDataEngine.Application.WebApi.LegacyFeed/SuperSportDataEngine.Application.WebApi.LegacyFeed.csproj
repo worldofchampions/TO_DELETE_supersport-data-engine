@@ -234,6 +234,7 @@
     <Compile Include="Models\Mappers\LegacyMatchDetailsMapperProfile.cs" />
     <Compile Include="Models\Mappers\LegacyMatchStatsMapperProfile.cs" />
     <Compile Include="Models\Mappers\LegacyResultMapperProfile.cs" />
+    <Compile Include="Models\Mappers\LegacyRugbyPointScorerMapperProfile.cs" />
     <Compile Include="Models\Mappers\LegacyScorerModelMapperProfile.cs" />
     <Compile Include="Models\Mappers\LegacyTeamsheetMapperProfile.cs" />
     <Compile Include="Models\Rugby\GeneralResponse.cs" />
