@@ -246,6 +246,7 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Seed\SeedCmsTeamNames.cs" />
+    <Compile Include="Migrations\Seed\SeedCMSTeamNamesForHemiltonSevens2018.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEnabledTournaments.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypeProviderMappings.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypes.cs" />
