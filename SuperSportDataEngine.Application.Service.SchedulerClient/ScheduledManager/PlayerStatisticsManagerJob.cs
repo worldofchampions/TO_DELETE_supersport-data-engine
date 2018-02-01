@@ -56,16 +56,8 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
 
         private async Task CreateChildJobsForFetchingPlayerStatistics()
         {
-            var today = DateTime.UtcNow.Date;
-            var now = DateTime.UtcNow;
-            const int maxSelectCount = 30;
-            const int timeValue = 3;
-
             var todayTournaments =
-                (await _childContainer.Resolve<IRugbyService>().GetRecentResultsFixtures(maxSelectCount))
-                .Where(f => f.StartDateTime.Date == today && f.StartDateTime > now - TimeSpan.FromHours(timeValue))
-                .Select(f => f.RugbyTournament)
-                .ToList();
+                (await _childContainer.Resolve<IRugbyService>().GetTournamentsForJustEndedFixtures()).ToList();
 
             foreach (var tournament in todayTournaments)
             {
@@ -76,7 +68,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
                     ConfigurationManager.AppSettings["ScheduleManagerJob_PlayerStats_CurrentTournaments_JobIdPrefix"] + tournament.Name;
 
                 var cronExpression =
-                    ConfigurationManager.AppSettings["ScheduleManagerJob_PlayerStats_CurrentTournaments_JobCronExpression_OneMinute"];
+                    ConfigurationManager.AppSettings["ScheduleManagerJob_PlayerStats_CurrentTournaments_JobCronExpression"];
 
                 AddOrUpdateHangfireJob(tournament.ProviderTournamentId, seasonId, jobId, cronExpression);
             }
