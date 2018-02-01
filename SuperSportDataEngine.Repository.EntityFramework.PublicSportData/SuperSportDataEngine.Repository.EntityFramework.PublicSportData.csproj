@@ -245,8 +245,7 @@
       <DependentUpon>201801291123262_RoundNumber_Added_To_Fixture.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
-    <Compile Include="Migrations\Seed\SeedCmsTeamNames.cs" />
-    <Compile Include="Migrations\Seed\SeedCMSTeamNamesForHemiltonSevens2018.cs" />
+    <Compile Include="Migrations\Seed\SeedRugbyTeamNames.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEnabledTournaments.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypeProviderMappings.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypes.cs" />

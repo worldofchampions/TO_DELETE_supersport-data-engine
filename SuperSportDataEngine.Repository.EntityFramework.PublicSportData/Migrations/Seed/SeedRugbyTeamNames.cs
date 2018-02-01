@@ -1,14 +1,13 @@
-﻿using System.Data.Entity.Migrations;
+﻿using System;
+using System.Collections.Generic;
+using System.Data.Entity.Migrations;
+using System.Linq;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
 
 namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed
 {
-    using System;
-    using System.Linq;
-    using System.Collections.Generic;
-    using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-
-    public class SeedCMSTeamNamesForHemiltonSevens2018
+    public static class SeedRugbyTeamNames
     {
         public static void Seed(PublicSportDataContext context)
         {
@@ -25,7 +24,6 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                     if (!string.IsNullOrEmpty(dbTeam.NameCmsOverride)) continue;
 
                     dbTeam.NameCmsOverride = team.NameCmsOverride;
-
                     context.RugbyTeams.AddOrUpdate(dbTeam);
                 }
 
@@ -43,6 +41,14 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
         {
             return new List<RugbyTeam>
             {
+                new RugbyTeam {ProviderTeamId = 1252, NameCmsOverride = "Vodacom Blue Bulls"},
+                new RugbyTeam {ProviderTeamId = 1253, NameCmsOverride = "Toyota Free State Cheetahs"},
+                new RugbyTeam {ProviderTeamId = 1254, NameCmsOverride = "Xerox Golden Lions"},
+                new RugbyTeam {ProviderTeamId = 1255, NameCmsOverride = "Tafel Lager Griquas"},
+                new RugbyTeam {ProviderTeamId = 1256, NameCmsOverride = "Cell C Sharks"},
+                new RugbyTeam {ProviderTeamId = 1263, NameCmsOverride = "Steval Pumas"},
+                new RugbyTeam {ProviderTeamId = 1257, NameCmsOverride = "DHL Western Province"},
+                //Sevens
                 new RugbyTeam {ProviderTeamId = 0, NameCmsOverride = "TBC"},
                 new RugbyTeam {ProviderTeamId = 1157, NameCmsOverride = "Argentina"},
                 new RugbyTeam {ProviderTeamId = 1158, NameCmsOverride = "Australia"},
