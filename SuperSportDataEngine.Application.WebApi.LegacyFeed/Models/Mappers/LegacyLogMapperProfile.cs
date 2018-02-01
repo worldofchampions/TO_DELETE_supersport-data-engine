@@ -16,7 +16,7 @@
                 .ForMember(dest => dest.GroupName, src => src.UseValue(string.Empty))
 
                 .ForMember(dest => dest.Team, expression => expression.MapFrom(
-                    src => src.RugbyTeam.Name))
+                    src => (src.RugbyTeam.NameCmsOverride ?? src.RugbyTeam.Name)))
 
                 .ForMember(dest => dest.TeamShortName, src => src.UseValue(string.Empty))
 
