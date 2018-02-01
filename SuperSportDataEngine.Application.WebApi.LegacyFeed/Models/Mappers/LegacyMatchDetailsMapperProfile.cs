@@ -16,7 +16,8 @@
 
                 .ForMember(dest => dest.MatchStatisticsTeamA, exp => exp.MapFrom(src => src.TeamAMatchStatistics))
 
-                .ForMember(dest => dest.TeamAName, exp => exp.MapFrom(src => src.RugbyFixture.TeamA.Name))
+                .ForMember(dest => dest.TeamAName, exp => exp.MapFrom(
+                    src => src.RugbyFixture.TeamA.NameCmsOverride ?? src.RugbyFixture.TeamA.Name))
 
                 .ForMember(dest => dest.TeamAShortName, src => src.UseValue(LegacyFeedConstants.EmptyTeamName))
 
@@ -37,7 +38,8 @@
 
                 .ForMember(dest => dest.MatchStatisticsTeamB, exp => exp.MapFrom(src => src.TeamBMatchStatistics))
 
-                .ForMember(dest => dest.TeamBName, exp => exp.MapFrom(src => src.RugbyFixture.TeamB.Name))
+                .ForMember(dest => dest.TeamBName, exp => exp.MapFrom(
+                    src => src.RugbyFixture.TeamB.NameCmsOverride ?? src.RugbyFixture.TeamB.Name))
 
                  .ForMember(dest => dest.TeamBShortName, src => src.UseValue(LegacyFeedConstants.EmptyTeamName))
 
