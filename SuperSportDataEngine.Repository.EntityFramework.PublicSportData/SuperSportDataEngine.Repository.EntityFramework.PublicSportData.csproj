@@ -248,6 +248,10 @@
     <Compile Include="Migrations\201801291222185_Add_PlayerStats_Model.Designer.cs">
       <DependentUpon>201801291222185_Add_PlayerStats_Model.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201802010913073_addPointsToPlayerStatsModel.cs" />
+    <Compile Include="Migrations\201802010913073_addPointsToPlayerStatsModel.Designer.cs">
+      <DependentUpon>201802010913073_addPointsToPlayerStatsModel.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Seed\SeedCmsTeamNames.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEnabledTournaments.cs" />
@@ -408,6 +412,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201801291222185_Add_PlayerStats_Model.resx">
       <DependentUpon>201801291222185_Add_PlayerStats_Model.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802010913073_addPointsToPlayerStatsModel.resx">
+      <DependentUpon>201802010913073_addPointsToPlayerStatsModel.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

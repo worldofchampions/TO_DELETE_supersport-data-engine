@@ -27,6 +27,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFram
 
         public int DropGoalsScored { get; set; }
 
+        public int TotalPoints { get; set; }
+
         public virtual RugbyTournament RugbyTournament { get; set; }
 
         public virtual RugbyPlayer RugbyPlayer { get; set; }
