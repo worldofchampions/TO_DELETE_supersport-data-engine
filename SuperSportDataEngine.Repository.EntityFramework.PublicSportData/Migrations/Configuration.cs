@@ -18,7 +18,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
             SeedRugbyEnabledTournaments.Seed(context);
             SeedRugbyHasLogsTournaments.Seed(context);
             SeedRugbyLiveScoredTournaments.Seed(context);
-            SeedCmsTeamNames.Seed(context);
+            SeedRugbyTeamNames.Seed(context);
             SeedRugbyEventTypes.Seed(context);
             SeedRugbyEventTypeProviderMappings.Seed(context);
             SeedRugbyTeams.Seed(context);
@@ -30,6 +30,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
             SeedRugbyGroupsForMitreCup2017.Seed(context);
             SeedRugbyLogGroupsForSydneySevens2018.Seed(context);
             SeedRugbyLogGroupsForHamiltonSevens2018.Seed(context);
+            SeedGroupNamesForHamiltonSevens.Seed(context);
         }
     }
 }

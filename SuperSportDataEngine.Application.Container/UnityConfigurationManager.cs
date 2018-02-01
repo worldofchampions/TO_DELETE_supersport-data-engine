@@ -73,7 +73,7 @@ namespace SuperSportDataEngine.Application.Container
 
             if (applicationScope == ApplicationScope.WebApiLegacyFeed)
             {
-                container.RegisterType<IDeprecatedFeedIntegrationService, DeprecatedFeedIntegrationService>();
+                container.RegisterType<IDeprecatedFeedIntegrationService, DeprecatedFeedIntegrationService>(new HierarchicalLifetimeManager());
             }
         }
 
@@ -93,7 +93,10 @@ namespace SuperSportDataEngine.Application.Container
             {
                 container.RegisterType<ICache, Cache>(new ContainerControlledLifetimeManager(), new InjectionFactory((x) => null));
 
-                logger.Error("NoCacheInDIContainer", exception.StackTrace);
+                logger.Error("NoCacheInDIContainer", 
+                    "Message: \n" + exception.Message + 
+                    "StackTrace: \n" + exception.StackTrace +
+                    "Inner Exception \n" + exception.InnerException);
             }
         }
 
