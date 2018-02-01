@@ -15,10 +15,12 @@
                 .ForMember(dest => dest.Sport, expression => expression.UseValue(SportType.Rugby))
 
                 .ForMember(dest => dest.AwayTeamShortName, expression => expression.MapFrom(
-                    src => src.TeamAIsHomeTeam ? src.TeamB.Name : src.TeamA.Name))
+                    src => src.TeamAIsHomeTeam ?
+                    (src.TeamB.NameCmsOverride ?? src.TeamB.Name) : (src.TeamA.NameCmsOverride ?? src.TeamA.Name)))
 
                 .ForMember(dest => dest.HomeTeamShortName, expression => expression.MapFrom(
-                   src => src.TeamAIsHomeTeam ? src.TeamA.Name : src.TeamB.Name))
+                   src => src.TeamAIsHomeTeam ?
+                   (src.TeamA.NameCmsOverride ?? src.TeamA.Name) : (src.TeamB.NameCmsOverride ?? src.TeamB.Name)))
 
                 .ForMember(dest => dest.HomeTeamScore, expression => expression.MapFrom(
                     src => (src.TeamAIsHomeTeam ? src.TeamAScore : src.TeamBScore)))
