@@ -49,7 +49,6 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                 new RugbyTeam {ProviderTeamId = 1263, NameCmsOverride = "Steval Pumas"},
                 new RugbyTeam {ProviderTeamId = 1257, NameCmsOverride = "DHL Western Province"},
                 //Sevens
-                new RugbyTeam {ProviderTeamId = 0, NameCmsOverride = "TBC"},
                 new RugbyTeam {ProviderTeamId = 1157, NameCmsOverride = "Argentina"},
                 new RugbyTeam {ProviderTeamId = 1158, NameCmsOverride = "Australia"},
                 new RugbyTeam {ProviderTeamId = 1159, NameCmsOverride = "Canada"},
