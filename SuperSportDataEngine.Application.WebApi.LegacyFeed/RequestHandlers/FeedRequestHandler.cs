@@ -100,7 +100,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
             {
                 authModel = new AuthModel
                 {
-                    Authorised = _legacyAuthService.IsAuthorised(auth, siteId)
+                    Authorised = await _legacyAuthService.IsAuthorised(auth, siteId)
                 };
             }
 
