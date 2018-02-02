@@ -25,6 +25,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
         private ILegacyAuthService _legacyAuthService;
         private ICache _cache;
         private ILoggingService _loggingService;
+        private IUnityContainer _container;
 
         private readonly int _authKeyCacheExpiryInMinutes;
         private const string CacheKeyPrefix = "LegacyFeed:"; 
@@ -69,17 +70,19 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
 
         private void ResolveDependencies()
         {
-            var container = new UnityContainer();
+            _container?.Dispose();
 
-            UnityConfigurationManager.RegisterTypes(container, ApplicationScope.WebApiLegacyFeed);
+            _container = new UnityContainer();
 
-            UnityConfigurationManager.RegisterApiGlobalTypes(container, ApplicationScope.WebApiLegacyFeed);
+            UnityConfigurationManager.RegisterTypes(_container, ApplicationScope.WebApiLegacyFeed);
 
-            _loggingService = container.Resolve<ILoggingService>();
+            UnityConfigurationManager.RegisterApiGlobalTypes(_container, ApplicationScope.WebApiLegacyFeed);
 
-            _legacyAuthService = container.Resolve<ILegacyAuthService>();
+            _loggingService = _container.Resolve<ILoggingService>();
 
-            _cache = container.Resolve<ICache>();
+            _legacyAuthService = _container.Resolve<ILegacyAuthService>();
+
+            _cache = _container.Resolve<ICache>();
         }
 
         private static bool IsRequestRedirectorEnabled()
@@ -100,7 +103,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
             {
                 authModel = new AuthModel
                 {
-                    Authorised = _legacyAuthService.IsAuthorised(auth, siteId)
+                    Authorised = await _legacyAuthService.IsAuthorised(auth, siteId)
                 };
             }
 
@@ -130,7 +133,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
                     return null;
                 }
 
-                return await _cache.GetAsync<AuthModel>($"auth/{siteId}/{auth}");
+                return await _cache.GetAsync<AuthModel>(CacheKeyPrefix + "AUTH:" + $"auth/{siteId}/{auth}");
             }
             catch (Exception exception)
             {
