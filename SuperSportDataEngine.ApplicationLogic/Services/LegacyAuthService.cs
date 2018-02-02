@@ -8,6 +8,7 @@ using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
 using SuperSportDataEngine.ApplicationLogic.Entities.Legacy.Mappers;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using SuperSportDataEngine.Common.Logging;
@@ -69,10 +70,11 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             catch (Exception)
             {
                 var maxAttempts = int.Parse(ConfigurationManager.AppSettings["MaximumAuthorisationAttempts"]);
+                var time = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture);
                 if (authoriseAttempts > maxAttempts)
                 {
-                    await _loggingService.Error("AuthoriseAttemptFailure",
-                        "Request has failed authorisation. " + maxAttempts + " attempts exceeeded.");
+                    await _loggingService.Error("AuthoriseAttemptFailure." + time,
+                    "Request has failed authorisation. " + maxAttempts + " attempts exceeeded.");
 
                     return false;
                 }
