@@ -10,18 +10,22 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
+using SuperSportDataEngine.Common.Logging;
 
 namespace SuperSportDataEngine.ApplicationLogic.Services
 {
     public class LegacyAuthService : ILegacyAuthService
     {
+        private readonly ILoggingService _loggingService;
         private readonly IBaseEntityFrameworkRepository<LegacyZoneSite> _legacyZoneSiteRepository;
         private readonly IBaseEntityFrameworkRepository<LegacyAuthFeedConsumer> _legacyAuthFeedConsumerRepository;
 
         public LegacyAuthService(
+            ILoggingService loggingService,
             IBaseEntityFrameworkRepository<LegacyZoneSite> legacyZoneSiteRepository,
             IBaseEntityFrameworkRepository<LegacyAuthFeedConsumer> legacyAuthFeedConsumerRepository)
         {
+            _loggingService = loggingService;
             _legacyZoneSiteRepository = legacyZoneSiteRepository;
             _legacyAuthFeedConsumerRepository = legacyAuthFeedConsumerRepository;
         }
@@ -64,8 +68,14 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             }
             catch (Exception)
             {
-                if (authoriseAttempts == int.Parse(ConfigurationManager.AppSettings["MaximumAuthorisationAttempts"]))
+                var maxAttempts = int.Parse(ConfigurationManager.AppSettings["MaximumAuthorisationAttempts"]);
+                if (authoriseAttempts > maxAttempts)
+                {
+                    await _loggingService.Error("AuthoriseAttemptFailure",
+                        "Request has failed authorisation. " + maxAttempts + " attempts exceeeded.");
+
                     return false;
+                }
 
                 goto BeginAuthorise;
             }
