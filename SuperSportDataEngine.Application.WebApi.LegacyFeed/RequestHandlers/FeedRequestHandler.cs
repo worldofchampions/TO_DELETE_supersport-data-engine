@@ -1,4 +1,5 @@
 ﻿using System.Configuration;
+using System.Linq;
 using System.Web.Http;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
@@ -28,13 +29,14 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
         private IUnityContainer _container;
 
         private readonly int _authKeyCacheExpiryInMinutes;
-        private const string CacheKeyPrefix = "LegacyFeed:"; 
+        private const string CacheKeyPrefix = "LegacyFeed:";
+        private const string AuthKeyId = "auth";
 
         public FeedRequestHandler()
         {
             ResolveDependencies();
 
-            _authKeyCacheExpiryInMinutes = 
+            _authKeyCacheExpiryInMinutes =
                 int.Parse(ConfigurationManager.AppSettings["AuthKeyCacheExpiryInMinutes"]);
         }
 
@@ -92,14 +94,13 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
 
         private async Task<HttpResponseMessage> AuthorizeNewFeedRequest(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            var queryDictionary = HttpUtility.ParseQueryString(request.RequestUri.Query);
+            var siteId = GetSiteIdFromRequest(request);
 
-            int.TryParse(queryDictionary.Get("site"), out var siteId);
+            var auth = GetAuthFromRequest(request);
 
-            var auth = queryDictionary.Get("auth");
             var authModel = await GetAuthModelFromCache(siteId, auth);
-            
-            if (authModel == null)
+
+            if (authModel is null)
             {
                 authModel = new AuthModel
                 {
@@ -107,14 +108,36 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
                 };
             }
 
-            if (!authModel.Authorised)
+            if (authModel.Authorised)
             {
-                return GetUnauthorizedResponse();
+                PersistRequestToCache(siteId, auth, authModel);
+
+                return await base.SendAsync(request, cancellationToken);
             }
 
-            PersistRequestToCache(siteId, auth, authModel);
+            return GetUnauthorizedResponse();
+        }
 
-            return await base.SendAsync(request, cancellationToken);
+        private static int GetSiteIdFromRequest(HttpRequestMessage request)
+        {
+            var queryDictionary = HttpUtility.ParseQueryString(request.RequestUri.Query);
+
+            int.TryParse(queryDictionary.Get("site"), out var siteId);
+
+            return siteId;
+        }
+
+        private static string GetAuthFromRequest(HttpRequestMessage request)
+        {
+            var queryDictionary = HttpUtility.ParseQueryString(request.RequestUri.Query);
+
+            var auth = queryDictionary.Get(AuthKeyId);
+
+            if (!string.IsNullOrWhiteSpace(auth)) return auth;
+
+            auth = request.Headers.GetValues(AuthKeyId).FirstOrDefault();
+
+            return auth;
         }
 
         private static HttpResponseMessage GetUnauthorizedResponse()
