@@ -26,6 +26,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
         private IUnityContainer _childContainer;
         private IRecurringJobManager _recurringJobManager;
         private ILoggingService _logger;
+        private IBaseEntityFrameworkRepository<RugbySeason> _rugbySeasonsRepository;
 
         public FixturesManagerJob(
             IRecurringJobManager recurringJobManager,
@@ -51,6 +52,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
         {
             _logger = _childContainer.Resolve<ILoggingService>();
             _recurringJobManager = _childContainer.Resolve<IRecurringJobManager>();
+            _rugbySeasonsRepository = _childContainer.Resolve<IBaseEntityFrameworkRepository<RugbySeason>>();
         }
 
         private void CreateNewContainer()
@@ -110,13 +112,8 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
 
         private async Task DeleteChildJobsForInactiveAndEndedTournaments()
         {
-            var endedTournaments =
-                await _childContainer.Resolve<IRugbyService>().GetEndedTournaments();
-
             var inactiveTournaments =
                 await _childContainer.Resolve<IRugbyService>().GetInactiveTournaments();
-
-            await DeleteJobsForFetchingFixturesForTournaments(endedTournaments);
 
             var rugbyTournaments = inactiveTournaments as IList<RugbyTournament> ?? inactiveTournaments.ToList();
             await DeleteJobsForFetchingFixturesForTournaments(rugbyTournaments);
@@ -130,7 +127,9 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
 
             foreach (var tournament in inactiveTournaments)
             {
-                var seasons = (await schedulerTrackingRugbyTournaments.AllAsync()).Where(t => t.TournamentId == tournament.Id);
+                var seasons = (await schedulerTrackingRugbyTournaments.AllAsync()).Where(t => 
+                    t.TournamentId == tournament.Id);
+
                 foreach (var tournamentSeason in seasons)
                 {
                     tournamentSeason.SchedulerStateForManagerJobPolling = SchedulerStateForManagerJobPolling.NotRunning;
