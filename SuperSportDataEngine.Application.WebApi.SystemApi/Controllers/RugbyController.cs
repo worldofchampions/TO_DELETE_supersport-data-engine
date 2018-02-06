@@ -9,17 +9,30 @@ using System.Threading.Tasks;
 using System.Web.Http;
 
 namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
-{
+{   
+    /// <summary>
+    /// Rugby Controller to manage rugby related data
+    /// </summary>
     public class RugbyController : ApiController
     {
         IRugbyCmsService _rugbyService;
 
+        /// <summary>
+        /// Rugby Constructor
+        /// </summary>
+        /// <param name="rugbyService"></param>
         public RugbyController(IRugbyCmsService rugbyService)
         {
             _rugbyService = rugbyService;
         }
 
-        [Route("tournaments")]
+        /// <summary>
+        /// Get paginated list of rugby tournaments
+        /// </summary>
+        /// <param name="pageIndex"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        [ActionName("tournaments")]
         [HttpGet]
         public async Task<HttpResponseMessage> GetAllTournaments(int pageIndex, int pageSize)
         {
@@ -28,7 +41,12 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
             return Request.CreateResponse(HttpStatusCode.OK, tournaments);
         }
 
-        [Route("tournaments")]
+        /// <summary>
+        /// Get single tournament by tournament Id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [ActionName("tournaments")]
         [HttpGet]
         public async Task<HttpResponseMessage> GetTournamentById(int id)
         {
@@ -45,7 +63,13 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
 
         }
 
-        [Route("tournaments")]
+        /// <summary>
+        /// Update tournament
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="rugbyTournamentEntity"></param>
+        /// <returns></returns>
+        [ActionName("tournaments")]
         [HttpPut]
         public async Task<HttpResponseMessage> UpdateTournament(int id, [FromBody] RugbyTournamentEntity rugbyTournamentEntity)
         {
