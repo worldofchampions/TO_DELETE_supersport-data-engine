@@ -173,7 +173,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
                     return null;
                 }
 
-                return await _cache.GetAsync<AuthModel>(CacheKeyPrefix + "AUTH:" + $"authToken/{siteId}/{auth}");
+                return await _cache.GetAsync<AuthModel>(CacheKeyPrefix + "AUTH:" + $"auth/{siteId}/{auth}");
             }
             catch (Exception exception)
             {
@@ -187,7 +187,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
         {
             try
             {
-                _cache.Add(CacheKeyPrefix + "AUTH:" + $"authToken/{siteId}/{auth}", authModel, TimeSpan.FromMinutes(_authKeyCacheExpiryInMinutes));
+                _cache.Add(CacheKeyPrefix + "AUTH:" + $"auth/{siteId}/{auth}", authModel, TimeSpan.FromMinutes(_authKeyCacheExpiryInMinutes));
             }
             catch (Exception exception)
             {
@@ -240,7 +240,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
 
         private static bool IsAuthRequest(HttpRequestMessage message)
         {
-            const string searchTextLowercase = "/authToken/";
+            const string searchTextLowercase = "/auth/";
 
             var requestUrlLowercase = message.RequestUri.ToString().ToLower();
 
