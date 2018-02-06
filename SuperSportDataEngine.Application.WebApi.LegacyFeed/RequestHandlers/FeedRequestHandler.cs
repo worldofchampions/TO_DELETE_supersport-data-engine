@@ -96,7 +96,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
         {
             int siteId = GetSiteIdFromRequest(request);
 
-            string auth = GetAuthValueFromRequest(request);
+            string auth = GetAuthTokenFromRequest(request);
 
             if (IsAuthTokenValid(auth))
             {
@@ -144,7 +144,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
             return siteId;
         }
 
-        private static string GetAuthValueFromRequest(HttpRequestMessage request)
+        private static string GetAuthTokenFromRequest(HttpRequestMessage request)
         {
             var queryDictionary = HttpUtility.ParseQueryString(request.RequestUri.Query);
 
