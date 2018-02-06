@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity.Migrations;
 using System.Linq;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
@@ -11,22 +12,30 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
     {
         public static void Seed(PublicSportDataContext context)
         {
-            var enabledTournaments = GetSeedingEnabledTournaments();
-
-            foreach (var tournament in enabledTournaments)
+            try
             {
-                var dbTournament = context.RugbyTournaments.FirstOrDefault(
-                    t => t.ProviderTournamentId == tournament.ProviderTournamentId
-                         && t.DataProvider == DataProvider.StatsProzone);
+                var enabledTournaments = GetSeedingEnabledTournaments();
 
-                if (dbTournament == null) continue;
+                foreach (var tournament in enabledTournaments)
+                {
+                    var dbTournament = context.RugbyTournaments.FirstOrDefault(
+                        t => t.ProviderTournamentId == tournament.ProviderTournamentId
+                             && t.DataProvider == DataProvider.StatsProzone);
 
-                dbTournament.IsEnabled = true;
+                    if (dbTournament == null) continue;
 
-                context.RugbyTournaments.AddOrUpdate(dbTournament);
+                    dbTournament.IsEnabled = true;
+
+                    context.RugbyTournaments.AddOrUpdate(dbTournament);
+                }
+
+                context.SaveChanges();
             }
-
-            context.SaveChanges();
+            catch (Exception exception)
+            {
+                //TODO: Add logging 
+                Console.WriteLine(exception);
+            }
         }
 
         private static IEnumerable<RugbyTournament> GetSeedingEnabledTournaments()

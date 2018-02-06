@@ -64,7 +64,6 @@
             {
                 // TODO: Add logging.
                 Console.WriteLine(exception);
-                return;
             }
         }
     }
