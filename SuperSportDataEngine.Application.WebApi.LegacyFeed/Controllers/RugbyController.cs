@@ -48,22 +48,22 @@
         }
 
         [Route("{category}/try-scorers")]
-        [ResponseType(typeof(List<Player>))]
+        [ResponseType(typeof(List<RugbyPointsScorerModel>))]
         public async Task<IHttpActionResult> GetTournamentTryScorers(string category)
         {
             const string cachePrefix = "TOURNAMENT:";
             var cacheKey = $"{cachePrefix}rugby/{category}try-scores";
 
-            var players = await GetFromCacheAsync<IEnumerable<Player>>(cacheKey);
+            var players = await GetFromCacheAsync<IEnumerable<RugbyPointsScorerModel>>(cacheKey);
 
             if (players != null) return Ok(players.ToList());
 
             players = (await _rugbyService.GetTournamentTryScorers(category))
-                .Select(Mapper.Map<Player>).ToList();
+                .Select(Mapper.Map<RugbyPointsScorerModel>).ToList();
 
-            if (!players.Any()) return Ok(new List<Player>());
+            if (!players.Any()) return Ok(new List<RugbyPointsScorerModel>());
 
-            var cacheData = (IList<Player>)players;
+            var cacheData = (IList<RugbyPointsScorerModel>)players;
 
             PersistToCache(cacheKey, cacheData);
 

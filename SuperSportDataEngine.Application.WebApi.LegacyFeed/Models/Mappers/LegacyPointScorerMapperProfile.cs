@@ -5,9 +5,9 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
     using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
 
-    public class LegacyRugbyPointScorerMapperProfile : Profile
+    public class LegacyPointScorerMapperProfile : Profile
     {
-        public LegacyRugbyPointScorerMapperProfile()
+        public LegacyPointScorerMapperProfile()
         {
             CreateMap<RugbyPlayerStatistics, RugbyPointsScorerModel>()
 
@@ -30,7 +30,15 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
 
                 .ForMember(dest => dest.TeamId, exp => exp.MapFrom(src => src.RugbyTeam.LegacyTeamId))
 
-                .ForMember(dest => dest.TeamName, exp => exp.MapFrom(src => src.RugbyTeam.NameCmsOverride))
+                .ForMember(dest => dest.TeamName, exp => exp.MapFrom(src => src.RugbyTeam.Name))
+
+                .ForMember(dest => dest.Name, exp => exp.MapFrom(src => src.RugbyPlayer.FirstName))
+
+                .ForMember(dest => dest.Surname, exp => exp.MapFrom(src => src.RugbyPlayer.LastName))
+
+                .ForMember(dest => dest.DisplayName, exp => exp.MapFrom(src => src.RugbyPlayer.FullName))
+
+                .ForMember(dest => dest.PersonId, exp => exp.MapFrom(src => src.RugbyPlayer.LegacyPlayerId))
 
                 .ForAllOtherMembers(dest => dest.Ignore());
         }

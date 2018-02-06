@@ -27,8 +27,8 @@
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> _schedulerTrackingRugbyTournamentRepository;
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> _schedulerTrackingRugbySeasonRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyFixture> _rugbyFixturesRepository;
+        private readonly IBaseEntityFrameworkRepository<RugbyPlayerStatistics> _rugbyPlayerStatisticsRepository;
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> _schedulerTrackingRugbyFixtureRepository;
-        private readonly IBaseEntityFrameworkRepository<RugbyPlayer> _rugbyPlayerRepository;
 
         private readonly ILoggingService _logger;
 
@@ -43,13 +43,12 @@
             IBaseEntityFrameworkRepository<RugbySeason> rugbySeasonRepository,
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> schedulerTrackingRugbySeasonRepository,
             IBaseEntityFrameworkRepository<RugbyFixture> rugbyFixturesRepository,
+            IBaseEntityFrameworkRepository<RugbyPlayerStatistics> rugbyPlayerStatisticsRepository,
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> schedulerTrackingRugbyTournamentRepository,
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> schedulerTrackingRugbyFixtureRepository,
-            IBaseEntityFrameworkRepository<RugbyPlayer> rugbyPlayerRepository,
             ILoggingService logger)
         {
             _logger = logger;
-            _rugbyPlayerRepository = rugbyPlayerRepository;
             _rugbyMatchEventsRepository = rugbyMatchEventsRepository;
             _rugbyMatchStatisticsRepository = rugbyMatchStatisticsRepository;
             _rugbyPlayerLineupsRepository = rugbyPlayerLineupsRepository;
@@ -60,6 +59,7 @@
             _rugbySeasonRepository = rugbySeasonRepository;
             _schedulerTrackingRugbySeasonRepository = schedulerTrackingRugbySeasonRepository;
             _rugbyFixturesRepository = rugbyFixturesRepository;
+            _rugbyPlayerStatisticsRepository = rugbyPlayerStatisticsRepository;
             _schedulerTrackingRugbyFixtureRepository = schedulerTrackingRugbyFixtureRepository;
             _schedulerTrackingRugbyTournamentRepository = schedulerTrackingRugbyTournamentRepository;
         }
@@ -296,20 +296,38 @@
 
         public async Task<IEnumerable<RugbyTournament>> GetTournamentsForJustEndedFixtures()
         {
-            const int totalGameTimeEstimateInMinutes = 95;
-            var utcNowDateTime = DateTimeOffset.UtcNow.DateTime;
-
-            var tournamentIds = (await Task.FromResult(_rugbyFixturesRepository.Where(
+            var rugbyFixtures =
+                (await Task.FromResult(_rugbyFixturesRepository.Where(
                     x => x.IsDisabledInbound == false &&
                          x.RugbyFixtureStatus == RugbyFixtureStatus.Result &&
                          x.RugbyTournament.IsEnabled &&
-                         x.StartDateTime.Date == utcNowDateTime.Date &&
-                         utcNowDateTime > x.StartDateTime.DateTime + TimeSpan.FromMinutes(totalGameTimeEstimateInMinutes))
-                .GroupBy(f => f.RugbyTournament.Id)
-                .Select(x => x.Key))).ToList();
+                         x.RugbyTournament.IsEnabled)))
+                .ToList();
 
-            return _rugbyTournamentRepository.Where(t => tournamentIds.Contains(t.Id) && t.IsEnabled);
+            var rugbyTournaments = new List<RugbyTournament>();
+
+            foreach (var fixture in rugbyFixtures)
+            {
+                var utcNowDateTime = DateTimeOffset.UtcNow.DateTime;
+                var isPlayedToday = fixture.StartDateTime.Year == utcNowDateTime.Year &&
+                                    fixture.StartDateTime.Month == utcNowDateTime.Month &&
+                                    fixture.StartDateTime.Day == utcNowDateTime.Day;
+
+                if (!isPlayedToday) continue;
+
+                const int gameTimeEstimateInMinutes = 95;
+                var isMatchOver = utcNowDateTime >
+                                  fixture.StartDateTime.DateTime + TimeSpan.FromMinutes(gameTimeEstimateInMinutes);
+                if (!isMatchOver) continue;
+
+                if (rugbyTournaments.Any(t => t.Id == fixture.RugbyTournament.Id)) continue;
+
+                rugbyTournaments.Add(fixture.RugbyTournament);
+            }
+
+            return rugbyTournaments;
         }
+
         public async Task<IEnumerable<RugbyFixture>> GetTournamentResults(string tournamentSlug)
         {
             if (IsNationalTeamSlug(tournamentSlug))
@@ -634,18 +652,28 @@
             return await Task.FromResult(fixtures.ToList());
         }
 
-        public async Task<IEnumerable<RugbyPlayer>> GetTournamentTryScorers(string tournamentSlug)
+        public async Task<IEnumerable<RugbyPlayerStatistics>> GetTournamentTryScorers(string tournamentSlug)
         {
             var tournamentId = await GetTournamentId(tournamentSlug);
 
-            const int tryEventCode = 2;
+            var players = _rugbyPlayerStatisticsRepository.Where(
+                s => s.RugbyTournament.Id == tournamentId)
+                .OrderByDescending(s => s.TriesScored)
+                .Take(50);
 
-            var players = _rugbyMatchEventsRepository
-                .Where(matchEvent => matchEvent.RugbyFixture.RugbyTournament.Id == tournamentId
-                && matchEvent.RugbyFixture.RugbyTournament.IsEnabled
-                && matchEvent.RugbyEventType.EventCode == tryEventCode).Select(p => p.RugbyPlayer1);
+            var results = players.ToList();
 
-            var results = await Task.FromResult(players.ToList());
+            return results;
+        }
+
+        public async Task<IEnumerable<RugbyPlayerStatistics>> GetTournamentPointsScorers(string tournamentSlug)
+        {
+            var tournamentId = await GetTournamentId(tournamentSlug);
+
+            var players = _rugbyPlayerStatisticsRepository.Where(
+                s => s.RugbyTournament.Id == tournamentId);
+
+            var results = players.ToList();
 
             return results;
         }
