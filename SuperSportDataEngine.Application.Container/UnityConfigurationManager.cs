@@ -8,24 +8,26 @@ namespace SuperSportDataEngine.Application.Container
     using MongoDB.Driver;
     using NLog.Slack;
     using StackExchange.Redis;
-    using SuperSportDataEngine.Application.Container.Enums;
-    using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.DeprecatedFeed.Interfaces;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
-    using SuperSportDataEngine.ApplicationLogic.Services;
-    using SuperSportDataEngine.Common.Logging;
-    using SuperSportDataEngine.Gateway.Http.DeprecatedFeed.Services;
-    using SuperSportDataEngine.Gateway.Http.StatsProzone.Services;
-    using SuperSportDataEngine.Logging.NLog.Logging;
-    using SuperSportDataEngine.Repository.EntityFramework.Common.Repositories.Base;
-    using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
-    using SuperSportDataEngine.Repository.EntityFramework.SystemSportData.Context;
-    using SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories;
+    using Enums;
+    using WebApi.Common.Interfaces;
+    using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+    using ApplicationLogic.Boundaries.CmsLogic.Interfaces;
+    using ApplicationLogic.Boundaries.Gateway.Http.DeprecatedFeed.Interfaces;
+    using ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
+    using ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
+    using ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+    using ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
+    using ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
+    using ApplicationLogic.Services;
+    using ApplicationLogic.Services.Cms;
+    using Common.Logging;
+    using Gateway.Http.DeprecatedFeed.Services;
+    using Gateway.Http.StatsProzone.Services;
+    using Logging.NLog.Logging;
+    using Repository.EntityFramework.Common.Repositories.Base;
+    using Repository.EntityFramework.PublicSportData.Context;
+    using Repository.EntityFramework.SystemSportData.Context;
+    using Repository.MongoDb.PayloadData.Repositories;
     using System.Configuration;
     using System.Data.Entity;
     using System.Web.Configuration;
@@ -71,14 +73,20 @@ namespace SuperSportDataEngine.Application.Container
                 container.RegisterType<ILegacyAuthService, LegacyAuthService>(new HierarchicalLifetimeManager());
             }
 
+            if (applicationScope == ApplicationScope.WebApiSystemApi)
+            {
+                container.RegisterType<IRugbyCmsService, RugbyCmsService>(new HierarchicalLifetimeManager());
+            }
+
             if (applicationScope == ApplicationScope.WebApiLegacyFeed)
             {
-                container.RegisterType<IDeprecatedFeedIntegrationService, DeprecatedFeedIntegrationService>(new HierarchicalLifetimeManager());
+                container.RegisterType<IDeprecatedFeedIntegrationService, DeprecatedFeedIntegrationService>();
             }
         }
 
         private static void ApplyRegistrationsForGatewayHttpCommon(IUnityContainer container, ApplicationScope applicationScope)
         {
+            /*
             try
             {
                 //if (applicationScope == ApplicationScope.WebApiLegacyFeed || applicationScope == ApplicationScope.WebApiPublicApi)
@@ -97,7 +105,7 @@ namespace SuperSportDataEngine.Application.Container
                     "Message: \n" + exception.Message + 
                     "StackTrace: \n" + exception.StackTrace +
                     "Inner Exception \n" + exception.InnerException);
-            }
+            }*/
         }
 
         private static void ApplyRegistrationsForGatewayHttpDeprecatedFeed(IUnityContainer container, ApplicationScope applicationScope)
