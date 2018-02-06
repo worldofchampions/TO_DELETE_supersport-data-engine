@@ -16,7 +16,7 @@
         /// <summary> A provider driven value. </summary>
         public string Name { get; set; }
 
-        /// <summary> A provider driven value. </summary>
+        /// <summary> A CMS driven value to set whether the season is current. </summary>
         public bool IsCurrent { get; set; }
 
         /// <summary> A provider driven value. </summary>
@@ -30,6 +30,11 @@
 
         public DataProvider DataProvider { get; set; }
 
+        /// <summary> 
+        /// A provider driven value for the current round number for the season.
+        /// The exception for this being in a Sevens tournament,
+        /// the CurrentRoundNumber is CMS driven.
+        /// </summary>
         public int CurrentRoundNumber { get; set; }
 
         public virtual RugbyTournament RugbyTournament { get; set; }

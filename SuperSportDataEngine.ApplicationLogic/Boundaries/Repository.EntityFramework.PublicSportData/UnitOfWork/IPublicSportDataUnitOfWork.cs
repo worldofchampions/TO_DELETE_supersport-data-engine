@@ -1,10 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
 
 namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork
 {
-    public interface IPublicSportDataUnitOfWork
+    public interface IPublicSportDataUnitOfWork : IDisposable
     {
         IBaseEntityFrameworkRepository<RugbyCommentary> RugbyCommentaries { get; }
         IBaseEntityFrameworkRepository<RugbyEventType> RugbyEventTypes { get; }

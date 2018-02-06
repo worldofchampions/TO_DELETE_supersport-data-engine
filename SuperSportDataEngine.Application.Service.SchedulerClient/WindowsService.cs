@@ -1,4 +1,5 @@
-﻿using SuperSportDataEngine.Common.Logging;
+﻿using System.Timers;
+using SuperSportDataEngine.Common.Logging;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient
 {
@@ -17,19 +18,18 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
 
     internal class WindowsService : IWindowsServiceContract
     {
-        private readonly UnityContainer _container;
         private readonly FixedScheduledJob _fixedManagerJob;
         private readonly MotorFixedScheduledJob _motorFixedScheduledJob;
         private readonly ManagerJob _jobManager;
-        private ILoggingService _logger;
+        private readonly ILoggingService _logger;
+        private System.Timers.Timer _timer;
 
-        public WindowsService(UnityContainer container)
+        public WindowsService(IUnityContainer container)
         {
-            _container = container;
             _logger = container.Resolve<ILoggingService>();
 
-            _fixedManagerJob = new FixedScheduledJob(_container.CreateChildContainer());
-            _motorFixedScheduledJob = new MotorFixedScheduledJob(_container.CreateChildContainer());
+            _fixedManagerJob = new FixedScheduledJob(container.CreateChildContainer());
+            _motorFixedScheduledJob = new MotorFixedScheduledJob(container.CreateChildContainer());
             _jobManager = new ManagerJob();
         }
 
@@ -53,6 +53,10 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
             {
                 JobStorage.Current = HangfireConfiguration.JobStorage;
 
+#if (!DEBUG)
+                ConfigureTimer();
+#endif
+
                 while (true)
                 {
                     try
@@ -70,9 +74,54 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
             }
         }
 
+        private void ConfigureTimer()
+        {
+            _timer = new System.Timers.Timer
+            {
+                AutoReset = false,
+                Interval = TimeSpan.FromMinutes(20).TotalMilliseconds
+            };
+
+            _timer.Elapsed += LogProcessingJobsTakingTooLong;
+            _timer.Start();
+        }
+
+        private void LogProcessingJobsTakingTooLong(object o, EventArgs args)
+        {
+            // This will only run if DEBUG is not defined.
+            // Won't run for Debug builds (development)
+            // Runs on QA, Staging and Production.
+#if (!DEBUG)
+            var monitorApi = JobStorage.Current.GetMonitoringApi();
+            var processingJobs = monitorApi.ProcessingJobs(0, (int) monitorApi.ProcessingCount());
+
+            foreach (var job in processingJobs)
+            {
+                if (job.Value.StartedAt == null)
+                    continue;
+
+                var timespanDuration = DateTime.UtcNow - job.Value.StartedAt;
+                var jobName = monitorApi.JobDetails(job.Key).Properties["RecurringJobId"];
+                
+                var key = "HangfireJobProcessingTime." + jobName;
+
+                var warningThresholdInMinutes =
+                    int.Parse(ConfigurationManager.AppSettings["WarningThresholdForJobsTakingTooLongInMinutes"]);
+                var errorThresholdInMinutes =
+                    int.Parse(ConfigurationManager.AppSettings["ErrorThresholdForJobsTakingTooLongInMinutes"]);
+
+                if (timespanDuration > TimeSpan.FromMinutes(errorThresholdInMinutes))
+                    _logger.Error(key, jobName + "is taking too long to process. Error threshold is " + errorThresholdInMinutes + "minutes. Taking " + timespanDuration.Value.TotalMinutes + " minutes.");
+                else if (timespanDuration > TimeSpan.FromMinutes(warningThresholdInMinutes))
+                    _logger.Warn(key, jobName + "is taking too long to process. Warning threshold is " + warningThresholdInMinutes + "minutes. Taking " + timespanDuration.Value.TotalMinutes + " minutes.");
+            }
+
+            _timer.Start();
+#endif
+        }
+
         public void StopService()
         {
-            // TODO: Implement resource disposal/clean-up here.
         }
     }
 }

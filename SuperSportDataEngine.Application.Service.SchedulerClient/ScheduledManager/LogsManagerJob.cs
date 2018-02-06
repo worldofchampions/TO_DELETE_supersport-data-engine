@@ -1,4 +1,4 @@
-﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
+﻿using SuperSportDataEngine.Application.Container.Enums;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledManager
 {
@@ -8,7 +8,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
     using Container;
     using Common.Hangfire.Configuration;
     using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-    using ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
     using ApplicationLogic.Services;
     using System;
     using System.Configuration;
@@ -47,44 +46,30 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
             _childContainer?.Dispose();
 
             _childContainer = new UnityContainer();
-            UnityConfigurationManager.RegisterTypes(_childContainer, Container.Enums.ApplicationScope.ServiceSchedulerClient);
+            UnityConfigurationManager.RegisterTypes(_childContainer, ApplicationScope.ServiceSchedulerClient);
+            UnityConfigurationManager.RegisterApiGlobalTypes(_childContainer, ApplicationScope.ServiceSchedulerClient);
         }
 
-        public async Task<int> CreateChildJobsForFetchingLogs()
+        private async Task CreateChildJobsForFetchingLogs()
         {
-            using (var unitOfWork = _childContainer.Resolve<ISystemSportDataUnitOfWork>())
+            var today = DateTime.UtcNow.Date;
+            var now = DateTime.UtcNow;
+
+            var todayTournaments =
+                (await _childContainer.Resolve<IRugbyService>().GetRecentResultsFixtures(30))
+                .Where(f => f.StartDateTime.Date == today && f.StartDateTime > now - TimeSpan.FromHours(3))
+                .Select(f => f.RugbyTournament)
+                .ToList();
+
+            foreach (var tournament in todayTournaments)
             {
-                var activeTournaments = await _childContainer.Resolve<IRugbyService>().GetActiveTournamentsForMatchesInResultsState();
+                var seasonId = await _childContainer.Resolve<IRugbyService>().GetCurrentProviderSeasonIdForTournament(CancellationToken.None, tournament.Id);
+                var jobId = ConfigurationManager.AppSettings["ScheduleManagerJob_Logs_CurrentTournaments_JobIdPrefix"] + tournament.Name;
+                var cronExpression =
+                    ConfigurationManager.AppSettings[
+                        "ScheduleManagerJob_Logs_CurrentTournaments_JobCronExpression_OneMinute"];
 
-                foreach (var tournament in activeTournaments)
-                {
-                    int seasonId = await _childContainer.Resolve<IRugbyService>().GetCurrentProviderSeasonIdForTournament(CancellationToken.None, tournament.Id);
-
-                    if (await _childContainer.Resolve<IRugbyService>().GetSchedulerStateForManagerJobPolling(tournament.Id) == SchedulerStateForManagerJobPolling.NotRunning)
-                    {
-                        var jobId = ConfigurationManager.AppSettings["ScheduleManagerJob_Logs_CurrentTournaments_JobIdPrefix"] + tournament.Name;
-                        var jobCronExpression = ConfigurationManager.AppSettings["ScheduleManagerJob_Logs_CurrentTournaments_JobCronExpression_OneMinute"];
-
-                        AddOrUpdateHangfireJob(tournament.ProviderTournamentId, seasonId, jobId, jobCronExpression);
-
-                        QueueJobForLowFrequencyPolling(tournament.Id, tournament.ProviderTournamentId, seasonId, jobId);
-
-                        var season =
-                            (await unitOfWork.SchedulerTrackingRugbySeasons.AllAsync())
-                            .FirstOrDefault(s =>
-                                s.RugbySeasonStatus == RugbySeasonStatus.InProgress &&
-                                s.TournamentId == tournament.Id &&
-                                s.SchedulerStateForManagerJobPolling == SchedulerStateForManagerJobPolling.NotRunning);
-
-                        if (season != null)
-                        {
-                            season.SchedulerStateForManagerJobPolling = SchedulerStateForManagerJobPolling.Running;
-                            unitOfWork.SchedulerTrackingRugbySeasons.Update(season);
-                        }
-                    }
-                }
-
-                return await unitOfWork.SaveChangesAsync();
+                AddOrUpdateHangfireJob(tournament.ProviderTournamentId, seasonId, jobId, cronExpression);
             }
         }
 
@@ -99,35 +84,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
                     TimeZone = TimeZoneInfo.Local,
                     QueueName = HangfireQueueConfiguration.HighPriority
                 });
-        }
-
-        private void QueueJobForLowFrequencyPolling(Guid tournamentId, int providerTournamentId, int seasonId, string jobId)
-        {
-            string highFreqExpiryFromConfig = ConfigurationManager.AppSettings["ScheduleManagerJob_Logs_CurrentTournaments_HighFrequencyPolling_ExpiryInMinutes"];
-
-            int udpateJobFrequencyOnThisMinute = int.Parse(highFreqExpiryFromConfig);
-
-            var timer = new System.Timers.Timer
-            {
-                AutoReset = false,
-                Interval = TimeSpan.FromMinutes(udpateJobFrequencyOnThisMinute).TotalMilliseconds
-            };
-
-            timer.Elapsed += delegate
-            {
-                var jobExpiryFromConfig = ConfigurationManager.AppSettings["ScheduleManagerJob_Logs_CurrentTournaments_LowFrequencyPolling_ExpiryInMinutes"];
-                var jobCronExpression = ConfigurationManager.AppSettings["ScheduleManagerJob_Logs_CurrentTournaments_LowFrequencyPolling_CronExpression"];
-
-                var deleteJobOnThisMinute = int.Parse(jobExpiryFromConfig);
-
-                AddOrUpdateHangfireJob(providerTournamentId, seasonId, jobId, jobCronExpression);
-
-                LogsJobCleanupManager.QueueJobForDeletion(tournamentId, jobId, deleteJobOnThisMinute);
-
-                timer.Stop();
-            };
-
-            timer.Start();
         }
     }
 }

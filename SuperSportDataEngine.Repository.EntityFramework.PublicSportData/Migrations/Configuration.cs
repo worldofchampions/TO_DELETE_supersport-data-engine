@@ -1,7 +1,7 @@
 namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations
 {
-    using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
-    using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed;
+    using Context;
+    using Seed;
     using System.Data.Entity.Migrations;
 
     internal sealed class Configuration : DbMigrationsConfiguration<PublicSportDataContext>
@@ -13,9 +13,24 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
 
         protected override void Seed(PublicSportDataContext context)
         {
+            SeedRugbyTournamentSlugs.Seed(context);
+            SeedRugbyTournamentNames.Seed(context);
+            SeedRugbyEnabledTournaments.Seed(context);
+            SeedRugbyHasLogsTournaments.Seed(context);
+            SeedRugbyLiveScoredTournaments.Seed(context);
+            SeedRugbyTeamNames.Seed(context);
             SeedRugbyEventTypes.Seed(context);
             SeedRugbyEventTypeProviderMappings.Seed(context);
-            SeedTeams.Seed(context);
+            SeedRugbyTeams.Seed(context);
+            SeedRugbyLogGroupsForTournamentSevens2017.Seed(context);
+            SeedRugbyLogGroupsForTournamentSuperRugby2017.Seed(context);
+            SeedRugbyLogGroupsForTournamentSuperRugby2018.Seed(context);
+            SeedRugbyLogGroupsForChampionsCup2018.Seed(context);
+            SeedRugbyLogGroupsForPro142018.Seed(context);
+            SeedRugbyGroupsForMitreCup2017.Seed(context);
+            SeedRugbyLogGroupsForSydneySevens2018.Seed(context);
+            SeedRugbyLogGroupsForHamiltonSevens2018.Seed(context);
+            SeedGroupNamesForHamiltonSevens.Seed(context);
         }
     }
 }

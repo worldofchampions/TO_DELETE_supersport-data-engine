@@ -232,6 +232,18 @@
     <Compile Include="Migrations\201801050821442_Adding_CurrentRoundNumber_To_RugbySeason.Designer.cs">
       <DependentUpon>201801050821442_Adding_CurrentRoundNumber_To_RugbySeason.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201801100154222_Added_Slug_and_ProviderGroupName_to_RugbyLogGroups.cs" />
+    <Compile Include="Migrations\201801100154222_Added_Slug_and_ProviderGroupName_to_RugbyLogGroups.Designer.cs">
+      <DependentUpon>201801100154222_Added_Slug_and_ProviderGroupName_to_RugbyLogGroups.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201801111001084_Added_IsCoreGroup_To_RugbyLogGroup.cs" />
+    <Compile Include="Migrations\201801111001084_Added_IsCoreGroup_To_RugbyLogGroup.Designer.cs">
+      <DependentUpon>201801111001084_Added_IsCoreGroup_To_RugbyLogGroup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201801291123262_RoundNumber_Added_To_Fixture.cs" />
+    <Compile Include="Migrations\201801291123262_RoundNumber_Added_To_Fixture.Designer.cs">
+      <DependentUpon>201801291123262_RoundNumber_Added_To_Fixture.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201801040932234_Addding_MotorDrivers_Table.cs" />
     <Compile Include="Migrations\201801040932234_Addding_MotorDrivers_Table.Designer.cs">
       <DependentUpon>201801040932234_Addding_MotorDrivers_Table.cs</DependentUpon>
@@ -261,9 +273,24 @@
       <DependentUpon>201801041446500_Adding_MotorResults_Table.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
+    <Compile Include="Migrations\Seed\SeedGroupNamesForHamiltonSevens.cs" />
+    <Compile Include="Migrations\Seed\SeedRugbyTeamNames.cs" />
+    <Compile Include="Migrations\Seed\SeedRugbyEnabledTournaments.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypeProviderMappings.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypes.cs" />
-    <Compile Include="Migrations\Seed\SeedTeams.cs" />
+    <Compile Include="Migrations\Seed\SeedRugbyGroupsForMitreCup2017.cs" />
+    <Compile Include="Migrations\Seed\SeedRugbyLogGroupsForChampionsCup2018.cs" />
+    <Compile Include="Migrations\Seed\SeedRugbyLogGroupsForPro142018.cs" />
+    <Compile Include="Migrations\Seed\SeedRugbyLogGroupsForHamiltonSevens2018.cs" />
+    <Compile Include="Migrations\Seed\SeedRugbyLogGroupsForSydneySevens2018.cs" />
+    <Compile Include="Migrations\Seed\SeedRugbyLogGroupsForTournamentSevens2017.cs" />
+    <Compile Include="Migrations\Seed\SeedRugbyHasLogsTournaments.cs" />
+    <Compile Include="Migrations\Seed\SeedRugbyLiveScoredTournaments.cs" />
+    <Compile Include="Migrations\Seed\SeedRugbyLogGroupsForTournamentSuperRugby2017.cs" />
+    <Compile Include="Migrations\Seed\SeedRugbyLogGroupsForTournamentSuperRugby2018.cs" />
+    <Compile Include="Migrations\Seed\SeedRugbyTeams.cs" />
+    <Compile Include="Migrations\Seed\SeedRugbyTournamentNames.cs" />
+    <Compile Include="Migrations\Seed\SeedRugbyTournamentSlugs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UnitOfWork\PublicSportDataUnitOfWork.cs" />
   </ItemGroup>
@@ -392,6 +419,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201712151055520_Added_IsDisabledInbound_To_RugbyFixture.resx">
       <DependentUpon>201712151055520_Added_IsDisabledInbound_To_RugbyFixture.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801050821442_Adding_CurrentRoundNumber_To_RugbySeason.resx">
+      <DependentUpon>201801050821442_Adding_CurrentRoundNumber_To_RugbySeason.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801100154222_Added_Slug_and_ProviderGroupName_to_RugbyLogGroups.resx">
+      <DependentUpon>201801100154222_Added_Slug_and_ProviderGroupName_to_RugbyLogGroups.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801111001084_Added_IsCoreGroup_To_RugbyLogGroup.resx">
+      <DependentUpon>201801111001084_Added_IsCoreGroup_To_RugbyLogGroup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801291123262_RoundNumber_Added_To_Fixture.resx">
+      <DependentUpon>201801291123262_RoundNumber_Added_To_Fixture.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

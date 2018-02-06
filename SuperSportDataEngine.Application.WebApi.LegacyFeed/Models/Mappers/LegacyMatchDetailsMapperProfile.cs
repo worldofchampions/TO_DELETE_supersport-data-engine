@@ -4,7 +4,6 @@
     using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
     using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
-    using System.Linq;
 
     public class LegacyMatchDetailsMapperProfile : Profile
     {
@@ -17,12 +16,13 @@
 
                 .ForMember(dest => dest.MatchStatisticsTeamA, exp => exp.MapFrom(src => src.TeamAMatchStatistics))
 
-                .ForMember(dest => dest.TeamAName, exp => exp.MapFrom(src => src.RugbyFixture.TeamA.Name))
+                .ForMember(dest => dest.TeamAName, exp => exp.MapFrom(
+                    src => src.RugbyFixture.TeamA.NameCmsOverride ?? src.RugbyFixture.TeamA.Name))
 
-                .ForMember(dest => dest.TeamAShortName, src =>src.UseValue(LegacyFeedConstants.EmptyTeamName))
+                .ForMember(dest => dest.TeamAShortName, src => src.UseValue(LegacyFeedConstants.EmptyTeamName))
 
                 .ForMember(dest => dest.TeamAScore, exp => exp.MapFrom(src => src.RugbyFixture.TeamAScore))
-                
+
                 .ForMember(dest => dest.TeamAId, exp => exp.MapFrom(src => src.RugbyFixture.TeamA.LegacyTeamId))
 
                 .ForMember(dest => dest.TeamATeamsheet, exp => exp.MapFrom(src => src.TeamALineup))
@@ -38,7 +38,8 @@
 
                 .ForMember(dest => dest.MatchStatisticsTeamB, exp => exp.MapFrom(src => src.TeamBMatchStatistics))
 
-                .ForMember(dest => dest.TeamBName, exp => exp.MapFrom(src => src.RugbyFixture.TeamB.Name))
+                .ForMember(dest => dest.TeamBName, exp => exp.MapFrom(
+                    src => src.RugbyFixture.TeamB.NameCmsOverride ?? src.RugbyFixture.TeamB.Name))
 
                  .ForMember(dest => dest.TeamBShortName, src => src.UseValue(LegacyFeedConstants.EmptyTeamName))
 
@@ -91,7 +92,7 @@
 
                 .ForMember(dest => dest.Officials, src => src.UseValue(LegacyFeedConstants.EmptyMatchOfficialsList))
 
-                .ForMember(dest => dest.isScoredLive, exp => exp.MapFrom(src => src.RugbyFixture.RugbyTournament.IsLiveScored))
+                .ForMember(dest => dest.isScoredLive, exp => exp.MapFrom(src => src.RugbyFixture.IsLiveScored))
 
                 .ForMember(dest => dest.Videos, src => src.UseValue(LegacyFeedConstants.EmptyVideosList))
 

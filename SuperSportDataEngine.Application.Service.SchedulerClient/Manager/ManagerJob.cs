@@ -1,3 +1,4 @@
+﻿using SuperSportDataEngine.Application.Container.Enums;
 ﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
@@ -29,7 +30,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
         private MotorDriversManagerJob _driversManagerJob;
         private IMotorIngestWorkerService _motorIngestWorkerService;
 
-
         public ManagerJob()
         {
 
@@ -39,12 +39,12 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
 
         private void ConfigureDepenencies()
         {
-            if (_container != null)
-                _container.Dispose();
+            _container?.Dispose();
 
             _container = new UnityContainer();
 
             UnityConfigurationManager.RegisterTypes(_container, Container.Enums.ApplicationScope.ServiceSchedulerClient);
+            UnityConfigurationManager.RegisterApiGlobalTypes(_container, ApplicationScope.ServiceSchedulerClient);
 
             _logger = _container.Resolve<ILoggingService>();
             _recurringJobManager = _container.Resolve<IRecurringJobManager>();
@@ -69,12 +69,12 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
             _logsManagerJob =
                 new LogsManagerJob(
                     _recurringJobManager,
-                    new UnityContainer());
+                    _container);
 
             _driversManagerJob = 
                 new MotorDriversManagerJob(
-                _recurringJobManager, 
-                new UnityContainer());
+                    _recurringJobManager, 
+                    new UnityContainer());
         }
 
         private void ConfigureTimer()
@@ -85,7 +85,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
                 Interval = TimeSpan.FromMinutes(1).TotalMilliseconds
             };
 
-            _timer.Elapsed += new ElapsedEventHandler(UpdateManagerJobs);
+            _timer.Elapsed += UpdateManagerJobs;
             _timer.Start();
         }
 

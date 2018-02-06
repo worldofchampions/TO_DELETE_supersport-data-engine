@@ -1,31 +1,30 @@
-﻿using System.Collections.Generic;
-using SuperSportDataEngine.Common.Extentions;
-
-namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
+﻿namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 {
+    using Newtonsoft.Json;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyEntities;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyEventsFlow;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyFixtures;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyFlatLogs;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyGroupedLogs;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyMatchStats;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.ResponseModels;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+    using SuperSportDataEngine.ApplicationLogic.Constants.Providers;
+    using SuperSportDataEngine.Common.Extentions;
+    using SuperSportDataEngine.Common.Logging;
+    using System;
+    using System.Configuration;
     using System.IO;
     using System.Net;
     using System.Text;
-    using System;
-    using Newtonsoft.Json;
-    using ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.ResponseModels;
-    using ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
     using System.Threading;
-    using ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyFixtures;
-    using ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyEntities;
-    using ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-    using ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models;
     using System.Threading.Tasks;
-    using ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyFlatLogs;
-    using ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyGroupedLogs;
-    using ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyMatchStats;
-    using ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyEventsFlow;
-    using SuperSportDataEngine.Common.Logging;
-    using System.Configuration;
 
     public class StatsProzoneRugbyIngestService : IStatsProzoneRugbyIngestService
     {
-        readonly ILoggingService _logger;
+        private readonly ILoggingService _logger;
         private readonly int _maximumTimeForRequestWithResponseInMilliseconds;
         private readonly int _maximumTimeForResponseInMilliseconds;
 
@@ -100,7 +99,7 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             }
             catch (Exception e)
             {
-                await _logger.Debug(System.Reflection.MethodBase.GetCurrentMethod().Name, e.StackTrace);   
+                await _logger.Debug(System.Reflection.MethodBase.GetCurrentMethod().Name, e.StackTrace);
                 return null;
             }
         }
@@ -218,7 +217,7 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
         {
             WebRequest request = GetWebRequestForFixturesEndpoint(tournamentId, seasonId, null);
 
-            var responseData = new RugbyFixturesResponse() {RequestTime = DateTime.Now};
+            var responseData = new RugbyFixturesResponse() { RequestTime = DateTime.Now };
 
             using (WebResponse response = await request.GetResponseAsync(_maximumTimeForResponseInMilliseconds, _logger))
             {
@@ -258,8 +257,8 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
         private async Task<RugbyFlatLogsResponse> RugbyFlatLogsResponse(int competitionId, int seasonId)
         {
             WebRequest request = GetWebRequestForLogsEndpoint(competitionId, seasonId, null);
-            
-            var logsResponse = new RugbyFlatLogsResponse() {RequestTime = DateTime.Now};
+
+            var logsResponse = new RugbyFlatLogsResponse() { RequestTime = DateTime.Now };
 
             using (WebResponse response = await request.GetResponseAsync(_maximumTimeForResponseInMilliseconds, _logger))
             {
@@ -283,19 +282,12 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
         public async Task<RugbyGroupedLogsResponse> IngestGroupedLogsForTournament(int competitionId, int seasonId, int numberOfRounds)
         {
-            // Ronald: Going to hack the response model returned to the ingest service for the Sevens tournament.
-            // We need to return a list of ladders, such that each item (list of ladder positions), have a group id
-            // set to the round number.
-            // The reasoning behind this is that each round for Sevens is played in a different location,
-            // With the same teams. So we group each log based on the round number.
-
-            // This is the competition id for Sevens
-            if (competitionId == 831)
+            if (competitionId == RugbyStatsProzoneConstants.ProviderTournamentIdPro14)
             {
-                return await GetSevensGroupedLogs(competitionId, seasonId, numberOfRounds);
+                return await GetPro14GroupedLogs(competitionId, seasonId, numberOfRounds);
             }
 
-            WebRequest request = GetWebRequestForLogsEndpoint(competitionId, seasonId, numberOfRounds);
+            WebRequest request = GetWebRequestForLogsEndpoint(competitionId, seasonId);
 
             var logsResponse = new RugbyGroupedLogsResponse() { RequestTime = DateTime.Now };
 
@@ -319,33 +311,24 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             }
         }
 
-        private async Task<RugbyGroupedLogsResponse> GetSevensGroupedLogs(int competitionId, int seasonId, int numberOfRounds)
+        private async Task<RugbyGroupedLogsResponse> GetPro14GroupedLogs(int competitionId, int seasonId, int numberOfRounds)
         {
             WebRequest request = GetWebRequestForLogsEndpoint(competitionId, seasonId, numberOfRounds);
 
-            var ladders = new List<List<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyGroupedLogs.Ladderposition>>();
+            var response = await GetSevensLogsResponse(request);
+            return response;
+        }
+
+        private async Task<RugbyGroupedLogsResponse> GetSevensGroupedLogs(int competitionId, int seasonId, int numberOfRounds)
+        {
+            WebRequest request = GetWebRequestForLogsEndpoint(competitionId, seasonId);
 
             var response = await GetSevensLogsResponse(request);
-            ladders.AddRange(response.RugbyGroupedLogs.ladders);
-
-            while (numberOfRounds > 1)
-            {
-                numberOfRounds--;
-                var req = GetWebRequestForLogsEndpoint(competitionId, seasonId, numberOfRounds);
-                var res = await GetSevensLogsResponse(req);
-
-                ladders.AddRange(res.RugbyGroupedLogs.ladders);
-            }
-
-            response.RugbyGroupedLogs.ladders = ladders;
-
             return response;
         }
 
         private async Task<RugbyGroupedLogsResponse> GetSevensLogsResponse(WebRequest request)
         {
-            var ladders = new List<List<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyGroupedLogs.Ladderposition>>();
-
             var logsResponse = new RugbyGroupedLogsResponse() { RequestTime = DateTime.Now };
 
             using (WebResponse response = await request.GetResponseAsync(_maximumTimeForResponseInMilliseconds, _logger))
@@ -358,16 +341,8 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
                     StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
                     string s = reader.ReadToEnd();
                     var groupedLogs = JsonConvert.DeserializeObject<RugbyGroupedLogs>(s);
-                    groupedLogs.ladderposition.ForEach((l) =>
-                    {
-                        l.group = groupedLogs.roundNumber;
-                    });
-
-                    ladders.Add(
-                        groupedLogs.ladderposition);
 
                     logsResponse.RugbyGroupedLogs = groupedLogs;
-                    logsResponse.RugbyGroupedLogs.ladders = ladders;
                     logsResponse.ResponseTime = DateTime.Now;
 
                     CheckIfRequestTakingTooLong(request, logsResponse);
@@ -422,7 +397,7 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
                 {
                     RequestTime = DateTime.Now
                 };
-            
+
             using (WebResponse response = await request.GetResponseAsync())
             {
                 if (response == null)
@@ -501,6 +476,21 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             }
         }
 
+        private static WebRequest GetWebRequestForLogsEndpoint(int competitionId, int seasonId)
+        {
+            var baseUrl = "http://rugbyunion-api.stats.com/api/RU/competitions/ladder/";
+
+            var request = WebRequest.Create(baseUrl + competitionId + "/" + seasonId);
+
+            request.Method = "GET";
+
+            request.Headers["Authorization"] = "Basic U3VwZXJTcG9ydF9NZWRpYTpTdTkzUjdyMFA1";
+
+            request.ContentType = "application/xml; charset=UTF-8";
+
+            return request;
+        }
+
         private static WebRequest GetWebRequestForLogsEndpoint(int competitionId, int seasonId, int? numberOfRounds)
         {
             var baseUrl = "http://rugbyunion-api.stats.com/api/RU/competitions/ladder/";
@@ -518,13 +508,14 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
         private void CheckIfRequestTakingTooLong(WebRequest request, dynamic o)
         {
-            var timeDifference = (o.ResponseTime - o.RequestTime);
-            var seconds = timeDifference.TotalSeconds;
+            TimeSpan timeDifference = (o.ResponseTime - o.RequestTime);
+            var milliseconds = timeDifference.TotalMilliseconds;
 
-            if (seconds > _maximumTimeForRequestWithResponseInMilliseconds)
+            if (milliseconds > _maximumTimeForRequestWithResponseInMilliseconds)
             {
-                _logger.Warn("HTTPRequestTooLong." + request.RequestUri, 
-                    "HTTP request taking too long. " + request.RequestUri + ". Taking " + seconds + " seconds.");
+                _logger.Warn($"HTTPRequestTooLong.{request.RequestUri}",
+                    $"HTTP request taking too long. {request.GetBaseUri()}. Warning level is {_maximumTimeForRequestWithResponseInMilliseconds / 1000.0} seconds; took " +
+                    milliseconds / 1000.0 + " seconds.");
             }
         }
     }

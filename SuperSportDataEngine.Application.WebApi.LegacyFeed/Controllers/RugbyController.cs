@@ -1,22 +1,21 @@
-﻿using System.Net;
-
-namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
+﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 {
     using AutoMapper;
-    using Common.Interfaces;
-    using Filters;
-    using Helpers.Extensions;
-    using Models.Mappers;
-    using Models.News;
-    using Models.Rugby;
-    using Models.Shared;
-    using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-    using ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
-    using ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-    using ApplicationLogic.Entities.Legacy;
+    using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Helpers.Extensions;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.News;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+    using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
     using SuperSportDataEngine.Common.Logging;
     using System;
     using System.Collections.Generic;
+    using System.Configuration;
     using System.Linq;
     using System.Threading.Tasks;
     using System.Web.Http;
@@ -53,7 +52,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet, HttpHead]
         [Route("matchdetails/{id:int}")]
         [ResponseType(typeof(RugbyMatchDetails))]
         [LogTimeFilter]
@@ -65,7 +64,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             var matchDetailsFromCache = await GetFromCacheAsync<RugbyMatchDetails>(cacheKey);
 
             var response = matchDetailsFromCache;
-            
+
             if (response != null)
                 return Ok(response);
 
@@ -111,7 +110,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         /// DO NOT REMOVE. THIS HAS TO BE HERE SO WE CAN REDIRECT REQUESTS TO OLD FEED.
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet, HttpHead]
         [Route("news")]
         [ResponseType(typeof(NewsModel))]
         public IHttpActionResult GetNews()
@@ -123,7 +122,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         /// Get News for Rugby
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet, HttpHead]
         [Route("live")]
         [ResponseType(typeof(Match))]
         public async Task<IHttpActionResult> GetTodayFixtures()
@@ -147,11 +146,70 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         }
 
         /// <summary>
+        /// Get Today fixtures for a tournament
+        /// </summary>
+        /// <param name="category"></param>
+        /// <returns></returns>
+        [HttpGet, HttpHead]
+        [Route("{category}/live")]
+        [ResponseType(typeof(List<Match>))]
+        public async Task<IHttpActionResult> GetTodayFixturesForTournament(string category)
+        {
+            const string cachePrefix = "LIVE:";
+            var cacheKey = $"{cachePrefix}rugby/{category}live";
+
+            var fixtures = await GetFromCacheAsync<IEnumerable<Match>>(cacheKey);
+
+            if (fixtures != null) return Ok(fixtures.ToList());
+
+            fixtures = (await _rugbyService.GetCurrentDayFixturesForTournament(category))
+                .Where(x => !x.IsDisabledOutbound)
+                .Select(Mapper.Map<Match>).ToList();
+
+            if (!fixtures.Any()) return ReplyWithGeneralResponseModel();
+
+            var cacheData = (IList<Match>)fixtures;
+
+            PersistToCache(cacheKey, cacheData);
+
+            return Ok(cacheData.ToList());
+        }
+
+        /// <summary>
+        /// Get Fixtures for Rugby (all tournaments)
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet, HttpHead]
+        [Route("fixtures")]
+        [ResponseType(typeof(List<Fixture>))]
+        public async Task<IHttpActionResult> GetFixtures()
+        {
+            const string cachePrefix = "FIXTURES:";
+            var cacheKey = cachePrefix + $"rugby/fixtures";
+
+            var fixtures = await GetFromCacheAsync<IEnumerable<Fixture>>(cacheKey);
+
+            if (fixtures != null)
+            {
+                return Ok(fixtures.ToList());
+            }
+
+            fixtures = (await _rugbyService.GetUpcomingFixtures())
+                .Select(Mapper.Map<Fixture>);
+
+            var cacheData = fixtures as IList<Fixture> ?? fixtures.ToList();
+
+            PersistToCache(cacheKey, cacheData);
+
+            return Ok(cacheData);
+        }
+
+        /// <summary>
         /// Get Fixtures for Tournament
         /// </summary>
         /// <param name="category"></param>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet, HttpHead]
         [Route("{category}/fixtures")]
         [ResponseType(typeof(List<Fixture>))]
         public async Task<IHttpActionResult> GetFixtures(string category)
@@ -177,7 +235,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             return Ok(cacheData);
         }
 
-        [HttpGet]
+        [HttpGet, HttpHead]
         [Route("{category}/fixtures/excludeinactive")]
         [ResponseType(typeof(List<Fixture>))]
         public async Task<IHttpActionResult> GetFixturesByStatus(string category)
@@ -210,11 +268,42 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         }
 
         /// <summary>
+        /// Get Results for Rugby (all tournaments)
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet, HttpHead]
+        [Route("results")]
+        [ResponseType(typeof(List<Result>))]
+        public async Task<IHttpActionResult> GetRugbyResults()
+        {
+            const string cachePrefix = "RESULTS:";
+            var cacheKey = cachePrefix + $"rugby/results";
+
+            var results = await GetFromCacheAsync<IEnumerable<Result>>(cacheKey);
+
+            if (results != null)
+            {
+                return Ok(results);
+            }
+
+            var maxCount = int.Parse(ConfigurationManager.AppSettings["MaxResponseCount.RugbyRecentFixtures"]);
+
+            results = (await _rugbyService.GetRecentResultsFixtures(maxCount))
+                .Select(Mapper.Map<Result>);
+
+            var cacheData = results as IList<Result> ?? results.ToList();
+
+            PersistToCache(cacheKey, cacheData);
+
+            return Ok(cacheData);
+        }
+
+        /// <summary>
         /// Get Results for Tournament
         /// </summary>
         /// <param name="category"></param>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet, HttpHead]
         [Route("{category}/results")]
         [ResponseType(typeof(List<Result>))]
         public async Task<IHttpActionResult> GetResults(string category)
@@ -240,7 +329,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             return Ok(cacheData);
         }
 
-        [HttpGet]
+        [HttpGet, HttpHead]
         [Route("{category}/results/excludeinactive")]
         [ResponseType(typeof(List<Result>))]
         public async Task<IHttpActionResult> GetResultsByStatus(string category)
@@ -277,10 +366,10 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         /// </summary>
         /// <param name="category"></param>
         /// <returns></returns>
-        [HttpGet]
-        [Route("{category}/logs")]
+        [HttpGet, HttpHead]
+        [Route("{category}/logs/{groupName?}")]
         [ResponseType(typeof(List<Log>))]
-        public async Task<IHttpActionResult> GetLogs(string category)
+        public async Task<IHttpActionResult> GetLogs(string category, string groupName = null)
         {
             const string flatLogsCacheKeyPrefix = "FLATLOGS:";
             var flatLogsCacheKey = flatLogsCacheKeyPrefix + $"rugby/flatLogs/{category}";
@@ -299,17 +388,20 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 
             if (groupedLogsCache != null)
             {
+                if (groupName != null)
+                    groupedLogsCache = groupedLogsCache.Where(g => String.Equals(g.GroupName, groupName, StringComparison.CurrentCultureIgnoreCase));
+
                 return Ok(groupedLogsCache);
             }
 
-            return await GetLogsFromService(category);
+            return await GetLogsFromService(category, groupName);
         }
 
         /// <summary>
         /// Get Tournament News
         /// </summary>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet, HttpHead]
         [Route("{category}/news")]
         [ResponseType(typeof(NewsModel))]
         public IHttpActionResult GetTournamentNews()
@@ -322,7 +414,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [HttpGet]
+        [HttpGet, HttpHead]
         [Route("{category}/news/{id:int}")]
         [ResponseType(typeof(NewsModel))]
         public IHttpActionResult GetTournamentNews(int id)
@@ -330,7 +422,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             return Ok();
         }
 
-        private async Task<IHttpActionResult> GetLogsFromService(string category)
+        private async Task<IHttpActionResult> GetLogsFromService(string category, string groupName)
         {
             var flatLogsFromService = await _rugbyService.GetFlatLogs(category);
 
@@ -368,6 +460,9 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 
             PersistToCache(groupedLogsCacheKey, groupedLogsCache);
 
+            if (groupName != null)
+                groupedLogsCache = groupedLogsCache.Where(g => String.Equals(g.GroupName, groupName, StringComparison.CurrentCultureIgnoreCase)).ToList();
+
             return Ok(groupedLogsCache);
         }
 
@@ -389,7 +484,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             {
                 if (_cache != null)
                 {
-                    return await _cache.GetAsync<T>(key);
+                    return await _cache.GetAsync<T>(CacheKeyNamespacePrefixForFeed + key);
                 }
 
                 return null;

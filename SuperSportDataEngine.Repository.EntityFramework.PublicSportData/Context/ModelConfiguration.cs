@@ -38,6 +38,9 @@
 
             modelBuilder.Entity<RugbyLogGroup>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
             modelBuilder.Entity<RugbyLogGroup>().Property(x => x.ProviderLogGroupId).IsOptional();
+            modelBuilder.Entity<RugbyLogGroup>().Property(x => x.Slug).IsRequired();
+            modelBuilder.Entity<RugbyLogGroup>().Property(x => x.Slug).HasMaxLength(450);
+            modelBuilder.Entity<RugbyLogGroup>().Property(x => x.Slug).HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Unique_Slug") { IsUnique = true }));
 
             modelBuilder.Entity<RugbyMatchEvent>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
 
