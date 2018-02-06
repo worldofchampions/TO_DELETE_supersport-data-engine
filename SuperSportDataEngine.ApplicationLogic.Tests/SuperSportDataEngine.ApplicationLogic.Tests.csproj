@@ -91,6 +91,7 @@
   <ItemGroup>
     <Compile Include="HelperTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RugbyIngestWorkerServiceTest.cs" />
     <Compile Include="RugbyServiceTest.cs" />
   </ItemGroup>
   <ItemGroup>

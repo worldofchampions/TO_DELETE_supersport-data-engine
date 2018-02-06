@@ -244,6 +244,34 @@
     <Compile Include="Migrations\201801291123262_RoundNumber_Added_To_Fixture.Designer.cs">
       <DependentUpon>201801291123262_RoundNumber_Added_To_Fixture.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201801040932234_Addding_MotorDrivers_Table.cs" />
+    <Compile Include="Migrations\201801040932234_Addding_MotorDrivers_Table.Designer.cs">
+      <DependentUpon>201801040932234_Addding_MotorDrivers_Table.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201801041159523_Addding_MotorCar_Table.cs" />
+    <Compile Include="Migrations\201801041159523_Addding_MotorCar_Table.Designer.cs">
+      <DependentUpon>201801041159523_Addding_MotorCar_Table.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201801041259577_Addding_MotorRaces_Table.cs" />
+    <Compile Include="Migrations\201801041259577_Addding_MotorRaces_Table.Designer.cs">
+      <DependentUpon>201801041259577_Addding_MotorRaces_Table.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201801041413043_Adding_MotorGrids_Table.cs" />
+    <Compile Include="Migrations\201801041413043_Adding_MotorGrids_Table.Designer.cs">
+      <DependentUpon>201801041413043_Adding_MotorGrids_Table.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201801041425522_Updated_MotorCars_Table.cs" />
+    <Compile Include="Migrations\201801041425522_Updated_MotorCars_Table.Designer.cs">
+      <DependentUpon>201801041425522_Updated_MotorCars_Table.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201801041440084_Adding_MotorRaces_Table.cs" />
+    <Compile Include="Migrations\201801041440084_Adding_MotorRaces_Table.Designer.cs">
+      <DependentUpon>201801041440084_Adding_MotorRaces_Table.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201801041446500_Adding_MotorResults_Table.cs" />
+    <Compile Include="Migrations\201801041446500_Adding_MotorResults_Table.Designer.cs">
+      <DependentUpon>201801041446500_Adding_MotorResults_Table.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Seed\SeedGroupNamesForHamiltonSevens.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyTeamNames.cs" />
@@ -264,6 +292,7 @@
     <Compile Include="Migrations\Seed\SeedRugbyTournamentNames.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyTournamentSlugs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UnitOfWork\PublicSportDataUnitOfWork.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SuperSportDataEngine.ApplicationLogic\SuperSportDataEngine.ApplicationLogic.csproj">

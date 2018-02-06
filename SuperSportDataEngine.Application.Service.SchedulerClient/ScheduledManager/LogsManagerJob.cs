@@ -8,11 +8,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
     using Container;
     using Common.Hangfire.Configuration;
     using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-    using ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
-    using ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
-    using ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
     using ApplicationLogic.Services;
-    using SuperSportDataEngine.Common.Logging;
     using System;
     using System.Configuration;
     using System.Linq;
@@ -23,16 +19,13 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
     {
         IRecurringJobManager _recurringJobManager;
         IUnityContainer _childContainer;
-        ILoggingService _logger;
 
         public LogsManagerJob(
             IRecurringJobManager recurringJobManager,
-            IUnityContainer childContainer,
-            ILoggingService logger)
+            IUnityContainer childContainer)
         {
             _recurringJobManager = recurringJobManager;
             _childContainer = childContainer;
-            _logger = logger;
         }
 
         public async Task DoWorkAsync()
@@ -46,7 +39,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
         private void ConfigureDependencies()
         {
             _recurringJobManager = _childContainer.Resolve<IRecurringJobManager>();
-            _logger = _childContainer.Resolve<ILoggingService>();
         }
 
         private void CreateContainer()

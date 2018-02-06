@@ -80,8 +80,11 @@
   <ItemGroup>
     <Compile Include="Boundaries\ApplicationLogic\Interfaces\IDeprecatedFeedIntegrationService.cs" />
     <Compile Include="Boundaries\ApplicationLogic\Interfaces\ILegacyAuthService.cs" />
+    <Compile Include="Boundaries\ApplicationLogic\Interfaces\IMotorIngestWorkerService.cs" />
+    <Compile Include="Boundaries\ApplicationLogic\Interfaces\IMotorService.cs" />
     <Compile Include="Boundaries\ApplicationLogic\Interfaces\IRugbyIngestWorkerService.cs" />
     <Compile Include="Boundaries\ApplicationLogic\Interfaces\ISchedulerClientService.cs" />
+    <Compile Include="Boundaries\Gateway.Http.StatsProzone\Models\RequestModels\MotorDriverRequestEntity.cs" />
     <Compile Include="Boundaries\Gateway.Http.DeprecatedFeed\Interfaces\IDeprecatedFeedService.cs" />
     <Compile Include="Boundaries\Gateway.Http.DeprecatedFeed\ResponseModels\Base\BaseArticlesResponse.cs" />
     <Compile Include="Boundaries\Gateway.Http.DeprecatedFeed\ResponseModels\HighlightVideosResponse.cs" />
@@ -89,6 +92,10 @@
     <Compile Include="Boundaries\Gateway.Http.DeprecatedFeed\ResponseModels\MatchDayBlogResponse.cs" />
     <Compile Include="Boundaries\Gateway.Http.DeprecatedFeed\ResponseModels\MatchPreviewResponse.cs" />
     <Compile Include="Boundaries\Gateway.Http.DeprecatedFeed\ResponseModels\MatchReportResponse.cs" />
+    <Compile Include="Boundaries\Gateway.Http.StatsProzone\Interfaces\IStatsProzoneMotorIngestService.cs" />
+    <Compile Include="Boundaries\Gateway.Http.StatsProzone\Models\RequestModels\MotorResultRequestParams.cs" />
+    <Compile Include="Boundaries\Gateway.Http.StatsProzone\Models\Motor\ApiResult.cs" />
+    <Compile Include="Boundaries\Gateway.Http.StatsProzone\Models\Motor\MotorEntitiesResponse.cs" />
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\Models\RugbyEntities.cs" />
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\Interfaces\IStatsProzoneRugbyIngestService.cs" />
     <Compile Include="Boundaries\ApplicationLogic\Interfaces\IRugbyService.cs" />
@@ -109,6 +116,20 @@
     <Compile Include="Boundaries\Repository.EntityFramework.Common\Models\Base\BaseModel.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.Common\Models\Enums\DataProvider.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Enums\RugbyLogType.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Motor\MotorCar.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Motor\MotorDriver.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Motor\MotorDriverStanding.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Motor\MotorGrid.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Motor\MotorLeague.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Motor\MotorRaceEvent.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Motor\MotorRace.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Motor\MotorRaceResult.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Motor\MotorSchedule.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Motor\MotorSeason.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Motor\MotorSpeed.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Motor\MotorTeam.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Motor\MotorTeamStanding.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Motor\MotorTime.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyCommentary.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyEventType.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyEventTypeProviderMapping.cs" />
@@ -125,6 +146,11 @@
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyTournament.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyVenue.cs" />
     <Compile Include="Constants\Providers\RugbyStatsProzoneConstants.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\UnitOfWork\IPublicSportDataUnitOfWork.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\Motor\MotorSeasonStatus.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\Motor\SchedulerStateForMotorDriverPolling.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\UnitOfWork\ISystemSportDataUnitOfWork.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\Motor\SchedulerTrackingMotorSeason.cs" />
     <Compile Include="Entities\Legacy\DeprecatedArticlesAndVideosEntity.cs" />
     <Compile Include="Entities\Legacy\LegacyRugbyMatchEventEntity.cs" />
     <Compile Include="Entities\Legacy\LegacyRugbyScorerEntity.cs" />
@@ -156,6 +182,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\DeprecatedFeedIntegrationService.cs" />
     <Compile Include="Services\LegacyAuthService.cs" />
+    <Compile Include="Services\MotorIngestWorkerService.cs" />
+    <Compile Include="Services\MotorService.cs" />
     <Compile Include="Services\RugbyIngestWorkerService.cs" />
     <Compile Include="Services\RugbyService.cs" />
     <Compile Include="Services\SchedulerClientService.cs" />

@@ -19,6 +19,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
     internal class WindowsService : IWindowsServiceContract
     {
         private readonly FixedScheduledJob _fixedManagerJob;
+        private readonly MotorFixedScheduledJob _motorFixedScheduledJob;
         private readonly ManagerJob _jobManager;
         private readonly ILoggingService _logger;
         private System.Timers.Timer _timer;
@@ -28,6 +29,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
             _logger = container.Resolve<ILoggingService>();
 
             _fixedManagerJob = new FixedScheduledJob(container.CreateChildContainer());
+            _motorFixedScheduledJob = new MotorFixedScheduledJob(container.CreateChildContainer());
             _jobManager = new ManagerJob();
         }
 
@@ -60,6 +62,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
                     try
                     {
                         _fixedManagerJob.UpdateRecurringJobDefinitions();
+                        _motorFixedScheduledJob.UpdateRecurringJobDefinitions();
                     }
                     catch (Exception e)
                     {

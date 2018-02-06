@@ -9,6 +9,13 @@
     {
         internal static void ApplyFluentApiConfigurations(DbModelBuilder modelBuilder)
         {
+            ApplyRugbyConfiguration(modelBuilder);
+
+            ApplyMotorSportConfiguration(modelBuilder);
+        }
+
+        private static void ApplyRugbyConfiguration(DbModelBuilder modelBuilder)
+        {
             modelBuilder.Entity<RugbyCommentary>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
             modelBuilder.Entity<RugbyCommentary>().Property(x => x.GameTimeDisplayHoursMinutesSeconds).IsRequired();
             modelBuilder.Entity<RugbyCommentary>().Property(x => x.GameTimeDisplayMinutesSeconds).IsRequired();
@@ -66,6 +73,33 @@
             modelBuilder.Entity<RugbyVenue>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
             modelBuilder.Entity<RugbyVenue>().Property(x => x.ProviderVenueId).HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Seek_ProviderVenueId")));
             modelBuilder.Entity<RugbyVenue>().Property(x => x.Name).IsRequired();
+        }
+
+        private static void ApplyMotorSportConfiguration(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<MotorLeague>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+            modelBuilder.Entity<MotorLeague>().Property(x => x.LegacyLeagueId).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+            modelBuilder.Entity<MotorLeague>().Property(x => x.ProviderLeagueId).IsRequired();
+            modelBuilder.Entity<MotorLeague>().Property(x => x.Name).IsRequired();
+            modelBuilder.Entity<MotorLeague>().Property(x => x.ProviderSlug).IsRequired();
+            modelBuilder.Entity<MotorLeague>().Property(x => x.Slug).IsRequired();
+
+            modelBuilder.Entity<MotorGrid>().HasKey(x => new { x.RaceId, x.DriverId});
+
+            modelBuilder.Entity<MotorCar>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+            modelBuilder.Entity<MotorCar>().Property(x => x.ProviderCarId).IsRequired();
+            modelBuilder.Entity<MotorCar>().Property(x => x.CarNumber).IsRequired();
+
+            modelBuilder.Entity<MotorRace>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+            modelBuilder.Entity<MotorRace>().Property(x => x.LegacyRaceId).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+            modelBuilder.Entity<MotorRace>().Property(x => x.ProviderRaceId).HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Seek_ProviderRaceId")));
+            modelBuilder.Entity<MotorRace>().Property(x => x.Name).IsRequired();
+            modelBuilder.Entity<MotorRace>().Property(x => x.Slug).IsRequired();
+            modelBuilder.Entity<MotorRace>().Property(x => x.Slug).HasMaxLength(450);
+            modelBuilder.Entity<MotorRace>().Property(x => x.Slug).HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Unique_Slug") { IsUnique = true }));
+
+            modelBuilder.Entity<MotorRaceResult>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+            modelBuilder.Entity<MotorRaceResult>().Property(x => x.DriverId).IsRequired();
         }
     }
 }
