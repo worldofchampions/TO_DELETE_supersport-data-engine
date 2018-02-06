@@ -80,7 +80,7 @@ namespace SuperSportDataEngine.Application.Container
 
             if (applicationScope == ApplicationScope.WebApiLegacyFeed)
             {
-                container.RegisterType<IDeprecatedFeedIntegrationService, DeprecatedFeedIntegrationService>();
+                container.RegisterType<IDeprecatedFeedIntegrationService, DeprecatedFeedIntegrationService>(new HierarchicalLifetimeManager());
             }
         }
 
