@@ -13,10 +13,10 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
             {
                 const int internationalsProviderTournamentId = 810;
 
-                var nonInternationalsBbTournaments =
+                var nonInternationalsDbTournaments =
                     context.RugbyTournaments.Where(t => t.ProviderTournamentId != internationalsProviderTournamentId).ToList();
 
-                foreach (var tournament in nonInternationalsBbTournaments)
+                foreach (var tournament in nonInternationalsDbTournaments)
                 {
                     tournament.HasLogs = true;
                     context.RugbyTournaments.AddOrUpdate(tournament);
@@ -28,7 +28,6 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
             {
                 // TODO: Add logging.
                 Console.WriteLine(exception);
-                return;
             }
         }
     }

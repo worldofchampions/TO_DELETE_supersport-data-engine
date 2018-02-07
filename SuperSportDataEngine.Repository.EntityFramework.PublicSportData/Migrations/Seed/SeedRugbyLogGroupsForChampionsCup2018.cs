@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Entity.Migrations;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
 using SuperSportDataEngine.ApplicationLogic.Constants.Providers;
@@ -22,38 +19,46 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
 
         public static void Seed(PublicSportDataContext context)
         {
-            var rugbyTournament = context.RugbyTournaments.Single(x =>
-                x.DataProvider == DataProvider.StatsProzone &&
-                x.ProviderTournamentId == RugbyStatsProzoneConstants.ProviderTournamentIdChampionsCup);
+            try
+            {
+                var rugbyTournament = context.RugbyTournaments.Single(x =>
+                        x.DataProvider == DataProvider.StatsProzone &&
+                        x.ProviderTournamentId == RugbyStatsProzoneConstants.ProviderTournamentIdChampionsCup);
 
-            var rugbySeason = context.RugbySeasons.Single(x =>
-                x.DataProvider == DataProvider.StatsProzone &&
-                x.RugbyTournament.Id == rugbyTournament.Id &&
-                x.ProviderSeasonId == RugbyStatsProzoneConstants.ProviderTournamentSeasonId2018);
+                var rugbySeason = context.RugbySeasons.Single(x =>
+                    x.DataProvider == DataProvider.StatsProzone &&
+                    x.RugbyTournament.Id == rugbyTournament.Id &&
+                    x.ProviderSeasonId == RugbyStatsProzoneConstants.ProviderTournamentSeasonId2018);
 
-            // Create log groups.
-            context.RugbyLogGroups.AddOrUpdate(
-                x => x.Slug,
-                // LogGroups for "OverallStandings", GroupHierarchyLevel: 0.
-                new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 0, IsConference = false, IsCoreGroup = true, Slug = SlugHierachyLevel0ChampionsCup, ProviderLogGroupId = 0, ProviderGroupName = null, GroupName = "Champions Cup", GroupShortName = "Champions Cup" },
+                // Create log groups.
+                context.RugbyLogGroups.AddOrUpdate(
+                    x => x.Slug,
+                    // LogGroups for "OverallStandings", GroupHierarchyLevel: 0.
+                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 0, IsConference = false, IsCoreGroup = true, Slug = SlugHierachyLevel0ChampionsCup, ProviderLogGroupId = 0, ProviderGroupName = null, GroupName = "Champions Cup", GroupShortName = "Champions Cup" },
 
-                new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = false, IsCoreGroup = true, Slug = SlugHierachyLevel1Pool1, ProviderLogGroupId = 1, ProviderGroupName = "Pool 1", GroupName = "Pool 1", GroupShortName = "Pool 1" },
-                new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = false, IsCoreGroup = true, Slug = SlugHierachyLevel1Pool2, ProviderLogGroupId = 2, ProviderGroupName = "Pool 2", GroupName = "Pool 2", GroupShortName = "Pool 2" },
-                new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = false, IsCoreGroup = true, Slug = SlugHierachyLevel1Pool3, ProviderLogGroupId = 3, ProviderGroupName = "Pool 3", GroupName = "Pool 3", GroupShortName = "Pool 3" },
-                new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = false, IsCoreGroup = true, Slug = SlugHierachyLevel1Pool4, ProviderLogGroupId = 4, ProviderGroupName = "Pool 4", GroupName = "Pool 4", GroupShortName = "Pool 4" },
-                new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = false, IsCoreGroup = true, Slug = SlugHierachyLevel1Pool5, ProviderLogGroupId = 5, ProviderGroupName = "Pool 5", GroupName = "Pool 5", GroupShortName = "Pool 5" }
-            );
+                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = false, IsCoreGroup = true, Slug = SlugHierachyLevel1Pool1, ProviderLogGroupId = 1, ProviderGroupName = "Pool 1", GroupName = "Pool 1", GroupShortName = "Pool 1" },
+                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = false, IsCoreGroup = true, Slug = SlugHierachyLevel1Pool2, ProviderLogGroupId = 2, ProviderGroupName = "Pool 2", GroupName = "Pool 2", GroupShortName = "Pool 2" },
+                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = false, IsCoreGroup = true, Slug = SlugHierachyLevel1Pool3, ProviderLogGroupId = 3, ProviderGroupName = "Pool 3", GroupName = "Pool 3", GroupShortName = "Pool 3" },
+                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = false, IsCoreGroup = true, Slug = SlugHierachyLevel1Pool4, ProviderLogGroupId = 4, ProviderGroupName = "Pool 4", GroupName = "Pool 4", GroupShortName = "Pool 4" },
+                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = false, IsCoreGroup = true, Slug = SlugHierachyLevel1Pool5, ProviderLogGroupId = 5, ProviderGroupName = "Pool 5", GroupName = "Pool 5", GroupShortName = "Pool 5" }
+                );
 
-            context.SaveChanges();
+                context.SaveChanges();
 
-            context.RugbyLogGroups.Single(x => x.Slug == SlugHierachyLevel1Pool1).ParentRugbyLogGroup = context.RugbyLogGroups.Single(x => x.Slug == SlugHierachyLevel0ChampionsCup);
-            context.RugbyLogGroups.Single(x => x.Slug == SlugHierachyLevel1Pool2).ParentRugbyLogGroup = context.RugbyLogGroups.Single(x => x.Slug == SlugHierachyLevel0ChampionsCup);
-            context.RugbyLogGroups.Single(x => x.Slug == SlugHierachyLevel1Pool3).ParentRugbyLogGroup = context.RugbyLogGroups.Single(x => x.Slug == SlugHierachyLevel0ChampionsCup);
-            context.RugbyLogGroups.Single(x => x.Slug == SlugHierachyLevel1Pool4).ParentRugbyLogGroup = context.RugbyLogGroups.Single(x => x.Slug == SlugHierachyLevel0ChampionsCup);
-            context.RugbyLogGroups.Single(x => x.Slug == SlugHierachyLevel1Pool5).ParentRugbyLogGroup = context.RugbyLogGroups.Single(x => x.Slug == SlugHierachyLevel0ChampionsCup);
+                context.RugbyLogGroups.Single(x => x.Slug == SlugHierachyLevel1Pool1).ParentRugbyLogGroup = context.RugbyLogGroups.Single(x => x.Slug == SlugHierachyLevel0ChampionsCup);
+                context.RugbyLogGroups.Single(x => x.Slug == SlugHierachyLevel1Pool2).ParentRugbyLogGroup = context.RugbyLogGroups.Single(x => x.Slug == SlugHierachyLevel0ChampionsCup);
+                context.RugbyLogGroups.Single(x => x.Slug == SlugHierachyLevel1Pool3).ParentRugbyLogGroup = context.RugbyLogGroups.Single(x => x.Slug == SlugHierachyLevel0ChampionsCup);
+                context.RugbyLogGroups.Single(x => x.Slug == SlugHierachyLevel1Pool4).ParentRugbyLogGroup = context.RugbyLogGroups.Single(x => x.Slug == SlugHierachyLevel0ChampionsCup);
+                context.RugbyLogGroups.Single(x => x.Slug == SlugHierachyLevel1Pool5).ParentRugbyLogGroup = context.RugbyLogGroups.Single(x => x.Slug == SlugHierachyLevel0ChampionsCup);
 
-            context.SaveChanges();
+                context.SaveChanges();
 
+            }
+            catch (Exception exception)
+            {
+                //TODO: Add logging.
+                Console.WriteLine(exception);
+            }
         }
     }
 }
