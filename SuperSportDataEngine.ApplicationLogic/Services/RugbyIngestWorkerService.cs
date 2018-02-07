@@ -2609,10 +2609,13 @@
                 // STATS combines these values :( "Number of Penalty Shots/Conversions/Drop Goals Made"
                 var dropGoals =
                     player?.playerSeasonStats?.Stat?.FirstOrDefault(s => s.StatTypeID == 2050)?.totalValue;
-
                 if (dropGoals is null) dropGoals = 0;
 
                 var penalties = dropGoals;
+
+                var points =
+                    player?.playerSeasonStats?.Stat?.FirstOrDefault(s => s.StatTypeID == 2001)?.totalValue;
+                if (points is null) points = 0;
 
                 var tournament =
                     _rugbyTournamentRepository.FirstOrDefault(t => t.ProviderTournamentId == providerTournamentId);
@@ -2630,7 +2633,8 @@
                     TriesScored = (int) tries,
                     ConversionsScored = (int) conversions,
                     DropGoalsScored = (int) dropGoals,
-                    PenaltiesScored = (int) penalties
+                    PenaltiesScored = (int) penalties,
+                    TotalPoints = (int) points
                 };
 
                 var statInRepo = _rugbyPlayerStatisticsRepository
@@ -2644,6 +2648,7 @@
                     statInRepo.ConversionsScored = playerStatistics.ConversionsScored;
                     statInRepo.DropGoalsScored = playerStatistics.DropGoalsScored;
                     statInRepo.PenaltiesScored = playerStatistics.PenaltiesScored;
+                    statInRepo.TotalPoints = playerStatistics.TotalPoints;
 
                     _rugbyPlayerStatisticsRepository.Update(statInRepo);
                 }
