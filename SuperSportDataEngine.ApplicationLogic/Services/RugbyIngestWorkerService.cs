@@ -1452,7 +1452,7 @@
 
                     // "GroupStandings" are GroupHierarchyLevel: 1.
                     if (logs.RugbyGroupedLogs.groupStandings != null)
-                        await IngestStandingsForSuperRugby(cancellationToken, 2, logs, logs.RugbyGroupedLogs.groupStandings.ladderposition);
+                        await IngestStandingsForSuperRugby(cancellationToken, 1, logs, logs.RugbyGroupedLogs.groupStandings.ladderposition);
                 }
             }
 
