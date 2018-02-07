@@ -11,7 +11,6 @@
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-    using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
     using SuperSportDataEngine.Common.Logging;
     using System;
     using System.Collections.Generic;
@@ -47,27 +46,70 @@
             _logger = logger;
         }
 
-        [Route("{category}/try-scorers")]
-        [ResponseType(typeof(List<RugbyPointsScorerModel>))]
-        public async Task<IHttpActionResult> GetTournamentTryScorers(string category)
+        [HttpGet, HttpHead]
+        [Route("{category}/try-scorers/{recordsCount?}")]
+        [ResponseType(typeof(IEnumerable<RugbyPointsScorerModel>))]
+        public async Task<IHttpActionResult> GetTournamentTryScorers(string category, int recordsCount = 0)
         {
+            if (recordsCount == 0)
+            {
+                recordsCount = int.Parse(ConfigurationManager.AppSettings["MaxResponseCount.TryScorers"]);
+            }
+
             const string cachePrefix = "TOURNAMENT:";
+
             var cacheKey = $"{cachePrefix}rugby/{category}try-scores";
 
-            var players = await GetFromCacheAsync<IEnumerable<RugbyPointsScorerModel>>(cacheKey);
+            var allPlayers = await GetFromCacheAsync<List<RugbyPointsScorerModel>>(cacheKey);
 
-            if (players != null) return Ok(players.ToList());
+            if (allPlayers == null)
+            {
+                allPlayers = (await _rugbyService.GetTournamentTryScorers(category))
+                    .Select(Mapper.Map<RugbyPointsScorerModel>).ToList();
 
-            players = (await _rugbyService.GetTournamentTryScorers(category))
-                .Select(Mapper.Map<RugbyPointsScorerModel>).ToList();
+                if (!allPlayers.Any()) return Ok(new List<RugbyPointsScorerModel>());
 
-            if (!players.Any()) return Ok(new List<RugbyPointsScorerModel>());
+                var requiredPlayers = allPlayers.Take(recordsCount).ToList();
 
-            var cacheData = (IList<RugbyPointsScorerModel>)players;
+                PersistToCache(cacheKey, allPlayers);
 
-            PersistToCache(cacheKey, cacheData);
+                return Ok(requiredPlayers);
+            }
 
-            return Ok(cacheData.ToList());
+            return Ok(allPlayers.Take(recordsCount).ToList());
+        }
+
+        [HttpGet, HttpHead]
+        [Route("{category}/scorers/{recordsCount?}")]
+        [ResponseType(typeof(IEnumerable<RugbyPointsScorerModel>))]
+        public async Task<IHttpActionResult> GetTournamentScorers(string category, int recordsCount = 0)
+        {
+            if (recordsCount == 0)
+            {
+                recordsCount = int.Parse(ConfigurationManager.AppSettings["MaxResponseCount.TryScorers"]);
+            }
+
+            const string cachePrefix = "TOURNAMENT:";
+
+            var cacheKey = $"{cachePrefix}rugby/{category}scores";
+
+            var allPlayers = await GetFromCacheAsync<List<RugbyPointsScorerModel>>(cacheKey);
+
+            if (allPlayers == null)
+            {
+                allPlayers = (await _rugbyService.GetTournamentPointsScorers(category))
+                    .Select(Mapper.Map<RugbyPointsScorerModel>).ToList();
+
+                if (!allPlayers.Any()) return Ok(new List<RugbyPointsScorerModel>());
+
+                PersistToCache(cacheKey, allPlayers);
+
+                var requiredPlayers = allPlayers.Take(recordsCount).ToList();
+
+                return Ok(requiredPlayers);
+            }
+
+            return Ok(allPlayers.Take(recordsCount).ToList());
         }
 
         /// <summary>
@@ -100,7 +142,7 @@
                 response.Events.AssignOrderingIds();
 
                 var deprecatedArticlesAndVideosEntity = await _deprecatedFeedIntegrationService.GetArticlesAndVideos("rugby", id);
-                response = Mapper.Map<DeprecatedArticlesAndVideosEntity, RugbyMatchDetails>(deprecatedArticlesAndVideosEntity, response);
+                response = Mapper.Map(deprecatedArticlesAndVideosEntity, response);
 
                 PersistToCache(cacheKey, response);
             }
@@ -122,8 +164,6 @@
             {
                 Message = LegacyFeedConstants.GeneralResponseMessage
             };
-
-            //_logger.Info("Replying with general response message.");
 
             return Ok(response);
         }

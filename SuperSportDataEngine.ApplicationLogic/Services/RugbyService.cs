@@ -656,26 +656,58 @@
         {
             var tournamentId = await GetTournamentId(tournamentSlug);
 
-            var players = _rugbyPlayerStatisticsRepository.Where(
-                s => s.RugbyTournament.Id == tournamentId)
-                .OrderByDescending(s => s.TriesScored)
-                .Take(50);
+            var players = _rugbyPlayerStatisticsRepository
+                .Where(s => s.RugbyTournament.Id == tournamentId)
+                .OrderByDescending(p => p.TriesScored)
+                .ToList();
 
-            var results = players.ToList();
+            if (!players.Any()) return players;
 
-            return results;
+            var currentPlayerTries = players.First().TriesScored;
+            var currentPlayerRank = 1;
+            foreach (var player in players)
+            {
+                var shouldIncrementRank = player.TriesScored < currentPlayerTries;
+                if (shouldIncrementRank)
+                {
+                    currentPlayerRank++;
+                    player.Rank = currentPlayerRank;
+                    currentPlayerTries = player.TriesScored;
+                }
+
+                player.Rank = currentPlayerRank;
+            }
+
+            return players;
         }
 
         public async Task<IEnumerable<RugbyPlayerStatistics>> GetTournamentPointsScorers(string tournamentSlug)
         {
             var tournamentId = await GetTournamentId(tournamentSlug);
 
-            var players = _rugbyPlayerStatisticsRepository.Where(
-                s => s.RugbyTournament.Id == tournamentId);
+            var players = _rugbyPlayerStatisticsRepository
+                .Where(s => s.RugbyTournament.Id == tournamentId)
+                .OrderByDescending(s => s.TotalPoints)
+                .ToList();
 
-            var results = players.ToList();
+            if (!players.Any()) return players;
 
-            return results;
+            var currentPlayerPoints = players.First().TotalPoints;
+            var currentPlayerRank = 1;
+            foreach (var player in players)
+            {
+                var shouldIncrementRank = player.TotalPoints < currentPlayerPoints;
+                if (shouldIncrementRank)
+                {
+                    currentPlayerPoints = player.TotalPoints;
+                    currentPlayerRank++;
+                    player.Rank = currentPlayerRank;
+                }
+
+                player.Rank = currentPlayerRank;
+            }
+
+            return players;
         }
     }
 }
