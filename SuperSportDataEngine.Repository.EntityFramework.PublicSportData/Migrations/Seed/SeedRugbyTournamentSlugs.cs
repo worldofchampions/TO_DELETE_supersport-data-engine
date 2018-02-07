@@ -25,6 +25,8 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
 
                     if (dbTournament == null) continue;
 
+                    if (!string.IsNullOrEmpty(dbTournament.Slug)) continue;
+
                     dbTournament.Slug = tournament.Slug;
 
                     context.RugbyTournaments.AddOrUpdate(dbTournament);
@@ -36,7 +38,6 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
             {
                 // TODO: Add logging.
                 Console.WriteLine(exception);
-                return;
             }
         }
 
