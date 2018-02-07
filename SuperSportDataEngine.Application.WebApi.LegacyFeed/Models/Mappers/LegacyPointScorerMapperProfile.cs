@@ -37,6 +37,9 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
 
                 .ForMember(dest => dest.Surname, exp => exp.MapFrom(src => src.RugbyPlayer.LastName))
 
+                .ForMember(dest => dest.CombinedName, exp => exp.MapFrom(
+                    src => src.RugbyPlayer.DisplayNameCmsOverride ?? src.RugbyPlayer.FullName ?? src.RugbyPlayer.FirstName))
+
                 .ForMember(dest => dest.DisplayName, exp => exp.MapFrom(
                     src => src.RugbyPlayer.DisplayNameCmsOverride ?? src.RugbyPlayer.FullName ?? src.RugbyPlayer.FirstName))
 
