@@ -249,6 +249,8 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\RugbyController.cs" />
+    <Compile Include="Filters\AddAuthHeaderToSwagger.cs" />
+    <Compile Include="Filters\AddTokenEndpointToSwagger.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

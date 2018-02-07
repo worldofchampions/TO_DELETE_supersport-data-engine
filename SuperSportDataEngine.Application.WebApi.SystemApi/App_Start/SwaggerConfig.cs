@@ -2,6 +2,7 @@ using System.Web.Http;
 using WebActivatorEx;
 using SuperSportDataEngine.Application.WebApi.SystemApi;
 using Swashbuckle.Application;
+using SuperSportDataEngine.Application.WebApi.SystemApi.Filters;
 
 [assembly: PreApplicationStartMethod(typeof(SwaggerConfig), "Register")]
 
@@ -36,7 +37,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi
 
                     // If you want the output Swagger docs to be indented properly, enable the "PrettyPrint" option.
                     //
-                    //c.PrettyPrint();
+                    c.PrettyPrint();
 
                     // If your API has multiple versions, use "MultipleApiVersions" instead of "SingleApiVersion".
                     // In this case, you must provide a lambda that tells Swashbuckle which actions should be
@@ -103,6 +104,10 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi
                     //
                     //c.IncludeXmlComments(GetXmlCommentsPath());
                     c.IncludeXmlComments(string.Format(@"{0}\bin\SuperSportDataEngine.Application.WebApi.SystemApi.XML", System.AppDomain.CurrentDomain.BaseDirectory));
+                    
+                    // Custom Filters
+                    c.OperationFilter<AddAuthHeaderToSwagger>();
+                    c.DocumentFilter<AddTokenEndpointToSwagger>();
 
                     // Swashbuckle makes a best attempt at generating Swagger compliant JSON schemas for the various types
                     // exposed in your API. However, there may be occasions when more control of the output is needed.

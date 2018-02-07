@@ -34,7 +34,6 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         /// <param name="pageSize"></param>
         /// <returns></returns>
         
-        [Authorize]
         [ActionName("tournaments")]
         [HttpGet]
         public async Task<HttpResponseMessage> GetAllTournaments(int pageIndex, int pageSize)
