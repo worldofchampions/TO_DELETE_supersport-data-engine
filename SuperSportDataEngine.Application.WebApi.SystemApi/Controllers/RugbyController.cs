@@ -13,6 +13,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
     /// <summary>
     /// Rugby Controller to manage rugby related data
     /// </summary>
+    [Authorize]
     public class RugbyController : ApiController
     {
         IRugbyCmsService _rugbyService;
@@ -32,6 +33,8 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         /// <param name="pageIndex"></param>
         /// <param name="pageSize"></param>
         /// <returns></returns>
+        
+        [Authorize]
         [ActionName("tournaments")]
         [HttpGet]
         public async Task<HttpResponseMessage> GetAllTournaments(int pageIndex, int pageSize)
