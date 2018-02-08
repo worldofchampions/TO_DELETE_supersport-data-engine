@@ -24,10 +24,12 @@
                    src => (src.TeamAIsHomeTeam ? src.TeamBScore : src.TeamAScore) ?? LegacyFeedConstants.DefaultScoreForStartedGame))
 
                 .ForMember(dest => dest.AwayTeamShortName, expression => expression.MapFrom(
-                    src => src.TeamAIsHomeTeam ? src.TeamB.Name : src.TeamA.Name))
+                    src => src.TeamAIsHomeTeam ?
+                        (src.TeamB.NameCmsOverride ?? src.TeamB.Name) : (src.TeamA.NameCmsOverride ?? src.TeamA.Name)))
 
                 .ForMember(dest => dest.HomeTeamShortName, expression => expression.MapFrom(
-                   src => src.TeamAIsHomeTeam ? src.TeamA.Name : src.TeamB.Name))
+                    src => src.TeamAIsHomeTeam ?
+                        (src.TeamA.NameCmsOverride ?? src.TeamA.Name) : (src.TeamB.NameCmsOverride ?? src.TeamB.Name)))
 
                 .ForMember(dest => dest.Location, expression => expression.MapFrom(
                     src => src.RugbyVenue.Name))

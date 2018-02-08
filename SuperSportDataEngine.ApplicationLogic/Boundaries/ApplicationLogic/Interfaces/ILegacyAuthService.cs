@@ -6,7 +6,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Inte
 {
     public interface ILegacyAuthService
     {
-        bool IsAuthorised(string authKey, int siteId = 0);
+        Task<bool> IsAuthorised(string authKey, int siteId = 0);
         Task<bool> ImportZoneSiteRecords(IEnumerable<LegacyZoneSiteEntity> models);
         Task<bool> ImportAuthFeedRecords(IEnumerable<LegacyAuthFeedConsumerEntity> models);
     }

@@ -105,7 +105,6 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
             {
                 // TODO: Add logging.
                 Console.WriteLine(exception);
-                return;
             }
         }
     }
