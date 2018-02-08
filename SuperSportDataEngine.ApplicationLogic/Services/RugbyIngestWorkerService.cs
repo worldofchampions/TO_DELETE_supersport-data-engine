@@ -2294,7 +2294,7 @@
             await IngestLineUpsForFixtures(cancellationToken, gamesInTheNext2Days);
         }
 
-        private async Task IngestLineUpsForFixtures(CancellationToken cancellationToken, IEnumerable<RugbyFixture> rugbyFixtures, RugbyMatchStatsResponse matchStatsResponse = null)
+        private async Task IngestLineUpsForFixtures(CancellationToken cancellationToken, IEnumerable<RugbyFixture> rugbyFixtures)
         {
             foreach (var fixture in rugbyFixtures)
             {
@@ -2302,12 +2302,9 @@
                     return;
 
                 var fixtureId = fixture.ProviderFixtureId;
-
-                if (matchStatsResponse == null)
-                {
-                    matchStatsResponse =
-                        await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, fixtureId);
-                }
+                
+                var matchStatsResponse =
+                    await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, fixtureId);
 
                 if (matchStatsResponse == null)
                     continue;
@@ -2528,7 +2525,7 @@
 
                     Stopwatch s = Stopwatch.StartNew();
 
-                    await IngestLineUpsForFixtures(cancellationToken, new List<RugbyFixture>() { fixture }, matchStatsResponse);
+                    await IngestLineUpsForFixtures(cancellationToken, new List<RugbyFixture>() { fixture });
 
                     var playersForFixture = _rugbyPlayerLineupsRepository.Where(l => l.RugbyFixture.ProviderFixtureId == fixture.ProviderFixtureId).Select(l => l.RugbyPlayer).ToList();
                     await IngestGameTime(cancellationToken, matchStatsResponse, fixture);
