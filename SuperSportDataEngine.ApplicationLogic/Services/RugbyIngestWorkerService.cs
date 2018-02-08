@@ -644,7 +644,11 @@
                         IsLiveScored = tournament != null && tournament.IsLiveScored,
                         TeamAScore = null,
                         TeamBScore = null,
-                        RoundNumber = roundFixture.roundId
+                        RoundNumber = roundFixture.roundId,
+                        RugbySeason = 
+                            _rugbySeasonRepository.FirstOrDefault(s => 
+                                    s.RugbyTournament.ProviderTournamentId == tournament.ProviderTournamentId && 
+                                    s.ProviderSeasonId == fixtures.Fixtures.seasonId)
                     };
 
                     // Should we set the scores of the new fixture?
@@ -684,10 +688,10 @@
                         fixtureInDb.TeamBIsHomeTeam = newFixture.TeamBIsHomeTeam;
                         fixtureInDb.RugbyTournament = newFixture.RugbyTournament;
                         fixtureInDb.RoundNumber = roundFixture.roundId;
+                        fixtureInDb.RugbySeason = newFixture.RugbySeason;
 
                         // Do not update the isLiveScored property here.
                         // It will be updated by the CMS.
-
                         _rugbyFixturesRepository.Update(fixtureInDb);
                     }
                 }
