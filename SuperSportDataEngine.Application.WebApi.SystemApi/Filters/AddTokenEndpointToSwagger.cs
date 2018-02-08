@@ -17,33 +17,44 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Filters
                 {
                     tags = new List<string> { "Auth" },
                     consumes = new List<string>
-                {
-                    "application/x-www-form-urlencoded"
-                },
+                    {
+                        "application/x-www-form-urlencoded"
+                    },
+                    produces = new List<string>
+                    {
+                        "application/json"
+                    },
                     parameters = new List<Parameter> {
-                    new Parameter
-                    {
-                        type = "string",
-                        name = "grant_type",
-                        required = true,
-                        @in = "formData"
-                    },
-                    new Parameter
-                    {
-                        type = "string",
-                        name = "username",
-                        required = false,
-                        @in = "formData"
-                    },
-                    new Parameter
-                    {
-                        type = "string",
-                        name = "password",
-                        format = "password",
-                        required = false,
-                        @in = "formData"
+                        new Parameter
+                        {
+                            type = "string",
+                            name = "grant_type",
+                            required = true,
+                            @in = "formData"
+                        },
+                        new Parameter
+                        {
+                            type = "string",
+                            name = "username",
+                            required = false,
+                            @in = "formData"
+                        },
+                        new Parameter
+                        {
+                            type = "string",
+                            name = "password",
+                            format = "password",
+                            required = false,
+                            @in = "formData"
+                        },
+                        new Parameter
+                        {
+                            type = "string",
+                            name = "Content-Type",
+                            required = false,
+                            @in = "header"
+                        },
                     }
-                }
                 }
             });
         }

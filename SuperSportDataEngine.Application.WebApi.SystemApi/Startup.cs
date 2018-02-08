@@ -17,9 +17,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi
     public class Startup
     {
         /// <summary>
-        /// Accepts IAppBuilder which will be supplied at run-time
-        /// *app* parameter is an interface which will be used to compose the application
-        /// for the OWIN server
+        /// Start Up Configuration
         /// </summary>
         /// <param name="app"></param>
         public void Configuration(IAppBuilder app)
@@ -31,7 +29,11 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi
             app.UseWebApi(config);
         }
 
-        
+        /// <summary>
+        /// Accepts IAppBuilder which will be supplied at run-time
+        /// *app* parameter is an interface which will be used to compose the application
+        /// </summary>
+        /// <param name="app"></param>
         public void ConfigureOAuth(IAppBuilder app)
         {
             OAuthAuthorizationServerOptions OAuthServerOptions = new OAuthAuthorizationServerOptions()

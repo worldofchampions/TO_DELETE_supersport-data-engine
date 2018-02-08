@@ -13,7 +13,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
     /// <summary>
     /// Rugby Controller to manage rugby related data
     /// </summary>
-    [Authorize]
+    //[Authorize]
     public class RugbyController : ApiController
     {
         IRugbyCmsService _rugbyService;
@@ -44,6 +44,38 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         }
 
         /// <summary>
+        /// Get paginated list of rugby fixtures
+        /// </summary>
+        /// <param name="pageIndex"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+
+        [ActionName("fixtures")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> GetAllFixtures(int pageIndex, int pageSize)
+        {
+            var fixtures = await _rugbyService.GetAllFixtures(pageIndex, pageSize);
+
+            return Request.CreateResponse(HttpStatusCode.OK, fixtures);
+        }
+
+        /// <summary>
+        /// Get paginated list of rugby seasons
+        /// </summary>
+        /// <param name="pageIndex"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        
+        [ActionName("seasons")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> GetAllSeasons(int pageIndex, int pageSize)
+        {
+            var seasons = await _rugbyService.GetAllSeasons(pageIndex, pageSize);
+
+            return Request.CreateResponse(HttpStatusCode.OK, seasons);
+        }
+
+        /// <summary>
         /// Get single tournament by tournament Id
         /// </summary>
         /// <param name="id"></param>
@@ -66,6 +98,50 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         }
 
         /// <summary>
+        /// Get single fixture retrieved by fixture Id
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [ActionName("fixtures")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> GetFixtureById(int id)
+        {
+            var fixture = await _rugbyService.GetFixtureById(id);
+
+            if (fixture != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, fixture);
+            }
+            else
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Fixture Not Found");
+            }
+
+        }
+
+        /// <summary>
+        /// Get single season retrieved by ProviderSeasonId
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [ActionName("seasons")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> GetSeasonById(int id)
+        {
+            var season = await _rugbyService.GetSeasonById(id);
+
+            if (season != null)
+            {
+                return Request.CreateResponse(HttpStatusCode.OK, season);
+            }
+            else
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Season Not Found");
+            }
+
+        }
+
+        /// <summary>
         /// Update tournament
         /// </summary>
         /// <param name="id"></param>
@@ -73,7 +149,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         /// <returns></returns>
         [ActionName("tournaments")]
         [HttpPut]
-        public async Task<HttpResponseMessage> UpdateTournament(int id, [FromBody] RugbyTournamentEntity rugbyTournamentEntity)
+        public async Task<HttpResponseMessage> PutTournament(int id, [FromBody] RugbyTournamentEntity rugbyTournamentEntity)
         {
             var tournament = await _rugbyService.UpdateTournament(id, rugbyTournamentEntity);
 
@@ -84,6 +160,52 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
             else
             {
                 return Request.CreateErrorResponse(HttpStatusCode.MethodNotAllowed, "Tournament could not be updated");
+            }
+
+        }
+
+        /// <summary>
+        /// Update fixture
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="rugbyFixtureEntity"></param>
+        /// <returns></returns>
+        [ActionName("fixtures")]
+        [HttpPut]
+        public async Task<HttpResponseMessage> PutFixture(int id, [FromBody] RugbyFixtureEntity rugbyFixtureEntity)
+        {
+            var fixture = await _rugbyService.UpdateFixture(id, rugbyFixtureEntity);
+
+            if (fixture)
+            {
+                return Request.CreateResponse(HttpStatusCode.NoContent, "Fixture was updated successfully");
+            }
+            else
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.MethodNotAllowed, "Fixture could not be updated");
+            }
+
+        }
+
+        /// <summary>
+        /// Update season
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="rugbyseasonEntity"></param>
+        /// <returns></returns>
+        [ActionName("seasons")]
+        [HttpPut]
+        public async Task<HttpResponseMessage> PutSeason(int id, [FromBody] RugbySeasonEntity rugbyseasonEntity)
+        {
+            var season = await _rugbyService.UpdateSeason(id, rugbyseasonEntity);
+
+            if (season)
+            {
+                return Request.CreateResponse(HttpStatusCode.NoContent, "Season was updated successfully");
+            }
+            else
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.MethodNotAllowed, "Season could not be updated");
             }
 
         }
