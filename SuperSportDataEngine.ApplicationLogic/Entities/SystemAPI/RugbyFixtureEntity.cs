@@ -28,18 +28,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Entities.SystemAPI
         /// <summary> A provider driven value. </summary>
         public bool TeamBIsHomeTeam { get; set; }
 
-        //public RugbyFixtureStatus RugbyFixtureStatus { get; set; }
-
-        //public DataProvider DataProvider { get; set; }
-
-        //public virtual RugbyTournament RugbyTournament { get; set; }
-
-        //public virtual RugbyVenue RugbyVenue { get; set; }
-
-        //public virtual RugbyTeam TeamA { get; set; }
-
-        //public virtual RugbyTeam TeamB { get; set; }
-
         public int? TeamAScore { get; set; }
 
         public int? TeamBScore { get; set; }

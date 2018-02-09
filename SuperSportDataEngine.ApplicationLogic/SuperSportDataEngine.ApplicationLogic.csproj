@@ -153,7 +153,9 @@
     <Compile Include="Entities\Legacy\Mappers\LegacyAuthMappingProfile.cs" />
     <Compile Include="Entities\LogEntity.cs" />
     <Compile Include="Entities\SystemAPI\RugbyFixtureEntity.cs" />
+    <Compile Include="Entities\SystemAPI\RugbyPlayerEntity.cs" />
     <Compile Include="Entities\SystemAPI\RugbySeasonEntity.cs" />
+    <Compile Include="Entities\SystemAPI\RugbyTeamEntity.cs" />
     <Compile Include="Entities\SystemAPI\RugbyTournamentEntity.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Helpers\FixturesStateHelper.cs" />
