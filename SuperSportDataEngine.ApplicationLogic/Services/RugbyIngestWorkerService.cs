@@ -2294,7 +2294,7 @@
             await IngestLineUpsForFixtures(cancellationToken, gamesInTheNext2Days);
         }
 
-        private async Task IngestLineUpsForFixtures(CancellationToken cancellationToken, IEnumerable<RugbyFixture> rugbyFixtures, RugbyMatchStatsResponse matchStatsResponse = null)
+        private async Task IngestLineUpsForFixtures(CancellationToken cancellationToken, IEnumerable<RugbyFixture> rugbyFixtures)
         {
             foreach (var fixture in rugbyFixtures)
             {
@@ -2302,12 +2302,9 @@
                     return;
 
                 var fixtureId = fixture.ProviderFixtureId;
-
-                if (matchStatsResponse == null)
-                {
-                    matchStatsResponse =
-                        await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, fixtureId);
-                }
+                
+                var matchStatsResponse =
+                    await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, fixtureId);
 
                 if (matchStatsResponse == null)
                     continue;
@@ -2325,11 +2322,22 @@
         private async Task IngestPlayerLineups(CancellationToken cancellationToken, RugbyMatchStatsResponse matchStatsResponse, RugbyFixture fixture)
         {
             if (matchStatsResponse?.RugbyMatchStats?.teams?.teamsMatch == null)
+            {
+                await _logger.Warn("TeamsMatchNull." + fixture.Id,
+                    "Teams mathc is null for fixture " + fixture.LegacyFixtureId);
                 return;
+            }
 
             // Do we have provider info?
             if (matchStatsResponse.RugbyMatchStats.teams.teamsMatch.Count == 0)
+            {
+                await _logger.Warn("TeamsMatchCount." + fixture.Id,
+                    "Teams match count is 0. Suppose to be 2. " + fixture.LegacyFixtureId);
                 return;
+            }
+
+            //await _logger.Warn("IngestingLineup.Notify." + fixture.Id,
+            //    "Ingesting lineup started for legacy fixture " + fixture.LegacyFixtureId);
 
             var lineupsInDb = _rugbyPlayerLineupsRepository.Where(l => l.RugbyFixture.ProviderFixtureId == fixture.ProviderFixtureId).ToList();
 
@@ -2528,7 +2536,7 @@
 
                     Stopwatch s = Stopwatch.StartNew();
 
-                    await IngestLineUpsForFixtures(cancellationToken, new List<RugbyFixture>() { fixture }, matchStatsResponse);
+                    await IngestLineUpsForFixtures(cancellationToken, new List<RugbyFixture>() { fixture });
 
                     var playersForFixture = _rugbyPlayerLineupsRepository.Where(l => l.RugbyFixture.ProviderFixtureId == fixture.ProviderFixtureId).Select(l => l.RugbyPlayer).ToList();
                     await IngestGameTime(cancellationToken, matchStatsResponse, fixture);
