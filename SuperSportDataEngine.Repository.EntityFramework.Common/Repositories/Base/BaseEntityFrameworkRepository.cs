@@ -102,6 +102,11 @@
             return await _dbContext.SaveChangesAsync();
         }
 
+        public int Save()
+        {
+            return _dbContext.SaveChanges();
+        }
+
         public void Update(T item)
         {
             var entry = item as DbEntityEntry<T>;

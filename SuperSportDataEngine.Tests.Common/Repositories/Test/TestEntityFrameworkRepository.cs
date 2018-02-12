@@ -80,6 +80,11 @@ namespace SuperSportDataEngine.Tests.Common.Repositories.Test
             return Task.FromResult<int>(1);
         }
 
+        public int Save()
+        {
+            return 1;
+        }
+
         public void Update(T item)
         {
             // TODO
