@@ -46,7 +46,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             var legacyAuthFeedKeys = _legacyAuthFeedConsumerRepository.All().ToList();
             const string key = "AUTH_KEYS";
 
-            if (_cache != null && await _cache.GetAsync<IEnumerable<LegacyAuthFeedConsumer>>(key) == null)
+            if (_cache != null && await _cache.GetAsync<List<LegacyAuthFeedConsumer>>(key) == null)
             {
                 _cache.Add(key, legacyAuthFeedKeys, TimeSpan.FromDays(_numberOfDaysToKeepAuthKeys));
             }
@@ -108,11 +108,14 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             if (_cache != null)
             {
                 var keys = await _cache.GetAsync<IEnumerable<LegacyAuthFeedConsumer>>(key);
-                var consumer = keys.FirstOrDefault(k => k.AuthKey == authKey && k.Active) ??
-                               _legacyAuthFeedConsumerRepository.FirstOrDefault(
-                                   k => k.AuthKey == authKey && k.Active);
+                if (keys != null)
+                {
+                    var consumer = keys.FirstOrDefault(k => k.AuthKey == authKey && k.Active) ??
+                                   _legacyAuthFeedConsumerRepository.FirstOrDefault(
+                                       k => k.AuthKey == authKey && k.Active);
 
-                return consumer;
+                    return consumer;
+                }
             }
 
             return _legacyAuthFeedConsumerRepository.FirstOrDefault(
