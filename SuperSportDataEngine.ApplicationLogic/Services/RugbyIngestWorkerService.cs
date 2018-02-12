@@ -1747,16 +1747,24 @@
 
         private async Task IngestGameTime(CancellationToken cancellationToken, RugbyMatchStatsResponse matchStatsResponse, RugbyFixture rugbyFixture)
         {
-            if (cancellationToken.IsCancellationRequested)
-                return;
+            try
+            {
+                if (cancellationToken.IsCancellationRequested)
+                    return;
 
-            if (matchStatsResponse.RugbyMatchStats?.gameInfo == null)
-                return;
+                if (matchStatsResponse.RugbyMatchStats?.gameInfo == null)
+                    return;
 
-            rugbyFixture.GameTimeInSeconds = matchStatsResponse.RugbyMatchStats.gameInfo.gameSeconds;
-            _rugbyFixturesRepository.Update(rugbyFixture);
+                rugbyFixture.GameTimeInSeconds = matchStatsResponse.RugbyMatchStats.gameInfo.gameSeconds;
+                _rugbyFixturesRepository.Update(rugbyFixture);
 
-            await _rugbyFixturesRepository.SaveAsync();
+                await _rugbyFixturesRepository.SaveAsync();
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+
         }
 
         private async Task UpdateSchedulerTrackingFixturesTable(Guid fixtureId, string fixtureGameState)
