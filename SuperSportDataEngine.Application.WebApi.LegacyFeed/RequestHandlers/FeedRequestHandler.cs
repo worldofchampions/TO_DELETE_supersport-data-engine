@@ -147,7 +147,8 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
         {
             try
             {
-                _cache.Add(CacheKeyPrefix + "AUTH:" + $"auth/{siteId}/{auth}", authModel, TimeSpan.FromMinutes(_authKeyCacheExpiryInMinutes));
+                _cache?.Add(CacheKeyPrefix + "AUTH:" + $"auth/{siteId}/{auth}", authModel,
+                    TimeSpan.FromMinutes(_authKeyCacheExpiryInMinutes));
             }
             catch (Exception exception)
             {
