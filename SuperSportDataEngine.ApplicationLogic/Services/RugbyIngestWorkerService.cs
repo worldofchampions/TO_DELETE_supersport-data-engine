@@ -2340,7 +2340,7 @@
                 catch (Exception e)
                 {
                     await _logger.Warn("IngestingLineupsForFixture." + fixtureId,
-                        "Ingesting lineups for fixture threw exception.\n"
+                        "Ingesting lineups for fixture threw exception. Provider Fixture Id = " + fixtureId + "\n"
                         + "Message: \n" + e.Message + "\n"
                         + "StackTrace: \n" + e.StackTrace + "\n"
                         + "InnerException: \n" + e.InnerException
