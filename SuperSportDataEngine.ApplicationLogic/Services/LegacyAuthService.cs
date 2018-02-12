@@ -106,7 +106,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             const string key = "AUTH_KEYS";
 
             var keys = await _cache.GetAsync<IEnumerable<LegacyAuthFeedConsumer>>(key);
-            var consumer = keys.FirstOrDefault(k => k.AuthKey == authKey);
+            var consumer = keys.FirstOrDefault(k => k.AuthKey == authKey && k.Active) ??
+                           _legacyAuthFeedConsumerRepository.FirstOrDefault(
+                               k => k.AuthKey == authKey && k.Active);
 
             return consumer;
         }
