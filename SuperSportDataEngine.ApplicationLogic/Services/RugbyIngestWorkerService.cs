@@ -2450,6 +2450,8 @@
                         // Should this lineup entry remain in the db?
                         lineupsToRemoveFromDb.Remove(dbEntry);
                     }
+
+                    _rugbyPlayerLineupsRepository.SaveAsync();
                 }
             }
 
