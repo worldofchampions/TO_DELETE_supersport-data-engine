@@ -10,7 +10,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.CmsLogic.Interfaces
 {
     public interface IRugbyCmsService
     {
-        Task<IEnumerable<RugbyTournamentEntity>> GetAllTournaments(int pageIndex, int pageSize);
+        Task<IEnumerable<RugbyTournamentEntity>> GetAllTournaments(int pageIndex, int pageSize, string query = null);
         Task<IEnumerable<RugbyFixtureEntity>> GetAllFixtures(int pageIndex, int pageSize);
         Task<IEnumerable<RugbySeasonEntity>> GetAllSeasons(int pageIndex, int pageSize);
         Task<IEnumerable<RugbyTeamEntity>> GetAllTeams(int pageIndex, int pageSize);

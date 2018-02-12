@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 using System.Web.Http;
 
 namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
-{   
+{
     /// <summary>
     /// Rugby Controller to manage rugby related data
     /// </summary>
-    //[Authorize]
+    [Authorize]
     public class RugbyController : ApiController
     {
         IRugbyCmsService _rugbyService;
@@ -32,15 +32,22 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         /// </summary>
         /// <param name="pageIndex"></param>
         /// <param name="pageSize"></param>
+        /// <param name="query"></param>
         /// <returns></returns>
-        
+
         [ActionName("tournaments")]
         [HttpGet]
-        public async Task<HttpResponseMessage> GetAllTournaments(int pageIndex, int pageSize)
+        public async Task<HttpResponseMessage> GetAllTournaments(int pageIndex, int pageSize, string query = null)
         {
-            var tournaments = await _rugbyService.GetAllTournaments(pageIndex, pageSize);
-
-            return Request.CreateResponse(HttpStatusCode.OK, tournaments);
+            try
+            {
+                var tournaments = await _rugbyService.GetAllTournaments(pageIndex, pageSize, query);
+                return Request.CreateResponse(HttpStatusCode.OK, tournaments);
+            }
+            catch(Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while retrieving tournaments !");
+            }
         }
 
         /// <summary>
@@ -54,9 +61,15 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         [HttpGet]
         public async Task<HttpResponseMessage> GetAllFixtures(int pageIndex, int pageSize)
         {
-            var fixtures = await _rugbyService.GetAllFixtures(pageIndex, pageSize);
-
-            return Request.CreateResponse(HttpStatusCode.OK, fixtures);
+            try
+            {
+                var fixtures = await _rugbyService.GetAllFixtures(pageIndex, pageSize);
+                return Request.CreateResponse(HttpStatusCode.OK, fixtures);
+            }
+            catch(Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while retrieving fixtures !");
+            }
         }
 
         /// <summary>
@@ -70,9 +83,15 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         [HttpGet]
         public async Task<HttpResponseMessage> GetAllSeasons(int pageIndex, int pageSize)
         {
-            var seasons = await _rugbyService.GetAllSeasons(pageIndex, pageSize);
-
-            return Request.CreateResponse(HttpStatusCode.OK, seasons);
+            try
+            {
+                var seasons = await _rugbyService.GetAllSeasons(pageIndex, pageSize);
+                return Request.CreateResponse(HttpStatusCode.OK, seasons);
+            }
+            catch(Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while retrieving seasons !");
+            }
         }
 
         /// <summary>
@@ -86,9 +105,15 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         [HttpGet]
         public async Task<HttpResponseMessage> GetAllTeams(int pageIndex, int pageSize)
         {
-            var teams = await _rugbyService.GetAllTeams(pageIndex, pageSize);
-
-            return Request.CreateResponse(HttpStatusCode.OK, teams);
+            try
+            {
+                var teams = await _rugbyService.GetAllTeams(pageIndex, pageSize);
+                return Request.CreateResponse(HttpStatusCode.OK, teams);
+            }
+            catch(Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while retrieving teams !");
+            }
         }
 
         /// <summary>
@@ -102,9 +127,15 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         [HttpGet]
         public async Task<HttpResponseMessage> GetAllPlayers(int pageIndex, int pageSize)
         {
-            var players = await _rugbyService.GetAllPlayers(pageIndex, pageSize);
-
-            return Request.CreateResponse(HttpStatusCode.OK, players);
+            try
+            {
+                var players = await _rugbyService.GetAllPlayers(pageIndex, pageSize);
+                return Request.CreateResponse(HttpStatusCode.OK, players);
+            }
+            catch(Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while retrieving players !");
+            }
         }
 
         /// <summary>
@@ -116,15 +147,22 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         [HttpGet]
         public async Task<HttpResponseMessage> GetTournamentById(int id)
         {
-            var tournament = await _rugbyService.GetTournamentById(id);
+            try
+            {
+                var tournament = await _rugbyService.GetTournamentById(id);
 
-            if (tournament != null)
-            {
-                return Request.CreateResponse(HttpStatusCode.OK, tournament);
+                if (tournament != null)
+                {
+                    return Request.CreateResponse(HttpStatusCode.OK, tournament);
+                }
+                else
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Tournament Not Found");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Tournament Not Found");
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while processing tournament !");
             }
 
         }
@@ -138,17 +176,23 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         [HttpGet]
         public async Task<HttpResponseMessage> GetFixtureById(int id)
         {
-            var fixture = await _rugbyService.GetFixtureById(id);
-
-            if (fixture != null)
+            try
             {
-                return Request.CreateResponse(HttpStatusCode.OK, fixture);
-            }
-            else
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Fixture Not Found");
-            }
+                var fixture = await _rugbyService.GetFixtureById(id);
 
+                if (fixture != null)
+                {
+                    return Request.CreateResponse(HttpStatusCode.OK, fixture);
+                }
+                else
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Fixture Not Found");
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while processing fixture !");
+            }
         }
 
         /// <summary>
@@ -160,17 +204,23 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         [HttpGet]
         public async Task<HttpResponseMessage> GetSeasonById(int id)
         {
-            var season = await _rugbyService.GetSeasonById(id);
-
-            if (season != null)
+            try
             {
-                return Request.CreateResponse(HttpStatusCode.OK, season);
-            }
-            else
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Season Not Found");
-            }
+                var season = await _rugbyService.GetSeasonById(id);
 
+                if (season != null)
+                {
+                    return Request.CreateResponse(HttpStatusCode.OK, season);
+                }
+                else
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Season Not Found");
+                }
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while processing season !");
+            }
         }
 
         /// <summary>
@@ -182,15 +232,22 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         [HttpGet]
         public async Task<HttpResponseMessage> GetTeamById(int id)
         {
-            var team = await _rugbyService.GetTeamById(id);
+            try
+            {
+                var team = await _rugbyService.GetTeamById(id);
 
-            if (team != null)
-            {
-                return Request.CreateResponse(HttpStatusCode.OK, team);
+                if (team != null)
+                {
+                    return Request.CreateResponse(HttpStatusCode.OK, team);
+                }
+                else
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Team Not Found");
+                }
             }
-            else
+            catch(Exception ex)
             {
-                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Team Not Found");
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while processing team !");
             }
 
         }
@@ -204,17 +261,23 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         [HttpGet]
         public async Task<HttpResponseMessage> GetPlayerById(int id)
         {
-            var player = await _rugbyService.GetPlayerById(id);
-
-            if (player != null)
+            try
             {
-                return Request.CreateResponse(HttpStatusCode.OK, player);
-            }
-            else
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Player Not Found");
-            }
+                var player = await _rugbyService.GetPlayerById(id);
 
+                if (player != null)
+                {
+                    return Request.CreateResponse(HttpStatusCode.OK, player);
+                }
+                else
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Player Not Found");
+                }
+            }
+            catch(Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while processing player !");
+            }
         }
 
         /// <summary>
@@ -227,17 +290,23 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         [HttpPut]
         public async Task<HttpResponseMessage> PutTournament(int id, [FromBody] RugbyTournamentEntity rugbyTournamentEntity)
         {
-            var tournament = await _rugbyService.UpdateTournament(id, rugbyTournamentEntity);
-
-            if (tournament)
+            try
             {
-                return Request.CreateResponse(HttpStatusCode.NoContent, "Tournament was updated successfully");
-            }
-            else
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.MethodNotAllowed, "Tournament could not be updated");
-            }
+                var tournament = await _rugbyService.UpdateTournament(id, rugbyTournamentEntity);
 
+                if (tournament)
+                {
+                    return Request.CreateResponse(HttpStatusCode.NoContent, "Tournament was updated successfully");
+                }
+                else
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.NotAcceptable, "Tournament could not be updated");
+                }
+            }
+            catch(Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while updating tournament !");
+            }
         }
 
         /// <summary>
@@ -250,17 +319,23 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         [HttpPut]
         public async Task<HttpResponseMessage> PutFixture(int id, [FromBody] RugbyFixtureEntity rugbyFixtureEntity)
         {
-            var fixture = await _rugbyService.UpdateFixture(id, rugbyFixtureEntity);
-
-            if (fixture)
+            try
             {
-                return Request.CreateResponse(HttpStatusCode.NoContent, "Fixture was updated successfully");
-            }
-            else
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.MethodNotAllowed, "Fixture could not be updated");
-            }
+                var fixture = await _rugbyService.UpdateFixture(id, rugbyFixtureEntity);
 
+                if (fixture)
+                {
+                    return Request.CreateResponse(HttpStatusCode.NoContent, "Fixture was updated successfully");
+                }
+                else
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.NotAcceptable, "Fixture could not be updated");
+                }
+            }
+            catch(Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while updating fixtures !");
+            }
         }
 
         /// <summary>
@@ -273,17 +348,23 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         [HttpPut]
         public async Task<HttpResponseMessage> PutSeason(int id, [FromBody] RugbySeasonEntity rugbyseasonEntity)
         {
-            var season = await _rugbyService.UpdateSeason(id, rugbyseasonEntity);
-
-            if (season)
+            try
             {
-                return Request.CreateResponse(HttpStatusCode.NoContent, "Season was updated successfully");
-            }
-            else
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.MethodNotAllowed, "Season could not be updated");
-            }
+                var season = await _rugbyService.UpdateSeason(id, rugbyseasonEntity);
 
+                if (season)
+                {
+                    return Request.CreateResponse(HttpStatusCode.NoContent, "Season was updated successfully");
+                }
+                else
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.NotAcceptable, "Season could not be updated");
+                }
+            }
+            catch(Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while updating season !");
+            }
         }
 
 
@@ -297,15 +378,22 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         [HttpPut]
         public async Task<HttpResponseMessage> PutTeam(int id, [FromBody] RugbyTeamEntity rugbyTeamEntity)
         {
-            var team = await _rugbyService.UpdateTeam(id, rugbyTeamEntity);
+            try
+            {
+                var team = await _rugbyService.UpdateTeam(id, rugbyTeamEntity);
 
-            if (team)
-            {
-                return Request.CreateResponse(HttpStatusCode.NoContent, "Team was updated successfully");
+                if (team)
+                {
+                    return Request.CreateResponse(HttpStatusCode.NoContent, "Team was updated successfully");
+                }
+                else
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.NotAcceptable, "Team could not be updated");
+                }
             }
-            else
+            catch(Exception ex)
             {
-                return Request.CreateErrorResponse(HttpStatusCode.MethodNotAllowed, "Team could not be updated");
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while updating team !");
             }
 
         }
@@ -320,17 +408,23 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         [HttpPut]
         public async Task<HttpResponseMessage> PutPlayer(int id, [FromBody] RugbyPlayerEntity rugbyPlayerEntity)
         {
-            var player = await _rugbyService.UpdatePlayer(id, rugbyPlayerEntity);
-
-            if (player)
+            try
             {
-                return Request.CreateResponse(HttpStatusCode.NoContent, "Player was updated successfully");
-            }
-            else
-            {
-                return Request.CreateErrorResponse(HttpStatusCode.MethodNotAllowed, "Player could not be updated");
-            }
+                var player = await _rugbyService.UpdatePlayer(id, rugbyPlayerEntity);
 
+                if (player)
+                {
+                    return Request.CreateResponse(HttpStatusCode.NoContent, "Player was updated successfully");
+                }
+                else
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.NotAcceptable, "Player could not be updated");
+                }
+            }
+            catch(Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while updating player !");
+            }
         }
     }
 }

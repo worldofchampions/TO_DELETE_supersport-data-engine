@@ -107,7 +107,6 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi
                     
                     // Custom Filters
                     c.OperationFilter<AddAuthHeaderToSwagger>();
-                    c.DocumentFilter<AddTokenEndpointToSwagger>();
 
                     // Swashbuckle makes a best attempt at generating Swagger compliant JSON schemas for the various types
                     // exposed in your API. However, there may be occasions when more control of the output is needed.

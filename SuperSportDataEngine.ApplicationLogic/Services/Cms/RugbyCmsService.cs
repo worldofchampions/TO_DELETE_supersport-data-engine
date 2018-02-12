@@ -54,10 +54,21 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
         /// <param name="pageIndex"></param>
         /// <param name="pageSize"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<RugbyTournamentEntity>> GetAllTournaments(int pageIndex, int pageSize)
+        public async Task<IEnumerable<RugbyTournamentEntity>> GetAllTournaments(int pageIndex, int pageSize, string query = null)
         {
-            var tournaments = await Task.FromResult(_rugbyTournamentRepository.All().Skip(pageIndex * pageSize).Take(pageSize));
+            var tournaments = (IEnumerable<RugbyTournament>)null;
 
+            if (!String.IsNullOrEmpty(query))
+            {
+                tournaments = await Task.FromResult(_rugbyTournamentRepository.Where(q => q.Name.Contains(query) 
+                                                        || q.NameCmsOverride.Contains(query) )
+                                                        .Skip(pageIndex * pageSize).Take(pageSize));
+            }
+            else
+            {
+                tournaments = await Task.FromResult(_rugbyTournamentRepository.All().Skip(pageIndex * pageSize).Take(pageSize));
+            }
+            
             if (tournaments.Any())
             {
                 return iMapper.Map<IEnumerable<RugbyTournament>, IEnumerable<RugbyTournamentEntity>>(tournaments);
