@@ -2451,7 +2451,7 @@
                         lineupsToRemoveFromDb.Remove(dbEntry);
                     }
 
-                    _rugbyPlayerLineupsRepository.SaveAsync();
+                    await _rugbyPlayerLineupsRepository.SaveAsync();
                 }
             }
 
