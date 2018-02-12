@@ -83,7 +83,14 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
             if (cache == null) return;
 
             var legacyAuthFeedConsumer = _container.Resolve<IBaseEntityFrameworkRepository<LegacyAuthFeedConsumer>>();
-            cache.Add("AUTH_KEYS", legacyAuthFeedConsumer.All());
+
+            cache.Add(
+                "AUTH_KEYS", 
+                legacyAuthFeedConsumer.All(), 
+                TimeSpan.FromDays(
+                    int.Parse(
+                        ConfigurationManager.AppSettings[
+                            "NumberOfDaysToKeepAuthKeys"])));
         }
 
         private void ConfigureTimer()
