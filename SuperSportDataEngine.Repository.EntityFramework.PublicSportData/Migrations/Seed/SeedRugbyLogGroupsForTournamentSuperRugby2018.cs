@@ -39,9 +39,9 @@
                     // Due to the logic on HD Active decoders 
                     // (if IsConference == true use CombinedRank else use Position)
                     // We want HD Active to use Position, so we mark it as false.
-                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 2, IsConference = false, IsCoreGroup = true, Slug = SlugHierarchyLevel1Australian, ProviderLogGroupId = 1, ProviderGroupName = "Australian Conference", GroupName = "Australian Conference", GroupShortName = "Aus Group" },
-                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 2, IsConference = false, IsCoreGroup = true, Slug = SlugHierarchyLevel1NewZealand, ProviderLogGroupId = 2, ProviderGroupName = "New Zealand Conference", GroupName = "New Zealand Conference", GroupShortName = "NZ Group" },
-                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 2, IsConference = false, IsCoreGroup = true, Slug = SlugHierarchyLevel1SouthAfrican, ProviderLogGroupId = 3, ProviderGroupName = "South African Conference", GroupName = "South African Conference", GroupShortName = "Africa Group" }
+                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = false, IsCoreGroup = true, Slug = SlugHierarchyLevel1Australian, ProviderLogGroupId = 1, ProviderGroupName = "Australian Conference", GroupName = "Australian Conference", GroupShortName = "Aus Group" },
+                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = false, IsCoreGroup = true, Slug = SlugHierarchyLevel1NewZealand, ProviderLogGroupId = 2, ProviderGroupName = "New Zealand Conference", GroupName = "New Zealand Conference", GroupShortName = "NZ Group" },
+                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = false, IsCoreGroup = true, Slug = SlugHierarchyLevel1SouthAfrican, ProviderLogGroupId = 3, ProviderGroupName = "South African Conference", GroupName = "South African Conference", GroupShortName = "Africa Group" }
                 );
 
                 context.SaveChanges();
