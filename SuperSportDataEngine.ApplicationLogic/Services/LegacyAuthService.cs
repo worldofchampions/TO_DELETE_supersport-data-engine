@@ -25,6 +25,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         private readonly int _numberOfDaysToKeepAuthKeys;
 
+        private static readonly object CacheLock = new object();
+
         public LegacyAuthService(
             ILoggingService loggingService,
             IBaseEntityFrameworkRepository<LegacyZoneSite> legacyZoneSiteRepository,
@@ -43,12 +45,16 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         private async void CacheAuthKeysFromDatabase()
         {
-            var legacyAuthFeedKeys = _legacyAuthFeedConsumerRepository.All().ToList();
             const string key = "AUTH_KEYS";
+            var keysInCache = await _cache.GetAsync<List<LegacyAuthFeedConsumer>>(key);
 
-            if (_cache != null && await _cache.GetAsync<List<LegacyAuthFeedConsumer>>(key) == null)
+            lock (CacheLock)
             {
-                _cache.Add(key, legacyAuthFeedKeys, TimeSpan.FromDays(_numberOfDaysToKeepAuthKeys));
+                if (_cache != null && keysInCache == null)
+                {
+                    var legacyAuthFeedKeys = _legacyAuthFeedConsumerRepository.All().ToList();
+                    _cache.Add(key, legacyAuthFeedKeys, TimeSpan.FromDays(_numberOfDaysToKeepAuthKeys));
+                }
             }
         }
 
@@ -107,6 +113,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             if (_cache != null)
             {
+                CacheAuthKeysFromDatabase();
+
                 var keys = await _cache.GetAsync<IEnumerable<LegacyAuthFeedConsumer>>(key);
                 if (keys != null)
                 {
