@@ -94,6 +94,15 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
                             "NumberOfDaysToKeepAuthKeys"])));
 
             var keysFromCache = await cache.GetAsync<IEnumerable<LegacyAuthFeedConsumer>>("AUTH_KEYS");
+
+            if (keysFromCache == null)
+            {
+                await _logger.Info(
+                    "LogNoAuthKeys.",
+                    "No Auth keys added to cache.");
+                return;
+            }
+
             foreach (var authFeedConsumer in keysFromCache)
             {
                 await _logger.Info(
