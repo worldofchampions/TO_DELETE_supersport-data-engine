@@ -432,6 +432,8 @@
                     return;
 
                 var team = (await _rugbyTeamRepository.AllAsync()).FirstOrDefault(t => t.ProviderTeamId == position.teamId);
+                if (team == null)
+                    continue;
 
                 var ladderEntryInDb =
                     laddersAlreadyInDb.FirstOrDefault(
