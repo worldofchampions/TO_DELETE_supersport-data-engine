@@ -1560,7 +1560,14 @@
             if (fixtures == null)
                 return;
 
-            await PersistFixturesData(cancellationToken, fixtures);
+            try
+            {
+                await PersistFixturesData(cancellationToken, fixtures);
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
         }
 
         public async Task IngestPastSeasonsForActiveTournaments(CancellationToken cancellationToken)
