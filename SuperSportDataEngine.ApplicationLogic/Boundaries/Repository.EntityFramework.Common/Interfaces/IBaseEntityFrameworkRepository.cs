@@ -29,6 +29,8 @@
 
         Task<int> SaveAsync();
 
+        int Save();
+
         void Update(T item);
 
         IEnumerable<T> Where(Expression<Func<T, bool>> predicate);

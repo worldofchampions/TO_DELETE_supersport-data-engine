@@ -1845,6 +1845,8 @@
                         _rugbyMatchEventsRepository.Update(eventInDb);
                         eventsToRemove.Remove(eventInDb);
                     }
+
+                    _rugbyMatchEventsRepository.Save();
                 }
             }
         }
