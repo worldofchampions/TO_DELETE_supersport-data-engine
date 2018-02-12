@@ -1701,47 +1701,54 @@
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                if (fixtureInDb == null)
-                    return;
+                try
+                {
+                    if (fixtureInDb == null)
+                        return;
 
-                var matchStatsResponse =
-                    await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, providerFixtureId);
+                    var matchStatsResponse =
+                        await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, providerFixtureId);
 
-                if (matchStatsResponse == null)
-                    continue;
+                    if (matchStatsResponse == null)
+                        continue;
 
-                var eventsFlowResponse =
-                    await _statsProzoneIngestService.IngestEventsFlow(cancellationToken, providerFixtureId);
+                    var eventsFlowResponse =
+                        await _statsProzoneIngestService.IngestEventsFlow(cancellationToken, providerFixtureId);
 
-                if (eventsFlowResponse == null)
-                    continue;
+                    if (eventsFlowResponse == null)
+                        continue;
 
-                await IngestLineUpsForFixtures(cancellationToken, new List<RugbyFixture>() { fixtureInDb });
-                await IngestGameTime(cancellationToken, matchStatsResponse, fixtureInDb);
+                    await IngestLineUpsForFixtures(cancellationToken, new List<RugbyFixture>() { fixtureInDb });
+                    await IngestGameTime(cancellationToken, matchStatsResponse, fixtureInDb);
 
-                var playersForFixture = _rugbyPlayerLineupsRepository.Where(l => l.RugbyFixture.ProviderFixtureId == fixtureInDb.ProviderFixtureId).Select(l => l.RugbyPlayer).ToList();
-                await IngestCommentary(cancellationToken, eventsFlowResponse.RugbyEventsFlow.commentaryFlow, fixtureInDb, playersForFixture);
+                    var playersForFixture = _rugbyPlayerLineupsRepository.Where(l => l.RugbyFixture.ProviderFixtureId == fixtureInDb.ProviderFixtureId).Select(l => l.RugbyPlayer).ToList();
+                    await IngestCommentary(cancellationToken, eventsFlowResponse.RugbyEventsFlow.commentaryFlow, fixtureInDb, playersForFixture);
 
-                await IngestMatchStatisticsData(cancellationToken, matchStatsResponse, providerFixtureId);
-                await IngestScoreData(cancellationToken, matchStatsResponse);
-                await IngestFixtureStatusData(cancellationToken, matchStatsResponse, fixtureInDb);
-                await UpdateSchedulerTrackingFixturesTable(fixtureInDb.Id, matchStatsResponse.RugbyMatchStats.gameState);
+                    await IngestMatchStatisticsData(cancellationToken, matchStatsResponse, providerFixtureId);
+                    await IngestScoreData(cancellationToken, matchStatsResponse);
+                    await IngestFixtureStatusData(cancellationToken, matchStatsResponse, fixtureInDb);
+                    await UpdateSchedulerTrackingFixturesTable(fixtureInDb.Id, matchStatsResponse.RugbyMatchStats.gameState);
 
-                await IngestEvents(cancellationToken, eventsFlowResponse, fixtureInDb);
+                    await IngestEvents(cancellationToken, eventsFlowResponse, fixtureInDb);
 
-                _mongoDbRepository.Save(matchStatsResponse);
-                _mongoDbRepository.Save(eventsFlowResponse);
+                    _mongoDbRepository.Save(matchStatsResponse);
+                    _mongoDbRepository.Save(eventsFlowResponse);
 
-                //// Check if should stop looping?
-                var matchState = GetFixtureStatusFromProviderFixtureState(fixtureInDb, matchStatsResponse.RugbyMatchStats.gameState);
-                var schedulerState = FixturesStateHelper.GetSchedulerStateForFixture(DateTime.UtcNow, matchState, fixtureInDb.StartDateTime.DateTime);
+                    //// Check if should stop looping?
+                    var matchState = GetFixtureStatusFromProviderFixtureState(fixtureInDb, matchStatsResponse.RugbyMatchStats.gameState);
+                    var schedulerState = FixturesStateHelper.GetSchedulerStateForFixture(DateTime.UtcNow, matchState, fixtureInDb.StartDateTime.DateTime);
 
-                if (schedulerState == SchedulerStateForRugbyFixturePolling.SchedulingCompleted ||
-                    schedulerState == SchedulerStateForRugbyFixturePolling.SchedulingNotYetStarted ||
-                    schedulerState == SchedulerStateForRugbyFixturePolling.ResultOnlyPolling)
-                    break;
+                    if (schedulerState == SchedulerStateForRugbyFixturePolling.SchedulingCompleted ||
+                        schedulerState == SchedulerStateForRugbyFixturePolling.SchedulingNotYetStarted ||
+                        schedulerState == SchedulerStateForRugbyFixturePolling.ResultOnlyPolling)
+                        break;
 
-                Thread.Sleep(5_000);
+                    Thread.Sleep(5_000);
+                }
+                catch (Exception)
+                {
+                    // ignored
+                }
             }
         }
 
