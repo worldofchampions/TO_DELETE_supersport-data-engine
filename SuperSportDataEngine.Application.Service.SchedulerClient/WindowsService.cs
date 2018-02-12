@@ -1,4 +1,5 @@
-﻿using System.Timers;
+﻿using System.Collections.Generic;
+using System.Timers;
 using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
@@ -77,7 +78,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
             }
         }
 
-        private void UpdateAuthKeysInCache()
+        private async void UpdateAuthKeysInCache()
         {
             var cache = _container.Resolve<ICache>();
             if (cache == null) return;
@@ -91,6 +92,14 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
                     int.Parse(
                         ConfigurationManager.AppSettings[
                             "NumberOfDaysToKeepAuthKeys"])));
+
+            var keysFromCache = await cache.GetAsync<IEnumerable<LegacyAuthFeedConsumer>>("AUTH_KEYS");
+            foreach (var authFeedConsumer in keysFromCache)
+            {
+                await _logger.Info(
+                    "LogAddedAuthKey." + authFeedConsumer.AuthKey,
+                    "Added auth key: " + authFeedConsumer.AuthKey);
+            }
         }
 
         private void ConfigureTimer()
