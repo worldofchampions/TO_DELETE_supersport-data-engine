@@ -7,27 +7,21 @@ using System.Web.Configuration;
 namespace SuperSportDataEngine.Application.WebApi.SystemApi.Authentication
 {
     /// <summary>
-    /// Class to handle API security
+    /// Class to handle API Authentication
     /// </summary>
     public class ApiSecurity
     {
         /// <summary>
-        /// Method that accepts cms key and check if it matches with the one
-        /// in the webconfig
+        /// Method that accepts cms key and check if it matches with the one in the webconfig
         /// </summary>
         /// <param name="key"></param>
-        /// <returns></returns>
+        /// <returns>true or false</returns>
         public static bool VaidateUser(string key)
         {
             // Check if it is valid credential  
             if (WebConfigurationManager.AppSettings["CmsKey"] == key)  
-            {
                 return true;
-            }
-            else
-            {
-                return false;
-            }
+            return false;
         }
     }
 }

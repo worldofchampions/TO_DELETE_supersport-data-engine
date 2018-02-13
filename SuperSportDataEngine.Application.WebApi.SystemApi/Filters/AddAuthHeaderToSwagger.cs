@@ -8,10 +8,16 @@ using System.Web.Http.Description;
 namespace SuperSportDataEngine.Application.WebApi.SystemApi.Filters
 {
     /// <summary>
-    /// Class to allow swagger user bearer auth token
+    /// Class to allow swagger use Authorization header
     /// </summary>
     public class AddAuthHeaderToSwagger : IOperationFilter
     {
+        /// <summary>
+        /// Method that applies the header for use in swagger
+        /// </summary>
+        /// <param name="operation"></param>
+        /// <param name="schemaRegistry"></param>
+        /// <param name="apiDescription"></param>
         public void Apply(Operation operation, SchemaRegistry schemaRegistry, ApiDescription apiDescription)
         {
             if (operation.parameters != null)

@@ -6,6 +6,9 @@ using System.Web;
 
 namespace SuperSportDataEngine.Application.WebApi.SystemApi.Models
 {
+    /// <summary>
+    /// User model for ASP.NET Users
+    /// </summary>
     public class UserModel
     {
         [Required]

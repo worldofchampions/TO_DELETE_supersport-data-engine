@@ -11,6 +11,10 @@ using System.Web;
 
 namespace SuperSportDataEngine.Application.WebApi.SystemApi.Providers
 {
+    /// <summary>
+    /// This is a class to handle OAuth authentication, currently not in use yet
+    /// But may revisit soonest.
+    /// </summary>
     public class SimpleAuthorizationServerProvider : OAuthAuthorizationServerProvider
     {
         public override async Task ValidateClientAuthentication(OAuthValidateClientAuthenticationContext context)

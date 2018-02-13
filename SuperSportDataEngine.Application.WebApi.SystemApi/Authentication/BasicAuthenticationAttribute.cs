@@ -9,8 +9,15 @@ using System.Web.Http.Filters;
 
 namespace SuperSportDataEngine.Application.WebApi.SystemApi.Authentication
 {
+    /// <summary>
+    /// Override ASP.NET Authentication behaviour
+    /// </summary>
     public class BasicAuthenticationAttribute : AuthorizationFilterAttribute
     {
+        /// <summary>
+        /// Overriding OnAuthorization method and passing the HTTP request information
+        /// </summary>
+        /// <param name="actionContext"></param>
         public override void OnAuthorization(System.Web.Http.Controllers.HttpActionContext actionContext)
         {
             if (actionContext.Request.Headers.Authorization == null)
@@ -30,6 +37,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Authentication
                 }
             }
 
+            // if valid continue with this request
             base.OnAuthorization(actionContext);
         }
     }

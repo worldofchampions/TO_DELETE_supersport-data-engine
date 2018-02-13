@@ -30,6 +30,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
 
         /// <summary>
         /// Get paginated list of rugby tournaments
+        /// And searching by passing query parameter
         /// </summary>
         /// <param name="pageIndex"></param>
         /// <param name="pageSize"></param>
@@ -52,7 +53,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         }
 
         /// <summary>
-        /// Get paginated list of rugby fixtures
+        /// Get paginated list of rugby fixtures and return a 500 error response if something failed while doing it
         /// </summary>
         /// <param name="pageIndex"></param>
         /// <param name="pageSize"></param>
@@ -74,7 +75,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         }
 
         /// <summary>
-        /// Get paginated list of rugby seasons
+        /// Get paginated list of rugby seasons and return a 500 error response if something failed while doing it
         /// </summary>
         /// <param name="pageIndex"></param>
         /// <param name="pageSize"></param>
@@ -96,7 +97,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         }
 
         /// <summary>
-        /// Get paginated list of rugby teams
+        /// Get paginated list of rugby teams and return a 500 error response if something failed while doing it
         /// </summary>
         /// <param name="pageIndex"></param>
         /// <param name="pageSize"></param>
@@ -118,7 +119,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         }
 
         /// <summary>
-        /// Get paginated list of rugby players
+        /// Get paginated list of rugby players and return a 500 error response if something failed while doing it
         /// </summary>
         /// <param name="pageIndex"></param>
         /// <param name="pageSize"></param>
@@ -141,6 +142,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
 
         /// <summary>
         /// Get single tournament by tournament Id
+        /// Return 404 if not found and a 500 error response if something failed while doing it
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -170,6 +172,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
 
         /// <summary>
         /// Get single fixture retrieved by fixture Id
+        /// Return 404 if not found and a 500 error response if something failed while doing it
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -198,6 +201,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
 
         /// <summary>
         /// Get single season retrieved by ProviderSeasonId
+        /// Return 404 if not found and a 500 error response if something failed while doing it
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -226,6 +230,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
 
         /// <summary>
         /// Get single team retrieved by LegacyTeamId
+        /// Return 404 if not found and a 500 error response if something failed while doing it
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -255,6 +260,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
 
         /// <summary>
         /// Get single player retrieved by LegacyPlayerId
+        /// Return 404 if not found and a 500 error response if something failed while doing it
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -283,6 +289,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
 
         /// <summary>
         /// Update tournament
+        /// Return 406 if update doesn't succeed and a 500 error response if something failed while doing it
         /// </summary>
         /// <param name="id"></param>
         /// <param name="rugbyTournamentEntity"></param>
@@ -312,6 +319,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
 
         /// <summary>
         /// Update fixture
+        /// Return 406 if update doesn't succeed and a 500 error response if something failed while doing it
         /// </summary>
         /// <param name="id"></param>
         /// <param name="rugbyFixtureEntity"></param>
@@ -341,6 +349,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
 
         /// <summary>
         /// Update season
+        /// Return 406 if update doesn't succeed and a 500 error response if something failed while doing it
         /// </summary>
         /// <param name="id"></param>
         /// <param name="rugbyseasonEntity"></param>
@@ -371,6 +380,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
 
         /// <summary>
         /// Update Team
+        /// Return 406 if update doesn't succeed and a 500 error response if something failed while doing it
         /// </summary>
         /// <param name="id"></param>
         /// <param name="rugbyTeamEntity"></param>
@@ -401,6 +411,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
 
         /// <summary>
         /// Update Player
+        /// Return 406 if update doesn't succeed and a 500 error response if something failed while doing it
         /// </summary>
         /// <param name="id"></param>
         /// <param name="rugbyPlayerEntity"></param>
