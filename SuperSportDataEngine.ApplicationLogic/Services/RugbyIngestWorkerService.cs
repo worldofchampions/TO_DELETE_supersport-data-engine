@@ -2440,6 +2440,7 @@
                         };
 
                         _rugbyPlayerLineupsRepository.Add(newEntry);
+                        lineupsInDb.Add(newEntry);
                     }
                     else
                     {
