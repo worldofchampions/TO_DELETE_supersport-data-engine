@@ -86,10 +86,9 @@ namespace SuperSportDataEngine.Application.Container
 
         private static void ApplyRegistrationsForGatewayHttpCommon(IUnityContainer container, ApplicationScope applicationScope)
         {
-            /*
             try
             {
-                //if (applicationScope == ApplicationScope.WebApiLegacyFeed || applicationScope == ApplicationScope.WebApiPublicApi)
+                if (applicationScope == ApplicationScope.WebApiLegacyFeed || applicationScope == ApplicationScope.WebApiPublicApi)
                 {
                     container.RegisterType<ICache, Cache>(new ContainerControlledLifetimeManager(),
                         new InjectionFactory((x) => new Cache(ConnectionMultiplexer.Connect(WebConfigurationManager.ConnectionStrings["Redis"].ConnectionString))));
@@ -105,7 +104,7 @@ namespace SuperSportDataEngine.Application.Container
                     "Message: \n" + exception.Message + 
                     "StackTrace: \n" + exception.StackTrace +
                     "Inner Exception \n" + exception.InnerException);
-            }*/
+            }
         }
 
         private static void ApplyRegistrationsForGatewayHttpDeprecatedFeed(IUnityContainer container, ApplicationScope applicationScope)
