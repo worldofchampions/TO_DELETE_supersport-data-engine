@@ -1,4 +1,5 @@
-﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.CmsLogic.Interfaces;
+﻿using SuperSportDataEngine.Application.WebApi.SystemApi.Authentication;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.CmsLogic.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Entities.SystemAPI;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
     /// <summary>
     /// Rugby Controller to manage rugby related data
     /// </summary>
-    [Authorize]
+    [BasicAuthentication]
     public class RugbyController : ApiController
     {
         IRugbyCmsService _rugbyService;

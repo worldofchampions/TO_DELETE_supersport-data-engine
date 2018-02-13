@@ -1,6 +1,7 @@
 ﻿using Microsoft.Practices.Unity;
 using SuperSportDataEngine.Application.Container;
 using SuperSportDataEngine.Application.WebApi.SystemApi.App_Start;
+using SuperSportDataEngine.Application.WebApi.SystemApi.Authentication;
 using System.Web.Http;
 
 namespace SuperSportDataEngine.Application.WebApi.SystemApi
@@ -11,7 +12,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi
         public static void Register(HttpConfiguration config)
         {
             _httpConfig = config;
-
+            config.Filters.Add(new BasicAuthenticationAttribute());
             ConfigureDependencyContainer();
 
             ConfigureApiRoutes();
