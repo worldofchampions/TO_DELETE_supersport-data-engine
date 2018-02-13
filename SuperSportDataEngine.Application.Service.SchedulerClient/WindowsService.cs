@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Timers;
 using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
@@ -87,13 +88,22 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
 
             cache.Add(
                 "AUTH_KEYS", 
-                legacyAuthFeedConsumer.All(), 
+                legacyAuthFeedConsumer.All().ToList(), 
                 TimeSpan.FromDays(
                     int.Parse(
                         ConfigurationManager.AppSettings[
                             "NumberOfDaysToKeepAuthKeys"])));
 
             var keysFromCache = await cache.GetAsync<IEnumerable<LegacyAuthFeedConsumer>>("AUTH_KEYS");
+
+            if (keysFromCache == null)
+            {
+                await _logger.Info(
+                    "LogNoAuthKeys.",
+                    "No Auth keys added to cache.");
+                return;
+            }
+
             foreach (var authFeedConsumer in keysFromCache)
             {
                 await _logger.Info(
