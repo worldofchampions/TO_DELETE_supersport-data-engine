@@ -1,4 +1,9 @@
-﻿using System.Timers;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Timers;
+using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
 using SuperSportDataEngine.Common.Logging;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient
@@ -18,6 +23,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
 
     internal class WindowsService : IWindowsServiceContract
     {
+        private readonly IUnityContainer _container;
         private readonly FixedScheduledJob _fixedManagerJob;
         private readonly ManagerJob _jobManager;
         private readonly ILoggingService _logger;
@@ -26,7 +32,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
         public WindowsService(IUnityContainer container)
         {
             _logger = container.Resolve<ILoggingService>();
-
+            _container = container;
             _fixedManagerJob = new FixedScheduledJob(container.CreateChildContainer());
             _jobManager = new ManagerJob();
         }
@@ -60,6 +66,8 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
                     try
                     {
                         _fixedManagerJob.UpdateRecurringJobDefinitions();
+
+                        UpdateAuthKeysInCache();
                     }
                     catch (Exception e)
                     {
@@ -68,6 +76,39 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
 
                     Thread.Sleep(2000);
                 }
+            }
+        }
+
+        private async void UpdateAuthKeysInCache()
+        {
+            var cache = _container.Resolve<ICache>();
+            if (cache == null) return;
+
+            var legacyAuthFeedConsumer = _container.Resolve<IBaseEntityFrameworkRepository<LegacyAuthFeedConsumer>>();
+
+            cache.Add(
+                "AUTH_KEYS", 
+                legacyAuthFeedConsumer.All().ToList(), 
+                TimeSpan.FromDays(
+                    int.Parse(
+                        ConfigurationManager.AppSettings[
+                            "NumberOfDaysToKeepAuthKeys"])));
+
+            var keysFromCache = await cache.GetAsync<IEnumerable<LegacyAuthFeedConsumer>>("AUTH_KEYS");
+
+            if (keysFromCache == null)
+            {
+                await _logger.Info(
+                    "LogNoAuthKeys.",
+                    "No Auth keys added to cache.");
+                return;
+            }
+
+            foreach (var authFeedConsumer in keysFromCache)
+            {
+                await _logger.Info(
+                    "LogAddedAuthKey." + authFeedConsumer.AuthKey,
+                    "Added auth key: " + authFeedConsumer.AuthKey);
             }
         }
 
