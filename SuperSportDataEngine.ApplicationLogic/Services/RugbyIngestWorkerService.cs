@@ -2371,7 +2371,7 @@
             //await _logger.Warn("IngestingLineup.Notify." + fixture.Id,
             //    "Ingesting lineup started for legacy fixture " + fixture.LegacyFixtureId);
 
-            var lineupsInDb = _rugbyPlayerLineupsRepository.Where(l => l.RugbyFixture.ProviderFixtureId == fixture.ProviderFixtureId).ToList();
+            var lineupsInDb = _rugbyPlayerLineupsRepository.WhereIncludeLocal(l => l.RugbyFixture.ProviderFixtureId == fixture.ProviderFixtureId).ToList();
 
             var lineupsToRemoveFromDb = lineupsInDb;
 
@@ -2452,8 +2452,6 @@
                         // Should this lineup entry remain in the db?
                         lineupsToRemoveFromDb.Remove(dbEntry);
                     }
-
-                    await _rugbyPlayerLineupsRepository.SaveAsync();
                 }
             }
 
