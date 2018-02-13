@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Timers;
 using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
@@ -87,7 +88,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
 
             cache.Add(
                 "AUTH_KEYS", 
-                legacyAuthFeedConsumer.All(), 
+                legacyAuthFeedConsumer.All().ToList(), 
                 TimeSpan.FromDays(
                     int.Parse(
                         ConfigurationManager.AppSettings[
