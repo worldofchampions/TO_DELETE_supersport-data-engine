@@ -67,7 +67,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
                     {
                         _fixedManagerJob.UpdateRecurringJobDefinitions();
 
-                        UpdateAuthKeysInCache();
+                        //UpdateAuthKeysInCache();
                     }
                     catch (Exception e)
                     {

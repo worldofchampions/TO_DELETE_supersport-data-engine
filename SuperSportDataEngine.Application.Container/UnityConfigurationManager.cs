@@ -90,7 +90,7 @@ namespace SuperSportDataEngine.Application.Container
                     container.RegisterType<ICache, Cache>(new ContainerControlledLifetimeManager(),
                         new InjectionFactory((x) => Cache));
 
-                    Logger.Cache = container.Resolve<ICache>();
+                    Logger.Cache = Cache;
                 }
             }
             catch (System.Exception exception)
