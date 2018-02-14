@@ -421,8 +421,12 @@
             var seasonId = flatLogsResponse.RugbyFlatLogs.seasonId;
             var roundNumber = flatLogsResponse.RugbyFlatLogs.roundNumber;
 
-            var laddersAlreadyInDb = (await _rugbyFlatLogsRepository.AllAsync()).ToList();
+            var laddersAlreadyInDb = (_rugbyFlatLogsRepository.Where(
+                l => l.RugbyTournament.ProviderTournamentId == tournamentId &&
+                     l.RugbySeason.ProviderSeasonId == seasonId &&
+                     l.RoundNumber == roundNumber)).ToList();
 
+            var itemsToRemove = laddersAlreadyInDb;
             if (flatLogsResponse.RugbyFlatLogs.ladderposition == null)
                 return;
 
@@ -445,7 +449,6 @@
                 var tournament = (await _rugbyTournamentRepository.AllAsync()).FirstOrDefault(t => t.ProviderTournamentId == tournamentId);
                 var season = (await _rugbySeasonRepository.AllAsync()).FirstOrDefault(s => tournament != null && (s.RugbyTournament.Id == tournament.Id && s.ProviderSeasonId == seasonId));
 
-                if (team == null) continue;
                 if (season == null) continue;
                 if (tournament == null) continue;
 
@@ -492,9 +495,11 @@
                     ladderEntryInDb.TriesFor = position.triesAgainst;
 
                     _rugbyFlatLogsRepository.Update(ladderEntryInDb);
+                    itemsToRemove.Remove(ladderEntryInDb);
                 }
             }
 
+            _rugbyFlatLogsRepository.DeleteRange(itemsToRemove);
             await _rugbyFlatLogsRepository.SaveAsync();
         }
 
