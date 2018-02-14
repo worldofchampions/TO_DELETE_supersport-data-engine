@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.Repository.EntityFramework.SystemSportData.Context
+﻿using System.Data.Entity.Infrastructure.Annotations;
+
+namespace SuperSportDataEngine.Repository.EntityFramework.SystemSportData.Context
 {
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
     using System.ComponentModel.DataAnnotations.Schema;
@@ -11,6 +13,10 @@
             modelBuilder.Entity<LegacyAccessItem>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
 
             modelBuilder.Entity<LegacyAuthFeedConsumer>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+            modelBuilder.Entity<LegacyAuthFeedConsumer>().Property(x => x.AuthKey).IsRequired();
+            modelBuilder.Entity<LegacyAuthFeedConsumer>().Property(x => x.AuthKey).HasColumnAnnotation(
+                IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Seek_AuthKey")));
+            modelBuilder.Entity<LegacyAuthFeedConsumer>().Property(x => x.AuthKey).HasMaxLength(50);
 
             modelBuilder.Entity<LegacyMethodAccess>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
 

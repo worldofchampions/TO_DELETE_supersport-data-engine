@@ -421,8 +421,12 @@
             var seasonId = flatLogsResponse.RugbyFlatLogs.seasonId;
             var roundNumber = flatLogsResponse.RugbyFlatLogs.roundNumber;
 
-            var laddersAlreadyInDb = (await _rugbyFlatLogsRepository.AllAsync()).ToList();
+            var laddersAlreadyInDb = (_rugbyFlatLogsRepository.Where(
+                l => l.RugbyTournament.ProviderTournamentId == tournamentId &&
+                     l.RugbySeason.ProviderSeasonId == seasonId &&
+                     l.RoundNumber == roundNumber)).ToList();
 
+            var itemsToRemove = laddersAlreadyInDb;
             if (flatLogsResponse.RugbyFlatLogs.ladderposition == null)
                 return;
 
@@ -432,6 +436,8 @@
                     return;
 
                 var team = (await _rugbyTeamRepository.AllAsync()).FirstOrDefault(t => t.ProviderTeamId == position.teamId);
+                if (team == null)
+                    continue;
 
                 var ladderEntryInDb =
                     laddersAlreadyInDb.FirstOrDefault(
@@ -443,7 +449,6 @@
                 var tournament = (await _rugbyTournamentRepository.AllAsync()).FirstOrDefault(t => t.ProviderTournamentId == tournamentId);
                 var season = (await _rugbySeasonRepository.AllAsync()).FirstOrDefault(s => tournament != null && (s.RugbyTournament.Id == tournament.Id && s.ProviderSeasonId == seasonId));
 
-                if (team == null) continue;
                 if (season == null) continue;
                 if (tournament == null) continue;
 
@@ -490,9 +495,11 @@
                     ladderEntryInDb.TriesFor = position.triesAgainst;
 
                     _rugbyFlatLogsRepository.Update(ladderEntryInDb);
+                    itemsToRemove.Remove(ladderEntryInDb);
                 }
             }
 
+            _rugbyFlatLogsRepository.DeleteRange(itemsToRemove);
             await _rugbyFlatLogsRepository.SaveAsync();
         }
 
@@ -1560,7 +1567,14 @@
             if (fixtures == null)
                 return;
 
-            await PersistFixturesData(cancellationToken, fixtures);
+            try
+            {
+                await PersistFixturesData(cancellationToken, fixtures);
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
         }
 
         public async Task IngestPastSeasonsForActiveTournaments(CancellationToken cancellationToken)
@@ -1694,62 +1708,77 @@
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                if (fixtureInDb == null)
-                    return;
+                try
+                {
+                    if (fixtureInDb == null)
+                        return;
 
-                var matchStatsResponse =
-                    await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, providerFixtureId);
+                    var matchStatsResponse =
+                        await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, providerFixtureId);
 
-                if (matchStatsResponse == null)
-                    continue;
+                    if (matchStatsResponse == null)
+                        continue;
 
-                var eventsFlowResponse =
-                    await _statsProzoneIngestService.IngestEventsFlow(cancellationToken, providerFixtureId);
+                    var eventsFlowResponse =
+                        await _statsProzoneIngestService.IngestEventsFlow(cancellationToken, providerFixtureId);
 
-                if (eventsFlowResponse == null)
-                    continue;
+                    if (eventsFlowResponse == null)
+                        continue;
 
-                await IngestLineUpsForFixtures(cancellationToken, new List<RugbyFixture>() { fixtureInDb });
-                await IngestGameTime(cancellationToken, matchStatsResponse, fixtureInDb);
+                    await IngestLineUpsForFixtures(cancellationToken, new List<RugbyFixture>() { fixtureInDb });
+                    await IngestGameTime(cancellationToken, matchStatsResponse, fixtureInDb);
 
-                var playersForFixture = _rugbyPlayerLineupsRepository.Where(l => l.RugbyFixture.ProviderFixtureId == fixtureInDb.ProviderFixtureId).Select(l => l.RugbyPlayer).ToList();
-                await IngestCommentary(cancellationToken, eventsFlowResponse.RugbyEventsFlow.commentaryFlow, fixtureInDb, playersForFixture);
+                    var playersForFixture = _rugbyPlayerLineupsRepository.Where(l => l.RugbyFixture.ProviderFixtureId == fixtureInDb.ProviderFixtureId).Select(l => l.RugbyPlayer).ToList();
+                    await IngestCommentary(cancellationToken, eventsFlowResponse.RugbyEventsFlow.commentaryFlow, fixtureInDb, playersForFixture);
 
-                await IngestMatchStatisticsData(cancellationToken, matchStatsResponse, providerFixtureId);
-                await IngestScoreData(cancellationToken, matchStatsResponse);
-                await IngestFixtureStatusData(cancellationToken, matchStatsResponse, fixtureInDb);
-                await UpdateSchedulerTrackingFixturesTable(fixtureInDb.Id, matchStatsResponse.RugbyMatchStats.gameState);
+                    await IngestMatchStatisticsData(cancellationToken, matchStatsResponse, providerFixtureId);
+                    await IngestScoreData(cancellationToken, matchStatsResponse);
+                    await IngestFixtureStatusData(cancellationToken, matchStatsResponse, fixtureInDb);
+                    await UpdateSchedulerTrackingFixturesTable(fixtureInDb.Id, matchStatsResponse.RugbyMatchStats.gameState);
 
-                await IngestEvents(cancellationToken, eventsFlowResponse, fixtureInDb);
+                    await IngestEvents(cancellationToken, eventsFlowResponse, fixtureInDb);
 
-                _mongoDbRepository.Save(matchStatsResponse);
-                _mongoDbRepository.Save(eventsFlowResponse);
+                    _mongoDbRepository.Save(matchStatsResponse);
+                    _mongoDbRepository.Save(eventsFlowResponse);
 
-                //// Check if should stop looping?
-                var matchState = GetFixtureStatusFromProviderFixtureState(fixtureInDb, matchStatsResponse.RugbyMatchStats.gameState);
-                var schedulerState = FixturesStateHelper.GetSchedulerStateForFixture(DateTime.UtcNow, matchState, fixtureInDb.StartDateTime.DateTime);
+                    //// Check if should stop looping?
+                    var matchState = GetFixtureStatusFromProviderFixtureState(fixtureInDb, matchStatsResponse.RugbyMatchStats.gameState);
+                    var schedulerState = FixturesStateHelper.GetSchedulerStateForFixture(DateTime.UtcNow, matchState, fixtureInDb.StartDateTime.DateTime);
 
-                if (schedulerState == SchedulerStateForRugbyFixturePolling.SchedulingCompleted ||
-                    schedulerState == SchedulerStateForRugbyFixturePolling.SchedulingNotYetStarted ||
-                    schedulerState == SchedulerStateForRugbyFixturePolling.ResultOnlyPolling)
-                    break;
+                    if (schedulerState == SchedulerStateForRugbyFixturePolling.SchedulingCompleted ||
+                        schedulerState == SchedulerStateForRugbyFixturePolling.SchedulingNotYetStarted ||
+                        schedulerState == SchedulerStateForRugbyFixturePolling.ResultOnlyPolling)
+                        break;
 
-                Thread.Sleep(5_000);
+                    Thread.Sleep(5_000);
+                }
+                catch (Exception)
+                {
+                    // ignored
+                }
             }
         }
 
         private async Task IngestGameTime(CancellationToken cancellationToken, RugbyMatchStatsResponse matchStatsResponse, RugbyFixture rugbyFixture)
         {
-            if (cancellationToken.IsCancellationRequested)
-                return;
+            try
+            {
+                if (cancellationToken.IsCancellationRequested)
+                    return;
 
-            if (matchStatsResponse.RugbyMatchStats?.gameInfo == null)
-                return;
+                if (matchStatsResponse.RugbyMatchStats?.gameInfo == null)
+                    return;
 
-            rugbyFixture.GameTimeInSeconds = matchStatsResponse.RugbyMatchStats.gameInfo.gameSeconds;
-            _rugbyFixturesRepository.Update(rugbyFixture);
+                rugbyFixture.GameTimeInSeconds = matchStatsResponse.RugbyMatchStats.gameInfo.gameSeconds;
+                _rugbyFixturesRepository.Update(rugbyFixture);
 
-            await _rugbyFixturesRepository.SaveAsync();
+                await _rugbyFixturesRepository.SaveAsync();
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+
         }
 
         private async Task UpdateSchedulerTrackingFixturesTable(Guid fixtureId, string fixtureGameState)
@@ -1845,6 +1874,8 @@
                         _rugbyMatchEventsRepository.Update(eventInDb);
                         eventsToRemove.Remove(eventInDb);
                     }
+
+                    _rugbyMatchEventsRepository.Save();
                 }
             }
         }
@@ -2294,7 +2325,7 @@
             await IngestLineUpsForFixtures(cancellationToken, gamesInTheNext2Days);
         }
 
-        private async Task IngestLineUpsForFixtures(CancellationToken cancellationToken, IEnumerable<RugbyFixture> rugbyFixtures, RugbyMatchStatsResponse matchStatsResponse = null)
+        private async Task IngestLineUpsForFixtures(CancellationToken cancellationToken, IEnumerable<RugbyFixture> rugbyFixtures)
         {
             foreach (var fixture in rugbyFixtures)
             {
@@ -2302,12 +2333,9 @@
                     return;
 
                 var fixtureId = fixture.ProviderFixtureId;
-
-                if (matchStatsResponse == null)
-                {
-                    matchStatsResponse =
-                        await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, fixtureId);
-                }
+                
+                var matchStatsResponse =
+                    await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, fixtureId);
 
                 if (matchStatsResponse == null)
                     continue;
@@ -2318,6 +2346,12 @@
                 }
                 catch (Exception e)
                 {
+                    await _logger.Warn("IngestingLineupsForFixture." + fixtureId,
+                        "Ingesting lineups for fixture threw exception. Provider Fixture Id = " + fixtureId + "\n"
+                        + "Message: \n" + e.Message + "\n"
+                        + "StackTrace: \n" + e.StackTrace + "\n"
+                        + "InnerException: \n" + e.InnerException
+                    );
                 }
             }
         }
@@ -2325,13 +2359,24 @@
         private async Task IngestPlayerLineups(CancellationToken cancellationToken, RugbyMatchStatsResponse matchStatsResponse, RugbyFixture fixture)
         {
             if (matchStatsResponse?.RugbyMatchStats?.teams?.teamsMatch == null)
+            {
+                await _logger.Warn("TeamsMatchNull." + fixture.Id,
+                    "Teams mathc is null for fixture " + fixture.LegacyFixtureId);
                 return;
+            }
 
             // Do we have provider info?
             if (matchStatsResponse.RugbyMatchStats.teams.teamsMatch.Count == 0)
+            {
+                await _logger.Warn("TeamsMatchCount." + fixture.Id,
+                    "Teams match count is 0. Suppose to be 2. " + fixture.LegacyFixtureId);
                 return;
+            }
 
-            var lineupsInDb = _rugbyPlayerLineupsRepository.Where(l => l.RugbyFixture.ProviderFixtureId == fixture.ProviderFixtureId).ToList();
+            //await _logger.Warn("IngestingLineup.Notify." + fixture.Id,
+            //    "Ingesting lineup started for legacy fixture " + fixture.LegacyFixtureId);
+
+            var lineupsInDb = _rugbyPlayerLineupsRepository.WhereIncludeLocal(l => l.RugbyFixture.ProviderFixtureId == fixture.ProviderFixtureId).ToList();
 
             var lineupsToRemoveFromDb = lineupsInDb;
 
@@ -2400,6 +2445,7 @@
                         };
 
                         _rugbyPlayerLineupsRepository.Add(newEntry);
+                        lineupsInDb.Add(newEntry);
                     }
                     else
                     {
@@ -2528,7 +2574,7 @@
 
                     Stopwatch s = Stopwatch.StartNew();
 
-                    await IngestLineUpsForFixtures(cancellationToken, new List<RugbyFixture>() { fixture }, matchStatsResponse);
+                    await IngestLineUpsForFixtures(cancellationToken, new List<RugbyFixture>() { fixture });
 
                     var playersForFixture = _rugbyPlayerLineupsRepository.Where(l => l.RugbyFixture.ProviderFixtureId == fixture.ProviderFixtureId).Select(l => l.RugbyPlayer).ToList();
                     await IngestGameTime(cancellationToken, matchStatsResponse, fixture);
