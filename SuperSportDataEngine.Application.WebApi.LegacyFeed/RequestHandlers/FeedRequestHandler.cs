@@ -27,15 +27,15 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
         private ILoggingService _loggingService;
         private IUnityContainer _container;
 
-        private readonly int _authKeyCacheExpiryInMinutes;
+        private readonly int _authKeyCacheExpiryInDays;
         private const string CacheKeyPrefix = "LegacyFeed:"; 
 
         public FeedRequestHandler()
         {
             ResolveDependencies();
 
-            _authKeyCacheExpiryInMinutes = 
-                int.Parse(ConfigurationManager.AppSettings["AuthKeyCacheExpiryInMinutes"]);
+            _authKeyCacheExpiryInDays = 
+                int.Parse(ConfigurationManager.AppSettings["AuthKeyCacheExpiryInDays"]);
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -148,7 +148,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
             try
             {
                 _cache?.Add(CacheKeyPrefix + "AUTH:" + $"auth/{siteId}/{auth}", authModel,
-                    TimeSpan.FromMinutes(_authKeyCacheExpiryInMinutes));
+                    TimeSpan.FromDays(_authKeyCacheExpiryInDays));
             }
             catch (Exception exception)
             {
