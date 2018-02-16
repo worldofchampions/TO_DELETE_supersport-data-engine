@@ -421,8 +421,12 @@
             var seasonId = flatLogsResponse.RugbyFlatLogs.seasonId;
             var roundNumber = flatLogsResponse.RugbyFlatLogs.roundNumber;
 
-            var laddersAlreadyInDb = (await _rugbyFlatLogsRepository.AllAsync()).ToList();
+            var laddersAlreadyInDb = (_rugbyFlatLogsRepository.Where(
+                l => l.RugbyTournament.ProviderTournamentId == tournamentId &&
+                l.RugbySeason.ProviderSeasonId == seasonId &&
+                l.RoundNumber == roundNumber)).ToList();
 
+            var itemsToRemove = laddersAlreadyInDb;
             if (flatLogsResponse.RugbyFlatLogs.ladderposition == null)
                 return;
 
@@ -432,6 +436,7 @@
                     return;
 
                 var team = (await _rugbyTeamRepository.AllAsync()).FirstOrDefault(t => t.ProviderTeamId == position.teamId);
+                if (team == null) continue;
 
                 var ladderEntryInDb =
                     laddersAlreadyInDb.FirstOrDefault(
@@ -443,7 +448,6 @@
                 var tournament = (await _rugbyTournamentRepository.AllAsync()).FirstOrDefault(t => t.ProviderTournamentId == tournamentId);
                 var season = (await _rugbySeasonRepository.AllAsync()).FirstOrDefault(s => tournament != null && (s.RugbyTournament.Id == tournament.Id && s.ProviderSeasonId == seasonId));
 
-                if (team == null) continue;
                 if (season == null) continue;
                 if (tournament == null) continue;
 
@@ -490,9 +494,11 @@
                     ladderEntryInDb.TriesFor = position.triesAgainst;
 
                     _rugbyFlatLogsRepository.Update(ladderEntryInDb);
+                    itemsToRemove.Remove(ladderEntryInDb);
                 }
             }
 
+            _rugbyFlatLogsRepository.DeleteRange(itemsToRemove);
             await _rugbyFlatLogsRepository.SaveAsync();
         }
 
@@ -1456,7 +1462,7 @@
 
                     // "GroupStandings" are GroupHierarchyLevel: 1.
                     if (logs.RugbyGroupedLogs.groupStandings != null)
-                        await IngestStandingsForSuperRugby(cancellationToken, 2, logs, logs.RugbyGroupedLogs.groupStandings.ladderposition);
+                        await IngestStandingsForSuperRugby(cancellationToken, 1, logs, logs.RugbyGroupedLogs.groupStandings.ladderposition);
                 }
             }
 
@@ -1811,6 +1817,8 @@
 
                 var playersForTeam = _rugbyPlayerLineupsRepository.Where(l => l.RugbyFixtureId == rugbyFixture.Id).Select(l => l.RugbyPlayer).ToList();
 
+                var localInterchanges = new List<RugbyMatchEvent>();
+
                 foreach (var interchange in team.interchanges)
                 {
                     var eventInDb = events.FirstOrDefault(e =>
@@ -1821,6 +1829,24 @@
                         e.RugbyPlayer1.ProviderPlayerId == interchange.off.playerId &&
                         e.RugbyPlayer2 != null &&
                         e.RugbyPlayer2.ProviderPlayerId == interchange.on.playerId);
+
+                    // Check if we just added this event 
+                    // but never call save yet.
+                    if (eventInDb == null)
+                    {
+                        var locallyAddedEvent = 
+                                localInterchanges.FirstOrDefault(e =>
+                                    interchange?.off != null &&
+                                    interchange.on != null &&
+                                    e.RugbyEventTypeId == substitutionIn.RugbyEventTypeId &&
+                                    e.RugbyPlayer1 != null &&
+                                    e.RugbyPlayer1.ProviderPlayerId == interchange.off.playerId &&
+                                    e.RugbyPlayer2 != null &&
+                                    e.RugbyPlayer2.ProviderPlayerId == interchange.on.playerId);
+
+                        if (locallyAddedEvent != null)
+                            continue;
+                    }
 
                     var newEvent = new RugbyMatchEvent()
                     {
@@ -1839,6 +1865,7 @@
                     if (eventInDb == null)
                     {
                         _rugbyMatchEventsRepository.Add(newEvent);
+                        localInterchanges.Add(newEvent);
                     }
                     else
                     {
@@ -2294,7 +2321,7 @@
             await IngestLineUpsForFixtures(cancellationToken, gamesInTheNext2Days);
         }
 
-        private async Task IngestLineUpsForFixtures(CancellationToken cancellationToken, IEnumerable<RugbyFixture> rugbyFixtures, RugbyMatchStatsResponse matchStatsResponse = null)
+        private async Task IngestLineUpsForFixtures(CancellationToken cancellationToken, IEnumerable<RugbyFixture> rugbyFixtures)
         {
             foreach (var fixture in rugbyFixtures)
             {
@@ -2303,11 +2330,8 @@
 
                 var fixtureId = fixture.ProviderFixtureId;
 
-                if (matchStatsResponse == null)
-                {
-                    matchStatsResponse =
-                        await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, fixtureId);
-                }
+                var matchStatsResponse =
+                    await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, fixtureId);
 
                 if (matchStatsResponse == null)
                     continue;
@@ -2334,6 +2358,8 @@
             var lineupsInDb = _rugbyPlayerLineupsRepository.Where(l => l.RugbyFixture.ProviderFixtureId == fixture.ProviderFixtureId).ToList();
 
             var lineupsToRemoveFromDb = lineupsInDb;
+
+            var localLineups = new List<RugbyPlayerLineup>();
 
             foreach (var squad in matchStatsResponse.RugbyMatchStats.teams.teamsMatch)
             {
@@ -2383,6 +2409,21 @@
                                     l.RugbyFixtureId == fixture.Id &&
                                     l.RugbyTeamId == dbTeam.Id);
 
+                    // Check if we just added this lineup 
+                    // but never call save yet.
+                    if (dbEntry == null)
+                    {
+                        var localEntry =
+                            localLineups
+                                .FirstOrDefault(l =>
+                                    l.RugbyPlayerId == dbPlayer.Id &&
+                                    l.RugbyFixtureId == fixture.Id &&
+                                    l.RugbyTeamId == dbTeam.Id);
+
+                        if (localEntry != null)
+                            continue;
+                    }
+
                     if (dbEntry == null)
                     {
                         var newEntry = new RugbyPlayerLineup()
@@ -2400,6 +2441,7 @@
                         };
 
                         _rugbyPlayerLineupsRepository.Add(newEntry);
+                        localLineups.Add(newEntry);
                     }
                     else
                     {
@@ -2528,7 +2570,7 @@
 
                     Stopwatch s = Stopwatch.StartNew();
 
-                    await IngestLineUpsForFixtures(cancellationToken, new List<RugbyFixture>() { fixture }, matchStatsResponse);
+                    await IngestLineUpsForFixtures(cancellationToken, new List<RugbyFixture>() { fixture });
 
                     var playersForFixture = _rugbyPlayerLineupsRepository.Where(l => l.RugbyFixture.ProviderFixtureId == fixture.ProviderFixtureId).Select(l => l.RugbyPlayer).ToList();
                     await IngestGameTime(cancellationToken, matchStatsResponse, fixture);
