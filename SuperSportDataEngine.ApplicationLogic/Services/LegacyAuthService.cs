@@ -11,7 +11,6 @@ using System.Configuration;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
 using SuperSportDataEngine.Common.Logging;
 
 namespace SuperSportDataEngine.ApplicationLogic.Services
@@ -21,41 +20,15 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         private readonly ILoggingService _loggingService;
         private readonly IBaseEntityFrameworkRepository<LegacyZoneSite> _legacyZoneSiteRepository;
         private readonly IBaseEntityFrameworkRepository<LegacyAuthFeedConsumer> _legacyAuthFeedConsumerRepository;
-        private readonly ICache _cache;
-
-        private readonly int _numberOfDaysToKeepAuthKeys;
-
-        private static readonly object CacheLock = new object();
 
         public LegacyAuthService(
             ILoggingService loggingService,
             IBaseEntityFrameworkRepository<LegacyZoneSite> legacyZoneSiteRepository,
-            IBaseEntityFrameworkRepository<LegacyAuthFeedConsumer> legacyAuthFeedConsumerRepository,
-            ICache cache)
+            IBaseEntityFrameworkRepository<LegacyAuthFeedConsumer> legacyAuthFeedConsumerRepository)
         {
             _loggingService = loggingService;
             _legacyZoneSiteRepository = legacyZoneSiteRepository;
             _legacyAuthFeedConsumerRepository = legacyAuthFeedConsumerRepository;
-            _cache = cache;
-
-            _numberOfDaysToKeepAuthKeys = int.Parse(ConfigurationManager.AppSettings["NumberOfDaysToKeepAuthKeys"]);
-
-            CacheAuthKeysFromDatabase();
-        }
-
-        private async void CacheAuthKeysFromDatabase()
-        {
-            const string key = "AUTH_KEYS";
-            var keysInCache = await _cache.GetAsync<List<LegacyAuthFeedConsumer>>(key);
-
-            lock (CacheLock)
-            {
-                if (_cache != null && keysInCache == null)
-                {
-                    var legacyAuthFeedKeys = _legacyAuthFeedConsumerRepository.All().ToList();
-                    _cache.Add(key, legacyAuthFeedKeys, TimeSpan.FromDays(_numberOfDaysToKeepAuthKeys));
-                }
-            }
         }
 
         public async Task<bool> IsAuthorised(string authKey, int siteId = 0)
@@ -67,7 +40,10 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             authoriseAttempts++;
             try
             {
-                var legacyAuthFeed = await GetAuthKeyFromCache(authKey);
+                // Get the Auth key from the DB.
+                var legacyAuthFeed =
+                    (await _legacyAuthFeedConsumerRepository.AllAsync()).FirstOrDefault(c =>
+                        c.AuthKey == authKey && c.Active);
 
                 // Auth key doesnt exist.
                 if (legacyAuthFeed == null)
@@ -105,29 +81,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
                 goto BeginAuthorise;
             }
-        }
-
-        private async Task<LegacyAuthFeedConsumer> GetAuthKeyFromCache(string authKey)
-        {
-            const string key = "AUTH_KEYS";
-
-            if (_cache != null)
-            {
-                CacheAuthKeysFromDatabase();
-
-                var keys = await _cache.GetAsync<IEnumerable<LegacyAuthFeedConsumer>>(key);
-                if (keys != null)
-                {
-                    var consumer = keys.FirstOrDefault(k => k.AuthKey == authKey && k.Active) ??
-                                   _legacyAuthFeedConsumerRepository.FirstOrDefault(
-                                       k => k.AuthKey == authKey && k.Active);
-
-                    return consumer;
-                }
-            }
-
-            return _legacyAuthFeedConsumerRepository.FirstOrDefault(
-                k => k.AuthKey == authKey && k.Active);
         }
 
         public async Task<bool> ImportZoneSiteRecords(IEnumerable<LegacyZoneSiteEntity> models)
