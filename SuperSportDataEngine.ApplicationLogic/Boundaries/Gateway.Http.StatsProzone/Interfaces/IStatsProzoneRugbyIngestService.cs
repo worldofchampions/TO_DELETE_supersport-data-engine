@@ -12,7 +12,7 @@
         Task<RugbySeasonResponse> IngestSeasonData(CancellationToken cancellationToken, int tournamentId, int tournamentYear);
         Task<RugbyFixturesResponse> IngestFixturesForTournamentSeason(int tournamentId, int seasonId, CancellationToken cancellationToken);
         Task<RugbyMatchStatsResponse> IngestMatchStatsForFixtureAsync(CancellationToken cancellationToken, long providerFixtureId);
-        Task<RugbyFlatLogsResponse> IngestFlatLogsForTournament(int competitionId, int seasonId);
+        Task<RugbyFlatLogsResponse> IngestFlatLogsForTournament(int competitionId, int seasonId, int roundNumber);
         Task<RugbyGroupedLogsResponse> IngestGroupedLogsForTournament(int competitionId, int seasonId, int numberOfRounds);
         Task<RugbyEventsFlowResponse> IngestEventsFlow(CancellationToken cancellationToken, long providerFixtureId);
     }

@@ -863,7 +863,9 @@
                 {
                     RugbyFlatLogsResponse logs =
                         await _statsProzoneIngestService.IngestFlatLogsForTournament(
-                            tournament.ProviderTournamentId, activeSeasonIdForTournament);
+                            tournament.ProviderTournamentId, 
+                            activeSeasonIdForTournament,
+                            numberOfRounds);
 
                     if (logs == null)
                         continue;
@@ -2487,7 +2489,10 @@
 
             if (logType == RugbyLogType.FlatLogs)
             {
-                var logs = await _statsProzoneIngestService.IngestFlatLogsForTournament(providerTournamentId, seasonId);
+                var logs = 
+                    await _statsProzoneIngestService.IngestFlatLogsForTournament(
+                        providerTournamentId, seasonId, numberOfRounds);
+
                 if (logs == null)
                     return;
 
@@ -2497,7 +2502,10 @@
             }
             else
             {
-                var logs = await _statsProzoneIngestService.IngestGroupedLogsForTournament(providerTournamentId, seasonId, numberOfRounds);
+                var logs = 
+                    await _statsProzoneIngestService.IngestGroupedLogsForTournament(
+                        providerTournamentId, seasonId, numberOfRounds);
+
                 if (logs == null)
                     return;
 
