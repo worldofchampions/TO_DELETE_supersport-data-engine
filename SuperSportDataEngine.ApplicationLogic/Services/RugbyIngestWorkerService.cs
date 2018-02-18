@@ -1757,7 +1757,6 @@
             rugbyFixture.GameTimeInSeconds = matchStatsResponse.RugbyMatchStats.gameInfo.gameSeconds;
             _rugbyFixturesRepository.Update(rugbyFixture);
 
-            // This is a test comment. To Check if the error shows on the following line.
             await _rugbyFixturesRepository.SaveAsync();
         }
 
@@ -2374,7 +2373,7 @@
                 if (lineup?.teamPlayer == null)
                     continue;
 
-                var players = lineup.teamPlayer.ToList();
+                var players = lineup.teamPlayer.ToList().Distinct(new TeamPlayerComparer());
 
                 var playersForFixture = (await _rugbyPlayerRepository.AllAsync()).Where(p => players.Any(player => player.playerId.Equals(p.ProviderPlayerId))).ToList();
 
