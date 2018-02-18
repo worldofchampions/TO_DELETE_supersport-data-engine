@@ -5,14 +5,14 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
     using Hangfire;
     using Hangfire.Common;
     using Microsoft.Practices.Unity;
-    using SuperSportDataEngine.Application.Container;
-    using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
-    using SuperSportDataEngine.ApplicationLogic.Services;
+    using Container;
+    using Common.Hangfire.Configuration;
+    using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+    using ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
+    using ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+    using ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
+    using ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
+    using ApplicationLogic.Services;
     using SuperSportDataEngine.Common.Logging;
     using System;
     using System.Collections.Generic;
@@ -25,17 +25,14 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
     {
         private IUnityContainer _childContainer;
         private IRecurringJobManager _recurringJobManager;
-        private ILoggingService _logger;
         private IBaseEntityFrameworkRepository<RugbySeason> _rugbySeasonsRepository;
 
         public FixturesManagerJob(
             IRecurringJobManager recurringJobManager,
-            IUnityContainer childContainer,
-            ILoggingService logger)
+            IUnityContainer childContainer)
         {
             _recurringJobManager = recurringJobManager;
             _childContainer = childContainer.CreateChildContainer();
-            _logger = logger;
         }
 
         public async Task DoWorkAsync()
@@ -50,7 +47,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
 
         private void ConfigureDependencies()
         {
-            _logger = _childContainer.Resolve<ILoggingService>();
             _recurringJobManager = _childContainer.Resolve<IRecurringJobManager>();
             _rugbySeasonsRepository = _childContainer.Resolve<IBaseEntityFrameworkRepository<RugbySeason>>();
         }
@@ -61,7 +57,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
 
             _childContainer = new UnityContainer();
             UnityConfigurationManager.RegisterTypes(_childContainer, ApplicationScope.ServiceSchedulerClient);
-            UnityConfigurationManager.RegisterApiGlobalTypes(_childContainer, ApplicationScope.ServiceSchedulerClient);
         }
 
         private async Task<int> CreateChildJobsForFetchingOneMonthsFixturesForActiveTournaments()
@@ -76,13 +71,9 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
         
             foreach (var tournament in activeTournaments)
             {
-                await _logger.Debug(methodName, "Tournament " + tournament.Name + " is active.");
-
                 {
                     var jobId = ConfigurationManager.AppSettings["ScheduleManagerJob_Fixtures_ActiveTournaments_JobIdPrefix"] + tournament.Name;
                     var jobCronExpression = ConfigurationManager.AppSettings["ScheduleManagerJob_Fixtures_ActiveTournaments_JobCronExpression"];
-
-                    await _logger.Debug(methodName, "Updating recurring job " + jobId);
 
                     _recurringJobManager.AddOrUpdate(
                         jobId,
@@ -101,7 +92,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
 
                     if (tournamentInDb == null) continue;
 
-                    await _logger.Debug(methodName, "Setting SchedulerStateForManagerJobPolling for tournament " + tournament.Name + " to running.");
                     tournamentInDb.SchedulerStateForManagerJobPolling = SchedulerStateForManagerJobPolling.Running;
                     schedulerTrackingRugbyTournaments.Update(tournamentInDb);
                 }
