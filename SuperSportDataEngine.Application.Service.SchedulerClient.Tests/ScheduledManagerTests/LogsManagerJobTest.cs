@@ -66,8 +66,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
             LogsManagerJob =
                 new LogsManagerJob(
                         MockRecurringJobManager.Object,
-                        MockUnityContainer,
-                        MockLogger.Object);
+                        MockUnityContainer);
         }
     }
 }

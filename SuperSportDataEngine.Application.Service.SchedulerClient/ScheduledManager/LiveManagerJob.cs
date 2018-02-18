@@ -20,17 +20,14 @@
         private readonly IRecurringJobManager _recurringJobManager;
         private readonly IRugbyService _rugbyService;
         private readonly IRugbyIngestWorkerService _rugbyIngestWorkerService;
-        private readonly ILoggingService _logger;
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> _schedulerTrackingRugbyFixtureRepository;
 
         public LiveManagerJob(
-            ILoggingService logger,
             IRecurringJobManager recurringJobManager,
             IRugbyService rugbyService,
             IRugbyIngestWorkerService rugbyIngestWorkerService,
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> schedulerTrackingRugbyFixtureRepository)
         {
-            _logger = logger;
             _recurringJobManager = recurringJobManager;
             _rugbyService = rugbyService;
             _rugbyIngestWorkerService = rugbyIngestWorkerService;
