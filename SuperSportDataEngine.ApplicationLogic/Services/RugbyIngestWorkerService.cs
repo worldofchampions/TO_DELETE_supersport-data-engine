@@ -2389,7 +2389,7 @@
                     var dbPlayer = playersForFixture.FirstOrDefault(p => p.ProviderPlayerId == playerId);
 
                     if (dbPlayer == null)
-                        continue;
+                        break;
 
                     if (dbPlayer.FirstName == null && dbPlayer.LastName == null)
                     {
@@ -2423,7 +2423,7 @@
                                     l.RugbyTeamId == dbTeam.Id);
 
                         if (localEntry != null)
-                            continue;
+                            break;
                     }
 
                     if (dbEntry == null)
