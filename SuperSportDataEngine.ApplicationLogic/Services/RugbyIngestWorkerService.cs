@@ -1757,6 +1757,7 @@
             rugbyFixture.GameTimeInSeconds = matchStatsResponse.RugbyMatchStats.gameInfo.gameSeconds;
             _rugbyFixturesRepository.Update(rugbyFixture);
 
+            // This is a test comment. To Check if the error shows on the following line.
             await _rugbyFixturesRepository.SaveAsync();
         }
 
