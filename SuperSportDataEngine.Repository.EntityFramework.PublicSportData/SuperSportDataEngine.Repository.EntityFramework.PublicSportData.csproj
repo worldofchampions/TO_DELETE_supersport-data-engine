@@ -244,14 +244,6 @@
     <Compile Include="Migrations\201801291123262_RoundNumber_Added_To_Fixture.Designer.cs">
       <DependentUpon>201801291123262_RoundNumber_Added_To_Fixture.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201801291222185_Add_PlayerStats_Model.cs" />
-    <Compile Include="Migrations\201801291222185_Add_PlayerStats_Model.Designer.cs">
-      <DependentUpon>201801291222185_Add_PlayerStats_Model.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201802010913073_addPointsToPlayerStatsModel.cs" />
-    <Compile Include="Migrations\201802010913073_addPointsToPlayerStatsModel.Designer.cs">
-      <DependentUpon>201802010913073_addPointsToPlayerStatsModel.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\201802010905205_Add_RugbySeason_To_RugbyFixture.cs" />
     <Compile Include="Migrations\201802010905205_Add_RugbySeason_To_RugbyFixture.Designer.cs">
       <DependentUpon>201802010905205_Add_RugbySeason_To_RugbyFixture.cs</DependentUpon>
@@ -413,12 +405,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201801291123262_RoundNumber_Added_To_Fixture.resx">
       <DependentUpon>201801291123262_RoundNumber_Added_To_Fixture.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201801291222185_Add_PlayerStats_Model.resx">
-      <DependentUpon>201801291222185_Add_PlayerStats_Model.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201802010913073_addPointsToPlayerStatsModel.resx">
-      <DependentUpon>201802010913073_addPointsToPlayerStatsModel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201802010905205_Add_RugbySeason_To_RugbyFixture.resx">
       <DependentUpon>201802010905205_Add_RugbySeason_To_RugbyFixture.cs</DependentUpon>
