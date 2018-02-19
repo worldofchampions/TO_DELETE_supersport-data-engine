@@ -881,7 +881,9 @@
                 {
                     var logs =
                         await _statsProzoneIngestService.IngestGroupedLogsForTournament(
-                            tournament.ProviderTournamentId, activeSeasonIdForTournament, numberOfRounds);
+                            tournament.ProviderTournamentId, 
+                            activeSeasonIdForTournament, 
+                            numberOfRounds);
 
                     if (logs == null)
                         continue;
