@@ -8,11 +8,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
     using Container;
     using Common.Hangfire.Configuration;
     using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-    using ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
-    using ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
-    using ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
     using ApplicationLogic.Services;
-    using SuperSportDataEngine.Common.Logging;
     using System;
     using System.Configuration;
     using System.Linq;
@@ -51,6 +47,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
 
             _childContainer = new UnityContainer();
             UnityConfigurationManager.RegisterTypes(_childContainer, ApplicationScope.ServiceSchedulerClient);
+            UnityConfigurationManager.RegisterApiGlobalTypes(_childContainer, ApplicationScope.ServiceSchedulerClient);
         }
 
         private async Task CreateChildJobsForFetchingLogs()
@@ -63,6 +60,18 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
                 .Where(f => f.StartDateTime.Date == today && f.StartDateTime > now - TimeSpan.FromHours(3))
                 .Select(f => f.RugbyTournament)
                 .ToList();
+
+            var todayTournamentIds = todayTournaments.Select(t => t.ProviderTournamentId);
+
+            var notTodayTournaments = (await _childContainer.Resolve<IRugbyService>().GetCurrentTournaments())
+                .Where(t => todayTournamentIds.Contains(t.ProviderTournamentId));
+
+            foreach (var tournament in notTodayTournaments)
+            {
+                var jobId = ConfigurationManager.AppSettings["ScheduleManagerJob_Logs_CurrentTournaments_JobIdPrefix"] + tournament.Name;
+
+                _recurringJobManager.RemoveIfExists(jobId);
+            }
 
             foreach (var tournament in todayTournaments)
             {
