@@ -26,13 +26,11 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
         private readonly ISystemSportDataUnitOfWork _systemSportDataUnitOfWork;
 
         public LiveManagerJob(
-            ILoggingService logger,
             IRecurringJobManager recurringJobManager,
             IRugbyService rugbyService,
             IRugbyIngestWorkerService rugbyIngestWorkerService,
             ISystemSportDataUnitOfWork systemSportDataUnitOfWork)
         {
-            _logger = logger;
             _recurringJobManager = recurringJobManager;
             _rugbyService = rugbyService;
             _rugbyIngestWorkerService = rugbyIngestWorkerService;

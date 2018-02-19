@@ -47,7 +47,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
 
             LiveManagerJob =
                 new LiveManagerJob(
-                    MockLogger.Object,
                     MockRecurringJobManager.Object,
                     MockRugbyService.Object,
                     MockRugbyIngestWorkerService.Object,

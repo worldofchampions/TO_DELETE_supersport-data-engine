@@ -7,13 +7,13 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class Adding_MotorRaces_Table : IMigrationMetadata
+    public sealed partial class Add_RugbySeason_To_RugbyFixture : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(Adding_MotorRaces_Table));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(Add_RugbySeason_To_RugbyFixture));
         
         string IMigrationMetadata.Id
         {
-            get { return "201801041440084_Adding_MotorRaces_Table"; }
+            get { return "201802010905205_Add_RugbySeason_To_RugbyFixture"; }
         }
         
         string IMigrationMetadata.Source

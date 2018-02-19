@@ -17,12 +17,16 @@ namespace SuperSportDataEngine.Application.Container
     using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using ApplicationLogic.Boundaries.Gateway.Http.DeprecatedFeed.Interfaces;
     using ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
+    using ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
+    using ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+    using ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
     using ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
     using ApplicationLogic.Services;
     using Common.Logging;
     using Gateway.Http.DeprecatedFeed.Services;
     using Gateway.Http.StatsProzone.Services;
     using Logging.NLog.Logging;
+    using Repository.EntityFramework.Common.Repositories.Base;
     using Repository.EntityFramework.PublicSportData.Context;
     using Repository.EntityFramework.SystemSportData.Context;
     using Repository.MongoDb.PayloadData.Repositories;

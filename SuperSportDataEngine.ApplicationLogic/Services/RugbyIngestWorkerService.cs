@@ -386,8 +386,12 @@
             var seasonId = flatLogsResponse.RugbyFlatLogs.seasonId;
             var roundNumber = flatLogsResponse.RugbyFlatLogs.roundNumber;
 
-            var laddersAlreadyInDb = (await _publicSportDataUnitOfWork.RugbyFlatLogs.AllAsync()).ToList();
+            var laddersAlreadyInDb = (_publicSportDataUnitOfWork.RugbyFlatLogs.Where(
+                l => l.RugbyTournament.ProviderTournamentId == tournamentId &&
+                l.RugbySeason.ProviderSeasonId == seasonId &&
+                l.RoundNumber == roundNumber)).ToList();
 
+            var itemsToRemove = laddersAlreadyInDb;
             if (flatLogsResponse.RugbyFlatLogs.ladderposition == null)
                 return;
 
@@ -397,6 +401,7 @@
                     return;
 
                 var team = (await _publicSportDataUnitOfWork.RugbyTeams.AllAsync()).FirstOrDefault(t => t.ProviderTeamId == position.teamId);
+                if (team == null) continue;
 
                 var ladderEntryInDb =
                     laddersAlreadyInDb.FirstOrDefault(
@@ -408,7 +413,6 @@
                 var tournament = (await _publicSportDataUnitOfWork.RugbyTournaments.AllAsync()).FirstOrDefault(t => t.ProviderTournamentId == tournamentId);
                 var season = (await _publicSportDataUnitOfWork.RugbySeasons.AllAsync()).FirstOrDefault(s => tournament != null && (s.RugbyTournament.Id == tournament.Id && s.ProviderSeasonId == seasonId));
 
-                if (team == null) continue;
                 if (season == null) continue;
                 if (tournament == null) continue;
 
@@ -455,9 +459,11 @@
                     ladderEntryInDb.TriesFor = position.triesAgainst;
 
                     _publicSportDataUnitOfWork.RugbyFlatLogs.Update(ladderEntryInDb);
+                    itemsToRemove.Remove(ladderEntryInDb);
                 }
             }
 
+            _publicSportDataUnitOfWork.RugbyFlatLogs.DeleteRange(itemsToRemove);
             await _publicSportDataUnitOfWork.SaveChangesAsync();
         }
 
@@ -609,7 +615,11 @@
                         IsLiveScored = tournament != null && tournament.IsLiveScored,
                         TeamAScore = null,
                         TeamBScore = null,
-                        RoundNumber = roundFixture.roundId
+                        RoundNumber = roundFixture.roundId,
+                        RugbySeason =
+                            _publicSportDataUnitOfWork.RugbySeasons.FirstOrDefault(s => 
+                                    s.RugbyTournament.ProviderTournamentId == tournament.ProviderTournamentId && 
+                                    s.ProviderSeasonId == fixtures.Fixtures.seasonId)
                     };
 
                     // Should we set the scores of the new fixture?
@@ -649,10 +659,10 @@
                         fixtureInDb.TeamBIsHomeTeam = newFixture.TeamBIsHomeTeam;
                         fixtureInDb.RugbyTournament = newFixture.RugbyTournament;
                         fixtureInDb.RoundNumber = roundFixture.roundId;
+                        fixtureInDb.RugbySeason = newFixture.RugbySeason;
 
                         // Do not update the isLiveScored property here.
                         // It will be updated by the CMS.
-
                         _publicSportDataUnitOfWork.RugbyFixtures.Update(fixtureInDb);
                     }
                 }
@@ -818,7 +828,9 @@
                 {
                     RugbyFlatLogsResponse logs =
                         await _statsProzoneIngestService.IngestFlatLogsForTournament(
-                            tournament.ProviderTournamentId, activeSeasonIdForTournament);
+                            tournament.ProviderTournamentId, 
+                            activeSeasonIdForTournament,
+                            numberOfRounds);
 
                     if (logs == null)
                         continue;
@@ -831,7 +843,9 @@
                 {
                     var logs =
                         await _statsProzoneIngestService.IngestGroupedLogsForTournament(
-                            tournament.ProviderTournamentId, activeSeasonIdForTournament, numberOfRounds);
+                            tournament.ProviderTournamentId, 
+                            activeSeasonIdForTournament, 
+                            numberOfRounds);
 
                     if (logs == null)
                         continue;
@@ -1771,6 +1785,8 @@
 
                 var playersForTeam = _publicSportDataUnitOfWork.RugbyPlayerLineups.Where(l => l.RugbyFixtureId == rugbyFixture.Id).Select(l => l.RugbyPlayer).ToList();
 
+                var localInterchanges = new List<RugbyMatchEvent>();
+
                 foreach (var interchange in team.interchanges)
                 {
                     var eventInDb = events.FirstOrDefault(e =>
@@ -1781,6 +1797,24 @@
                         e.RugbyPlayer1.ProviderPlayerId == interchange.off.playerId &&
                         e.RugbyPlayer2 != null &&
                         e.RugbyPlayer2.ProviderPlayerId == interchange.on.playerId);
+
+                    // Check if we just added this event 
+                    // but never call save yet.
+                    if (eventInDb == null)
+                    {
+                        var locallyAddedEvent = 
+                                localInterchanges.FirstOrDefault(e =>
+                                    interchange?.off != null &&
+                                    interchange.on != null &&
+                                    e.RugbyEventTypeId == substitutionIn.RugbyEventTypeId &&
+                                    e.RugbyPlayer1 != null &&
+                                    e.RugbyPlayer1.ProviderPlayerId == interchange.off.playerId &&
+                                    e.RugbyPlayer2 != null &&
+                                    e.RugbyPlayer2.ProviderPlayerId == interchange.on.playerId);
+
+                        if (locallyAddedEvent != null)
+                            continue;
+                    }
 
                     var newEvent = new RugbyMatchEvent()
                     {
@@ -1799,6 +1833,7 @@
                     if (eventInDb == null)
                     {
                         _publicSportDataUnitOfWork.RugbyMatchEvents.Add(newEvent);
+                        localInterchanges.Add(newEvent);
                     }
                     else
                     {
@@ -2253,7 +2288,7 @@
             await IngestLineUpsForFixtures(cancellationToken, gamesInTheNext2Days);
         }
 
-        private async Task IngestLineUpsForFixtures(CancellationToken cancellationToken, IEnumerable<RugbyFixture> rugbyFixtures, RugbyMatchStatsResponse matchStatsResponse = null)
+        private async Task IngestLineUpsForFixtures(CancellationToken cancellationToken, IEnumerable<RugbyFixture> rugbyFixtures)
         {
             foreach (var fixture in rugbyFixtures)
             {
@@ -2262,11 +2297,8 @@
 
                 var fixtureId = fixture.ProviderFixtureId;
 
-                if (matchStatsResponse == null)
-                {
-                    matchStatsResponse =
-                        await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, fixtureId);
-                }
+                var matchStatsResponse =
+                    await _statsProzoneIngestService.IngestMatchStatsForFixtureAsync(cancellationToken, fixtureId);
 
                 if (matchStatsResponse == null)
                     continue;
@@ -2294,6 +2326,8 @@
           
             var lineupsToRemoveFromDb = lineupsInDb;
 
+            var localLineups = new List<RugbyPlayerLineup>();
+
             foreach (var squad in matchStatsResponse.RugbyMatchStats.teams.teamsMatch)
             {
                 if (cancellationToken.IsCancellationRequested)
@@ -2304,7 +2338,7 @@
                 if (lineup?.teamPlayer == null)
                     continue;
 
-                var players = lineup.teamPlayer.ToList();
+                var players = lineup.teamPlayer.ToList().Distinct(new TeamPlayerComparer());
 
                 var playersForFixture = (await _publicSportDataUnitOfWork.RugbyPlayers.AllAsync()).Where(p => players.Any(player => player.playerId.Equals(p.ProviderPlayerId))).ToList();
 
@@ -2320,7 +2354,7 @@
                     var dbPlayer = playersForFixture.FirstOrDefault(p => p.ProviderPlayerId == playerId);
 
                     if (dbPlayer == null)
-                        continue;
+                        break;
 
                     if (dbPlayer.FirstName == null && dbPlayer.LastName == null)
                     {
@@ -2342,6 +2376,21 @@
                                     l.RugbyFixtureId == fixture.Id &&
                                     l.RugbyTeamId == dbTeam.Id);
 
+                    // Check if we just added this lineup 
+                    // but never call save yet.
+                    if (dbEntry == null)
+                    {
+                        var localEntry =
+                            localLineups
+                                .FirstOrDefault(l =>
+                                    l.RugbyPlayerId == dbPlayer.Id &&
+                                    l.RugbyFixtureId == fixture.Id &&
+                                    l.RugbyTeamId == dbTeam.Id);
+
+                        if (localEntry != null)
+                            break;
+                    }
+
                     if (dbEntry == null)
                     {
                         var newEntry = new RugbyPlayerLineup()
@@ -2359,6 +2408,7 @@
                         };
 
                         _publicSportDataUnitOfWork.RugbyPlayerLineups.Add(newEntry);
+                        localLineups.Add(newEntry);
                     }
                     else
                     {
@@ -2403,7 +2453,10 @@
 
             if (logType == RugbyLogType.FlatLogs)
             {
-                var logs = await _statsProzoneIngestService.IngestFlatLogsForTournament(providerTournamentId, seasonId);
+                var logs = 
+                    await _statsProzoneIngestService.IngestFlatLogsForTournament(
+                        providerTournamentId, seasonId, numberOfRounds);
+
                 if (logs == null)
                     return;
 
@@ -2413,7 +2466,10 @@
             }
             else
             {
-                var logs = await _statsProzoneIngestService.IngestGroupedLogsForTournament(providerTournamentId, seasonId, numberOfRounds);
+                var logs = 
+                    await _statsProzoneIngestService.IngestGroupedLogsForTournament(
+                        providerTournamentId, seasonId, numberOfRounds);
+
                 if (logs == null)
                     return;
 
@@ -2486,7 +2542,7 @@
 
                     Stopwatch s = Stopwatch.StartNew();
 
-                    await IngestLineUpsForFixtures(cancellationToken, new List<RugbyFixture>() { fixture }, matchStatsResponse);
+                    await IngestLineUpsForFixtures(cancellationToken, new List<RugbyFixture>() { fixture });
 
                     var playersForFixture = _publicSportDataUnitOfWork.RugbyPlayerLineups.Where(l => l.RugbyFixture.ProviderFixtureId == fixture.ProviderFixtureId).Select(l => l.RugbyPlayer).ToList();
                     await IngestGameTime(cancellationToken, matchStatsResponse, fixture);

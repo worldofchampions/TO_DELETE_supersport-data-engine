@@ -19,6 +19,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
     {
         IRecurringJobManager _recurringJobManager;
         IUnityContainer _childContainer;
+        private static int _maxNumberOfRecentFixturesToConsider;
 
         public LogsManagerJob(
             IRecurringJobManager recurringJobManager,
@@ -26,6 +27,8 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
         {
             _recurringJobManager = recurringJobManager;
             _childContainer = childContainer;
+            _maxNumberOfRecentFixturesToConsider =
+                int.Parse(ConfigurationManager.AppSettings["MaxNumberOfRecentFixturesToConsider"]);
         }
 
         public async Task DoWorkAsync()
@@ -56,10 +59,22 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
             var now = DateTime.UtcNow;
 
             var todayTournaments =
-                (await _childContainer.Resolve<IRugbyService>().GetRecentResultsFixtures(30))
-                .Where(f => f.StartDateTime.Date == today && f.StartDateTime > now - TimeSpan.FromHours(3))
+                (await _childContainer.Resolve<IRugbyService>().GetRecentResultsFixtures(_maxNumberOfRecentFixturesToConsider))
+                .Where(f => f.StartDateTime.Date == today)
                 .Select(f => f.RugbyTournament)
                 .ToList();
+
+            var todayTournamentIds = todayTournaments.Select(t => t.ProviderTournamentId);
+
+            var notTodayTournaments = (await _childContainer.Resolve<IRugbyService>().GetCurrentTournaments())
+                .Where(t => todayTournamentIds.Contains(t.ProviderTournamentId));
+
+            foreach (var tournament in notTodayTournaments)
+            {
+                var jobId = ConfigurationManager.AppSettings["ScheduleManagerJob_Logs_CurrentTournaments_JobIdPrefix"] + tournament.Name;
+
+                _recurringJobManager.RemoveIfExists(jobId);
+            }
 
             foreach (var tournament in todayTournaments)
             {

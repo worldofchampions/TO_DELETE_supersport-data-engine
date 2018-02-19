@@ -71,5 +71,7 @@
         public int GameTimeInSeconds { get; set; }
 
         public int RoundNumber { get; set; }
+
+        public virtual RugbySeason RugbySeason { get; set; }
     }
 }
