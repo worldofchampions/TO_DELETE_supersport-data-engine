@@ -23,7 +23,7 @@ namespace SuperSportDataEngine.Common.Extentions
 
                 request.Abort();
 
-                await logger.Error("PROVIDERCALLS:REQUESTDURATION:" + request.GetBaseUri(), "Request timed out. " + request.RequestUri, WebExceptionStatus.Timeout);
+                await logger.Error("PROVIDERCALLS:REQUESTDURATION:" + request.GetBaseUri(), "Request timed out. Timeout length is " + timeoutInMilliseconds / 1000 + " seconds" + request.RequestUri, WebExceptionStatus.Timeout);
 
                 return null;
             }
