@@ -252,6 +252,10 @@
     <Compile Include="Migrations\201802010913073_addPointsToPlayerStatsModel.Designer.cs">
       <DependentUpon>201802010913073_addPointsToPlayerStatsModel.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201802010905205_Add_RugbySeason_To_RugbyFixture.cs" />
+    <Compile Include="Migrations\201802010905205_Add_RugbySeason_To_RugbyFixture.Designer.cs">
+      <DependentUpon>201802010905205_Add_RugbySeason_To_RugbyFixture.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyTeamNames.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEnabledTournaments.cs" />
@@ -415,6 +419,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201802010913073_addPointsToPlayerStatsModel.resx">
       <DependentUpon>201802010913073_addPointsToPlayerStatsModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802010905205_Add_RugbySeason_To_RugbyFixture.resx">
+      <DependentUpon>201802010905205_Add_RugbySeason_To_RugbyFixture.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -241,11 +241,11 @@
             }
         }
 
-        public async Task<RugbyFlatLogsResponse> IngestFlatLogsForTournament(int competitionId, int seasonId)
+        public async Task<RugbyFlatLogsResponse> IngestFlatLogsForTournament(int competitionId, int seasonId, int roundNumber)
         {
             try
             {
-                return await RugbyFlatLogsResponse(competitionId, seasonId);
+                return await RugbyFlatLogsResponse(competitionId, seasonId, roundNumber);
             }
             catch (Exception e)
             {
@@ -254,9 +254,9 @@
             }
         }
 
-        private async Task<RugbyFlatLogsResponse> RugbyFlatLogsResponse(int competitionId, int seasonId)
+        private async Task<RugbyFlatLogsResponse> RugbyFlatLogsResponse(int competitionId, int seasonId, int roundNumber)
         {
-            WebRequest request = GetWebRequestForLogsEndpoint(competitionId, seasonId, null);
+            WebRequest request = GetWebRequestForLogsEndpoint(competitionId, seasonId, roundNumber);
 
             var logsResponse = new RugbyFlatLogsResponse() { RequestTime = DateTime.Now };
 
@@ -287,7 +287,7 @@
                 return await GetPro14GroupedLogs(competitionId, seasonId, numberOfRounds);
             }
 
-            WebRequest request = GetWebRequestForLogsEndpoint(competitionId, seasonId);
+            WebRequest request = GetWebRequestForLogsEndpoint(competitionId, seasonId, numberOfRounds);
 
             var logsResponse = new RugbyGroupedLogsResponse() { RequestTime = DateTime.Now };
 
