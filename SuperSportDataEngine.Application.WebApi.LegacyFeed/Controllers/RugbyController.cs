@@ -76,7 +76,7 @@
             {
                 response.Events.AssignOrderingIds();
 
-                var deprecatedArticlesAndVideosEntity = await _deprecatedFeedIntegrationService.GetArticlesAndVideos("rugby", id);
+                var deprecatedArticlesAndVideosEntity = await _deprecatedFeedIntegrationService.GetArticlesAndVideos(DeprecatedFeedSportNames.Rugby, id);
                 response = Mapper.Map<DeprecatedArticlesAndVideosEntity, RugbyMatchDetails>(deprecatedArticlesAndVideosEntity, response);
 
                 PersistToCache(cacheKey, response);
