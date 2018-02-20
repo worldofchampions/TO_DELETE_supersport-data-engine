@@ -237,7 +237,6 @@
     <Compile Include="Models\Mappers\LegacyPointScorerMapperProfile.cs" />
     <Compile Include="Models\Mappers\LegacyScorerModelMapperProfile.cs" />
     <Compile Include="Models\Mappers\LegacyTeamsheetMapperProfile.cs" />
-    <Compile Include="Models\Mappers\LegacyTryScorerMapperProfile.cs" />
     <Compile Include="Models\Rugby\GeneralResponse.cs" />
     <Compile Include="Models\Shared\AlternateCommentsModel.cs" />
     <Compile Include="Models\Shared\AuthModel.cs" />
