@@ -11,6 +11,7 @@
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+    using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
     using SuperSportDataEngine.Common.Logging;
     using System;
     using System.Collections.Generic;
@@ -141,8 +142,8 @@
             {
                 response.Events.AssignOrderingIds();
 
-                var deprecatedArticlesAndVideosEntity = await _deprecatedFeedIntegrationService.GetArticlesAndVideos("rugby", id);
-                response = Mapper.Map(deprecatedArticlesAndVideosEntity, response);
+                var deprecatedArticlesAndVideosEntity = await _deprecatedFeedIntegrationService.GetArticlesAndVideos(DeprecatedFeedSportNames.Rugby, id);
+                response = Mapper.Map<DeprecatedArticlesAndVideosEntity, RugbyMatchDetails>(deprecatedArticlesAndVideosEntity, response);
 
                 PersistToCache(cacheKey, response);
             }
