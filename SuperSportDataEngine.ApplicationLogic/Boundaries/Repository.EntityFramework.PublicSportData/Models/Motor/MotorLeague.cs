@@ -1,9 +1,10 @@
-﻿using System;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
-
-namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models
+﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models
 {
-    public class MotorLeague
+    using System;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Base;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
+    
+    public class MotorLeague: BaseModel
     {
         /// <summary> The primary internal record identifier. </summary>
         public Guid Id { get; set; }
