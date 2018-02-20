@@ -112,13 +112,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             }
         }
 
-        public async Task IngestTournaments(CancellationToken cancellationToken)
-        {
-            var tournaments = _statsProzoneMotorIngestService.IngestTournaments();
-
-            await PersistTournamentsInRepository(tournaments, cancellationToken);
-        }
-
         public async Task IngestRacesForActiveTournaments(CancellationToken cancellationToken)
         {
             var motorLeagues = await _motorService.GetActiveLeagues();
@@ -164,13 +157,11 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             await PersistGridInRepository(tournamentGrid, cancellationToken);
         }
 
-        public async Task IngestReferenceData(CancellationToken cancellationToken)
+        public async Task IngestLeagues(CancellationToken cancellationToken)
         {
-            await IngestTournaments(cancellationToken);
+            var leagues = _statsProzoneMotorIngestService.IngestLeagues();
 
-            //await IngestRacesForActiveTournaments(cancellationToken);
-
-            //await IngestDriversForActiveTournaments(cancellationToken);
+            await PersistLeaguesInRepository(leagues, cancellationToken);
         }
 
         private async Task PersistTournamentDriversInRepository(MotorEntitiesResponse providerResponse)
@@ -220,27 +211,35 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             await _publicSportDataUnitOfWork.SaveChangesAsync();
         }
 
-        private async Task PersistTournamentsInRepository(MotorEntitiesResponse providerResponse,
+        private async Task PersistLeaguesInRepository(MotorEntitiesResponse providerResponse,
             CancellationToken cancellationToken)
         {
-            var leaguesFromProvider = ExtractLeaguesFromProviderResponse(providerResponse);
-            if (leaguesFromProvider != null)
+            try
             {
-                foreach (var leagueFromProvider in leaguesFromProvider)
+                var leaguesFromProvider = ExtractLeaguesFromProviderResponse(providerResponse);
+                if (leaguesFromProvider != null)
                 {
-                    var leagueInRepo =
-                        _publicSportDataUnitOfWork.MotorLeagues.FirstOrDefault(l => l.ProviderLeagueId == leagueFromProvider.league.leagueId);
-                    if (leagueInRepo is null)
+                    foreach (var leagueFromProvider in leaguesFromProvider)
                     {
-                        AddNewLeagueToRepo(leagueFromProvider);
+                        var leagueInRepo =
+                            _publicSportDataUnitOfWork.MotorLeagues.FirstOrDefault(l => l.ProviderLeagueId == leagueFromProvider.league.subLeague.subLeagueId);
+                        if (leagueInRepo is null)
+                        {
+                            AddNewLeagueToRepo(leagueFromProvider);
+                        }
+                        else
+                        {
+                            UpdateLeagueInRepo(leagueFromProvider, leagueInRepo);
+                        }
                     }
-                    else
-                    {
-                        UpdateLeagueInRepo(leagueFromProvider, leagueInRepo);
-                    }
-                }
 
-                await _publicSportDataUnitOfWork.SaveChangesAsync();
+                    await _publicSportDataUnitOfWork.SaveChangesAsync();
+                }
+            }
+            catch (Exception exception)
+            {
+
+                Console.WriteLine(exception);
             }
         }
 
@@ -563,10 +562,10 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         private void UpdateLeagueInRepo(League leagueFromProvider, MotorLeague leagueInRepo)
         {
-            leagueInRepo.ProviderSlug = leagueFromProvider.league.uriPaths.FirstOrDefault()?.path;
-            leagueInRepo.Abbreviation = leagueFromProvider.league.abbreviation;
-            leagueInRepo.Name = leagueFromProvider.league.name;
-            leagueInRepo.DisplayName = leagueFromProvider.league.displayName;
+            leagueInRepo.ProviderSlug = leagueFromProvider.league.subLeague.abbreviation;
+            leagueInRepo.Abbreviation = leagueFromProvider.league.subLeague.abbreviation;
+            leagueInRepo.Name = leagueFromProvider.league.subLeague.name;
+            leagueInRepo.DisplayName = leagueFromProvider.league.subLeague.displayName;
 
             _publicSportDataUnitOfWork.MotorLeagues.Update(leagueInRepo);
         }
@@ -575,11 +574,13 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         {
             var league = new MotorLeague
             {
-                ProviderSlug = leagueFromProvider.league.uriPaths.FirstOrDefault()?.path,
-                Name = leagueFromProvider.league.name,
-                DisplayName = leagueFromProvider.league.displayName,
-                ProviderLeagueId = leagueFromProvider.league.leagueId,
-                Abbreviation = leagueFromProvider.league.abbreviation
+                ProviderSlug = leagueFromProvider.league.subLeague.abbreviation,
+                Name = leagueFromProvider.league.subLeague.name,
+                DisplayName = leagueFromProvider.league.subLeague.displayName,
+                ProviderLeagueId = leagueFromProvider.league.subLeague.subLeagueId,
+                Abbreviation = leagueFromProvider.league.subLeague.abbreviation,
+                Slug = leagueFromProvider.league.name,
+                DataProvider = DataProvider.StatsProzone
             };
 
             _publicSportDataUnitOfWork.MotorLeagues.Add(league);

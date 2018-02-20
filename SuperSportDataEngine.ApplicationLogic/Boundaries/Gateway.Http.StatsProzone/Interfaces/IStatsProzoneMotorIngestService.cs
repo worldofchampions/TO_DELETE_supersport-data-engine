@@ -9,7 +9,7 @@
         MotorEntitiesResponse IngestTournamentOwners(string providerSlug);
         MotorEntitiesResponse IngestDriverStandings(string providerSlug);
         MotorEntitiesResponse IngestTeamStandings(string providerSlug);
-        MotorEntitiesResponse IngestTournaments();
+        MotorEntitiesResponse IngestLeagues();
         MotorEntitiesResponse IngestTournamentRaces(string providerSlug);
         MotorEntitiesResponse IngestTournamentSchedule(string providerSlug, int providerSeasonId);
         MotorEntitiesResponse IngestTournamentResults(MotorResultRequestParams motorResultRequestParams);

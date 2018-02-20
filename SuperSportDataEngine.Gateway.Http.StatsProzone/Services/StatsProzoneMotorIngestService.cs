@@ -20,11 +20,11 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             _prozoneMotorWebRequest = prozoneMotorWebRequest;
         }
 
-        public MotorEntitiesResponse IngestTournaments()
+        public MotorEntitiesResponse IngestLeagues()
         {
             var webRequestForTournamentsIngest = _prozoneMotorWebRequest.GetRequestForTournaments();
 
-            MotorEntitiesResponse tournamentsEntitiesResponse;
+            MotorEntitiesResponse leagues;
 
             using (var webResponse = webRequestForTournamentsIngest.GetResponse())
             {
@@ -34,11 +34,11 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
                     var streamReader = new StreamReader(responseStream, Encoding.UTF8);
 
-                    tournamentsEntitiesResponse = JsonConvert.DeserializeObject<MotorEntitiesResponse>(streamReader.ReadToEnd());
+                    leagues = JsonConvert.DeserializeObject<MotorEntitiesResponse>(streamReader.ReadToEnd());
                 }
             }
 
-            return tournamentsEntitiesResponse;
+            return leagues;
         }
 
         public MotorEntitiesResponse IngestTournamentRaces(string providerSlug)

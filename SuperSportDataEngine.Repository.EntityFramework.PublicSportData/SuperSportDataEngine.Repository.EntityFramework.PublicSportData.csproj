@@ -248,9 +248,9 @@
     <Compile Include="Migrations\201802010905205_Add_RugbySeason_To_RugbyFixture.Designer.cs">
       <DependentUpon>201802010905205_Add_RugbySeason_To_RugbyFixture.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201802191402282_ReAdded_MotorsportMigrations.cs" />
-    <Compile Include="Migrations\201802191402282_ReAdded_MotorsportMigrations.Designer.cs">
-      <DependentUpon>201802191402282_ReAdded_MotorsportMigrations.cs</DependentUpon>
+    <Compile Include="Migrations\201802201315282_Added_MotorsportMigrations.cs" />
+    <Compile Include="Migrations\201802201315282_Added_MotorsportMigrations.Designer.cs">
+      <DependentUpon>201802201315282_Added_MotorsportMigrations.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyLogGroupsForLasVegasSevens2018.cs" />
@@ -415,8 +415,8 @@
     <EmbeddedResource Include="Migrations\201802010905205_Add_RugbySeason_To_RugbyFixture.resx">
       <DependentUpon>201802010905205_Add_RugbySeason_To_RugbyFixture.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201802191402282_ReAdded_MotorsportMigrations.resx">
-      <DependentUpon>201802191402282_ReAdded_MotorsportMigrations.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201802201315282_Added_MotorsportMigrations.resx">
+      <DependentUpon>201802201315282_Added_MotorsportMigrations.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

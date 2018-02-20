@@ -3,18 +3,10 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class ReAdded_MotorsportMigrations : DbMigration
+    public partial class Added_MotorsportMigrations : DbMigration
     {
         public override void Up()
         {
-            DropForeignKey("dbo.RugbyPlayerStatistics", "RugbyPlayerId", "dbo.RugbyPlayers");
-            DropForeignKey("dbo.RugbyPlayerStatistics", "RugbySeasonId", "dbo.RugbySeasons");
-            DropForeignKey("dbo.RugbyPlayerStatistics", "RugbyTeamId", "dbo.RugbyTeams");
-            DropForeignKey("dbo.RugbyPlayerStatistics", "RugbyTournamentId", "dbo.RugbyTournaments");
-            DropIndex("dbo.RugbyPlayerStatistics", new[] { "RugbyTournamentId" });
-            DropIndex("dbo.RugbyPlayerStatistics", new[] { "RugbySeasonId" });
-            DropIndex("dbo.RugbyPlayerStatistics", new[] { "RugbyTeamId" });
-            DropIndex("dbo.RugbyPlayerStatistics", new[] { "RugbyPlayerId" });
             CreateTable(
                 "dbo.MotorCars",
                 c => new
@@ -152,30 +144,10 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                 .ForeignKey("dbo.MotorDrivers", t => t.MotorDriver_Id)
                 .Index(t => t.MotorDriver_Id);
             
-            DropTable("dbo.RugbyPlayerStatistics");
         }
         
         public override void Down()
         {
-            CreateTable(
-                "dbo.RugbyPlayerStatistics",
-                c => new
-                    {
-                        RugbyTournamentId = c.Guid(nullable: false),
-                        RugbySeasonId = c.Guid(nullable: false),
-                        RugbyTeamId = c.Guid(nullable: false),
-                        RugbyPlayerId = c.Guid(nullable: false),
-                        Rank = c.Int(nullable: false),
-                        TriesScored = c.Int(nullable: false),
-                        PenaltiesScored = c.Int(nullable: false),
-                        ConversionsScored = c.Int(nullable: false),
-                        DropGoalsScored = c.Int(nullable: false),
-                        TotalPoints = c.Int(nullable: false),
-                        TimestampCreated = c.DateTimeOffset(nullable: false, precision: 7),
-                        TimestampUpdated = c.DateTimeOffset(nullable: false, precision: 7),
-                    })
-                .PrimaryKey(t => new { t.RugbyTournamentId, t.RugbySeasonId, t.RugbyTeamId, t.RugbyPlayerId });
-            
             DropForeignKey("dbo.MotorRaceResults", "MotorDriver_Id", "dbo.MotorDrivers");
             DropForeignKey("dbo.MotorGrids", "MotorRace_Id", "dbo.MotorRaces");
             DropForeignKey("dbo.MotorRaces", "MotorLeagueId", "dbo.MotorLeagues");
@@ -192,14 +164,6 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
             DropTable("dbo.MotorGrids");
             DropTable("dbo.MotorDrivers");
             DropTable("dbo.MotorCars");
-            CreateIndex("dbo.RugbyPlayerStatistics", "RugbyPlayerId");
-            CreateIndex("dbo.RugbyPlayerStatistics", "RugbyTeamId");
-            CreateIndex("dbo.RugbyPlayerStatistics", "RugbySeasonId");
-            CreateIndex("dbo.RugbyPlayerStatistics", "RugbyTournamentId");
-            AddForeignKey("dbo.RugbyPlayerStatistics", "RugbyTournamentId", "dbo.RugbyTournaments", "Id", cascadeDelete: true);
-            AddForeignKey("dbo.RugbyPlayerStatistics", "RugbyTeamId", "dbo.RugbyTeams", "Id", cascadeDelete: true);
-            AddForeignKey("dbo.RugbyPlayerStatistics", "RugbySeasonId", "dbo.RugbySeasons", "Id", cascadeDelete: true);
-            AddForeignKey("dbo.RugbyPlayerStatistics", "RugbyPlayerId", "dbo.RugbyPlayers", "Id", cascadeDelete: true);
         }
     }
 }

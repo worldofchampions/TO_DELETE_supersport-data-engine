@@ -11,11 +11,10 @@
         Task IngestOwnersForActiveTournaments(CancellationToken cancellationToken);
         Task IngestDriverStandingsForActiveTournaments(CancellationToken cancellationToken);
         Task IngestTeamStandingsForActiveTournaments(CancellationToken cancellationToken);
-        Task IngestTournaments(CancellationToken cancellationToken);
         Task IngestRacesForActiveTournaments(CancellationToken cancellationToken);
         Task IngestSchedulesForActiveTournaments(CancellationToken cancellationToken);
         Task IngestTournamentResults(MotorResultRequestParams requestParams, CancellationToken cancellationToken);
         Task IngestTournamentGrid(MotorResultRequestParams requestParams, CancellationToken cancellationToken);
-        Task IngestReferenceData(CancellationToken cancellationToken);
+        Task IngestLeagues(CancellationToken cancellationToken);
     }
 }

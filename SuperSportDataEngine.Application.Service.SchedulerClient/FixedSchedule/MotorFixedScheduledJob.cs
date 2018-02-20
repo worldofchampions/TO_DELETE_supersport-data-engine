@@ -25,15 +25,15 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
 
         public void UpdateRecurringJobDefinitions()
         {
-            UpdateRecurringJobDefinition_ReferenceData();
+            UpdateRecurringJobDefinition_Leagues();
         }
 
-        private void UpdateRecurringJobDefinition_ReferenceData()
+        private void UpdateRecurringJobDefinition_Leagues()
         {
             _recurringJobManager.AddOrUpdate(
-                ConfigurationManager.AppSettings["MotorFixedScheduledJob_ReferenceData_JobId"],
-                Job.FromExpression(() => _container.Resolve<IMotorIngestWorkerService>().IngestReferenceData(CancellationToken.None)),
-                ConfigurationManager.AppSettings["MotorFixedScheduledJob_ReferenceData_JobCronExpression"],
+                ConfigurationManager.AppSettings["MotorFixedScheduledJob_Leagues_JobId"],
+                Job.FromExpression(() => _container.Resolve<IMotorIngestWorkerService>().IngestLeagues(CancellationToken.None)),
+                ConfigurationManager.AppSettings["MotorFixedScheduledJob_Leagues_JobCronExpression"],
                 new RecurringJobOptions
                 {
                     TimeZone = TimeZoneInfo.Local,
