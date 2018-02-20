@@ -25,10 +25,10 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
         private FixturesManagerJob _fixturesManagerJob;
         private LiveManagerJob _liveManagerJob;
         private LogsManagerJob _logsManagerJob;
+        private PlayerStatisticsManagerJob _playerStatisticsManagerJob;
 
         public ManagerJob()
         {
-
             ConfigureTimer();
             ConfigureDepenencies();
         }
@@ -85,6 +85,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
                 await _liveManagerJob.DoWorkAsync();
                 await _fixturesManagerJob.DoWorkAsync();
                 await _logsManagerJob.DoWorkAsync();
+                await _playerStatisticsManagerJob.DoWorkAsync();
             }
             catch (Exception)
             {

@@ -47,6 +47,72 @@
             _logger = logger;
         }
 
+        [HttpGet, HttpHead]
+        [Route("{category}/try-scorers/{recordsCount?}")]
+        [ResponseType(typeof(IEnumerable<RugbyPointsScorerModel>))]
+        public async Task<IHttpActionResult> GetTournamentTryScorers(string category, int recordsCount = 0)
+        {
+            if (recordsCount == 0)
+            {
+                recordsCount = int.Parse(ConfigurationManager.AppSettings["MaxResponseCount.TryScorers"]);
+            }
+
+            const string cachePrefix = "TOURNAMENT:";
+
+            var cacheKey = $"{cachePrefix}rugby/{category}try-scores";
+
+            var allPlayers = await GetFromCacheAsync<List<RugbyPointsScorerModel>>(cacheKey);
+
+            if (allPlayers == null)
+            {
+                allPlayers = (await _rugbyService.GetTournamentTryScorers(category))
+                    .Select(Mapper.Map<RugbyPointsScorerModel>).ToList();
+
+                if (!allPlayers.Any()) return Ok(new List<RugbyPointsScorerModel>());
+
+                var requiredPlayers = allPlayers.Take(recordsCount).ToList();
+
+                PersistToCache(cacheKey, allPlayers);
+
+                return Ok(requiredPlayers);
+            }
+
+            return Ok(allPlayers.Take(recordsCount).ToList());
+        }
+
+        [HttpGet, HttpHead]
+        [Route("{category}/scorers/{recordsCount?}")]
+        [ResponseType(typeof(IEnumerable<RugbyPointsScorerModel>))]
+        public async Task<IHttpActionResult> GetTournamentScorers(string category, int recordsCount = 0)
+        {
+            if (recordsCount == 0)
+            {
+                recordsCount = int.Parse(ConfigurationManager.AppSettings["MaxResponseCount.TryScorers"]);
+            }
+
+            const string cachePrefix = "TOURNAMENT:";
+
+            var cacheKey = $"{cachePrefix}rugby/{category}scores";
+
+            var allPlayers = await GetFromCacheAsync<List<RugbyPointsScorerModel>>(cacheKey);
+
+            if (allPlayers == null)
+            {
+                allPlayers = (await _rugbyService.GetTournamentPointsScorers(category))
+                    .Select(Mapper.Map<RugbyPointsScorerModel>).ToList();
+
+                if (!allPlayers.Any()) return Ok(new List<RugbyPointsScorerModel>());
+
+                PersistToCache(cacheKey, allPlayers);
+
+                var requiredPlayers = allPlayers.Take(recordsCount).ToList();
+
+                return Ok(requiredPlayers);
+            }
+
+            return Ok(allPlayers.Take(recordsCount).ToList());
+        }
+
         /// <summary>
         /// Match Details
         /// </summary>
@@ -99,8 +165,6 @@
             {
                 Message = LegacyFeedConstants.GeneralResponseMessage
             };
-
-            //_logger.Info("Replying with general response message.");
 
             return Ok(response);
         }
