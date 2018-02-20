@@ -312,8 +312,6 @@
 
             if (season == null)
             {
-                await _logger.Error("IngestSeason." + tournament.ProviderTournamentId + "." + year, 
-                    "Provider returning null for season data. Tournament = "+ tournament.Name + " Season = " + year);
                 return;
             }
 
@@ -631,10 +629,6 @@
                     var venue = fixture.venueName == null ? null :
                         allVenues.FirstOrDefault(v => v.ProviderVenueId == fixture.venueId);
 
-                    //if (venue == null)
-                    //    await _logger.Warn("UnconfirmedVenue." + fixture.gameId, 
-                    //        "Ingesting fixture " + fixture.gameId + " with venue unconfirmed.");
-
                     var newFixture = new RugbyFixture()
                     {
                         ProviderFixtureId = fixtureId,
@@ -863,7 +857,9 @@
                 {
                     RugbyFlatLogsResponse logs =
                         await _statsProzoneIngestService.IngestFlatLogsForTournament(
-                            tournament.ProviderTournamentId, activeSeasonIdForTournament);
+                            tournament.ProviderTournamentId, 
+                            activeSeasonIdForTournament,
+                            numberOfRounds);
 
                     if (logs == null)
                         continue;
@@ -876,7 +872,9 @@
                 {
                     var logs =
                         await _statsProzoneIngestService.IngestGroupedLogsForTournament(
-                            tournament.ProviderTournamentId, activeSeasonIdForTournament, numberOfRounds);
+                            tournament.ProviderTournamentId, 
+                            activeSeasonIdForTournament, 
+                            numberOfRounds);
 
                     if (logs == null)
                         continue;
@@ -1819,6 +1817,7 @@
 
                 var localInterchanges = new List<RugbyMatchEvent>();
 
+                var interchanges = team.interchanges.Distinct(new InterchangeCompare());
                 foreach (var interchange in team.interchanges)
                 {
                     var eventInDb = events.FirstOrDefault(e =>
@@ -2371,7 +2370,7 @@
                 if (lineup?.teamPlayer == null)
                     continue;
 
-                var players = lineup.teamPlayer.ToList();
+                var players = lineup.teamPlayer.ToList().Distinct(new TeamPlayerComparer());
 
                 var playersForFixture = (await _rugbyPlayerRepository.AllAsync()).Where(p => players.Any(player => player.playerId.Equals(p.ProviderPlayerId))).ToList();
 
@@ -2387,7 +2386,7 @@
                     var dbPlayer = playersForFixture.FirstOrDefault(p => p.ProviderPlayerId == playerId);
 
                     if (dbPlayer == null)
-                        continue;
+                        break;
 
                     if (dbPlayer.FirstName == null && dbPlayer.LastName == null)
                     {
@@ -2421,7 +2420,7 @@
                                     l.RugbyTeamId == dbTeam.Id);
 
                         if (localEntry != null)
-                            continue;
+                            break;
                     }
 
                     if (dbEntry == null)
@@ -2487,7 +2486,10 @@
 
             if (logType == RugbyLogType.FlatLogs)
             {
-                var logs = await _statsProzoneIngestService.IngestFlatLogsForTournament(providerTournamentId, seasonId);
+                var logs = 
+                    await _statsProzoneIngestService.IngestFlatLogsForTournament(
+                        providerTournamentId, seasonId, numberOfRounds);
+
                 if (logs == null)
                     return;
 
@@ -2497,7 +2499,10 @@
             }
             else
             {
-                var logs = await _statsProzoneIngestService.IngestGroupedLogsForTournament(providerTournamentId, seasonId, numberOfRounds);
+                var logs = 
+                    await _statsProzoneIngestService.IngestGroupedLogsForTournament(
+                        providerTournamentId, seasonId, numberOfRounds);
+
                 if (logs == null)
                     return;
 
@@ -2586,10 +2591,9 @@
 
                     s.Stop();
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    await _logger.Warn($"IngestPastFixtures.{fixture.LegacyFixtureId}",
-                        $"Exception occured while ingesting legacy fixture {fixture.LegacyFixtureId} / provider fixture id {fixture.ProviderFixtureId}. \n" + e.StackTrace);
+                    // ignored
                 }
             }
         }

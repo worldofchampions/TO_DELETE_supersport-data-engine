@@ -88,6 +88,19 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsPro
         public MatchStats matchStats { get; set; }
     }
 
+    public class TeamPlayerComparer : IEqualityComparer<TeamPlayer>
+    {
+        public bool Equals(TeamPlayer x, TeamPlayer y)
+        {
+            return x?.playerId == y?.playerId;
+        }
+
+        public int GetHashCode(TeamPlayer obj)
+        {
+            return obj.GetHashCode();
+        }
+    }
+
     public class TeamPlayer
     {
         public string playerFirstName { get; set; }
