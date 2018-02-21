@@ -436,6 +436,48 @@
             }
         }
 
+        public async Task<RugbyPlayerStatsResponse> IngestPlayerStatsForTournament(int providerTournamentId, int providerSeasonId,
+            CancellationToken cancellationToken)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return null;
+
+            try
+            {
+                var webRequest = GetWebRequestForPlayerStatsEndpoint(providerTournamentId, providerSeasonId);
+
+                using (var response = await webRequest.GetResponseAsync())
+                {
+                    if (response == null)
+                        return null;
+
+                    var playerStatsResponse = new RugbyPlayerStatsResponse { RequestTime = DateTime.Now };
+
+                    using (var responseStream = response.GetResponseStream())
+                    {
+                        if (responseStream != null)
+                        {
+                            var reader = new StreamReader(responseStream, Encoding.UTF8);
+                            var stats = reader.ReadToEnd();
+
+                            playerStatsResponse.RugbyPlayerStats = JsonConvert.DeserializeObject<RugbyPlayerStats>(stats);
+                        }
+
+                        playerStatsResponse.ResponseTime = DateTime.Now;
+
+                        CheckIfRequestTakingTooLong(webRequest, playerStatsResponse);
+
+                        return playerStatsResponse;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                await _logger.Debug(System.Reflection.MethodBase.GetCurrentMethod().Name, e.StackTrace);
+                return null;
+            }
+        }
+
         private async Task<RugbyEventsFlowResponse> EventsFlowResponse(long providerFixtureId)
         {
             WebRequest request =
@@ -476,9 +518,24 @@
             }
         }
 
+        private static WebRequest GetWebRequestForPlayerStatsEndpoint(int competitionId, int seasonId)
+        {
+            const string baseUrl = "http://rugbyunion-api.stats.com/api/RU/playerStats/";
+
+            var request = WebRequest.Create(baseUrl + competitionId + "/" + seasonId);
+
+            request.Method = "GET";
+
+            request.Headers["Authorization"] = "Basic U3VwZXJTcG9ydF9NZWRpYTpTdTkzUjdyMFA1";
+
+            request.ContentType = "application/json; charset=UTF-8";
+
+            return request;
+        }
+
         private static WebRequest GetWebRequestForLogsEndpoint(int competitionId, int seasonId)
         {
-            var baseUrl = "http://rugbyunion-api.stats.com/api/RU/competitions/ladder/";
+            const string baseUrl = "http://rugbyunion-api.stats.com/api/RU/competitions/ladder/";
 
             var request = WebRequest.Create(baseUrl + competitionId + "/" + seasonId);
 
@@ -493,7 +550,7 @@
 
         private static WebRequest GetWebRequestForLogsEndpoint(int competitionId, int seasonId, int? numberOfRounds)
         {
-            var baseUrl = "http://rugbyunion-api.stats.com/api/RU/competitions/ladder/";
+            const string baseUrl = "http://rugbyunion-api.stats.com/api/RU/competitions/ladder/";
 
             var request = WebRequest.Create(baseUrl + competitionId + "/" + seasonId + "/" + (numberOfRounds != null ? numberOfRounds.ToString() : ""));
 

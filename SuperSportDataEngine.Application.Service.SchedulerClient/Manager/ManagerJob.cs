@@ -8,7 +8,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
     using ScheduledManager;
     using Hangfire;
     using Container;
-    using SuperSportDataEngine.Common.Logging;
     using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using ApplicationLogic.Services;
     using ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
@@ -25,10 +24,10 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
         private FixturesManagerJob _fixturesManagerJob;
         private LiveManagerJob _liveManagerJob;
         private LogsManagerJob _logsManagerJob;
+        private PlayerStatisticsManagerJob _playerStatisticsManagerJob;
 
         public ManagerJob()
         {
-
             ConfigureTimer();
             ConfigureDepenencies();
         }
@@ -61,6 +60,11 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
                 new LogsManagerJob(
                     _recurringJobManager,
                     _container);
+
+            _playerStatisticsManagerJob =
+                new PlayerStatisticsManagerJob(
+                    _recurringJobManager,
+                    _container);
         }
 
         private void ConfigureTimer()
@@ -85,6 +89,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
                 await _liveManagerJob.DoWorkAsync();
                 await _fixturesManagerJob.DoWorkAsync();
                 await _logsManagerJob.DoWorkAsync();
+                await _playerStatisticsManagerJob.DoWorkAsync();
             }
             catch (Exception)
             {
