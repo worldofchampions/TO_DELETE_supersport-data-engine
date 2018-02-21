@@ -214,32 +214,25 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         private async Task PersistLeaguesInRepository(MotorEntitiesResponse providerResponse,
             CancellationToken cancellationToken)
         {
-            try
+            var leaguesFromProvider = ExtractLeaguesFromProviderResponse(providerResponse);
+            if (leaguesFromProvider != null)
             {
-                var leaguesFromProvider = ExtractLeaguesFromProviderResponse(providerResponse);
-                if (leaguesFromProvider != null)
+                foreach (var leagueFromProvider in leaguesFromProvider)
                 {
-                    foreach (var leagueFromProvider in leaguesFromProvider)
+                    var leagueInRepo =
+                        _publicSportDataUnitOfWork.MotorLeagues.FirstOrDefault(l =>
+                            l.ProviderLeagueId == leagueFromProvider.league.subLeague.subLeagueId);
+                    if (leagueInRepo is null)
                     {
-                        var leagueInRepo =
-                            _publicSportDataUnitOfWork.MotorLeagues.FirstOrDefault(l => l.ProviderLeagueId == leagueFromProvider.league.subLeague.subLeagueId);
-                        if (leagueInRepo is null)
-                        {
-                            AddNewLeagueToRepo(leagueFromProvider);
-                        }
-                        else
-                        {
-                            UpdateLeagueInRepo(leagueFromProvider, leagueInRepo);
-                        }
+                        AddNewLeagueToRepo(leagueFromProvider);
                     }
-
-                    await _publicSportDataUnitOfWork.SaveChangesAsync();
+                    else
+                    {
+                        UpdateLeagueInRepo(leagueFromProvider, leagueInRepo);
+                    }
                 }
-            }
-            catch (Exception exception)
-            {
 
-                Console.WriteLine(exception);
+                await _publicSportDataUnitOfWork.SaveChangesAsync();
             }
         }
 
@@ -404,7 +397,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             await _publicSportDataUnitOfWork.SaveChangesAsync();
         }
 
-        private void UpdateScheduleInRepo(MotorSchedule scheduleInRepo, Event raceEvent)
+        private void UpdateScheduleInRepo(MotorRaceCalendar raceCalendarInRepo, Event raceEvent)
         {
             if (raceEvent is null || raceEvent.race is null)
                 return;
@@ -418,15 +411,15 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             var previousChampionProviderId = raceEvent.champions?.FirstOrDefault(c => c.championType == "previous")?.playerId;
             var previousChampionInRepo = _publicSportDataUnitOfWork.MotorDrivers.FirstOrDefault(d => d.ProviderId == previousChampionProviderId);
 
-            scheduleInRepo.City = raceEvent.venue.city;
-            scheduleInRepo.CountryAbbreviation = raceEvent.venue?.country?.abbreviation;
-            scheduleInRepo.CountryNameFull = raceEvent.venue?.country?.name;
-            scheduleInRepo.VenueName = raceEvent.venue?.name;
-            scheduleInRepo.Name = raceEvent.race.nameFull;
-            scheduleInRepo.ProviderRaceId = raceEvent.race.raceId;
-            scheduleInRepo.StartDateTimeUtc = date;
+            raceCalendarInRepo.City = raceEvent.venue.city;
+            raceCalendarInRepo.CountryAbbreviation = raceEvent.venue?.country?.abbreviation;
+            raceCalendarInRepo.CountryName = raceEvent.venue?.country?.name;
+            raceCalendarInRepo.VenueName = raceEvent.venue?.name;
+            raceCalendarInRepo.EventName = raceEvent.race.nameFull;
+            raceCalendarInRepo.ProviderRaceId = raceEvent.race.raceId;
+            raceCalendarInRepo.StartDateTimeUtc = date;
 
-            _publicSportDataUnitOfWork.MotorSchedules.Update(scheduleInRepo);
+            _publicSportDataUnitOfWork.MotorSchedules.Update(raceCalendarInRepo);
         }
 
         private void AddNewScheduleToRepo(Event raceEvent)
@@ -443,19 +436,15 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             var previousChampionProviderId = raceEvent.champions?.FirstOrDefault(c => c.championType == "previous")?.playerId;
             var previousChampionInRepo = _publicSportDataUnitOfWork.MotorDrivers.FirstOrDefault(d => d.ProviderId == previousChampionProviderId);
 
-            var newSchedule = new MotorSchedule
+            var newSchedule = new MotorRaceCalendar
             {
                 City = raceEvent.venue.city,
                 CountryAbbreviation = raceEvent.venue?.country?.abbreviation,
-                CountryNameFull = raceEvent.venue?.country?.name,
+                CountryName = raceEvent.venue?.country?.name,
                 VenueName = raceEvent.venue?.name,
-                Name = raceEvent.race.nameFull,
+                EventName = raceEvent.race.nameFull,
                 ProviderRaceId = raceEvent.race.raceId,
-                StartDateTimeUtc = date,
-                CurrentChampion = currentChampionInRepo,
-                PreviousChampion = previousChampionInRepo,
-                CurrentChampionId = currentChampionInRepo.Id,
-                PreviousChampionId = previousChampionInRepo.Id
+                StartDateTimeUtc = date
             };
 
             _publicSportDataUnitOfWork.MotorSchedules.Add(newSchedule);

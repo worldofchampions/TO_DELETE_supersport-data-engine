@@ -36,7 +36,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.UnitOf
         public IBaseEntityFrameworkRepository<MotorTeamStanding> MotorTeamStandings { get; set; }
         public IBaseEntityFrameworkRepository<MotorTeam> MotortTeams { get; set; }
         public IBaseEntityFrameworkRepository<MotorRaceResult> MotorTeamResults { get; set; }
-        public IBaseEntityFrameworkRepository<MotorSchedule> MotorSchedules { get; set; }
+        public IBaseEntityFrameworkRepository<MotorRaceCalendar> MotorSchedules { get; set; }
         public IBaseEntityFrameworkRepository<MotorGrid> MotorGrids { get; set; }
 
         public PublicSportDataUnitOfWork(
