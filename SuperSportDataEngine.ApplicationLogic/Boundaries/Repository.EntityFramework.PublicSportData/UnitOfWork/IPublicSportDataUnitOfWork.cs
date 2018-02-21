@@ -30,7 +30,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFram
         IBaseEntityFrameworkRepository<MotorTeamStanding> MotorTeamStandings { get; set; }
         IBaseEntityFrameworkRepository<MotorTeam> MotortTeams { get; set; }
         IBaseEntityFrameworkRepository<MotorRaceResult> MotorTeamResults { get; set; }
-        IBaseEntityFrameworkRepository<MotorRaceCalendar> MotorSchedules { get; set; }
+        IBaseEntityFrameworkRepository<MotorRaceCalendar> MotorCalendars { get; set; }
         IBaseEntityFrameworkRepository<MotorGrid> MotorGrids { get; set; }
 
         int SaveChanges();

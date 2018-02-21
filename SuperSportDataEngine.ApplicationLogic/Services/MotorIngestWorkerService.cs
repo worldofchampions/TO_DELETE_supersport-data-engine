@@ -127,7 +127,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             }
         }
 
-        public async Task IngestSchedulesForActiveTournaments(CancellationToken cancellationToken)
+        public async Task IngestRaceCalendarsForActiveTournaments(CancellationToken cancellationToken)
         {
             var motorLeagues = _publicSportDataUnitOfWork.MotorLeagues.Where(league => league.IsEnabled);
             if (motorLeagues != null)
@@ -382,7 +382,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                     if (raceRaceId is null) continue;
 
                     var scheduleInRepo =
-                        _publicSportDataUnitOfWork.MotorSchedules.FirstOrDefault(s => s.ProviderRaceId == raceRaceId);
+                        _publicSportDataUnitOfWork.MotorCalendars.FirstOrDefault(c => c.MotorRace.ProviderRaceId == raceRaceId);
 
                     if (scheduleInRepo is null)
                     {
@@ -402,7 +402,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             if (raceEvent is null || raceEvent.race is null)
                 return;
 
-            var date = raceEvent.startDate?.FirstOrDefault(d =>
+            var dateTimeUtc = raceEvent.startDate?.FirstOrDefault(d =>
                 string.Equals(d.dateType, "utc", StringComparison.InvariantCultureIgnoreCase))?.full;
 
             var currentChampionProviderId = raceEvent.champions?.FirstOrDefault(c => c.championType == "current")?.playerId;
@@ -411,15 +411,15 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             var previousChampionProviderId = raceEvent.champions?.FirstOrDefault(c => c.championType == "previous")?.playerId;
             var previousChampionInRepo = _publicSportDataUnitOfWork.MotorDrivers.FirstOrDefault(d => d.ProviderId == previousChampionProviderId);
 
-            raceCalendarInRepo.City = raceEvent.venue.city;
-            raceCalendarInRepo.CountryAbbreviation = raceEvent.venue?.country?.abbreviation;
-            raceCalendarInRepo.CountryName = raceEvent.venue?.country?.name;
-            raceCalendarInRepo.VenueName = raceEvent.venue?.name;
-            raceCalendarInRepo.EventName = raceEvent.race.nameFull;
-            raceCalendarInRepo.ProviderRaceId = raceEvent.race.raceId;
-            raceCalendarInRepo.StartDateTimeUtc = date;
+            raceCalendarInRepo.MotorRace.CityName = raceEvent.venue.city;
+            raceCalendarInRepo.MotorRace.CountryAbbreviation = raceEvent.venue?.country?.abbreviation;
+            raceCalendarInRepo.MotorRace.CountryName = raceEvent.venue?.country?.name;
+            raceCalendarInRepo.MotorRace.VenueName = raceEvent.venue?.name;
+            raceCalendarInRepo.MotorRace.Name = raceEvent.race.nameFull;
+            raceCalendarInRepo.MotorRace.ProviderRaceId = raceEvent.race.raceId;
+            raceCalendarInRepo.StartDateTimeUtc = dateTimeUtc;
 
-            _publicSportDataUnitOfWork.MotorSchedules.Update(raceCalendarInRepo);
+            _publicSportDataUnitOfWork.MotorCalendars.Update(raceCalendarInRepo);
         }
 
         private void AddNewScheduleToRepo(Event raceEvent)
@@ -436,18 +436,23 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             var previousChampionProviderId = raceEvent.champions?.FirstOrDefault(c => c.championType == "previous")?.playerId;
             var previousChampionInRepo = _publicSportDataUnitOfWork.MotorDrivers.FirstOrDefault(d => d.ProviderId == previousChampionProviderId);
 
-            var newSchedule = new MotorRaceCalendar
+            var race = new MotorRace
             {
-                City = raceEvent.venue.city,
+                CityName = raceEvent.venue.city,
                 CountryAbbreviation = raceEvent.venue?.country?.abbreviation,
                 CountryName = raceEvent.venue?.country?.name,
                 VenueName = raceEvent.venue?.name,
-                EventName = raceEvent.race.nameFull,
+                Name = raceEvent.race.nameFull,
                 ProviderRaceId = raceEvent.race.raceId,
+            };
+
+            var newSchedule = new MotorRaceCalendar
+            {
+                MotorRace = race,
                 StartDateTimeUtc = date
             };
 
-            _publicSportDataUnitOfWork.MotorSchedules.Add(newSchedule);
+            _publicSportDataUnitOfWork.MotorCalendars.Add(newSchedule);
         }
 
         private void UpdateGridEntryInRepo(MotorGrid gridInRepo, Result providerGridEntry)
@@ -611,8 +616,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         private void UpdateRaceInRepo(Race providerRace, MotorRace raceInRepo)
         {
             raceInRepo.Name = providerRace.name;
-            raceInRepo.Abbreviation = providerRace.name;
-
+            raceInRepo.NameAbbreviation = providerRace.name;
             _publicSportDataUnitOfWork.MotorRaces.Update(raceInRepo);
         }
 
