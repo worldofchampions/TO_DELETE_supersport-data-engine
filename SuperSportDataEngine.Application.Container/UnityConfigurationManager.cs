@@ -187,6 +187,10 @@ namespace SuperSportDataEngine.Application.Container
             container.RegisterType<IBaseEntityFrameworkRepository<RugbyVenue>, BaseEntityFrameworkRepository<RugbyVenue>>(
                 new HierarchicalLifetimeManager(),
                 new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyVenue>(container.Resolve<DbContext>(PublicSportDataRepository))));
+
+            container.RegisterType<IBaseEntityFrameworkRepository<RugbyPlayerStatistics>, BaseEntityFrameworkRepository<RugbyPlayerStatistics>>(
+                new HierarchicalLifetimeManager(),
+                new InjectionFactory(x => new BaseEntityFrameworkRepository<RugbyPlayerStatistics>(container.Resolve<DbContext>(PublicSportDataRepository))));
         }
 
         private static void ApplyRegistrationsForRepositoryEntityFrameworkSystemSportData(IUnityContainer container)
