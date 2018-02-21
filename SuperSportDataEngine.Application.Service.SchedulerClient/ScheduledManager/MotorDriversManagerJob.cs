@@ -118,7 +118,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
             _recurringJobManager.AddOrUpdate(
                 jobId,
                 Job.FromExpression(() => _childContainer.Resolve<IMotorIngestWorkerService>()
-                    .IngestDriversForActiveTournaments(new MotorDriverRequestEntity(providerSlug, providerSeasonId), CancellationToken.None)),
+                    .IngestDriversForActiveLeagues(new MotorDriverRequestEntity(providerSlug, providerSeasonId), CancellationToken.None)),
                 jobCronExpression,
                 new RecurringJobOptions
                 {

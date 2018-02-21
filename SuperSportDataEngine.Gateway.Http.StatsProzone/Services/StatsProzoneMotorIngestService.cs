@@ -62,7 +62,7 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             return tournamentRacesEntitiesResponse;
         }
 
-        public MotorEntitiesResponse IngestTournamentSchedule(string providerSlug, int providerSeasonId)
+        public MotorEntitiesResponse IngestLeagueCalendar(string providerSlug, int providerSeasonId)
         {
             var requestForSchedule = _prozoneMotorWebRequest.GetRequestForSchedule(providerSlug, providerSeasonId);
 

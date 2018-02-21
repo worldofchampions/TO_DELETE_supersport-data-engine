@@ -6,15 +6,15 @@
 
     public interface IMotorIngestWorkerService
     {
-        Task IngestDriversForActiveTournaments(MotorDriverRequestEntity motorDriverRequestEntity, CancellationToken none);
-        Task IngestTeamsForActiveTournaments(CancellationToken cancellationToken);
-        Task IngestOwnersForActiveTournaments(CancellationToken cancellationToken);
-        Task IngestDriverStandingsForActiveTournaments(CancellationToken cancellationToken);
-        Task IngestTeamStandingsForActiveTournaments(CancellationToken cancellationToken);
-        Task IngestRacesForActiveTournaments(CancellationToken cancellationToken);
-        Task IngestSchedulesForActiveTournaments(CancellationToken cancellationToken);
-        Task IngestTournamentResults(MotorResultRequestParams requestParams, CancellationToken cancellationToken);
-        Task IngestTournamentGrid(MotorResultRequestParams requestParams, CancellationToken cancellationToken);
+        Task IngestDriversForActiveLeagues(MotorDriverRequestEntity motorDriverRequestEntity, CancellationToken none);
+        Task IngestTeamsForActiveLeagues(CancellationToken cancellationToken);
+        Task IngestOwnersForActiveLeagues(CancellationToken cancellationToken);
+        Task IngestDriverStandingsForActiveLeagues(CancellationToken cancellationToken);
+        Task IngestTeamStandingsForActiveLeagues(CancellationToken cancellationToken);
+        Task IngestRacesForActiveLeagues(CancellationToken cancellationToken);
+        Task IngestRaceCalendarsForActiveLeagues(CancellationToken cancellationToken);
+        Task IngestRaceResults(MotorResultRequestParams requestParams, CancellationToken cancellationToken);
+        Task IngestRaceGrid(MotorResultRequestParams requestParams, CancellationToken cancellationToken);
         Task IngestLeagues(CancellationToken cancellationToken);
     }
 }

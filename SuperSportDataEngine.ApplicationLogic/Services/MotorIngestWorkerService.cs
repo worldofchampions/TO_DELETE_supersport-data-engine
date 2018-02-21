@@ -33,7 +33,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             _motorService = motorService;
         }
 
-        public async Task IngestDriversForActiveTournaments(MotorDriverRequestEntity motorDriverRequestEntity, CancellationToken cancellationToken)
+        public async Task IngestDriversForActiveLeagues(MotorDriverRequestEntity motorDriverRequestEntity, CancellationToken cancellationToken)
         {
             var tournamentDrivers = _statsProzoneMotorIngestService.IngestTournamentDrivers(motorDriverRequestEntity);
             await PersistTournamentDriversInRepository(tournamentDrivers);
@@ -52,7 +52,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             }
         }
 
-        public async Task IngestTeamsForActiveTournaments(CancellationToken cancellationToken)
+        public async Task IngestTeamsForActiveLeagues(CancellationToken cancellationToken)
         {
             var motorLeagues = _publicSportDataUnitOfWork.MotorLeagues.Where(league => league.IsEnabled);
             if (motorLeagues != null)
@@ -67,7 +67,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             }
         }
 
-        public async Task IngestOwnersForActiveTournaments(CancellationToken cancellationToken)
+        public async Task IngestOwnersForActiveLeagues(CancellationToken cancellationToken)
         {
             var motorLeagues = _publicSportDataUnitOfWork.MotorLeagues.Where(league => league.IsEnabled);
             if (motorLeagues != null)
@@ -82,7 +82,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             }
         }
 
-        public async Task IngestDriverStandingsForActiveTournaments(CancellationToken cancellationToken)
+        public async Task IngestDriverStandingsForActiveLeagues(CancellationToken cancellationToken)
         {
             var motorLeagues = _publicSportDataUnitOfWork.MotorLeagues.Where(race => race.IsEnabled);
             if (motorLeagues != null)
@@ -97,7 +97,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             }
         }
 
-        public async Task IngestTeamStandingsForActiveTournaments(CancellationToken cancellationToken)
+        public async Task IngestTeamStandingsForActiveLeagues(CancellationToken cancellationToken)
         {
             var motorLeagues = _publicSportDataUnitOfWork.MotorLeagues.Where(league => league.IsEnabled);
             if (motorLeagues != null)
@@ -112,7 +112,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             }
         }
 
-        public async Task IngestRacesForActiveTournaments(CancellationToken cancellationToken)
+        public async Task IngestRacesForActiveLeagues(CancellationToken cancellationToken)
         {
             var motorLeagues = await _motorService.GetActiveLeagues();
             if (motorLeagues != null)
@@ -127,7 +127,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             }
         }
 
-        public async Task IngestRaceCalendarsForActiveTournaments(CancellationToken cancellationToken)
+        public async Task IngestRaceCalendarsForActiveLeagues(CancellationToken cancellationToken)
         {
             var motorLeagues = _publicSportDataUnitOfWork.MotorLeagues.Where(league => league.IsEnabled);
             if (motorLeagues != null)
@@ -137,20 +137,20 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                     if (league.ProviderSlug is null) continue;
 
                     var schedule =
-                        _statsProzoneMotorIngestService.IngestTournamentSchedule(league.ProviderSlug, league.ProviderLeagueId);
+                        _statsProzoneMotorIngestService.IngestLeagueCalendar(league.ProviderSlug, league.ProviderLeagueId);
                     await PersistScheduleInRepository(schedule, cancellationToken);
                 }
             }
         }
 
-        public async Task IngestTournamentResults(MotorResultRequestParams requestParams, CancellationToken cancellationToken)
+        public async Task IngestRaceResults(MotorResultRequestParams requestParams, CancellationToken cancellationToken)
         {
             var raceResults = _statsProzoneMotorIngestService.IngestTournamentResults(requestParams);
 
             await PersistResultsInRepository(raceResults, cancellationToken);
         }
 
-        public async Task IngestTournamentGrid(MotorResultRequestParams requestParams, CancellationToken cancellationToken)
+        public async Task IngestRaceGrid(MotorResultRequestParams requestParams, CancellationToken cancellationToken)
         {
             var tournamentGrid = _statsProzoneMotorIngestService.IngestTournamentGrid(requestParams);
 
