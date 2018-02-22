@@ -11,7 +11,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Context
     /// </summary>
     public class AuthContext : IdentityDbContext<IdentityUser>
     {
-        public AuthContext() : base("AuthContext")
+        public AuthContext() : base("SqlDatabase_SystemSportData")
         {
 
         }
