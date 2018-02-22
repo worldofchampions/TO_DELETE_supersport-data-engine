@@ -68,7 +68,7 @@ namespace SuperSportDataEngine.Application.Container
         {
             container.RegisterType<ITemporaryExampleService, TemporaryExampleService>();
             container.RegisterType<IRugbyService, RugbyService>(new HierarchicalLifetimeManager());
-            container.RegisterType<IMotorService, MotorService>(new HierarchicalLifetimeManager());
+            container.RegisterType<IMotorsportService, MotorsportService>(new HierarchicalLifetimeManager());
 
 
             if (applicationScope == ApplicationScope.WebApiLegacyFeed ||
@@ -176,7 +176,7 @@ namespace SuperSportDataEngine.Application.Container
 
                 container.RegisterType<IRugbyIngestWorkerService, RugbyIngestWorkerService>(new HierarchicalLifetimeManager());
 
-                container.RegisterType<IMotorIngestWorkerService, MotorIngestWorkerService>(new HierarchicalLifetimeManager());
+                container.RegisterType<IMotorsportIngestWorkerService, MotorsportIngestWorkerService>(new HierarchicalLifetimeManager());
 
                 container.RegisterType<ITemporaryExampleMongoDbRepository, TemporaryExampleMongoDbRepository>();
 

@@ -38,13 +38,13 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
         {
             using (var unitOfWork = _childContainer.Resolve<ISystemSportDataUnitOfWork>())
             {
-                var leagues = await _childContainer.Resolve<IMotorService>().GetActiveLeagues();
+                var leagues = await _childContainer.Resolve<IMotorsportService>().GetActiveLeagues();
 
                 foreach (var league in leagues)
                 {
-                    var seasonId = await _childContainer.Resolve<IMotorService>().GetProviderSeasonIdForLeague(league.Id, CancellationToken.None);
+                    var seasonId = await _childContainer.Resolve<IMotorsportService>().GetProviderSeasonIdForLeague(league.Id, CancellationToken.None);
 
-                    if (await _childContainer.Resolve<IMotorService>().GetSchedulerStateForManagerJobPolling(league.Id) == SchedulerStateForManagerJobPolling.NotRunning)
+                    if (await _childContainer.Resolve<IMotorsportService>().GetSchedulerStateForManagerJobPolling(league.Id) == SchedulerStateForManagerJobPolling.NotRunning)
                     {
                         var jobId = ConfigurationManager.AppSettings["ScheduleManagerJob_Drivers_CurrentLeagues_JobIdPrefix"] + league.Name;
                         var jobCronExpression = ConfigurationManager.AppSettings["ScheduleManagerJob_Drivers_CurrentLeagues_JobCronExpression_OneMinute"];
@@ -117,7 +117,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
         {
             _recurringJobManager.AddOrUpdate(
                 jobId,
-                Job.FromExpression(() => _childContainer.Resolve<IMotorIngestWorkerService>()
+                Job.FromExpression(() => _childContainer.Resolve<IMotorsportIngestWorkerService>()
                     .IngestDriversForActiveLeagues(new MotorDriverRequestEntity(providerSlug, providerSeasonId), CancellationToken.None)),
                 jobCronExpression,
                 new RecurringJobOptions

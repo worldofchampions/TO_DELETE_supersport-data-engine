@@ -1,10 +1,10 @@
-﻿using System;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Base;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
-
-namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models
+﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models
 {
-    public class MotorDriver: BaseModel
+    using System;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Base;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
+
+    public class MotorsportDriver: BaseModel
     {
         /// <summary> The primary internal record identifier. </summary>
         public Guid Id { get; set; }
@@ -13,7 +13,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFram
         public int LegacyDriverId { get; set; }
 
         /// <summary> The provider's record identifier. </summary>
-        public int ProviderId { get; set; }
+        public int ProviderDriverId { get; set; }
 
         /// <summary> A provider driven value. </summary>
         public string FirstName { get; set; }
@@ -21,8 +21,11 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFram
         /// <summary> A provider driven value. </summary>
         public string LastName { get; set; }
 
-        /// <summary> Provider does not serve this value. </summary>
+        /// <summary> Auto-calculated on ingest. Provider does not serve this value. </summary>
         public string FullName { get; set; }
+
+        /// <summary> A CMS driven value. </summary>
+        public string FullNameCmsOverride { get; set; }
 
         /// <summary> A provider driven value. </summary>
         public double HeightInCentimeters { get; set; }
@@ -30,32 +33,24 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFram
         /// <summary> A provider driven value. </summary>
         public double WeightInKilograms { get; set; }
 
-        /// <summary> A CMS driven value. </summary>
-        public string DisplayNameCmsOverride { get; set; }
-
         /// <summary> A provider driven value. </summary>
         public string CountryName { get; set; }
 
         /// <summary> A provider driven value. </summary>
         public int ProviderCarId { get; set; }
 
+        //TODO : Clarify if car info is needed. Should it be a seperate model
         /// <summary> A provider driven value. </summary>
         public int? CarNumber { get; set; }
 
-        /// <summary> A provider driven value. </summary>
-        public int? CarDisplayNumber { get; set; }
+        ///// <summary> A provider driven value. </summary>
+        //public int? CarDisplayNumber { get; set; }
 
-        /// <summary> A provider driven value. </summary>
-        public string CarName { get; set; }
+        ///// <summary> A provider driven value. </summary>
+        //public string CarName { get; set; }
 
-        /// <summary> A provider driven value. </summary>
-        public string CarDisplayName { get; set; }
-
-        /// <summary> A provider driven value. </summary>
-        public string TeamName { get; set; }
-
-        /// <summary> A provider driven value. </summary>
-        public int ProviderTeamId { get; set; }
+        ///// <summary> A provider driven value. </summary>
+        //public string CarDisplayName { get; set; }
 
         public DataProvider DataProvider { get; set; }
     }

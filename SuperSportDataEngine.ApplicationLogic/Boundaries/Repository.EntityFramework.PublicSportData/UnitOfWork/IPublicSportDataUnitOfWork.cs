@@ -23,15 +23,15 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFram
         IBaseEntityFrameworkRepository<RugbyTournament> RugbyTournaments { get; }
         IBaseEntityFrameworkRepository<RugbyVenue> RugbyVenues { get; }
 
-        IBaseEntityFrameworkRepository<MotorDriver> MotorDrivers { get; set; }
-        IBaseEntityFrameworkRepository<MotorLeague> MotorLeagues { get; set; }
-        IBaseEntityFrameworkRepository<MotorRace> MotorRaces { get; set; }
-        IBaseEntityFrameworkRepository<MotorDriverStanding> MotorDriverStandings { get; set; }
-        IBaseEntityFrameworkRepository<MotorTeamStanding> MotorTeamStandings { get; set; }
-        IBaseEntityFrameworkRepository<MotorTeam> MotortTeams { get; set; }
-        IBaseEntityFrameworkRepository<MotorRaceResult> MotorTeamResults { get; set; }
-        IBaseEntityFrameworkRepository<MotorRaceCalendar> MotorCalendars { get; set; }
-        IBaseEntityFrameworkRepository<MotorGrid> MotorGrids { get; set; }
+        IBaseEntityFrameworkRepository<MotorsportDriver> MotorsportDrivers { get; set; }
+        IBaseEntityFrameworkRepository<MotorsportDriverStanding> MotorsportDriverStandings { get; set; }
+        IBaseEntityFrameworkRepository<MotorsportGrid> MotorsportGrids { get; set; }
+        IBaseEntityFrameworkRepository<MotorsportLeague> MotorsportLeagues { get; set; }
+        IBaseEntityFrameworkRepository<MotorsportRace> MotorsportRaces { get; set; }
+        IBaseEntityFrameworkRepository<MotorsportRaceResult> MotorsportRaceResults { get; set; }
+        IBaseEntityFrameworkRepository<MotorsportSeason> MotorsportSeasons { get; set; }
+        IBaseEntityFrameworkRepository<MotorsportTeam> MotortsportTeams { get; set; }
+        IBaseEntityFrameworkRepository<MotorsportTeamStanding> MotorsportTeamStandings { get; set; }
 
         int SaveChanges();
         Task<int> SaveChangesAsync();

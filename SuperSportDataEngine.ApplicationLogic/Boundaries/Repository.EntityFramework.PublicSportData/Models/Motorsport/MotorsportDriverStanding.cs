@@ -1,9 +1,9 @@
-﻿using System;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Base;
-
-namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models
+﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models
 {
-    public class MotorDriverStanding: BaseModel
+    using System;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Base;
+
+    public class MotorsportDriverStanding: BaseModel
     {
         /// <summary> A clustered-key record identifier. </summary>
         public Guid MotorLeagueId { get; set; }
@@ -13,9 +13,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFram
 
         /// <summary> A clustered-key record identifier. </summary>
         public Guid MotorTeamId { get; set; }
-
-        /// <summary> A clustered-key record identifier. </summary>
-        public Guid MotorRaceId { get; set; }
 
         /// <summary> A clustered-key record identifier. </summary>
         public Guid MotorDriverId { get; set; }
@@ -50,15 +47,13 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFram
 
         public int Starts { get; set; }
 
-        public virtual MotorLeague MotorLeague { get; set; }
+        public virtual MotorsportLeague MotorsportLeague { get; set; }
 
-        public virtual MotorSeason RugbySeason { get; set; }
+        public virtual MotorsportSeason RugbySeason { get; set; }
 
-        public virtual MotorRace MotorRace { get; set; }
+        public virtual MotorsportTeam MotorsportTeam { get; set; }
 
-        public virtual MotorTeam MotorTeam { get; set; }
-
-        public virtual MotorDriver MotorDriver { get; set; }
+        public virtual MotorsportDriver MotorsportDriver { get; set; }
 
     }
 }

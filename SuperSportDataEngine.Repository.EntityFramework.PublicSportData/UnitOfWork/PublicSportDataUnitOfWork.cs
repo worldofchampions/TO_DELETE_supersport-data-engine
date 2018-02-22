@@ -29,15 +29,15 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.UnitOf
         public IBaseEntityFrameworkRepository<RugbyVenue> RugbyVenues { get; private set; }
 
 
-        public IBaseEntityFrameworkRepository<MotorDriver> MotorDrivers { get; set; }
-        public IBaseEntityFrameworkRepository<MotorLeague> MotorLeagues { get; set; }
-        public IBaseEntityFrameworkRepository<MotorRace> MotorRaces { get; set; }
-        public IBaseEntityFrameworkRepository<MotorDriverStanding> MotorDriverStandings { get; set; }
-        public IBaseEntityFrameworkRepository<MotorTeamStanding> MotorTeamStandings { get; set; }
-        public IBaseEntityFrameworkRepository<MotorTeam> MotortTeams { get; set; }
-        public IBaseEntityFrameworkRepository<MotorRaceResult> MotorTeamResults { get; set; }
-        public IBaseEntityFrameworkRepository<MotorRaceCalendar> MotorCalendars { get; set; }
-        public IBaseEntityFrameworkRepository<MotorGrid> MotorGrids { get; set; }
+        public IBaseEntityFrameworkRepository<MotorsportDriver> MotorsportDrivers { get; set; }
+        public IBaseEntityFrameworkRepository<MotorsportLeague> MotorsportLeagues { get; set; }
+        public IBaseEntityFrameworkRepository<MotorsportRace> MotorsportRaces { get; set; }
+        public IBaseEntityFrameworkRepository<MotorsportDriverStanding> MotorsportDriverStandings { get; set; }
+        public IBaseEntityFrameworkRepository<MotorsportTeamStanding> MotorsportTeamStandings { get; set; }
+        public IBaseEntityFrameworkRepository<MotorsportSeason> MotorsportSeasons { get; set; }
+        public IBaseEntityFrameworkRepository<MotorsportTeam> MotortsportTeams { get; set; }
+        public IBaseEntityFrameworkRepository<MotorsportRaceResult> MotorsportRaceResults { get; set; }
+        public IBaseEntityFrameworkRepository<MotorsportGrid> MotorsportGrids { get; set; }
 
         public PublicSportDataUnitOfWork(
             DbContext context)
@@ -58,12 +58,12 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.UnitOf
             RugbyTeams = new BaseEntityFrameworkRepository<RugbyTeam>(_context);
             RugbyTournaments = new BaseEntityFrameworkRepository<RugbyTournament>(_context);
             RugbyVenues = new BaseEntityFrameworkRepository<RugbyVenue>(_context);
-            MotorDrivers = new BaseEntityFrameworkRepository<MotorDriver>(_context);
-            MotorGrids = new BaseEntityFrameworkRepository<MotorGrid>(_context);
-            MotorLeagues = new BaseEntityFrameworkRepository<MotorLeague>(_context);
-            MotorRaces = new BaseEntityFrameworkRepository<MotorRace>(_context);
-            MotorTeamStandings = new BaseEntityFrameworkRepository<MotorTeamStanding>(_context);
-            MotorDriverStandings = new BaseEntityFrameworkRepository<MotorDriverStanding>(_context);
+            MotorsportDrivers = new BaseEntityFrameworkRepository<MotorsportDriver>(_context);
+            MotorsportGrids = new BaseEntityFrameworkRepository<MotorsportGrid>(_context);
+            MotorsportLeagues = new BaseEntityFrameworkRepository<MotorsportLeague>(_context);
+            MotorsportRaces = new BaseEntityFrameworkRepository<MotorsportRace>(_context);
+            MotorsportTeamStandings = new BaseEntityFrameworkRepository<MotorsportTeamStanding>(_context);
+            MotorsportDriverStandings = new BaseEntityFrameworkRepository<MotorsportDriverStanding>(_context);
 
         }
         

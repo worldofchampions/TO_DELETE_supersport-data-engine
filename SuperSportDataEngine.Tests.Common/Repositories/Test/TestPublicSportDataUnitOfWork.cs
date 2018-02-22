@@ -23,15 +23,16 @@ namespace SuperSportDataEngine.Tests.Common.Repositories.Test
         public IBaseEntityFrameworkRepository<RugbyTeam> RugbyTeams { get; set; }
         public IBaseEntityFrameworkRepository<RugbyTournament> RugbyTournaments { get; set; }
         public IBaseEntityFrameworkRepository<RugbyVenue> RugbyVenues { get; set; }
-        public IBaseEntityFrameworkRepository<MotorDriver> MotorDrivers { get; set; }
-        public IBaseEntityFrameworkRepository<MotorLeague> MotorLeagues { get; set; }
-        public IBaseEntityFrameworkRepository<MotorRace> MotorRaces { get; set; }
-        public IBaseEntityFrameworkRepository<MotorDriverStanding> MotorDriverStandings { get; set; }
-        public IBaseEntityFrameworkRepository<MotorTeamStanding> MotorTeamStandings { get; set; }
-        public IBaseEntityFrameworkRepository<MotorTeam> MotortTeams { get; set; }
-        public IBaseEntityFrameworkRepository<MotorRaceResult> MotorTeamResults { get; set; }
-        public IBaseEntityFrameworkRepository<MotorRaceCalendar> MotorCalendars { get; set; }
-        public IBaseEntityFrameworkRepository<MotorGrid> MotorGrids { get; set; }
+        public IBaseEntityFrameworkRepository<MotorsportDriver> MotorsportDrivers { get; set; }
+        public IBaseEntityFrameworkRepository<MotorsportLeague> MotorsportLeagues { get; set; }
+        public IBaseEntityFrameworkRepository<MotorsportRace> MotorsportRaces { get; set; }
+        public IBaseEntityFrameworkRepository<MotorsportRaceResult> MotorsportRaceResults { get; set; }
+        public IBaseEntityFrameworkRepository<MotorsportSeason> MotorsportSeasons { get; set; }
+        public IBaseEntityFrameworkRepository<MotorsportDriverStanding> MotorsportDriverStandings { get; set; }
+        public IBaseEntityFrameworkRepository<MotorsportTeamStanding> MotorsportTeamStandings { get; set; }
+        public IBaseEntityFrameworkRepository<MotorsportTeam> MotortsportTeams { get; set; }
+        public IBaseEntityFrameworkRepository<MotorsportRaceResult> MotorTeamResults { get; set; }
+        public IBaseEntityFrameworkRepository<MotorsportGrid> MotorsportGrids { get; set; }
 
         public TestPublicSportDataUnitOfWork()
         {

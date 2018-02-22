@@ -1,9 +1,9 @@
-﻿using System;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Base;
-
-namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models
+﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models
 {
-    public class MotorTeamStanding: BaseModel
+    using System;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Base;
+
+    public class MotorsportTeamStanding: BaseModel
     {
         /// <summary> A clustered-key record identifier. </summary>
         public Guid MotorLeagueId { get; set; }
@@ -40,11 +40,11 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFram
 
         public int Starts { get; set; }
 
-        public virtual MotorLeague MotorLeague { get; set; }
+        public virtual MotorsportLeague MotorsportLeague { get; set; }
 
-        public virtual MotorSeason MotorSeason { get; set; }
+        public virtual MotorsportSeason MotorsportSeason { get; set; }
 
-        public virtual MotorTeam MotorTeam { get; set; }
+        public virtual MotorsportTeam MotorsportTeam { get; set; }
         
     }
 }

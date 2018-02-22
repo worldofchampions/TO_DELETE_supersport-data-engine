@@ -4,7 +4,7 @@
     using System.Threading.Tasks;
     using Gateway.Http.StatsProzone.Models.RequestModels;
 
-    public interface IMotorIngestWorkerService
+    public interface IMotorsportIngestWorkerService
     {
         Task IngestDriversForActiveLeagues(MotorDriverRequestEntity motorDriverRequestEntity, CancellationToken none);
         Task IngestTeamsForActiveLeagues(CancellationToken cancellationToken);
@@ -12,7 +12,6 @@
         Task IngestDriverStandingsForActiveLeagues(CancellationToken cancellationToken);
         Task IngestTeamStandingsForActiveLeagues(CancellationToken cancellationToken);
         Task IngestRacesForActiveLeagues(CancellationToken cancellationToken);
-        Task IngestRaceCalendarsForActiveLeagues(CancellationToken cancellationToken);
         Task IngestRaceResults(MotorResultRequestParams requestParams, CancellationToken cancellationToken);
         Task IngestRaceGrid(MotorResultRequestParams requestParams, CancellationToken cancellationToken);
         Task IngestLeagues(CancellationToken cancellationToken);

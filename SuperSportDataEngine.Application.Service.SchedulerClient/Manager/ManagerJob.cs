@@ -27,7 +27,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
         private LiveManagerJob _liveManagerJob;
         private LogsManagerJob _logsManagerJob;
         private MotorDriversManagerJob _driversManagerJob;
-        private IMotorIngestWorkerService _motorIngestWorkerService;
+        private IMotorsportIngestWorkerService _motorIngestWorkerService;
 
         public ManagerJob()
         {
@@ -47,7 +47,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
             _recurringJobManager = _container.Resolve<IRecurringJobManager>();
             _rugbyService = _container.Resolve<IRugbyService>();
             _rugbyIngestWorkerService = _container.Resolve<IRugbyIngestWorkerService>();
-            _motorIngestWorkerService = _container.Resolve<IMotorIngestWorkerService>();
+            _motorIngestWorkerService = _container.Resolve<IMotorsportIngestWorkerService>();
             _systemSportDataUnitOfWork = _container.Resolve<ISystemSportDataUnitOfWork>();
 
             _fixturesManagerJob =

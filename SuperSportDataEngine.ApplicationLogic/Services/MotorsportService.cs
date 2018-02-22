@@ -10,13 +10,13 @@ using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramewor
 
 namespace SuperSportDataEngine.ApplicationLogic.Services
 {
-    public class MotorService: IMotorService
+    public class MotorsportService: IMotorsportService
     {
 
         private readonly IPublicSportDataUnitOfWork _publicSportDataUnitOfWork;
         private readonly ISystemSportDataUnitOfWork _systemSportDataUnitOfWork;
 
-        public MotorService(
+        public MotorsportService(
             IPublicSportDataUnitOfWork publicSportDataUnitOfWork,
             ISystemSportDataUnitOfWork systemSportDataUnitOfWork)
         {
@@ -24,11 +24,11 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             _systemSportDataUnitOfWork = systemSportDataUnitOfWork;
         }
 
-        public async Task<IEnumerable<MotorLeague>> GetActiveLeagues()
+        public async Task<IEnumerable<MotorsportLeague>> GetActiveLeagues()
         {
             //TODO
-            var res = await _publicSportDataUnitOfWork.MotorLeagues.WhereAsync(l => l.IsEnabled);
-            return new List<MotorLeague> {new MotorLeague
+            var res = await _publicSportDataUnitOfWork.MotorsportLeagues.WhereAsync(l => l.IsEnabled);
+            return new List<MotorsportLeague> {new MotorsportLeague
             {
                 Name = "Test-F1",
                 IsEnabled = true,

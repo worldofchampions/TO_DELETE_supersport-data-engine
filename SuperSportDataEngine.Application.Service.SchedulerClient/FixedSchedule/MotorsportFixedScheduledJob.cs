@@ -10,13 +10,13 @@ using SuperSportDataEngine.Common.Logging;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
 {
-    public class MotorFixedScheduledJob
+    public class MotorsportFixedScheduledJob
     {
         private readonly IRecurringJobManager _recurringJobManager;
         private readonly IUnityContainer _container;
         private readonly ILoggingService _logger;
 
-        public MotorFixedScheduledJob(IUnityContainer container)
+        public MotorsportFixedScheduledJob(IUnityContainer container)
         {
             _container = container;
             _logger = _container.Resolve<ILoggingService>();
@@ -26,14 +26,28 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
         public void UpdateRecurringJobDefinitions()
         {
             UpdateRecurringJobDefinition_Leagues();
+            UpdateRecurringJobDefinition_RacesCalendar();
+        }
+
+        private void UpdateRecurringJobDefinition_RacesCalendar()
+        {
+            _recurringJobManager.AddOrUpdate(
+                ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_Calendar_JobId"],
+                Job.FromExpression(() => _container.Resolve<IMotorsportIngestWorkerService>().IngestRacesForActiveLeagues(CancellationToken.None)),
+                ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_Calendar_JobCronExpression"],
+                new RecurringJobOptions
+                {
+                    TimeZone = TimeZoneInfo.Local,
+                    QueueName = HangfireQueueConfiguration.NormalPriority
+                });
         }
 
         private void UpdateRecurringJobDefinition_Leagues()
         {
             _recurringJobManager.AddOrUpdate(
-                ConfigurationManager.AppSettings["MotorFixedScheduledJob_Leagues_JobId"],
-                Job.FromExpression(() => _container.Resolve<IMotorIngestWorkerService>().IngestLeagues(CancellationToken.None)),
-                ConfigurationManager.AppSettings["MotorFixedScheduledJob_Leagues_JobCronExpression"],
+                ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_Leagues_JobId"],
+                Job.FromExpression(() => _container.Resolve<IMotorsportIngestWorkerService>().IngestLeagues(CancellationToken.None)),
+                ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_Leagues_JobCronExpression"],
                 new RecurringJobOptions
                 {
                     TimeZone = TimeZoneInfo.Local,
