@@ -1821,7 +1821,7 @@
                 var localInterchanges = new List<RugbyMatchEvent>();
 
                 var interchanges = team.interchanges.Distinct(new InterchangeCompare());
-                foreach (var interchange in team.interchanges)
+                foreach (var interchange in interchanges)
                 {
                     var eventInDb = events.FirstOrDefault(e =>
                         interchange?.off != null &&
