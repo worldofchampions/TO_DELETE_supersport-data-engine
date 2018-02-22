@@ -215,6 +215,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\SwaggerConfig.cs" />
+    <Compile Include="App_Start\UnityConfig.cs" />
     <Compile Include="App_Start\UnityDependencyResolver.cs" />
     <Compile Include="App_Start\UnityDependencyScope.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
