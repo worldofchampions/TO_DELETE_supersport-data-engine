@@ -1,4 +1,5 @@
 ﻿using System.Configuration;
+using System.Linq;
 using System.Web.Http;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
@@ -28,13 +29,14 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
         private IUnityContainer _container;
 
         private readonly int _authKeyCacheExpiryInMinutes;
-        private const string CacheKeyPrefix = "LegacyFeed:"; 
+        private const string CacheKeyPrefix = "LegacyFeed:";
+        private const string AuthId = "auth";
 
         public FeedRequestHandler()
         {
             ResolveDependencies();
 
-            _authKeyCacheExpiryInMinutes = 
+            _authKeyCacheExpiryInMinutes =
                 int.Parse(ConfigurationManager.AppSettings["AuthKeyCacheExpiryInMinutes"]);
         }
 
@@ -92,29 +94,67 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
 
         private async Task<HttpResponseMessage> AuthorizeNewFeedRequest(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            var queryDictionary = HttpUtility.ParseQueryString(request.RequestUri.Query);
+            int siteId = GetSiteIdFromRequest(request);
 
-            int.TryParse(queryDictionary.Get("site"), out var siteId);
+            string auth = GetAuthTokenFromRequest(request);
 
-            var auth = queryDictionary.Get("auth");
-            var authModel = await GetAuthModelFromCache(siteId, auth);
-            
-            if (authModel == null)
-            {
-                authModel = new AuthModel
-                {
-                    Authorised = await _legacyAuthService.IsAuthorised(auth, siteId)
-                };
-            }
-
-            if (!authModel.Authorised)
+            if (IsAuthTokenValid(auth))
             {
                 return GetUnauthorizedResponse();
             }
 
-            PersistRequestToCache(siteId, auth, authModel);
+            AuthModel authModel = await GetAuthModelFromCache(siteId, auth);
 
-            return await base.SendAsync(request, cancellationToken);
+            if (authModel is null)
+            {
+                authModel = await GetAuthModelFromService(siteId, auth);
+            }
+
+            if (authModel.Authorised)
+            {
+                PersistRequestToCache(siteId, auth, authModel);
+
+                return await base.SendAsync(request, cancellationToken);
+            }
+
+            return GetUnauthorizedResponse();
+        }
+
+        private async Task<AuthModel> GetAuthModelFromService(int siteId, string authToken)
+        {
+            var authModel = new AuthModel
+            {
+                Authorised = await _legacyAuthService.IsAuthorised(authToken, siteId)
+            };
+
+            return authModel;
+        }
+
+        private static bool IsAuthTokenValid(string auth)
+        {
+            return string.IsNullOrWhiteSpace(auth);
+        }
+
+        private static int GetSiteIdFromRequest(HttpRequestMessage request)
+        {
+            var queryDictionary = HttpUtility.ParseQueryString(request.RequestUri.Query);
+
+            int.TryParse(queryDictionary.Get("site"), out var siteId);
+
+            return siteId;
+        }
+
+        private static string GetAuthTokenFromRequest(HttpRequestMessage request)
+        {
+            var queryDictionary = HttpUtility.ParseQueryString(request.RequestUri.Query);
+
+            var auth = queryDictionary.Get(AuthId);
+
+            if (!string.IsNullOrWhiteSpace(auth)) return auth;
+
+            auth = request.Headers.GetValues(AuthId).FirstOrDefault();
+
+            return auth;
         }
 
         private static HttpResponseMessage GetUnauthorizedResponse()
@@ -147,8 +187,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
         {
             try
             {
-                _cache?.Add(CacheKeyPrefix + "AUTH:" + $"auth/{siteId}/{auth}", authModel,
-                    TimeSpan.FromMinutes(_authKeyCacheExpiryInMinutes));
+                _cache.Add(CacheKeyPrefix + "AUTH:" + $"auth/{siteId}/{auth}", authModel, TimeSpan.FromMinutes(_authKeyCacheExpiryInMinutes));
             }
             catch (Exception exception)
             {

@@ -15,13 +15,11 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
     {
         private readonly IRecurringJobManager _recurringJobManager;
         private readonly IUnityContainer _container;
-        private readonly ILoggingService _logger;
 
         public FixedScheduledJob(IUnityContainer container)
         {
             _container = container;
 
-            _logger = _container.Resolve<ILoggingService>();
             _recurringJobManager = _container.Resolve<IRecurringJobManager>();
         }
 
@@ -40,6 +38,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
             UpdateRecurringJobDefinition_LiveDataForPastFixtures();
             UpdateRecurringJobDefinition_PastFewDaysFixtures();
             UpdateRecurringJobDefinition_PastSeasonsForActiveTournaments();
+            UpdateRecurringJobDefinition_PlayerStatsForCurrentTournaments();
         }
 
         private void UpdateRecurringJobDefinition_PastFewDaysFixtures()
@@ -224,6 +223,22 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
                     TimeZone = TimeZoneInfo.Local,
                     QueueName = HangfireQueueConfiguration.HighPriority
                 });
+        }
+
+        private void UpdateRecurringJobDefinition_PlayerStatsForCurrentTournaments()
+        {
+            //TODO: @thobani
+            // Decide if we should have a nightly job for polling player stats for all active tournaments.
+
+            //_recurringJobManager.AddOrUpdate(
+            //    ConfigurationManager.AppSettings["FixedScheduledJob_PlayerStatsData_CurrentTournaments_JobId"],
+            //    Job.FromExpression(() => (_container.Resolve<IRugbyIngestWorkerService>()).IngestPlayerStatsForCurrentTournaments(CancellationToken.None)),
+            //    ConfigurationManager.AppSettings["FixedScheduledJob_PlayerStatsData_CurrentTournaments_JobCronExpression"],
+            //    new RecurringJobOptions()
+            //    {
+            //        TimeZone = TimeZoneInfo.Local,
+            //        QueueName = HangfireQueueConfiguration.HighPriority
+            //    });
         }
     }
 }

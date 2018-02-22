@@ -1,8 +1,8 @@
 ﻿namespace SuperSportDataEngine.Application.Service.SchedulerClient
 {
     using Microsoft.Practices.Unity;
-    using SuperSportDataEngine.Application.Container;
-    using SuperSportDataEngine.Application.Container.Enums;
+    using Container;
+    using Container.Enums;
     using Topshelf;
 
     internal class Program
@@ -11,7 +11,6 @@
         {
             var container = new UnityContainer();
             UnityConfigurationManager.RegisterTypes(container, ApplicationScope.ServiceSchedulerClient);
-            UnityConfigurationManager.RegisterApiGlobalTypes(container, ApplicationScope.ServiceSchedulerClient);
 
             HostFactory.Run(hostConfigurator =>
             {

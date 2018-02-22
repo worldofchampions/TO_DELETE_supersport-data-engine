@@ -30,12 +30,10 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
 
         public FixturesManagerJob(
             IRecurringJobManager recurringJobManager,
-            IUnityContainer childContainer,
-            ILoggingService logger)
+            IUnityContainer childContainer)
         {
             _recurringJobManager = recurringJobManager;
             _childContainer = childContainer.CreateChildContainer();
-            _logger = logger;
         }
 
         public async Task DoWorkAsync()
@@ -73,7 +71,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
                     await _childContainer.Resolve<IRugbyService>().GetActiveTournaments();
 
             var methodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
-        
+
             foreach (var tournament in activeTournaments)
             {
                 await _logger.Debug(methodName, "Tournament " + tournament.Name + " is active.");
@@ -127,7 +125,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
 
             foreach (var tournament in inactiveTournaments)
             {
-                var seasons = (await schedulerTrackingRugbyTournaments.AllAsync()).Where(t => 
+                var seasons = (await schedulerTrackingRugbyTournaments.AllAsync()).Where(t =>
                     t.TournamentId == tournament.Id);
 
                 foreach (var tournamentSeason in seasons)
@@ -205,7 +203,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
 
             foreach (var tournament in currentTournaments)
             {
-                //if ((await _childContainer.Resolve<IRugbyService>().GetSchedulerStateForManagerJobPolling(tournament.Id)) == SchedulerStateForManagerJobPolling.NotRunning)
+                if ((await _childContainer.Resolve<IRugbyService>().GetSchedulerStateForManagerJobPolling(tournament.Id)) == SchedulerStateForManagerJobPolling.NotRunning)
                 {
                     var jobId = ConfigurationManager.AppSettings["ScheduleManagerJob_Fixtures_CurrentTournaments_JobIdPrefix"] + tournament.Name;
                     var jobCronExpression = ConfigurationManager.AppSettings["ScheduleManagerJob_Fixtures_CurrentTournaments_JobCronExpression"];

@@ -5,19 +5,18 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
     using Microsoft.Practices.Unity;
     using System;
     using System.Timers;
-    using SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledManager;
+    using ScheduledManager;
     using Hangfire;
-    using SuperSportDataEngine.Application.Container;
+    using Container;
     using SuperSportDataEngine.Common.Logging;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-    using SuperSportDataEngine.ApplicationLogic.Services;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
+    using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+    using ApplicationLogic.Services;
+    using ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
+    using ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
 
     internal class ManagerJob
     {
         private Timer _timer;
-        private ILoggingService _logger;
         private IRecurringJobManager _recurringJobManager;
         private IUnityContainer _container;
         private IRugbyService _rugbyService;
@@ -26,10 +25,10 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
         private FixturesManagerJob _fixturesManagerJob;
         private LiveManagerJob _liveManagerJob;
         private LogsManagerJob _logsManagerJob;
+        private PlayerStatisticsManagerJob _playerStatisticsManagerJob;
 
         public ManagerJob()
         {
-
             ConfigureTimer();
             ConfigureDepenencies();
         }
@@ -40,10 +39,8 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
 
             _container = new UnityContainer();
 
-            UnityConfigurationManager.RegisterTypes(_container, Container.Enums.ApplicationScope.ServiceSchedulerClient);
-            UnityConfigurationManager.RegisterApiGlobalTypes(_container, ApplicationScope.ServiceSchedulerClient);
+            UnityConfigurationManager.RegisterTypes(_container, ApplicationScope.ServiceSchedulerClient);
 
-            _logger = _container.Resolve<ILoggingService>();
             _recurringJobManager = _container.Resolve<IRecurringJobManager>();
             _rugbyService = _container.Resolve<IRugbyService>();
             _rugbyIngestWorkerService = _container.Resolve<IRugbyIngestWorkerService>();
@@ -52,11 +49,9 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
             _fixturesManagerJob =
                 new FixturesManagerJob(
                     _recurringJobManager,
-                    _container,
-                    _logger);
+                    _container);
 
             _liveManagerJob = new LiveManagerJob(
-                _logger,
                 _recurringJobManager,
                 _rugbyService,
                 _rugbyIngestWorkerService,
@@ -65,8 +60,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
             _logsManagerJob =
                 new LogsManagerJob(
                     _recurringJobManager,
-                    _container,
-                    _logger);
+                    _container);
         }
 
         private void ConfigureTimer()
@@ -85,18 +79,17 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
         {
             var methodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
 
-            await _logger.Debug(methodName, "Do work for ManagerJob's.");
-
             ConfigureDepenencies();
             try
             {
                 await _liveManagerJob.DoWorkAsync();
                 await _fixturesManagerJob.DoWorkAsync();
                 await _logsManagerJob.DoWorkAsync();
+                await _playerStatisticsManagerJob.DoWorkAsync();
             }
-            catch (Exception exception)
+            catch (Exception)
             {
-                await _logger.Info(methodName, exception.StackTrace);
+                // ignored
             }
 
             _timer.Start();

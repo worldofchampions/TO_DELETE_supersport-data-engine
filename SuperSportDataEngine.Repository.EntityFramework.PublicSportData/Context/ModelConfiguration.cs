@@ -45,6 +45,7 @@
             modelBuilder.Entity<RugbyPlayer>().Property(x => x.FullName).IsRequired();
 
             modelBuilder.Entity<RugbyPlayerLineup>().HasKey(x => new { x.RugbyFixtureId, x.RugbyTeamId, x.RugbyPlayerId });
+            modelBuilder.Entity<RugbyPlayerStatistics>().HasKey(x => new { x.RugbyTournamentId, x.RugbySeasonId, x.RugbyTeamId, x.RugbyPlayerId });
 
             modelBuilder.Entity<RugbySeason>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
             modelBuilder.Entity<RugbySeason>().Property(x => x.ProviderSeasonId).HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Seek_ProviderSeasonId")));
@@ -66,6 +67,7 @@
             modelBuilder.Entity<RugbyVenue>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
             modelBuilder.Entity<RugbyVenue>().Property(x => x.ProviderVenueId).HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Seek_ProviderVenueId")));
             modelBuilder.Entity<RugbyVenue>().Property(x => x.Name).IsRequired();
+
         }
     }
 }
