@@ -86,9 +86,9 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
             ConfigureDepenencies();
             try
             {
-                //await _liveManagerJob.DoWorkAsync();
-                //await _fixturesManagerJob.DoWorkAsync();
-                //await _logsManagerJob.DoWorkAsync();
+                await _liveManagerJob.DoWorkAsync();
+                await _fixturesManagerJob.DoWorkAsync();
+                await _logsManagerJob.DoWorkAsync();
                 await _playerStatisticsManagerJob.DoWorkAsync();
             }
             catch (Exception)
