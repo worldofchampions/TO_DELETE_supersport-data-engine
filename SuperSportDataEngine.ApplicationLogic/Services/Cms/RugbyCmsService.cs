@@ -42,7 +42,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
                         cfg.CreateMap<RugbyFixture, RugbyFixtureEntity>();
                         cfg.CreateMap<RugbySeason, RugbySeasonEntity>();
                         cfg.CreateMap<RugbyTeam, RugbyTeamEntity>();
-                        cfg.CreateMap<DataProvider, RugbyDataProviderEntity>();
                         cfg.CreateMap<RugbyPlayer, RugbyPlayerEntity>();
                 });
             iMapper = config.CreateMapper();
@@ -114,10 +113,15 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             return null;
         }
 
-        public async Task<RugbyTournamentEntity> GetTournamentById(int id)
+        /// <summary>
+        /// Fetches tournament details
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RugbyTournamentEntity> GetTournamentById(Guid id)
         {
             var rugbyTournament = await Task.FromResult(_rugbyTournamentRepository.FirstOrDefault(
-                                                        tournament => tournament.ProviderTournamentId == id));
+                                                        tournament => tournament.Id == id));
 
             if (rugbyTournament != null)
             {
@@ -127,10 +131,15 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             return null;
         }
 
-        public async Task<RugbyFixtureEntity> GetFixtureById(int id)
+        /// <summary>
+        /// Fetches fixture details
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RugbyFixtureEntity> GetFixtureById(Guid id)
         {
             var rugbyFixture = await Task.FromResult(_rugbyFixtureRepository.FirstOrDefault(
-                                                        fixture => fixture.LegacyFixtureId == id));
+                                                        fixture => fixture.Id == id));
 
             if (rugbyFixture != null)
             {
@@ -140,10 +149,15 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             return null;
         }
 
-        public async Task<RugbySeasonEntity> GetSeasonById(int id)
+        /// <summary>
+        /// Fetches season details by their ProviderSeasonId
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RugbySeasonEntity> GetSeasonById(Guid id)
         {
             var rugbySeason = await Task.FromResult(_rugbySeasonRepository.FirstOrDefault(
-                                                        season => season.ProviderSeasonId == id));
+                                                        season => season.Id == id));
 
             if (rugbySeason != null)
             {
@@ -153,10 +167,15 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             return null;
         }
 
-        public async Task<RugbyTeamEntity> GetTeamById(int id)
+        /// <summary>
+        /// Fetches team details by their LegacyTeamId
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RugbyTeamEntity> GetTeamById(Guid id)
         {
             var rugbyTeam = await Task.FromResult(_rugbyTeamRepository.FirstOrDefault(
-                                                        team => team.LegacyTeamId == id));
+                                                        team => team.Id == id));
 
             if (rugbyTeam != null)
             {
@@ -166,10 +185,15 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             return null;
         }
 
-        public async Task<RugbyPlayerEntity> GetPlayerById(int id)
+        /// <summary>
+        /// Fetches player details by their LegacyPlayerId
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<RugbyPlayerEntity> GetPlayerById(Guid id)
         {
             var rugbyPlayer = await Task.FromResult(_rugbyPlayerRepository.FirstOrDefault(
-                                                        player => player.LegacyPlayerId == id));
+                                                        player => player.Id == id));
 
             if (rugbyPlayer != null)
             {
@@ -185,14 +209,14 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
         /// <param name="tournamentId"></param>
         /// <param name="rugbyTournamentEntity"></param>
         /// <returns></returns>
-        public async Task<bool> UpdateTournament(int tournamentId, RugbyTournamentEntity rugbyTournamentEntity)
+        public async Task<bool> UpdateTournament(Guid id, RugbyTournamentEntity rugbyTournamentEntity)
         {
             var success = false;
 
             if (rugbyTournamentEntity != null)
             {
                 var rugbyTournament = (await Task.FromResult(_rugbyTournamentRepository.FirstOrDefault(
-                                                            tournament => tournament.ProviderTournamentId == tournamentId)));
+                                                            tournament => tournament.Id == id)));
 
                 if (rugbyTournament != null)
                 {
@@ -217,14 +241,14 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
         /// <param name="fixtureId"></param>
         /// <param name="rugbyFixtureEntity"></param>
         /// <returns></returns>
-        public async Task<bool> UpdateFixture(int fixtureId, RugbyFixtureEntity rugbyFixtureEntity)
+        public async Task<bool> UpdateFixture(Guid id, RugbyFixtureEntity rugbyFixtureEntity)
         {
             var success = false;
 
             if (rugbyFixtureEntity != null)
             {
                 var rugbyFixture= (await Task.FromResult(_rugbyFixtureRepository.FirstOrDefault(
-                                                            fixture => fixture.LegacyFixtureId == fixtureId)));
+                                                            fixture => fixture.Id == id)));
 
                 if (rugbyFixture != null)
                 {
@@ -249,14 +273,14 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
         /// <param name="seasonId"></param>
         /// <param name="rugbySeasonEntity"></param>
         /// <returns></returns>
-        public async Task<bool> UpdateSeason(int seasonId, RugbySeasonEntity rugbySeasonEntity)
+        public async Task<bool> UpdateSeason(Guid id, RugbySeasonEntity rugbySeasonEntity)
         {
             var success = false;
 
             if (rugbySeasonEntity != null)
             {
                 var rugbySeason = (await Task.FromResult(_rugbySeasonRepository.FirstOrDefault(
-                                                            season => season.ProviderSeasonId == seasonId)));
+                                                            season => season.Id == id)));
 
                 if (rugbySeason != null)
                 {
@@ -280,14 +304,14 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
         /// <param name="teamId"></param>
         /// <param name="rugbyteamEntity"></param>
         /// <returns></returns>
-        public async Task<bool> UpdateTeam(int teamId, RugbyTeamEntity rugbyteamEntity)
+        public async Task<bool> UpdateTeam(Guid id, RugbyTeamEntity rugbyteamEntity)
         {
             var success = false;
 
             if (rugbyteamEntity != null)
             {
                 var rugbyTeam = (await Task.FromResult(_rugbyTeamRepository.FirstOrDefault(
-                                                            team => team.LegacyTeamId == teamId)));
+                                                            team => team.Id == id)));
 
                 if (rugbyTeam != null)
                 {
@@ -309,14 +333,14 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
         /// <param name="playerId"></param>
         /// <param name="rugbyPlayerEntity"></param>
         /// <returns></returns>
-        public async Task<bool> UpdatePlayer(int playerId, RugbyPlayerEntity rugbyPlayerEntity)
+        public async Task<bool> UpdatePlayer(Guid id, RugbyPlayerEntity rugbyPlayerEntity)
         {
             var success = false;
 
             if (rugbyPlayerEntity != null)
             {
                 var rugbyPlayer = (await Task.FromResult(_rugbyPlayerRepository.FirstOrDefault(
-                                                            player => player.LegacyPlayerId == playerId)));
+                                                            player => player.Id == id)));
 
                 if (rugbyPlayer != null)
                 {

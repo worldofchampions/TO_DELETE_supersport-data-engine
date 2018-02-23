@@ -1,9 +1,6 @@
-﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-using SuperSportDataEngine.ApplicationLogic.Entities.SystemAPI;
+﻿using SuperSportDataEngine.ApplicationLogic.Entities.SystemAPI;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace SuperSportDataEngine.ApplicationLogic.Boundaries.CmsLogic.Interfaces
@@ -16,16 +13,16 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.CmsLogic.Interfaces
         Task<IEnumerable<RugbyTeamEntity>> GetAllTeams(int pageIndex, int pageSize);
         Task<IEnumerable<RugbyPlayerEntity>> GetAllPlayers(int pageIndex, int pageSize);
 
-        Task<RugbyTournamentEntity> GetTournamentById(int id);
-        Task<RugbyFixtureEntity> GetFixtureById(int id);
-        Task<RugbySeasonEntity> GetSeasonById(int id);
-        Task<RugbyTeamEntity> GetTeamById(int id);
-        Task<RugbyPlayerEntity> GetPlayerById(int id);
+        Task<RugbyTournamentEntity> GetTournamentById(Guid tournamentId);
+        Task<RugbyFixtureEntity> GetFixtureById(Guid fixtureId);
+        Task<RugbySeasonEntity> GetSeasonById(Guid seasonId);
+        Task<RugbyTeamEntity> GetTeamById(Guid teamId);
+        Task<RugbyPlayerEntity> GetPlayerById(Guid playerId);
 
-        Task<bool> UpdateTournament(int tournamentId, RugbyTournamentEntity rugbyTournamentEntity);
-        Task<bool> UpdateFixture(int fixtureId, RugbyFixtureEntity rugbyFixtureEntity);
-        Task<bool> UpdateSeason(int seasonId, RugbySeasonEntity rugbySeasonEntity);
-        Task<bool> UpdateTeam(int teamId, RugbyTeamEntity rugbyTeamEntity);
-        Task<bool> UpdatePlayer(int playerId, RugbyPlayerEntity rugbyPlayerEntity);
+        Task<bool> UpdateTournament(Guid tournamentId, RugbyTournamentEntity rugbyTournamentEntity);
+        Task<bool> UpdateFixture(Guid fixtureId, RugbyFixtureEntity rugbyFixtureEntity);
+        Task<bool> UpdateSeason(Guid seasonId, RugbySeasonEntity rugbySeasonEntity);
+        Task<bool> UpdateTeam(Guid teamId, RugbyTeamEntity rugbyTeamEntity);
+        Task<bool> UpdatePlayer(Guid playerId, RugbyPlayerEntity rugbyPlayerEntity);
     }
 }

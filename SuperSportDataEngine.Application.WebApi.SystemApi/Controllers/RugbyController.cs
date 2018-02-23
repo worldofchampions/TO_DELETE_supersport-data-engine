@@ -146,7 +146,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         /// <returns></returns>
         [ActionName("tournaments")]
         [HttpGet]
-        public async Task<HttpResponseMessage> GetTournamentById(int id)
+        public async Task<HttpResponseMessage> GetTournamentById(Guid id)
         {
             try
             {
@@ -176,7 +176,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         /// <returns></returns>
         [ActionName("fixtures")]
         [HttpGet]
-        public async Task<HttpResponseMessage> GetFixtureById(int id)
+        public async Task<HttpResponseMessage> GetFixtureById(Guid id)
         {
             try
             {
@@ -205,7 +205,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         /// <returns></returns>
         [ActionName("seasons")]
         [HttpGet]
-        public async Task<HttpResponseMessage> GetSeasonById(int id)
+        public async Task<HttpResponseMessage> GetSeasonById(Guid id)
         {
             try
             {
@@ -234,7 +234,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         /// <returns></returns>
         [ActionName("teams")]
         [HttpGet]
-        public async Task<HttpResponseMessage> GetTeamById(int id)
+        public async Task<HttpResponseMessage> GetTeamById(Guid id)
         {
             try
             {
@@ -264,7 +264,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         /// <returns></returns>
         [ActionName("players")]
         [HttpGet]
-        public async Task<HttpResponseMessage> GetPlayerById(int id)
+        public async Task<HttpResponseMessage> GetPlayerById(Guid id)
         {
             try
             {
@@ -294,7 +294,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         /// <returns></returns>
         [ActionName("tournaments")]
         [HttpPut]
-        public async Task<HttpResponseMessage> PutTournament(int id, [FromBody] RugbyTournamentEntity rugbyTournamentEntity)
+        public async Task<HttpResponseMessage> PutTournament(Guid id, [FromBody] RugbyTournamentEntity rugbyTournamentEntity)
         {
             try
             {
@@ -324,7 +324,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         /// <returns></returns>
         [ActionName("fixtures")]
         [HttpPut]
-        public async Task<HttpResponseMessage> PutFixture(int id, [FromBody] RugbyFixtureEntity rugbyFixtureEntity)
+        public async Task<HttpResponseMessage> PutFixture(Guid id, [FromBody] RugbyFixtureEntity rugbyFixtureEntity)
         {
             try
             {
@@ -354,7 +354,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         /// <returns></returns>
         [ActionName("seasons")]
         [HttpPut]
-        public async Task<HttpResponseMessage> PutSeason(int id, [FromBody] RugbySeasonEntity rugbyseasonEntity)
+        public async Task<HttpResponseMessage> PutSeason(Guid id, [FromBody] RugbySeasonEntity rugbyseasonEntity)
         {
             try
             {
@@ -385,7 +385,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         /// <returns></returns>
         [ActionName("teams")]
         [HttpPut]
-        public async Task<HttpResponseMessage> PutTeam(int id, [FromBody] RugbyTeamEntity rugbyTeamEntity)
+        public async Task<HttpResponseMessage> PutTeam(Guid id, [FromBody] RugbyTeamEntity rugbyTeamEntity)
         {
             try
             {
@@ -416,7 +416,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         /// <returns></returns>
         [ActionName("players")]
         [HttpPut]
-        public async Task<HttpResponseMessage> PutPlayer(int id, [FromBody] RugbyPlayerEntity rugbyPlayerEntity)
+        public async Task<HttpResponseMessage> PutPlayer(Guid id, [FromBody] RugbyPlayerEntity rugbyPlayerEntity)
         {
             try
             {
