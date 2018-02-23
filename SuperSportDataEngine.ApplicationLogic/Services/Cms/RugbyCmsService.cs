@@ -48,12 +48,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             iMapper = config.CreateMapper();
         }
 
-        /// <summary>
-        /// Fetches all tournaments
-        /// </summary>
-        /// <param name="pageIndex"></param>
-        /// <param name="pageSize"></param>
-        /// <returns></returns>
         public async Task<IEnumerable<RugbyTournamentEntity>> GetAllTournaments(int pageIndex, int pageSize, string query = null)
         {
             var tournaments = (IEnumerable<RugbyTournament>)null;
@@ -76,12 +70,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             return null;
         }
 
-        /// <summary>
-        /// Fetches all fixtures
-        /// </summary>
-        /// <param name="pageIndex"></param>
-        /// <param name="pageSize"></param>
-        /// <returns></returns>
         public async Task<IEnumerable<RugbyFixtureEntity>> GetAllFixtures(int pageIndex, int pageSize)
         {
             var fixtures = await Task.FromResult(_rugbyFixtureRepository.All().Skip(pageIndex * pageSize).Take(pageSize));
@@ -93,12 +81,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             return null;
         }
 
-        /// <summary>
-        /// Fetches all Seasons
-        /// </summary>
-        /// <param name="pageIndex"></param>
-        /// <param name="pageSize"></param>
-        /// <returns></returns>
         public async Task<IEnumerable<RugbySeasonEntity>> GetAllSeasons(int pageIndex, int pageSize)
         {
             var seasons = await Task.FromResult(_rugbySeasonRepository.All().Skip(pageIndex * pageSize).Take(pageSize));
@@ -110,12 +92,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             return null;
         }
 
-        /// <summary>
-        /// Fetches all Teams
-        /// </summary>
-        /// <param name="pageIndex"></param>
-        /// <param name="pageSize"></param>
-        /// <returns></returns>
         public async Task<IEnumerable<RugbyTeamEntity>> GetAllTeams(int pageIndex, int pageSize)
         {
             var teams = await Task.FromResult(_rugbyTeamRepository.All().Skip(pageIndex * pageSize).Take(pageSize));
@@ -127,12 +103,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             return null;
         }
 
-        /// <summary>
-        /// Fetches all Players
-        /// </summary>
-        /// <param name="pageIndex"></param>
-        /// <param name="pageSize"></param>
-        /// <returns></returns>
         public async Task<IEnumerable<RugbyPlayerEntity>> GetAllPlayers(int pageIndex, int pageSize)
         {
             var players = await Task.FromResult(_rugbyPlayerRepository.All().Skip(pageIndex * pageSize).Take(pageSize));
@@ -144,11 +114,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             return null;
         }
 
-        /// <summary>
-        /// Fetches tournament details
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
         public async Task<RugbyTournamentEntity> GetTournamentById(int id)
         {
             var rugbyTournament = await Task.FromResult(_rugbyTournamentRepository.FirstOrDefault(
@@ -162,11 +127,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             return null;
         }
 
-        /// <summary>
-        /// Fetches fixture details
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
         public async Task<RugbyFixtureEntity> GetFixtureById(int id)
         {
             var rugbyFixture = await Task.FromResult(_rugbyFixtureRepository.FirstOrDefault(
@@ -180,11 +140,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             return null;
         }
 
-        /// <summary>
-        /// Fetches season details by their ProviderSeasonId
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
         public async Task<RugbySeasonEntity> GetSeasonById(int id)
         {
             var rugbySeason = await Task.FromResult(_rugbySeasonRepository.FirstOrDefault(
@@ -198,11 +153,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             return null;
         }
 
-        /// <summary>
-        /// Fetches team details by their LegacyTeamId
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
         public async Task<RugbyTeamEntity> GetTeamById(int id)
         {
             var rugbyTeam = await Task.FromResult(_rugbyTeamRepository.FirstOrDefault(
@@ -216,11 +166,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             return null;
         }
 
-        /// <summary>
-        /// Fetches player details by their LegacyPlayerId
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
         public async Task<RugbyPlayerEntity> GetPlayerById(int id)
         {
             var rugbyPlayer = await Task.FromResult(_rugbyPlayerRepository.FirstOrDefault(
