@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.ApplicationLogic.Services
+﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models;
+
+namespace SuperSportDataEngine.ApplicationLogic.Services
 {
     using Boundaries.ApplicationLogic.Interfaces;
     using Boundaries.Gateway.Http.StatsProzone.Interfaces;
@@ -2642,11 +2644,22 @@
                 var playerInDb =
                     _rugbyPlayerRepository.FirstOrDefault(p => p.ProviderPlayerId == player.playerId);
 
+                if (playerInDb == null)
+                    continue;
+
                 var teamInDb =
                     _rugbyTeamRepository.FirstOrDefault(t => t.ProviderTeamId == player.teamId);
 
+                if (teamInDb == null)
+                    continue;
+
                 var seasonInDb =
-                    _rugbySeasonRepository.FirstOrDefault(s => s.ProviderSeasonId == providerSeasonId);
+                    _rugbySeasonRepository.FirstOrDefault(s => 
+                    s.RugbyTournament.ProviderTournamentId == providerTournamentId &&
+                    s.ProviderSeasonId == providerSeasonId);
+
+                if (seasonInDb == null)
+                    continue;
 
                 var conversions =
                     player?.playerSeasonStats?.Stat?.FirstOrDefault(s => s.StatTypeID == 2)?.totalValue;
