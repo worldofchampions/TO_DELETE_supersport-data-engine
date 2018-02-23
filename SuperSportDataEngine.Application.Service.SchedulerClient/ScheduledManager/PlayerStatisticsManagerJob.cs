@@ -55,7 +55,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
         private async Task CreateAndDeleteChildJobsForFetchingPlayerStatistics()
         {
             var todayTournaments =
-                (await _childContainer.Resolve<IRugbyService>().GetActiveTournaments()).ToList();
+                (await _childContainer.Resolve<IRugbyService>().GetTournamentsForJustEndedFixtures()).ToList();
 
             var todayTournamentIds = todayTournaments.Select(t => t.ProviderTournamentId);
 
