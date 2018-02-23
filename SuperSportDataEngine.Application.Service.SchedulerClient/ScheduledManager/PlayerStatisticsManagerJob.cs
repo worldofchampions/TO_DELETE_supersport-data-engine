@@ -33,7 +33,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
             CreateContainer();
             ConfigureDependencies();
 
-            await CreateChildJobsForFetchingPlayerStatistics();
+            await CreateAndDeleteChildJobsForFetchingPlayerStatistics();
         }
 
         private void ConfigureDependencies()
@@ -50,10 +50,23 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
             UnityConfigurationManager.RegisterApiGlobalTypes(_childContainer, ApplicationScope.ServiceSchedulerClient);
         }
 
-        private async Task CreateChildJobsForFetchingPlayerStatistics()
+        private async Task CreateAndDeleteChildJobsForFetchingPlayerStatistics()
         {
             var todayTournaments =
-                (await _childContainer.Resolve<IRugbyService>().GetTournamentsForJustEndedFixtures()).ToList();
+                (await _childContainer.Resolve<IRugbyService>().GetActiveTournaments()).ToList();
+
+            var todayTournamentIds = todayTournaments.Select(t => t.ProviderTournamentId);
+
+            var notTodayTournaments = (await _childContainer.Resolve<IRugbyService>().GetCurrentTournaments())
+                .Where(t => todayTournamentIds.Contains(t.ProviderTournamentId));
+
+            foreach (var tournament in notTodayTournaments)
+            {
+                var jobId =
+                    ConfigurationManager.AppSettings["ScheduleManagerJob_PlayerStats_CurrentTournaments_JobIdPrefix"] + tournament.Name;
+
+                _recurringJobManager.RemoveIfExists(jobId);
+            }
 
             foreach (var tournament in todayTournaments)
             {

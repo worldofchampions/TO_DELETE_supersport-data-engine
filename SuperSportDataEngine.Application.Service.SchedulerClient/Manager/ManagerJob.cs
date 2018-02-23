@@ -61,7 +61,11 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
                     _recurringJobManager,
                     _container);
 
+<<<<<<< HEAD
             _playerStatisticsManagerJob =
+=======
+            _playerStatisticsManagerJob = 
+>>>>>>> development
                 new PlayerStatisticsManagerJob(
                     _recurringJobManager,
                     _container);
@@ -86,9 +90,9 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
             ConfigureDepenencies();
             try
             {
-                await _liveManagerJob.DoWorkAsync();
-                await _fixturesManagerJob.DoWorkAsync();
-                await _logsManagerJob.DoWorkAsync();
+                //await _liveManagerJob.DoWorkAsync();
+                //await _fixturesManagerJob.DoWorkAsync();
+                //await _logsManagerJob.DoWorkAsync();
                 await _playerStatisticsManagerJob.DoWorkAsync();
             }
             catch (Exception)
