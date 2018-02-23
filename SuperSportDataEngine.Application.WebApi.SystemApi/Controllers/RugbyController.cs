@@ -139,6 +139,52 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         }
 
         /// <summary>
+        /// Get paginated list of rugby tournament seasons and return a 500 error response if something failed while doing it
+        /// </summary>
+        /// <param name="tournamentId"></param>
+        /// <param name="pageIndex"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+
+        [Route("api/Rugby/tournament/{tournamentId:guid}/seasons")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> GetAllTournamentSeasons(Guid tournamentId, int pageIndex, int pageSize)
+        {
+            try
+            {
+                var tournamentSeasons = await _rugbyService.GetSeasonsForTournament(tournamentId, pageIndex, pageSize);
+                return Request.CreateResponse(HttpStatusCode.OK, tournamentSeasons);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while retrieving seasons for tournament !");
+            }
+        }
+
+        /// <summary>
+        /// Get paginated list of rugby season fixtures and return a 500 error response if something failed while doing it
+        /// </summary>
+        /// <param name="seasonId"></param>
+        /// <param name="pageIndex"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+
+        [Route("api/Rugby/season/{seasonId:guid}/fixtures")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> GetAllFixturesForTournamentSeason(Guid seasonId, int pageIndex, int pageSize)
+        {
+            try
+            {
+                var seasonFixtures = await _rugbyService.GetFixturesForTournamentSeason(seasonId, pageIndex, pageSize);
+                return Request.CreateResponse(HttpStatusCode.OK, seasonFixtures);
+            }
+            catch (Exception ex)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while retrieving fixtures for season !");
+            }
+        }
+
+        /// <summary>
         /// Get single tournament by tournament Id
         /// Return 404 if not found and a 500 error response if something failed while doing it
         /// </summary>

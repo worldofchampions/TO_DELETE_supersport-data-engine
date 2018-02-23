@@ -9,7 +9,6 @@ using System.Text;
 using System.Threading.Tasks;
 using SuperSportDataEngine.ApplicationLogic.Entities.SystemAPI;
 using System.Text.RegularExpressions;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
 
 namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
 {
@@ -113,11 +112,34 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             return null;
         }
 
-        /// <summary>
-        /// Fetches tournament details
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        public async Task<IEnumerable<RugbySeasonEntity>> GetSeasonsForTournament(Guid tournamentId, int pageIndex, int pageSize)
+        {
+            var tournamentSeasons = await Task.FromResult(_rugbySeasonRepository.Where(
+                                                            query => query.RugbyTournament.Id == tournamentId)
+                                                            .Skip(pageIndex * pageSize)
+                                                            .Take(pageSize));
+
+            if (tournamentSeasons.Any())
+            {
+                return iMapper.Map<IEnumerable<RugbySeason>, IEnumerable<RugbySeasonEntity>>(tournamentSeasons);
+            }
+            return null;
+        }
+
+        public async Task<IEnumerable<RugbyFixtureEntity>> GetFixturesForTournamentSeason(Guid seasonId, int pageIndex, int pageSize)
+        {
+            var tournamentSeasonFixtures = await Task.FromResult(_rugbyFixtureRepository.Where(
+                                                            query => query.RugbySeason.Id == seasonId)
+                                                            .Skip(pageIndex * pageSize)
+                                                            .Take(pageSize));
+
+            if (tournamentSeasonFixtures.Any())
+            {
+                return iMapper.Map<IEnumerable<RugbyFixture>, IEnumerable<RugbyFixtureEntity>>(tournamentSeasonFixtures);
+            }
+            return null;
+        }
+
         public async Task<RugbyTournamentEntity> GetTournamentById(Guid id)
         {
             var rugbyTournament = await Task.FromResult(_rugbyTournamentRepository.FirstOrDefault(
@@ -131,11 +153,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             return null;
         }
 
-        /// <summary>
-        /// Fetches fixture details
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
         public async Task<RugbyFixtureEntity> GetFixtureById(Guid id)
         {
             var rugbyFixture = await Task.FromResult(_rugbyFixtureRepository.FirstOrDefault(
@@ -149,11 +166,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             return null;
         }
 
-        /// <summary>
-        /// Fetches season details by their ProviderSeasonId
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
         public async Task<RugbySeasonEntity> GetSeasonById(Guid id)
         {
             var rugbySeason = await Task.FromResult(_rugbySeasonRepository.FirstOrDefault(
@@ -167,11 +179,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             return null;
         }
 
-        /// <summary>
-        /// Fetches team details by their LegacyTeamId
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
         public async Task<RugbyTeamEntity> GetTeamById(Guid id)
         {
             var rugbyTeam = await Task.FromResult(_rugbyTeamRepository.FirstOrDefault(
@@ -185,11 +192,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             return null;
         }
 
-        /// <summary>
-        /// Fetches player details by their LegacyPlayerId
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
         public async Task<RugbyPlayerEntity> GetPlayerById(Guid id)
         {
             var rugbyPlayer = await Task.FromResult(_rugbyPlayerRepository.FirstOrDefault(

@@ -12,6 +12,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.CmsLogic.Interfaces
         Task<IEnumerable<RugbySeasonEntity>> GetAllSeasons(int pageIndex, int pageSize);
         Task<IEnumerable<RugbyTeamEntity>> GetAllTeams(int pageIndex, int pageSize);
         Task<IEnumerable<RugbyPlayerEntity>> GetAllPlayers(int pageIndex, int pageSize);
+        Task<IEnumerable<RugbySeasonEntity>> GetSeasonsForTournament(Guid tournamentId, int pageIndex, int pageSize);
+        Task<IEnumerable<RugbyFixtureEntity>> GetFixturesForTournamentSeason(Guid seasonId, int pageIndex, int pageSize);
 
         Task<RugbyTournamentEntity> GetTournamentById(Guid tournamentId);
         Task<RugbyFixtureEntity> GetFixtureById(Guid fixtureId);
