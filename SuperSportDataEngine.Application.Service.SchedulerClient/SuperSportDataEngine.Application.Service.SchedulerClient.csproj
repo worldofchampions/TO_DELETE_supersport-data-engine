@@ -162,6 +162,7 @@
     <Compile Include="ScheduledManager\LiveManagerJob.cs" />
     <Compile Include="ScheduledManager\LogsCleanupManager.cs" />
     <Compile Include="ScheduledManager\LogsManagerJob.cs" />
+    <Compile Include="ScheduledManager\PlayerStatisticsManagerJob.cs" />
     <Compile Include="ScheduledManager\MotorDriversManagerJob.cs" />
     <Compile Include="StartUp.cs" />
     <Compile Include="WindowsService.cs" />

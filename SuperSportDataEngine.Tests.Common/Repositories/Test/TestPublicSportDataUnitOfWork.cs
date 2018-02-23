@@ -18,6 +18,7 @@ namespace SuperSportDataEngine.Tests.Common.Repositories.Test
         public IBaseEntityFrameworkRepository<RugbyMatchEvent> RugbyMatchEvents { get; set; }
         public IBaseEntityFrameworkRepository<RugbyMatchStatistics> RugbyMatchStatistics { get; set; }
         public IBaseEntityFrameworkRepository<RugbyPlayer> RugbyPlayers { get; set; }
+        public IBaseEntityFrameworkRepository<RugbyPlayerStatistics> RugbyPlayerStatistics { get; set; }
         public IBaseEntityFrameworkRepository<RugbyPlayerLineup> RugbyPlayerLineups { get; set; }
         public IBaseEntityFrameworkRepository<RugbySeason> RugbySeasons { get; set; }
         public IBaseEntityFrameworkRepository<RugbyTeam> RugbyTeams { get; set; }
@@ -48,6 +49,7 @@ namespace SuperSportDataEngine.Tests.Common.Repositories.Test
             RugbyMatchStatistics = new TestEntityFrameworkRepository<RugbyMatchStatistics>(new List<RugbyMatchStatistics>());
             RugbyPlayerLineups = new TestEntityFrameworkRepository<RugbyPlayerLineup>(new List<RugbyPlayerLineup>());
             RugbyPlayers = new TestEntityFrameworkRepository<RugbyPlayer>(new List<RugbyPlayer>());
+            RugbyPlayerStatistics = new TestEntityFrameworkRepository<RugbyPlayerStatistics>(new List<RugbyPlayerStatistics>());
             RugbySeasons = new TestEntityFrameworkRepository<RugbySeason>(new List<RugbySeason>());
             RugbyTeams = new TestEntityFrameworkRepository<RugbyTeam>(new List<RugbyTeam>());
             RugbyTournaments = new TestEntityFrameworkRepository<RugbyTournament>(new List<RugbyTournament>());

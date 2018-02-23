@@ -17,21 +17,23 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFram
         IBaseEntityFrameworkRepository<RugbyMatchEvent> RugbyMatchEvents { get; }
         IBaseEntityFrameworkRepository<RugbyMatchStatistics> RugbyMatchStatistics { get; }
         IBaseEntityFrameworkRepository<RugbyPlayer> RugbyPlayers { get; }
+        IBaseEntityFrameworkRepository<RugbyPlayerStatistics> RugbyPlayerStatistics { get; }
+
         IBaseEntityFrameworkRepository<RugbyPlayerLineup> RugbyPlayerLineups { get; }
         IBaseEntityFrameworkRepository<RugbySeason> RugbySeasons { get; }
         IBaseEntityFrameworkRepository<RugbyTeam> RugbyTeams { get; }
         IBaseEntityFrameworkRepository<RugbyTournament> RugbyTournaments { get; }
         IBaseEntityFrameworkRepository<RugbyVenue> RugbyVenues { get; }
 
-        IBaseEntityFrameworkRepository<MotorsportDriver> MotorsportDrivers { get; set; }
-        IBaseEntityFrameworkRepository<MotorsportDriverStanding> MotorsportDriverStandings { get; set; }
-        IBaseEntityFrameworkRepository<MotorsportGrid> MotorsportGrids { get; set; }
-        IBaseEntityFrameworkRepository<MotorsportLeague> MotorsportLeagues { get; set; }
-        IBaseEntityFrameworkRepository<MotorsportRace> MotorsportRaces { get; set; }
-        IBaseEntityFrameworkRepository<MotorsportRaceResult> MotorsportRaceResults { get; set; }
-        IBaseEntityFrameworkRepository<MotorsportSeason> MotorsportSeasons { get; set; }
-        IBaseEntityFrameworkRepository<MotorsportTeam> MotortsportTeams { get; set; }
-        IBaseEntityFrameworkRepository<MotorsportTeamStanding> MotorsportTeamStandings { get; set; }
+        IBaseEntityFrameworkRepository<MotorsportDriver> MotorsportDrivers { get; }
+        IBaseEntityFrameworkRepository<MotorsportDriverStanding> MotorsportDriverStandings { get; }
+        IBaseEntityFrameworkRepository<MotorsportGrid> MotorsportGrids { get; }
+        IBaseEntityFrameworkRepository<MotorsportLeague> MotorsportLeagues { get; }
+        IBaseEntityFrameworkRepository<MotorsportRace> MotorsportRaces { get; }
+        IBaseEntityFrameworkRepository<MotorsportRaceResult> MotorsportRaceResults { get; }
+        IBaseEntityFrameworkRepository<MotorsportSeason> MotorsportSeasons { get; }
+        IBaseEntityFrameworkRepository<MotorsportTeam> MotortsportTeams { get; }
+        IBaseEntityFrameworkRepository<MotorsportTeamStanding> MotorsportTeamStandings { get; }
 
         int SaveChanges();
         Task<int> SaveChangesAsync();

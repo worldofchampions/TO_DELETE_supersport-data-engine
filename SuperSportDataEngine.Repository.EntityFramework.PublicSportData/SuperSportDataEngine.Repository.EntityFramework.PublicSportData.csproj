@@ -248,6 +248,10 @@
     <Compile Include="Migrations\201802010905205_Add_RugbySeason_To_RugbyFixture.Designer.cs">
       <DependentUpon>201802010905205_Add_RugbySeason_To_RugbyFixture.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201802191222054_Added_PlayerStats_Model.cs" />
+    <Compile Include="Migrations\201802191222054_Added_PlayerStats_Model.Designer.cs">
+      <DependentUpon>201802191222054_Added_PlayerStats_Model.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201802230004491_Motorsport_Initial_Migration.cs" />
     <Compile Include="Migrations\201802230004491_Motorsport_Initial_Migration.Designer.cs">
       <DependentUpon>201802230004491_Motorsport_Initial_Migration.cs</DependentUpon>
@@ -414,6 +418,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201802010905205_Add_RugbySeason_To_RugbyFixture.resx">
       <DependentUpon>201802010905205_Add_RugbySeason_To_RugbyFixture.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802191222054_Added_PlayerStats_Model.resx">
+      <DependentUpon>201802191222054_Added_PlayerStats_Model.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201802230004491_Motorsport_Initial_Migration.resx">
       <DependentUpon>201802230004491_Motorsport_Initial_Migration.cs</DependentUpon>

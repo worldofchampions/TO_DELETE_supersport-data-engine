@@ -135,6 +135,20 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsPro
         public object commentary { get; set; }
     }
 
+    public class InterchangeCompare : IEqualityComparer<Interchange>
+    {
+        public bool Equals(Interchange x, Interchange y)
+        {
+            return x?.on?.playerId == y?.on?.playerId &&
+                   x?.off?.playerId == y?.off?.playerId;
+        }
+
+        public int GetHashCode(Interchange obj)
+        {
+            return obj.GetHashCode();
+        }
+    }
+
     public class Interchange
     {
         public int interchangeNumber { get; set; }

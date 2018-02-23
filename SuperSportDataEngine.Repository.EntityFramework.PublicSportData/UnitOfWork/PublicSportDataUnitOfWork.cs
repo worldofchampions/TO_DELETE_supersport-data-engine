@@ -22,6 +22,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.UnitOf
         public IBaseEntityFrameworkRepository<RugbyMatchEvent> RugbyMatchEvents { get; private set; }
         public IBaseEntityFrameworkRepository<RugbyMatchStatistics> RugbyMatchStatistics { get; private set; }
         public IBaseEntityFrameworkRepository<RugbyPlayer> RugbyPlayers { get; private set; }
+        public IBaseEntityFrameworkRepository<RugbyPlayerStatistics> RugbyPlayerStatistics { get; private set; }
         public IBaseEntityFrameworkRepository<RugbyPlayerLineup> RugbyPlayerLineups { get; private set; }
         public IBaseEntityFrameworkRepository<RugbySeason> RugbySeasons { get; private set; }
         public IBaseEntityFrameworkRepository<RugbyTeam> RugbyTeams { get; private set; }
@@ -54,6 +55,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.UnitOf
             RugbyMatchStatistics = new BaseEntityFrameworkRepository<RugbyMatchStatistics>(_context);
             RugbyPlayerLineups = new BaseEntityFrameworkRepository<RugbyPlayerLineup>(_context);
             RugbyPlayers = new BaseEntityFrameworkRepository<RugbyPlayer>(_context);
+            RugbyPlayerStatistics = new BaseEntityFrameworkRepository<RugbyPlayerStatistics>(_context);
             RugbySeasons = new BaseEntityFrameworkRepository<RugbySeason>(_context);
             RugbyTeams = new BaseEntityFrameworkRepository<RugbyTeam>(_context);
             RugbyTournaments = new BaseEntityFrameworkRepository<RugbyTournament>(_context);
@@ -64,7 +66,6 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.UnitOf
             MotorsportRaces = new BaseEntityFrameworkRepository<MotorsportRace>(_context);
             MotorsportTeamStandings = new BaseEntityFrameworkRepository<MotorsportTeamStanding>(_context);
             MotorsportDriverStandings = new BaseEntityFrameworkRepository<MotorsportDriverStanding>(_context);
-
         }
         
         public int SaveChanges()

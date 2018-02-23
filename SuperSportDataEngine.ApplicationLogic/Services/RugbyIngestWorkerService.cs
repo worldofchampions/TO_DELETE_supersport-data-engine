@@ -277,8 +277,6 @@
 
             if (season == null)
             {
-                await _logger.Error("IngestSeason." + tournament.ProviderTournamentId + "." + year, 
-                    "Provider returning null for season data. Tournament = "+ tournament.Name + " Season = " + year);
                 return;
             }
 
@@ -595,10 +593,6 @@
 
                     var venue = fixture.venueName == null ? null :
                         allVenues.FirstOrDefault(v => v.ProviderVenueId == fixture.venueId);
-
-                    //if (venue == null)
-                    //    await _logger.Warn("UnconfirmedVenue." + fixture.gameId, 
-                    //        "Ingesting fixture " + fixture.gameId + " with venue unconfirmed.");
 
                     var newFixture = new RugbyFixture()
                     {
@@ -1787,7 +1781,8 @@
 
                 var localInterchanges = new List<RugbyMatchEvent>();
 
-                foreach (var interchange in team.interchanges)
+                var interchanges = team.interchanges.Distinct(new InterchangeCompare());
+                foreach (var interchange in interchanges)
                 {
                     var eventInDb = events.FirstOrDefault(e =>
                         interchange?.off != null &&
@@ -2558,10 +2553,9 @@
 
                     s.Stop();
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-                    await _logger.Warn($"IngestPastFixtures.{fixture.LegacyFixtureId}",
-                        $"Exception occured while ingesting legacy fixture {fixture.LegacyFixtureId} / provider fixture id {fixture.ProviderFixtureId}. \n" + e.StackTrace);
+                    // ignored
                 }
             }
         }
@@ -2589,6 +2583,91 @@
             _systemSportDataUnitOfWork.SchedulerTrackingRugbyFixtures.Update(schedule);
 
             await _systemSportDataUnitOfWork.SaveChangesAsync();
+        }
+
+        public async Task IngestPlayerStatsForCurrentTournaments(int providerTournamentId, int providerSeasonId, CancellationToken cancellationToken)
+        {
+            // TODO: @thobani  
+            // Think about how to handle ranking since STATS does not provide this info.
+            if (cancellationToken.IsCancellationRequested)
+                return;
+            
+            var response =
+                await _statsProzoneIngestService.IngestPlayerStatsForTournament(providerTournamentId, providerSeasonId,
+                    cancellationToken);
+
+            foreach (var player in response.RugbyPlayerStats.players)
+            {
+                var playerInDb =
+                    _publicSportDataUnitOfWork.RugbyPlayers.FirstOrDefault(p => p.ProviderPlayerId == player.playerId);
+
+                var teamInDb =
+                    _publicSportDataUnitOfWork.RugbyTeams.FirstOrDefault(t => t.ProviderTeamId == player.teamId);
+
+                var seasonInDb =
+                    _publicSportDataUnitOfWork.RugbySeasons.FirstOrDefault(s => s.ProviderSeasonId == providerSeasonId);
+
+                var conversions =
+                    player?.playerSeasonStats?.Stat?.FirstOrDefault(s => s.StatTypeID == 2)?.totalValue;
+                if (conversions is null) conversions = 0;
+
+                var tries =
+                    player?.playerSeasonStats?.Stat?.FirstOrDefault(s => s.StatTypeID == 5)?.totalValue;
+                if (tries is null) tries = 0;
+
+                // STATS combines these values :( "Number of Penalty Shots/Conversions/Drop Goals Made"
+                var dropGoals =
+                    player?.playerSeasonStats?.Stat?.FirstOrDefault(s => s.StatTypeID == 2050)?.totalValue;
+                if (dropGoals is null) dropGoals = 0;
+
+                var penalties = dropGoals;
+
+                var points =
+                    player?.playerSeasonStats?.Stat?.FirstOrDefault(s => s.StatTypeID == 2001)?.totalValue;
+                if (points is null) points = 0;
+
+                var tournament =
+                    _publicSportDataUnitOfWork.RugbyTournaments.FirstOrDefault(t => t.ProviderTournamentId == providerTournamentId);
+
+                var playerStatistics = new RugbyPlayerStatistics
+                {
+                    RugbyTournament = tournament,
+                    RugbyTournamentId = tournament.Id,
+                    RugbyPlayer = playerInDb,
+                    RugbyPlayerId = playerInDb.Id,
+                    RugbyTeam = teamInDb,
+                    RugbyTeamId = teamInDb.Id,
+                    RugbySeason = seasonInDb,
+                    RugbySeasonId = seasonInDb.Id,
+                    TriesScored = (int) tries,
+                    ConversionsScored = (int) conversions,
+                    DropGoalsScored = (int) dropGoals,
+                    PenaltiesScored = (int) penalties,
+                    TotalPoints = (int) points
+                };
+
+                var statInRepo = _publicSportDataUnitOfWork.RugbyPlayerStatistics
+                    .FirstOrDefault(s => s.RugbyPlayerId == playerStatistics.RugbyPlayerId
+                                         && s.RugbySeasonId == playerStatistics.RugbySeasonId
+                                         && s.RugbyTournamentId == playerStatistics.RugbyTournamentId);
+
+                if (statInRepo != null)
+                {
+                    statInRepo.TriesScored = playerStatistics.TriesScored;
+                    statInRepo.ConversionsScored = playerStatistics.ConversionsScored;
+                    statInRepo.DropGoalsScored = playerStatistics.DropGoalsScored;
+                    statInRepo.PenaltiesScored = playerStatistics.PenaltiesScored;
+                    statInRepo.TotalPoints = playerStatistics.TotalPoints;
+
+                    _publicSportDataUnitOfWork.RugbyPlayerStatistics.Update(statInRepo);
+                }
+                else
+                {
+                    _publicSportDataUnitOfWork.RugbyPlayerStatistics.Add(playerStatistics);
+                }
+            }
+
+            await _publicSportDataUnitOfWork.SaveChangesAsync();
         }
     }
 }

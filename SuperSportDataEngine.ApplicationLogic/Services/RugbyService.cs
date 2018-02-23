@@ -266,6 +266,40 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             return recentFixturesInResultsState;
         }
 
+        public async Task<IEnumerable<RugbyTournament>> GetTournamentsForJustEndedFixtures()
+        {
+            var rugbyFixtures =
+                (await Task.FromResult(_publicSportDataUnitOfWork.RugbyFixtures.Where(
+                    x => x.IsDisabledInbound == false &&
+                         x.RugbyFixtureStatus == RugbyFixtureStatus.Result &&
+                         x.RugbyTournament.IsEnabled &&
+                         x.RugbyTournament.IsEnabled)))
+                .ToList();
+
+            var rugbyTournaments = new List<RugbyTournament>();
+
+            foreach (var fixture in rugbyFixtures)
+            {
+                var utcNowDateTime = DateTimeOffset.UtcNow.DateTime;
+                var isPlayedToday = fixture.StartDateTime.Year == utcNowDateTime.Year &&
+                                    fixture.StartDateTime.Month == utcNowDateTime.Month &&
+                                    fixture.StartDateTime.Day == utcNowDateTime.Day;
+
+                if (!isPlayedToday) continue;
+
+                const int gameTimeEstimateInMinutes = 95;
+                var isMatchOver = utcNowDateTime >
+                                  fixture.StartDateTime.DateTime + TimeSpan.FromMinutes(gameTimeEstimateInMinutes);
+                if (!isMatchOver) continue;
+
+                if (rugbyTournaments.Any(t => t.Id == fixture.RugbyTournament.Id)) continue;
+
+                rugbyTournaments.Add(fixture.RugbyTournament);
+            }
+
+            return rugbyTournaments;
+        }
+
         public async Task<IEnumerable<RugbyFixture>> GetTournamentResults(string tournamentSlug)
         {
             if (IsNationalTeamSlug(tournamentSlug))
@@ -591,6 +625,64 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             var fixtures = _publicSportDataUnitOfWork.RugbyFixtures.Where(f => f.StartDateTime < today && f.StartDateTime >= fewDaysAgo);
 
             return await Task.FromResult(fixtures.ToList());
+        }
+
+        public async Task<IEnumerable<RugbyPlayerStatistics>> GetTournamentTryScorers(string tournamentSlug)
+        {
+            var tournamentId = await GetTournamentId(tournamentSlug);
+
+            var players = _publicSportDataUnitOfWork.RugbyPlayerStatistics
+                .Where(s => s.RugbyTournament.Id == tournamentId)
+                .OrderByDescending(p => p.TriesScored)
+                .ToList();
+
+            if (!players.Any()) return players;
+
+            var currentPlayerTries = players.First().TriesScored;
+            var currentPlayerRank = 1;
+            foreach (var player in players)
+            {
+                var shouldIncrementRank = player.TriesScored < currentPlayerTries;
+                if (shouldIncrementRank)
+                {
+                    currentPlayerRank++;
+                    player.Rank = currentPlayerRank;
+                    currentPlayerTries = player.TriesScored;
+                }
+
+                player.Rank = currentPlayerRank;
+            }
+
+            return players;
+        }
+
+        public async Task<IEnumerable<RugbyPlayerStatistics>> GetTournamentPointsScorers(string tournamentSlug)
+        {
+            var tournamentId = await GetTournamentId(tournamentSlug);
+
+            var players = _publicSportDataUnitOfWork.RugbyPlayerStatistics
+                .Where(s => s.RugbyTournament.Id == tournamentId)
+                .OrderByDescending(s => s.TotalPoints)
+                .ToList();
+
+            if (!players.Any()) return players;
+
+            var currentPlayerPoints = players.First().TotalPoints;
+            var currentPlayerRank = 1;
+            foreach (var player in players)
+            {
+                var shouldIncrementRank = player.TotalPoints < currentPlayerPoints;
+                if (shouldIncrementRank)
+                {
+                    currentPlayerPoints = player.TotalPoints;
+                    currentPlayerRank++;
+                    player.Rank = currentPlayerRank;
+                }
+
+                player.Rank = currentPlayerRank;
+            }
+
+            return players;
         }
     }
 }

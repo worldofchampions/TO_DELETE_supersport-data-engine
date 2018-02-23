@@ -16,6 +16,7 @@ using SuperSportDataEngine.ApplicationLogic.Services;
 using SuperSportDataEngine.Common.Logging;
 using SuperSportDataEngine.Tests.Common.Repositories.Test;
 using GameFixture = SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyFixtures.GameFixture;
+using Player = SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyEntities.Player;
 using RoundFixture = SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyFixtures.RoundFixture;
 using Season = SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Season;
 using Team = SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyFixtures.Team;

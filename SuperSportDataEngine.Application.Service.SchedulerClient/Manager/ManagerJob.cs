@@ -26,12 +26,12 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
         private FixturesManagerJob _fixturesManagerJob;
         private LiveManagerJob _liveManagerJob;
         private LogsManagerJob _logsManagerJob;
+        private PlayerStatisticsManagerJob _playerStatisticsManagerJob;
         private MotorDriversManagerJob _driversManagerJob;
         private IMotorsportIngestWorkerService _motorIngestWorkerService;
 
         public ManagerJob()
         {
-
             ConfigureTimer();
             ConfigureDepenencies();
         }
@@ -91,10 +91,10 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
             ConfigureDepenencies();
             try
             {
-                //await _driversManagerJob.DoWorkAsync();
-                //await _liveManagerJob.DoWorkAsync();
-                //await _fixturesManagerJob.DoWorkAsync();
-                //await _logsManagerJob.DoWorkAsync();
+                await _liveManagerJob.DoWorkAsync();
+                await _fixturesManagerJob.DoWorkAsync();
+                await _logsManagerJob.DoWorkAsync();
+                await _playerStatisticsManagerJob.DoWorkAsync();
             }
             catch (Exception)
             {
