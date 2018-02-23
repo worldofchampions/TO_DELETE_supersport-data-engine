@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -121,7 +122,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 {
                     if (league.ProviderSlug is null) continue;
 
-                    var races = _statsProzoneMotorIngestService.IngestTournamentRaces(league.ProviderSlug);
+                    var races = _statsProzoneMotorIngestService.IngestLeagueCalendar(league.ProviderSlug, 2017);
                     await PersistRacesInRepository(races, league, cancellationToken);
                 }
             }
@@ -181,14 +182,14 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             foreach (var providerRace in racesFromProvider)
             {
-                var raceInRepo = _publicSportDataUnitOfWork.MotorsportRaces.FirstOrDefault(r => r.LegacyRaceId == providerRace.raceId);
+                var raceInRepo = _publicSportDataUnitOfWork.MotorsportRaces.FirstOrDefault(r => r.ProviderRaceId == providerRace.race.raceId);
                 if (raceInRepo is null)
                 {
-                    AddNewRaceToRepo(providerRace, league);
+                    AddNewRaceEventToRepo(providerRace, league);
                 }
                 else
                 {
-                    UpdateRaceInRepo(providerRace, raceInRepo);
+                    UpdateRaceEventInRepo(providerRace, raceInRepo);
                 }
             }
 
@@ -460,13 +461,13 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         {
             var league = new MotorsportLeague
             {
-                ProviderSlug = leagueFromProvider.league.subLeague.abbreviation,
+                ProviderSlug = leagueFromProvider.league.uriPaths.FirstOrDefault()?.path,
                 Name = leagueFromProvider.league.subLeague.name,
                 DisplayName = leagueFromProvider.league.subLeague.displayName,
                 ProviderLeagueId = leagueFromProvider.league.subLeague.subLeagueId,
                 Abbreviation = leagueFromProvider.league.subLeague.abbreviation,
                 Slug = leagueFromProvider.league.uriPaths.FirstOrDefault()?.path,
-                DataProvider = DataProvider.StatsProzone
+                DataProvider = DataProvider.Stats
             };
 
             _publicSportDataUnitOfWork.MotorsportLeagues.Add(league);
@@ -478,7 +479,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             driverInRepo.LastName = providerDriver.lastName;
             driverInRepo.HeightInCentimeters = providerDriver.height.centimeters;
             driverInRepo.WeightInKilograms = providerDriver.weight.kilograms;
-            driverInRepo.DataProvider = DataProvider.StatsProzone;
+            driverInRepo.DataProvider = DataProvider.Stats;
 
             _publicSportDataUnitOfWork.MotorsportDrivers.Update(driverInRepo);
         }
@@ -495,28 +496,44 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 CountryName = providerDriver.birth.country.name,
                 ProviderCarId = providerDriver.car.make.makeId,
                 CarNumber = providerDriver.car.carNumber,
-                DataProvider = DataProvider.StatsProzone
+                DataProvider = DataProvider.Stats
             };
 
             _publicSportDataUnitOfWork.MotorsportDrivers.Add(driver);
         }
 
-        private void UpdateRaceInRepo(Race providerRace, MotorsportRace raceInRepo)
+        private void UpdateRaceEventInRepo(Event providerRaceEvent, MotorsportRace raceInRepo)
         {
-            raceInRepo.RaceName = providerRace.name;
-            raceInRepo.RaceNameAbbreviation = providerRace.name;
+            var startDate = providerRaceEvent.startDate.FirstOrDefault(d => d.dateType.ToLowerInvariant().Equals("utc"));
+            raceInRepo.StartDateTimeUtc = DateTimeOffset.Parse(startDate?.full.ToString(CultureInfo.InvariantCulture));
+            raceInRepo.RaceName = providerRaceEvent.race.name;
+            raceInRepo.RaceNameAbbreviation = providerRaceEvent.race.name;
+            raceInRepo.CountryName = providerRaceEvent.venue.country.name;
+            raceInRepo.CountryAbbreviation = providerRaceEvent.venue.country.abbreviation;
+            raceInRepo.CityName = providerRaceEvent.venue.city;
+            raceInRepo.VenueName = providerRaceEvent.venue.name;
+            raceInRepo.DataProvider = DataProvider.Stats;
+
             _publicSportDataUnitOfWork.MotorsportRaces.Update(raceInRepo);
         }
 
-        private void AddNewRaceToRepo(Race motorRace, MotorsportLeague motorsportLeague)
+        private void AddNewRaceEventToRepo(Event providerRaceEvent, MotorsportLeague motorsportLeague)
         {
+            var startDate = providerRaceEvent.startDate.FirstOrDefault(d => d.dateType.ToLowerInvariant().Equals("utc"));
             var newRace = new MotorsportRace
             {
-                ProviderRaceId = motorRace.raceId,
-                RaceName = motorRace.name,
+                ProviderRaceId = providerRaceEvent.race.raceId,
+                RaceName = providerRaceEvent.race.name,
+                RaceNameAbbreviation = providerRaceEvent.race.name,
                 MotorsportLeague = motorsportLeague,
                 MotorLeagueId = motorsportLeague.Id,
-                DataProvider = DataProvider.StatsProzone
+                CountryName = providerRaceEvent.venue.country.name,
+                CountryAbbreviation = providerRaceEvent.venue.country.abbreviation,
+                CityName = providerRaceEvent.venue.city,
+                VenueName = providerRaceEvent.venue.name,
+                StartDateTimeUtc = DateTimeOffset.Parse(startDate?.full.ToString(CultureInfo.InvariantCulture)),
+
+                DataProvider = DataProvider.Stats
             };
 
             _publicSportDataUnitOfWork.MotorsportRaces.Add(newRace);
@@ -541,7 +558,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             {
                 Name = owner.name,
                 ProviderTeamId = owner.ownerId,
-                DataProvider = DataProvider.StatsProzone
+                DataProvider = DataProvider.Stats
             };
 
             _publicSportDataUnitOfWork.MotortsportTeams.Add(newOwner);
@@ -675,18 +692,22 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             return ExtractResultsFromProviderResponse(response);
         }
 
-        private static IEnumerable<Race> ExtractRacesFromProviderResponse(MotorEntitiesResponse response)
+        private static IEnumerable<Event> ExtractRacesFromProviderResponse(MotorEntitiesResponse response)
         {
             if (response != null && response.recordCount <= 0)
                 return null;
 
             var races = response
                 ?.apiResults.FirstOrDefault()
-                ?.league.races;
+                ?.league
+                .subLeague
+                .season
+                .eventType
+                .FirstOrDefault()
+                ?.events;
 
             return races;
         }
-
         private static IEnumerable<League> ExtractLeaguesFromProviderResponse(MotorEntitiesResponse response)
         {
             if (response != null && response.recordCount <= 0)
@@ -758,23 +779,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 ?.owners;
 
             return results;
-        }
-
-        private static IEnumerable<Event> ExtractScheduleFromProviderResponse(MotorEntitiesResponse response)
-        {
-            if (response != null && response.recordCount <= 0)
-                return null;
-
-            var events = response
-                ?.apiResults
-                ?.FirstOrDefault()
-                ?.leagues.FirstOrDefault()
-                ?.league.subLeague
-                ?.season
-                ?.eventType.FirstOrDefault()
-                ?.events;
-
-            return events;
         }
 
         private static async Task PersistTournamentTeamsInRepository(MotorEntitiesResponse response)

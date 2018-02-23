@@ -26,14 +26,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<IEnumerable<MotorsportLeague>> GetActiveLeagues()
         {
-            //TODO
-            var res = await _publicSportDataUnitOfWork.MotorsportLeagues.WhereAsync(l => l.IsEnabled);
-            return new List<MotorsportLeague> {new MotorsportLeague
-            {
-                Name = "Test-F1",
-                IsEnabled = true,
-                ProviderSlug = "f1",
-            }};
+            var activeLeagues = await _publicSportDataUnitOfWork.MotorsportLeagues.WhereAsync(l => l.IsEnabled);
+            
+            return activeLeagues;
         }
 
         public async Task<int> GetProviderSeasonIdForLeague(Guid leagueId, CancellationToken cancellationToken)
