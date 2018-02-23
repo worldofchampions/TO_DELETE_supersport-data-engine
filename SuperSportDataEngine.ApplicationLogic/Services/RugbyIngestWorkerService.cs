@@ -2636,8 +2636,17 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 return;
             
             var response =
-                await _statsProzoneIngestService.IngestPlayerStatsForTournament(providerTournamentId, providerSeasonId,
+                await _statsProzoneIngestService.IngestPlayerStatsForTournament(
+                    providerTournamentId, 
+                    providerSeasonId,
                     cancellationToken);
+
+            var seasonResponse =
+                await _statsProzoneIngestService.IngestSeasonData(cancellationToken, providerTournamentId, providerSeasonId);
+            var clubsId = seasonResponse.RugbySeasons.season?.FirstOrDefault()?.clubs.clubs.Select(club => club.teamId);
+
+            var teamsForTournamentSeason =
+                _rugbyTeamRepository.Where(t => clubsId.Contains(t.ProviderTeamId)).ToList();
 
             foreach (var player in response.RugbyPlayerStats.players)
             {
@@ -2648,7 +2657,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                     continue;
 
                 var teamInDb =
-                    _rugbyTeamRepository.FirstOrDefault(t => t.ProviderTeamId == player.teamId);
+                    teamsForTournamentSeason.FirstOrDefault(t => t.ProviderTeamId == player.teamId);
 
                 if (teamInDb == null)
                     continue;
