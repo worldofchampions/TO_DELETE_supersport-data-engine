@@ -1,20 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motor;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RequestModels;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
-using SuperSportDataEngine.Common.Logging;
-
-namespace SuperSportDataEngine.ApplicationLogic.Services
+﻿namespace SuperSportDataEngine.ApplicationLogic.Services
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motor;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RequestModels;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
+    using SuperSportDataEngine.Common.Logging;
+
     public class MotorsportIngestWorkerService : IMotorsportIngestWorkerService
     {
         private readonly IStatsProzoneMotorIngestService _statsProzoneMotorIngestService;
@@ -34,23 +34,19 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             _motorService = motorService;
         }
 
-        public async Task IngestDriversForActiveLeagues(MotorDriverRequestEntity motorDriverRequestEntity, CancellationToken cancellationToken)
-        {
-            var tournamentDrivers = _statsProzoneMotorIngestService.IngestTournamentDrivers(motorDriverRequestEntity);
-            await PersistTournamentDriversInRepository(tournamentDrivers);
-        }
-
-        private async Task IngestDriversForActiveTournaments(CancellationToken cancellationToken)
+        public async Task IngestDriversForActiveLeagues(CancellationToken cancellationToken)
         {
             var activeLeagues = await _motorService.GetActiveLeagues();
 
             foreach (var league in activeLeagues)
             {
                 var providerSeasonId = await _motorService.GetProviderSeasonIdForLeague(league.Id, cancellationToken);
-                var motorDriverRequestEntity = new MotorDriverRequestEntity(league.ProviderSlug, providerSeasonId);
-                var tournamentDrivers = _statsProzoneMotorIngestService.IngestTournamentDrivers(motorDriverRequestEntity);
-                await PersistTournamentDriversInRepository(tournamentDrivers);
+
+                var leagueDrivers = _statsProzoneMotorIngestService.IngestLeagueDrivers(league.ProviderSlug, providerSeasonId);
+
+                await PersistLeagueDriversInRepository(leagueDrivers);
             }
+
         }
 
         public async Task IngestTeamsForActiveLeagues(CancellationToken cancellationToken)
@@ -116,13 +112,17 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         public async Task IngestRacesForActiveLeagues(CancellationToken cancellationToken)
         {
             var motorLeagues = await _motorService.GetActiveLeagues();
+
             if (motorLeagues != null)
             {
                 foreach (var league in motorLeagues)
                 {
                     if (league.ProviderSlug is null) continue;
 
-                    var races = _statsProzoneMotorIngestService.IngestLeagueCalendar(league.ProviderSlug, 2017);
+                    var providerSeasonId = await _motorService.GetProviderSeasonIdForLeague(league.Id, cancellationToken);
+
+                    var races = _statsProzoneMotorIngestService.IngestLeagueCalendar(league.ProviderSlug, providerSeasonId);
+
                     await PersistRacesInRepository(races, league, cancellationToken);
                 }
             }
@@ -149,9 +149,10 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             await PersistLeaguesInRepository(leagues, cancellationToken);
         }
 
-        private async Task PersistTournamentDriversInRepository(MotorEntitiesResponse providerResponse)
+        private async Task PersistLeagueDriversInRepository(MotorEntitiesResponse providerResponse)
         {
             var driversFromProvider = ExtractDriversFromProviderResponse(providerResponse);
+
             if (driversFromProvider != null)
             {
                 foreach (var providerDriver in driversFromProvider)
@@ -744,7 +745,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             var players = response
                 ?.apiResults
                 ?.FirstOrDefault()
-                ?.leagues.FirstOrDefault()
                 ?.league.subLeague
                 ?.players;
 

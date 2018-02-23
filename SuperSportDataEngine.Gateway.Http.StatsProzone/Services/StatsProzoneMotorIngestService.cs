@@ -55,7 +55,8 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
                     var streamReader = new StreamReader(responseStream, Encoding.UTF8);
 
-                    tournamentRacesEntitiesResponse = JsonConvert.DeserializeObject<MotorEntitiesResponse>(streamReader.ReadToEnd());
+                    tournamentRacesEntitiesResponse =
+                        JsonConvert.DeserializeObject<MotorEntitiesResponse>(streamReader.ReadToEnd());
                 }
             }
 
@@ -85,7 +86,7 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
         public MotorEntitiesResponse IngestTournamentResults(MotorResultRequestParams motorResultRequestParams)
         {
-            var raceResultsRequest = 
+            var raceResultsRequest =
                 _prozoneMotorWebRequest.GetRequestRaceResults(motorResultRequestParams);
 
             MotorEntitiesResponse raceResultsResponse;
@@ -98,7 +99,8 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
                     var streamReader = new StreamReader(responseStream, Encoding.UTF8);
 
-                    raceResultsResponse = JsonConvert.DeserializeObject<MotorEntitiesResponse>(streamReader.ReadToEnd());
+                    raceResultsResponse =
+                        JsonConvert.DeserializeObject<MotorEntitiesResponse>(streamReader.ReadToEnd());
                 }
             }
 
@@ -110,9 +112,10 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             return IngestTournamentResults(motorResultRequestParams);
         }
 
-        public MotorEntitiesResponse IngestTournamentDrivers(MotorDriverRequestEntity driverRequestEntity)
+        public MotorEntitiesResponse IngestLeagueDrivers(string providerSlug, int providerSeasonId)
         {
-            var webRequestForDriverIngest = _prozoneMotorWebRequest.GetRequestForDrivers(driverRequestEntity.ProviderSlug);
+            var webRequestForDriverIngest =
+                _prozoneMotorWebRequest.GetRequestForDrivers(providerSlug, providerSeasonId);
 
             MotorEntitiesResponse tournamentDrivers;
 

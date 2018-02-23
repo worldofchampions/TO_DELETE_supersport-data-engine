@@ -27,7 +27,7 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
             var requestSignature = GetRequestSignature();
 
-            var queryString = $"?api_key={_statsApiKey} & sig= {requestSignature}";
+            var queryString = $"?api_key={_statsApiKey}&sig={requestSignature}";
 
             var requestUriString = _statsApiBaseUrl + driversUrl + queryString;
 

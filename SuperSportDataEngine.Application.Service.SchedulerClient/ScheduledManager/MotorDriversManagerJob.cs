@@ -1,20 +1,17 @@
-﻿using System;
-using System.Configuration;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Hangfire;
-using Hangfire.Common;
-using Microsoft.Practices.Unity;
-using SuperSportDataEngine.Application.Container;
-using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RequestModels;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
-
-namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledManager
+﻿namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledManager
 {
+    using System;
+    using System.Configuration;
+    using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Hangfire;
+    using Microsoft.Practices.Unity;
+    using SuperSportDataEngine.Application.Container;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
+
     public class MotorDriversManagerJob
     {
         private IRecurringJobManager _recurringJobManager;
@@ -33,6 +30,19 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
             ConfigureDependencies();
             await CreateChildJobsForFetchingRaceDrivers();
         }
+
+        private void ConfigureDependencies()
+        {
+            _recurringJobManager = _childContainer.Resolve<IRecurringJobManager>();
+        }
+
+        private void CreateContainer()
+        {
+            _childContainer?.Dispose();
+            _childContainer = new UnityContainer();
+            UnityConfigurationManager.RegisterTypes(_childContainer, Container.Enums.ApplicationScope.ServiceSchedulerClient);
+        }
+
 
         private async Task<int> CreateChildJobsForFetchingRaceDrivers()
         {
@@ -73,58 +83,14 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
 
         private void QueueJobForLowFrequencyPolling(Guid leagueId, int providerLeagueId, int seasonId, string jobId)
         {
-            var highFreqExpiryFromConfig = ConfigurationManager.AppSettings["ScheduleManagerJob_Logs_CurrentTournaments_HighFrequencyPolling_ExpiryInMinutes"];
-
-            var udpateJobFrequencyOnThisMinute = int.Parse(highFreqExpiryFromConfig);
-
-            var timer = new System.Timers.Timer
-            {
-                AutoReset = false,
-                Interval = TimeSpan.FromMinutes(udpateJobFrequencyOnThisMinute).TotalMilliseconds
-            };
-
-            timer.Elapsed += delegate
-            {
-                var jobExpiryFromConfig = ConfigurationManager.AppSettings["ScheduleManagerJob_Logs_CurrentTournaments_LowFrequencyPolling_ExpiryInMinutes"];
-                var jobCronExpression = ConfigurationManager.AppSettings["ScheduleManagerJob_Logs_CurrentTournaments_LowFrequencyPolling_CronExpression"];
-
-                var deleteJobOnThisMinute = int.Parse(jobExpiryFromConfig);
-
-                AddOrUpdateHangfireJob(providerLeagueId.ToString(), seasonId, jobId, jobCronExpression);
-
-                //TODO: Queue Job for ceanup job
-
-                timer.Stop();
-            };
-
-            timer.Start();
+            //TODO
         }
 
-        private void ConfigureDependencies()
-        {
-            _recurringJobManager = _childContainer.Resolve<IRecurringJobManager>();
-        }
-
-        private void CreateContainer()
-        {
-            _childContainer?.Dispose();
-            _childContainer = new UnityContainer();
-            UnityConfigurationManager.RegisterTypes(_childContainer, Container.Enums.ApplicationScope.ServiceSchedulerClient);
-        }
 
 
         private void AddOrUpdateHangfireJob(string providerSlug, int providerSeasonId, string jobId, string jobCronExpression)
         {
-            _recurringJobManager.AddOrUpdate(
-                jobId,
-                Job.FromExpression(() => _childContainer.Resolve<IMotorsportIngestWorkerService>()
-                    .IngestDriversForActiveLeagues(new MotorDriverRequestEntity(providerSlug, providerSeasonId), CancellationToken.None)),
-                jobCronExpression,
-                new RecurringJobOptions
-                {
-                    TimeZone = TimeZoneInfo.Local,
-                    QueueName = HangfireQueueConfiguration.HighPriority
-                });
+            //TODO
         }
     }
 }

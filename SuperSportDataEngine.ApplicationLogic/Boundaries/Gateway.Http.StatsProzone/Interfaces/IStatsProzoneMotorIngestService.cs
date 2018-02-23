@@ -4,7 +4,7 @@
     using Models.RequestModels;
     public interface IStatsProzoneMotorIngestService
     {
-        MotorEntitiesResponse IngestTournamentDrivers(MotorDriverRequestEntity motorDriverRequestEntity);
+        MotorEntitiesResponse IngestLeagueDrivers(string providerSlug, int providerSeasonId);
         MotorEntitiesResponse IngestTournamentTeams(string providerSlug);
         MotorEntitiesResponse IngestTournamentOwners(string providerSlug);
         MotorEntitiesResponse IngestDriverStandings(string providerSlug);

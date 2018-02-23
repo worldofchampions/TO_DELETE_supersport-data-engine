@@ -6,7 +6,7 @@
 
     public interface IMotorsportIngestWorkerService
     {
-        Task IngestDriversForActiveLeagues(MotorDriverRequestEntity motorDriverRequestEntity, CancellationToken none);
+        Task IngestDriversForActiveLeagues(CancellationToken cancellationToken);
         Task IngestTeamsForActiveLeagues(CancellationToken cancellationToken);
         Task IngestOwnersForActiveLeagues(CancellationToken cancellationToken);
         Task IngestDriverStandingsForActiveLeagues(CancellationToken cancellationToken);
