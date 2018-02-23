@@ -60,12 +60,8 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
                 new LogsManagerJob(
                     _recurringJobManager,
                     _container);
-
-<<<<<<< HEAD
+            
             _playerStatisticsManagerJob =
-=======
-            _playerStatisticsManagerJob = 
->>>>>>> development
                 new PlayerStatisticsManagerJob(
                     _recurringJobManager,
                     _container);
