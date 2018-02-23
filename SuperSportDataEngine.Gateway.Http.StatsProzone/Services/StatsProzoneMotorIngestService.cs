@@ -1,12 +1,11 @@
-﻿using System.IO;
-using System.Text;
-using Newtonsoft.Json;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motor;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RequestModels;
-
-namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
+﻿namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 {
+    using System.IO;
+    using System.Text;
+    using Newtonsoft.Json;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motor;
+
     public class StatsProzoneMotorIngestService : IStatsProzoneMotorIngestService
     {
         private const string TeamStandingsTypeId = "2"; //TODO Move to STATS constants
@@ -84,10 +83,10 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             return tournamentSchedule;
         }
 
-        public MotorEntitiesResponse IngestTournamentResults(MotorResultRequestParams motorResultRequestParams)
+        public MotorEntitiesResponse IngestRaceResults(string providerSlug, int providerSeasonId, int providerRaceId)
         {
             var raceResultsRequest =
-                _prozoneMotorWebRequest.GetRequestRaceResults(motorResultRequestParams);
+                _prozoneMotorWebRequest.GetRequestForRaceResults(providerSlug, providerSeasonId, providerRaceId);
 
             MotorEntitiesResponse raceResultsResponse;
 
@@ -107,9 +106,9 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             return raceResultsResponse;
         }
 
-        public MotorEntitiesResponse IngestTournamentGrid(MotorResultRequestParams motorResultRequestParams)
+        public MotorEntitiesResponse IngestLeagueGrid(string providerSlug, int providerSeasonId)
         {
-            return IngestTournamentResults(motorResultRequestParams);
+            return IngestRaceResults(providerSlug, providerSeasonId, providerSeasonId);
         }
 
         public MotorEntitiesResponse IngestLeagueDrivers(string providerSlug, int providerSeasonId)

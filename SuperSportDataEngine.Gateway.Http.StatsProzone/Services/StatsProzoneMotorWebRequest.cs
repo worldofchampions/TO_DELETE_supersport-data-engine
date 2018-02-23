@@ -123,14 +123,14 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             return requestForTournamentSchedule;
         }
 
-        public WebRequest GetRequestRaceResults(MotorResultRequestParams requestParams)
+        public WebRequest GetRequestForRaceResults(string providerSlug, int providerSeasonId, int providerRaceId)
         {
-            var raceResultsUrl = $"/v1/stats/motor/{requestParams.Slug}/events/";
+            var raceResultsUrl = $"/v1/stats/motor/{providerSlug}/events/";
 
             var requestSignature = GetRequestSignature();
 
             var queryString =
-                $"?box=true&season={requestParams.SeasonId}&raceId={requestParams.RaceId}&api_key={_statsApiKey}&sig={requestSignature}";
+                $"?box=true&season={providerSeasonId}&api_key={_statsApiKey}&sig={requestSignature}";
 
             var requestUriString = _statsApiBaseUrl + raceResultsUrl + queryString;
 

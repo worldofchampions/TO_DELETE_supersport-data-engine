@@ -28,6 +28,7 @@
             UpdateRecurringJobDefinition_Leagues();
             UpdateRecurringJobDefinition_RacesCalendar();
             UpdateRecurringJobDefinition_Drivers();
+            CreateManualJobDefinition_HistoricGridData();
         }
 
         private void UpdateRecurringJobDefinition_RacesCalendar()
@@ -62,6 +63,19 @@
                 ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_Drivers_JobId"],
                 Job.FromExpression(() => _container.Resolve<IMotorsportIngestWorkerService>().IngestDriversForActiveLeagues(CancellationToken.None)),
                 ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_Drivers_JobCronExpression"],
+                new RecurringJobOptions
+                {
+                    TimeZone = TimeZoneInfo.Local,
+                    QueueName = HangfireQueueConfiguration.NormalPriority
+                });
+        }
+
+        private void CreateManualJobDefinition_HistoricGridData()
+        {
+            _recurringJobManager.AddOrUpdate(
+                ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_HistoricGrids_JobId"],
+                Job.FromExpression(() => _container.Resolve<IMotorsportIngestWorkerService>().IngestRaceGridsForPastSeasons(CancellationToken.None)),
+                ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_HistoricGrids_JobCronExpression"],
                 new RecurringJobOptions
                 {
                     TimeZone = TimeZoneInfo.Local,

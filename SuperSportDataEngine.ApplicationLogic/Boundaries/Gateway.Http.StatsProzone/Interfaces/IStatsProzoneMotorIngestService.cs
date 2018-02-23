@@ -12,7 +12,7 @@
         MotorEntitiesResponse IngestLeagues();
         MotorEntitiesResponse IngestTournamentRaces(string providerSlug);
         MotorEntitiesResponse IngestLeagueCalendar(string providerSlug, int providerSeasonId);
-        MotorEntitiesResponse IngestTournamentResults(MotorResultRequestParams motorResultRequestParams);
-        MotorEntitiesResponse IngestTournamentGrid(MotorResultRequestParams motorResultRequestParams);
+        MotorEntitiesResponse IngestRaceResults(string providerSlug, int providerSeasonId, int providerRaceId);
+        MotorEntitiesResponse IngestLeagueGrid(string providerSlug, int providerSeasonId);
     }
 }

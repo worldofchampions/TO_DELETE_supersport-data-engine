@@ -11,7 +11,7 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
         WebRequest GetRequestForTournaments();
         WebRequest GetRequestForRaces(string providerSlug);
         WebRequest GetRequestForSchedule(string providerSlug, int providerSeasonId);
-        WebRequest GetRequestRaceResults(MotorResultRequestParams requestParams);
         WebRequest GetRequestForOwners(string providerSlug);
+        WebRequest GetRequestForRaceResults(string providerSlug, int providerSeasonId, int providerRaceId);
     }
 }
