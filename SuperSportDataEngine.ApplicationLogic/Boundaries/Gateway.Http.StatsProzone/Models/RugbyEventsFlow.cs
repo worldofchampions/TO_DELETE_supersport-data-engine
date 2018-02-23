@@ -145,7 +145,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsPro
 
         public int GetHashCode(Interchange obj)
         {
-            return obj.GetHashCode();
+            return obj.off.playerId;
         }
     }
 

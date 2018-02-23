@@ -43,7 +43,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
         private void ConfigureDependencies()
         {
             _recurringJobManager = _childContainer.Resolve<IRecurringJobManager>();
-            _logger = _childContainer.Resolve<ILoggingService>();
         }
 
         private void CreateContainer()
