@@ -2375,7 +2375,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 if (lineup?.teamPlayer == null)
                     continue;
 
-                var players = lineup.teamPlayer.ToList().Distinct(new TeamPlayerComparer());
+                var players = lineup.teamPlayer.ToList().Distinct(new TeamPlayerComparer()).ToList();
 
                 var playersForFixture = (await _rugbyPlayerRepository.AllAsync()).Where(p => players.Any(player => player.playerId.Equals(p.ProviderPlayerId))).ToList();
 

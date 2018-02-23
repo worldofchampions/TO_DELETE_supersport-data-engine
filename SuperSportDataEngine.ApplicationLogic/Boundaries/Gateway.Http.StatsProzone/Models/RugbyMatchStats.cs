@@ -97,7 +97,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsPro
 
         public int GetHashCode(TeamPlayer obj)
         {
-            return obj.GetHashCode();
+            return obj.playerId;
         }
     }
 
