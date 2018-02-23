@@ -19,6 +19,8 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
     {
         private IRecurringJobManager _recurringJobManager;
         private IUnityContainer _childContainer;
+        ILoggingService _logger;
+        private static int _maxNumberOfRecentFixturesToConsider;
 
         public PlayerStatisticsManagerJob(
             IRecurringJobManager recurringJobManager,
@@ -26,6 +28,8 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
         {
             _recurringJobManager = recurringJobManager;
             _childContainer = childContainer;
+            _maxNumberOfRecentFixturesToConsider =
+                int.Parse(ConfigurationManager.AppSettings["MaxNumberOfRecentFixturesToConsider"]);
         }
 
         public async Task DoWorkAsync()
@@ -52,8 +56,14 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
 
         private async Task CreateAndDeleteChildJobsForFetchingPlayerStatistics()
         {
+            var today = DateTime.UtcNow.Date;
+            var now = DateTime.UtcNow;
+
             var todayTournaments =
-                (await _childContainer.Resolve<IRugbyService>().GetTournamentsForJustEndedFixtures()).ToList();
+                (await _childContainer.Resolve<IRugbyService>().GetRecentResultsFixtures(_maxNumberOfRecentFixturesToConsider))
+                .Where(f => f.StartDateTime.Date == today)
+                .Select(f => f.RugbyTournament)
+                .ToList();
 
             var todayTournamentIds = todayTournaments.Select(t => t.ProviderTournamentId);
 
