@@ -11,6 +11,9 @@
         /// <summary> A clustered-key record identifier. </summary>
         public Guid DriverId { get; set; }
 
+        /// <summary> A clustered-key record identifier. </summary>
+        public Guid TeamId { get; set; }
+
         public int Position { get; set; }
 
         public int QualifyingTimeHours { get; set; }
@@ -21,8 +24,10 @@
 
         public int QualifyingTimeMilliseconds { get; set; }
         
-        public MotorsportDriver MotorsportDriver { get; set; }
+        public virtual MotorsportDriver MotorsportDriver { get; set; }
 
-        public MotorsportRace MotorsportRace { get; set; }
+        public virtual MotorsportRace MotorsportRace { get; set; }
+
+        public virtual MotorsportTeam MotorsportTeam { get; set; }
     }
 }
