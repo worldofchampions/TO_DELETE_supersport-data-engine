@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Hangfire;
 using Hangfire.Common;
 using Hangfire.Server;
+using Hangfire.Storage;
 
 namespace SuperSportDataEngine.Application.Service.Common.Hangfire.Filters
 {
@@ -26,10 +28,10 @@ namespace SuperSportDataEngine.Application.Service.Common.Hangfire.Filters
 
         public void OnPerforming(PerformingContext filterContext)
         {
-            var resource = String.Format(
-                "{0}.{1}",
-                filterContext.Job.Type.FullName,
-                filterContext.Job.Method.Name);
+            var monitor = JobStorage.Current.GetMonitoringApi();
+            var name = monitor.JobDetails(filterContext.BackgroundJob.Id).Properties["RecurringJobId"];
+
+            var resource = $"{name}";
 
             var timeout = TimeSpan.FromSeconds(_timeoutInSeconds);
 
