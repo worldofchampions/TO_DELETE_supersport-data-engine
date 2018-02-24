@@ -120,7 +120,6 @@
     <Compile Include="Boundaries\Repository.EntityFramework.Common\Models\Enums\MotorsportRaceStatus.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.Common\Models\Enums\MotorsportSportType.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Enums\RugbyLogType.cs" />
-    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Motorsport\MotorsportCar.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Motorsport\MotorsportDriver.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Motorsport\MotorsportDriverStanding.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Motorsport\MotorsportGrid.cs" />

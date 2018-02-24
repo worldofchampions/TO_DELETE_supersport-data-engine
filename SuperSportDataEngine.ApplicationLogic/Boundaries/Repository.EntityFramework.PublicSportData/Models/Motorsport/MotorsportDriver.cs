@@ -39,18 +39,8 @@
         /// <summary> A provider driven value. </summary>
         public int ProviderCarId { get; set; }
 
-        //TODO : Clarify if car info is needed. Should it be a seperate model
         /// <summary> A provider driven value. </summary>
         public int? CarNumber { get; set; }
-
-        ///// <summary> A provider driven value. </summary>
-        //public int? CarDisplayNumber { get; set; }
-
-        ///// <summary> A provider driven value. </summary>
-        //public string CarName { get; set; }
-
-        ///// <summary> A provider driven value. </summary>
-        //public string CarDisplayName { get; set; }
 
         public DataProvider DataProvider { get; set; }
     }
