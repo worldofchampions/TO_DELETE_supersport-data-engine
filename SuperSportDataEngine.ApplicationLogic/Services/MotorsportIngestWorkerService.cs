@@ -605,18 +605,8 @@
             if (providerStanding is null || providerStanding.finishes is null)
                 return;
 
-            repoStanding.Wins = providerStanding.finishes.first;
-            repoStanding.FinishedSecond = providerStanding.finishes.second;
-            repoStanding.FinishedThird = providerStanding.finishes.third;
-            repoStanding.Top5Finishes = providerStanding.finishes.top5;
-            repoStanding.Top10Finishes = providerStanding.finishes.top10;
-            repoStanding.Top15Finishes = providerStanding.finishes.top15;
-            repoStanding.Top20Finishes = providerStanding.finishes.top20;
-            repoStanding.DidNotFinish = providerStanding.finishes.didNotFinish;
             repoStanding.Points = providerStanding.points;
-            repoStanding.Rank = providerStanding.rank;
-            repoStanding.Starts = providerStanding.starts;
-            repoStanding.Poles = providerStanding.poles;
+            repoStanding.Position = providerStanding.rank;
 
             _publicSportDataUnitOfWork.MotorsportTeamStandings.Update(repoStanding);
         }
@@ -633,18 +623,8 @@
 
             var teamStanding = new MotorsportTeamStanding
             {
-                Wins = providerTeam.finishes.first,
-                FinishedSecond = providerTeam.finishes.second,
-                FinishedThird = providerTeam.finishes.third,
-                Top5Finishes = providerTeam.finishes.top5,
-                Top10Finishes = providerTeam.finishes.top10,
-                Top15Finishes = providerTeam.finishes.top15,
-                Top20Finishes = providerTeam.finishes.top20,
-                DidNotFinish = providerTeam.finishes.didNotFinish,
                 Points = providerTeam.points,
-                Rank = providerTeam.rank,
-                Starts = providerTeam.starts,
-                Poles = providerTeam.poles
+                Position = providerTeam.rank
             };
 
             _publicSportDataUnitOfWork.MotorsportTeamStandings.Add(teamStanding);
