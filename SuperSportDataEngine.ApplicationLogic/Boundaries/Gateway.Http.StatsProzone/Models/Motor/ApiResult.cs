@@ -25,7 +25,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsPro
         public string abbreviation { get; set; }
         public string displayName { get; set; }
         public SubLeague subLeague { get; set; }
-       // public List<UriPath> uriPaths { get; set; }
+        // public List<UriPath> uriPaths { get; set; }
         public Season season { get; set; }
         public List<Race> races { get; set; }
         public List<UriPath2> uriPaths { get; set; }
@@ -48,6 +48,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsPro
         public List<Race> races { get; set; }
         public List<UriPath2> uriPaths { get; set; }
         public League2 league { get; set; }
+        public List<Season> seasons { get; set; }
     }
 
 
@@ -56,7 +57,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsPro
         public int season { get; set; }
         public string name { get; set; }
         public bool isActive { get; set; }
-
         public List<EventType> eventType { get; set; }
         public Standings standings { get; set; }
     }
@@ -65,7 +65,18 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsPro
     {
         public int eventTypeId { get; set; }
         public string name { get; set; }
+        public StartDate startDate { get; set; }
+        public EndDate endDate { get; set; }
         public List<Event> events { get; set; }
+    }
+
+    public class EndDate
+    {
+        public int year { get; set; }
+        public int month { get; set; }
+        public int date { get; set; }
+        public string full { get; set; }
+        public string dateType { get; set; }
     }
 
     public class Event

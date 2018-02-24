@@ -2,17 +2,17 @@
 {
     using System.Threading;
     using System.Threading.Tasks;
-    using Gateway.Http.StatsProzone.Models.RequestModels;
 
     public interface IMotorsportIngestWorkerService
     {
+        Task IngestLeagues(CancellationToken cancellationToken);
+        Task IngestSeasons(CancellationToken cancellationToken);
         Task IngestDriversForActiveLeagues(CancellationToken cancellationToken);
         Task IngestTeamsForActiveLeagues(CancellationToken cancellationToken);
         Task IngestDriverStandingsForActiveLeagues(CancellationToken cancellationToken);
         Task IngestTeamStandingsForActiveLeagues(CancellationToken cancellationToken);
         Task IngestRacesForActiveLeagues(CancellationToken cancellationToken);
-        Task IngestRaceResults(CancellationToken cancellationToken);
-        Task IngestLeagues(CancellationToken cancellationToken);
         Task IngestRaceGridsForPastSeasons(CancellationToken cancellationToken);
+        Task IngestRaceResults(CancellationToken cancellationToken);
     }
 }

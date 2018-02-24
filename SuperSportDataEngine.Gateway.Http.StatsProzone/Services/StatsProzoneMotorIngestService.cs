@@ -1,4 +1,7 @@
-﻿namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
+﻿using System;
+using System.Net;
+
+namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 {
     using System.IO;
     using System.Text;
@@ -38,6 +41,39 @@
             }
 
             return leagues;
+        }
+
+        public MotorEntitiesResponse IngestLeagueSeasons(string providerSlug)
+        {
+            var webRequestForTournamentsIngest = _statsMotorsportWebRequest.GetRequestForLeagueSeasons(providerSlug);
+
+            try
+            {
+                MotorEntitiesResponse seasons;
+
+                using (var webResponse = webRequestForTournamentsIngest.GetResponse())
+                {
+                    if (((HttpWebResponse)webResponse).StatusCode != HttpStatusCode.OK) return null;
+
+                    using (var responseStream = webResponse.GetResponseStream())
+                    {
+                        if (responseStream == null) return null;
+
+                        var streamReader = new StreamReader(responseStream, Encoding.UTF8);
+
+                        seasons = JsonConvert.DeserializeObject<MotorEntitiesResponse>(streamReader.ReadToEnd());
+                    }
+
+                }
+
+                return seasons;
+            }
+            catch (WebException)
+            {
+                // Provider must have returned error object hence failed to serealize it.
+                // TODO rework handling of this
+                return null;
+            }
         }
 
         public MotorEntitiesResponse IngestTournamentRaces(string providerSlug)

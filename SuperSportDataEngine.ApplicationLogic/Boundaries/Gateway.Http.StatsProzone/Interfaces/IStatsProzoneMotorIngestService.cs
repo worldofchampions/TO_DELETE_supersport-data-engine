@@ -4,6 +4,7 @@
     public interface IStatsProzoneMotorIngestService
     {
         MotorEntitiesResponse IngestLeagues();
+        MotorEntitiesResponse IngestLeagueSeasons(string providerSlug);
         MotorEntitiesResponse IngestDriversForLeague(string providerSlug, int providerSeasonId);
         MotorEntitiesResponse IngestTeamsForLeague(string providerSlug);
         MotorEntitiesResponse IngestDriverStandings(string providerSlug, int providerSeasonId);

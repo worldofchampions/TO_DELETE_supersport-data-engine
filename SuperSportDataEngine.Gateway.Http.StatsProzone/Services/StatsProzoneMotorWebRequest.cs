@@ -143,6 +143,23 @@
             return requestForTournamentSchedule;
         }
 
+        public WebRequest GetRequestForLeagueSeasons(string providerSlug)
+        {
+            var seasonsUrl = $"/v1/decode/motor/{providerSlug}/seasonStructure/";
+
+            var requestSignature = GetRequestSignature();
+
+            var queryString = $"?api_key={_statsApiKey}&sig={requestSignature}";
+
+            var requestUriString = _statsApiBaseUrl + seasonsUrl + queryString;
+
+            var requestForTeam = WebRequest.Create(requestUriString);
+
+            requestForTeam.Method = "GET";
+
+            return requestForTeam;
+        }
+
         public WebRequest GetRequestForOwners(string providerSlug)
         {
 

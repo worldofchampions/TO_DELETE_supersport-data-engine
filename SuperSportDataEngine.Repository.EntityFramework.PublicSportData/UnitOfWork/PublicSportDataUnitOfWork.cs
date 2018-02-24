@@ -60,12 +60,16 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.UnitOf
             RugbyTeams = new BaseEntityFrameworkRepository<RugbyTeam>(_context);
             RugbyTournaments = new BaseEntityFrameworkRepository<RugbyTournament>(_context);
             RugbyVenues = new BaseEntityFrameworkRepository<RugbyVenue>(_context);
+
             MotorsportDrivers = new BaseEntityFrameworkRepository<MotorsportDriver>(_context);
+            MotorsportDriverStandings = new BaseEntityFrameworkRepository<MotorsportDriverStanding>(_context);
             MotorsportGrids = new BaseEntityFrameworkRepository<MotorsportGrid>(_context);
             MotorsportLeagues = new BaseEntityFrameworkRepository<MotorsportLeague>(_context);
             MotorsportRaces = new BaseEntityFrameworkRepository<MotorsportRace>(_context);
+            MotorsportRaceResults = new BaseEntityFrameworkRepository<MotorsportRaceResult>(_context);
+            MotorsportSeasons = new BaseEntityFrameworkRepository<MotorsportSeason>(_context);
+            MotortsportTeams = new BaseEntityFrameworkRepository<MotorsportTeam>(_context);
             MotorsportTeamStandings = new BaseEntityFrameworkRepository<MotorsportTeamStanding>(_context);
-            MotorsportDriverStandings = new BaseEntityFrameworkRepository<MotorsportDriverStanding>(_context);
         }
         
         public int SaveChanges()

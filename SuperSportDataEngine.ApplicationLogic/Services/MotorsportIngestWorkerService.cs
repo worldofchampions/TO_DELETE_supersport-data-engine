@@ -34,6 +34,18 @@
             _motorService = motorService;
         }
 
+        public async Task IngestSeasons(CancellationToken cancellationToken)
+        {
+            var motorsportLeagues = await _motorService.GetActiveLeagues();
+
+            foreach (var race in motorsportLeagues)
+            {
+                var leagues = _statsProzoneMotorIngestService.IngestLeagueSeasons(race.ProviderSlug);
+
+                await PersistSeasonsInRepository(leagues, cancellationToken);
+            }
+        }
+
         public async Task IngestDriversForActiveLeagues(CancellationToken cancellationToken)
         {
             var activeLeagues = await _motorService.GetActiveLeagues();
@@ -137,7 +149,7 @@
                     {
                         var tournamentGrid = _statsProzoneMotorIngestService.IngestRaceGrid(league.Slug, providerSeasonId, race.ProviderRaceId);
 
-                        await PersistGridInRepository(tournamentGrid, cancellationToken); 
+                        await PersistGridInRepository(tournamentGrid, cancellationToken);
                     }
                 }
             }
@@ -172,8 +184,6 @@
 
             await PersistLeaguesInRepository(leagues, cancellationToken);
         }
-
-       
 
         private async Task PersistLeagueDriversInRepository(MotorEntitiesResponse providerResponse)
         {
@@ -241,6 +251,32 @@
                     else
                     {
                         UpdateLeagueInRepo(leagueFromProvider, leagueInRepo);
+                    }
+                }
+
+                await _publicSportDataUnitOfWork.SaveChangesAsync();
+            }
+        }
+
+        private async Task PersistSeasonsInRepository(MotorEntitiesResponse providerResponse, CancellationToken cancellationToken)
+        {
+            var seasonsFromProviderResponse = ExtractSeasonsFromProviderResponse(providerResponse);
+
+            if (seasonsFromProviderResponse != null)
+            {
+                foreach (var providerSeason in seasonsFromProviderResponse)
+                {
+                    var seasonInRepo =
+                        _publicSportDataUnitOfWork.MotorsportSeasons.FirstOrDefault(l =>
+                            l.ProviderSeasonId == providerSeason.season);
+
+                    if (seasonInRepo is null)
+                    {
+                        AddNewSeasonToRepo(providerSeason);
+                    }
+                    else
+                    {
+                        UpdateSeasonInRepo(seasonInRepo, providerSeason);
                     }
                 }
 
@@ -570,7 +606,7 @@
             repoStanding.Points = providerStanding.points;
             repoStanding.Position = providerStanding.rank;
             repoStanding.Wins = providerStanding.finishes.first;
-            
+
             _publicSportDataUnitOfWork.MotorsportDriverStandings.Update(repoStanding);
         }
 
@@ -630,6 +666,47 @@
             _publicSportDataUnitOfWork.MotorsportTeamStandings.Add(teamStanding);
         }
 
+        private void UpdateSeasonInRepo(MotorsportSeason seasonInRepo, Season providerSeason)
+        {
+            if (providerSeason is null || providerSeason.name is null)
+                return;
+
+            seasonInRepo.Name = providerSeason.name;
+            seasonInRepo.IsActive = providerSeason.isActive;
+            seasonInRepo.DataProvider = DataProvider.Stats;
+
+            _publicSportDataUnitOfWork.MotorsportSeasons.Update(seasonInRepo);
+        }
+
+        private void AddNewSeasonToRepo(Season season)
+        {
+            if (season is null || season.name is null)
+                return;
+
+            var motorsportSeason = new MotorsportSeason
+            {
+                Name = season.name,
+                IsActive = season.isActive,
+                ProviderSeasonId = season.season,
+                DataProvider = DataProvider.Stats
+            };
+
+            _publicSportDataUnitOfWork.MotorsportSeasons.Add(motorsportSeason);
+        }
+
+        private static IEnumerable<Season> ExtractSeasonsFromProviderResponse(MotorEntitiesResponse providerResponse)
+        {
+            if (providerResponse != null && providerResponse.recordCount <= 0)
+                return null;
+
+            var seasons = providerResponse
+                ?.apiResults.FirstOrDefault()
+                ?.league
+                .seasons;
+
+            return seasons;
+        }
+
         private static IEnumerable<Result> ExtractResultsFromProviderResponse(MotorEntitiesResponse response)
         {
             if (response != null && response.recordCount <= 0)
@@ -668,6 +745,7 @@
 
             return races;
         }
+
         private static IEnumerable<League> ExtractLeaguesFromProviderResponse(MotorEntitiesResponse response)
         {
             if (response != null && response.recordCount <= 0)

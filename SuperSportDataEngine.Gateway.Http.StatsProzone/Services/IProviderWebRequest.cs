@@ -11,5 +11,6 @@
         WebRequest GetRequestForSchedule(string providerSlug, int providerSeasonId);
         WebRequest GetRequestForOwners(string providerSlug);
         WebRequest GetRequestForRaceResults(string providerSlug, int providerSeasonId, int providerRaceId);
+        WebRequest GetRequestForLeagueSeasons(string providerSlug);
     }
 }
