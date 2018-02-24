@@ -273,8 +273,14 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 if (cancellationToken.IsCancellationRequested)
                     return;
 
-                await IngestSeason(cancellationToken, tournament, DateTime.Now.Year);
-                await IngestSeason(cancellationToken, tournament, DateTime.Now.Year + 1);
+                var currentSeason = _rugbySeasonRepository.FirstOrDefault(s =>
+                        s.RugbyTournament.ProviderTournamentId == tournament.ProviderTournamentId &&
+                        s.IsCurrent);
+
+                if (currentSeason == null)
+                    continue;
+
+                await IngestSeason(cancellationToken, tournament, currentSeason.ProviderSeasonId);
             }
         }
 
