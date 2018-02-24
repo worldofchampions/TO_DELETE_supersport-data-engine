@@ -13,7 +13,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
         
         string IMigrationMetadata.Id
         {
-            get { return "201802230004491_Motorsport_Initial_Migration"; }
+            get { return "201802241720232_Motorsport_Initial_Migration"; }
         }
         
         string IMigrationMetadata.Source

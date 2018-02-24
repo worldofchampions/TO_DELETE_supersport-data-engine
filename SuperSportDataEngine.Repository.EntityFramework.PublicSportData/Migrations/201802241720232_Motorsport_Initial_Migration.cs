@@ -39,20 +39,8 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                         MotorTeamId = c.Guid(nullable: false),
                         MotorDriverId = c.Guid(nullable: false),
                         Points = c.Int(nullable: false),
-                        Rank = c.Int(nullable: false),
+                        Position = c.Int(nullable: false),
                         Wins = c.Int(nullable: false),
-                        FinishedSecond = c.Int(nullable: false),
-                        FinishedThird = c.Int(nullable: false),
-                        Top5Finishes = c.Int(nullable: false),
-                        Top10Finishes = c.Int(nullable: false),
-                        Top15Finishes = c.Int(nullable: false),
-                        Top20Finishes = c.Int(nullable: false),
-                        DidNotFinish = c.Int(nullable: false),
-                        Earnings = c.Int(nullable: false),
-                        LapsTotalLed = c.Int(nullable: false),
-                        LapsCompleted = c.Int(nullable: false),
-                        Poles = c.Int(nullable: false),
-                        Starts = c.Int(nullable: false),
                         TimestampCreated = c.DateTimeOffset(nullable: false, precision: 7),
                         TimestampUpdated = c.DateTimeOffset(nullable: false, precision: 7),
                         MotorsportDriver_Id = c.Guid(),
@@ -78,12 +66,9 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                         LegacyLeagueId = c.Int(nullable: false, identity: true),
                         ProviderLeagueId = c.Int(nullable: false),
                         Name = c.String(nullable: false),
-                        ProviderSlug = c.String(nullable: false),
                         NameCmsOverride = c.String(),
                         Slug = c.String(nullable: false, maxLength: 450),
-                        Abbreviation = c.String(),
-                        DisplayName = c.String(),
-                        DisplayNameCmsOverride = c.String(),
+                        ProviderSlug = c.String(nullable: false),
                         IsEnabled = c.Boolean(nullable: false),
                         DataProvider = c.Int(nullable: false),
                         TimestampCreated = c.DateTimeOffset(nullable: false, precision: 7),
@@ -114,6 +99,9 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                     {
                         Id = c.Guid(nullable: false, identity: true),
                         ProviderSeasonId = c.Int(nullable: false),
+                        Name = c.String(),
+                        StartDateTime = c.DateTimeOffset(nullable: false, precision: 7),
+                        EndDateTime = c.DateTimeOffset(nullable: false, precision: 7),
                         IsActive = c.Boolean(nullable: false),
                         IsCurrent = c.Boolean(nullable: false),
                         DataProvider = c.Int(nullable: false),
@@ -132,6 +120,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                     {
                         RaceId = c.Guid(nullable: false),
                         DriverId = c.Guid(nullable: false),
+                        TeamId = c.Guid(nullable: false),
                         Position = c.Int(nullable: false),
                         QualifyingTimeHours = c.Int(nullable: false),
                         QualifyingTimeMinutes = c.Int(nullable: false),
@@ -141,19 +130,21 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                         TimestampUpdated = c.DateTimeOffset(nullable: false, precision: 7),
                         MotorsportDriver_Id = c.Guid(),
                         MotorsportRace_Id = c.Guid(),
+                        MotorsportTeam_Id = c.Guid(),
                     })
                 .PrimaryKey(t => new { t.RaceId, t.DriverId })
                 .ForeignKey("dbo.MotorsportDrivers", t => t.MotorsportDriver_Id)
                 .ForeignKey("dbo.MotorsportRaces", t => t.MotorsportRace_Id)
+                .ForeignKey("dbo.MotorsportTeams", t => t.MotorsportTeam_Id)
                 .Index(t => t.MotorsportDriver_Id)
-                .Index(t => t.MotorsportRace_Id);
+                .Index(t => t.MotorsportRace_Id)
+                .Index(t => t.MotorsportTeam_Id);
             
             CreateTable(
                 "dbo.MotorsportRaces",
                 c => new
                     {
                         Id = c.Guid(nullable: false, identity: true),
-                        MotorLeagueId = c.Guid(nullable: false),
                         LegacyRaceId = c.Int(nullable: false, identity: true),
                         ProviderRaceId = c.Int(nullable: false),
                         MotorsportRaceStatus = c.Int(nullable: false),
@@ -161,7 +152,6 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                         RaceNameCmsOverride = c.String(),
                         RaceNameAbbreviation = c.String(),
                         RaceNameAbbreviationCmsOverride = c.String(),
-                        RaceDisplayNameCmsOverride = c.String(),
                         IsDisabledOutbound = c.Boolean(nullable: false),
                         IsDisabledInbound = c.Boolean(nullable: false),
                         IsLiveScored = c.Boolean(nullable: false),
@@ -191,28 +181,26 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                     {
                         MotorsportRaceId = c.Guid(nullable: false),
                         MotorsportDriverId = c.Guid(nullable: false),
-                        LapsCompleted = c.Int(nullable: false),
-                        LapsLed = c.Int(nullable: false),
-                        LapsBehind = c.Int(nullable: false),
+                        CircuitName = c.String(),
                         Position = c.Int(nullable: false),
-                        StartingPosition = c.Int(nullable: false),
-                        IsFastest = c.Boolean(nullable: false),
+                        LapsCompleted = c.Int(nullable: false),
+                        CompletedRace = c.Boolean(nullable: false),
+                        OutReason = c.String(),
+                        GridPosition = c.Int(nullable: false),
                         FinishingTimeHours = c.Int(nullable: false),
                         FinishingTimeMinutes = c.Int(nullable: false),
                         FinishingTimeSeconds = c.Int(nullable: false),
                         FinishingTimeMilliseconds = c.Int(nullable: false),
                         DriverTotalPoints = c.Int(nullable: false),
-                        DriverBonusPoints = c.Int(nullable: false),
-                        DriverPenaltyPoints = c.Int(nullable: false),
-                        OwnerTotalPoints = c.Int(nullable: false),
-                        OwnerBonusPoints = c.Int(nullable: false),
-                        OwnerPenaltyPoints = c.Int(nullable: false),
                         TimestampCreated = c.DateTimeOffset(nullable: false, precision: 7),
                         TimestampUpdated = c.DateTimeOffset(nullable: false, precision: 7),
+                        MotorsportTeam_Id = c.Guid(),
                     })
                 .PrimaryKey(t => new { t.MotorsportRaceId, t.MotorsportDriverId })
                 .ForeignKey("dbo.MotorsportDrivers", t => t.MotorsportDriverId, cascadeDelete: true)
-                .Index(t => t.MotorsportDriverId);
+                .ForeignKey("dbo.MotorsportTeams", t => t.MotorsportTeam_Id)
+                .Index(t => t.MotorsportDriverId)
+                .Index(t => t.MotorsportTeam_Id);
             
             CreateTable(
                 "dbo.MotorsportTeamStandings",
@@ -222,18 +210,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                         MotorSeasonId = c.Guid(nullable: false),
                         MotorTeamId = c.Guid(nullable: false),
                         Points = c.Int(nullable: false),
-                        Rank = c.Int(nullable: false),
-                        Wins = c.Int(nullable: false),
-                        FinishedSecond = c.Int(nullable: false),
-                        FinishedThird = c.Int(nullable: false),
-                        Top5Finishes = c.Int(nullable: false),
-                        Top10Finishes = c.Int(nullable: false),
-                        Top15Finishes = c.Int(nullable: false),
-                        Top20Finishes = c.Int(nullable: false),
-                        DidNotFinish = c.Int(nullable: false),
-                        Earnings = c.Int(nullable: false),
-                        Poles = c.Int(nullable: false),
-                        Starts = c.Int(nullable: false),
+                        Position = c.Int(nullable: false),
                         TimestampCreated = c.DateTimeOffset(nullable: false, precision: 7),
                         TimestampUpdated = c.DateTimeOffset(nullable: false, precision: 7),
                         MotorsportLeague_Id = c.Guid(),
@@ -255,8 +232,10 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
             DropForeignKey("dbo.MotorsportTeamStandings", "MotorsportTeam_Id", "dbo.MotorsportTeams");
             DropForeignKey("dbo.MotorsportTeamStandings", "MotorsportSeason_Id", "dbo.MotorsportSeasons");
             DropForeignKey("dbo.MotorsportTeamStandings", "MotorsportLeague_Id", "dbo.MotorsportLeagues");
+            DropForeignKey("dbo.MotorsportGrids", "MotorsportTeam_Id", "dbo.MotorsportTeams");
             DropForeignKey("dbo.MotorsportGrids", "MotorsportRace_Id", "dbo.MotorsportRaces");
             DropForeignKey("dbo.MotorsportRaces", new[] { "MotorsportRaceResult_MotorsportRaceId", "MotorsportRaceResult_MotorsportDriverId" }, "dbo.MotorsportRaceResults");
+            DropForeignKey("dbo.MotorsportRaceResults", "MotorsportTeam_Id", "dbo.MotorsportTeams");
             DropForeignKey("dbo.MotorsportRaceResults", "MotorsportDriverId", "dbo.MotorsportDrivers");
             DropForeignKey("dbo.MotorsportRaces", "MotorsportLeague_Id", "dbo.MotorsportLeagues");
             DropForeignKey("dbo.MotorsportGrids", "MotorsportDriver_Id", "dbo.MotorsportDrivers");
@@ -268,9 +247,11 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
             DropIndex("dbo.MotorsportTeamStandings", new[] { "MotorsportTeam_Id" });
             DropIndex("dbo.MotorsportTeamStandings", new[] { "MotorsportSeason_Id" });
             DropIndex("dbo.MotorsportTeamStandings", new[] { "MotorsportLeague_Id" });
+            DropIndex("dbo.MotorsportRaceResults", new[] { "MotorsportTeam_Id" });
             DropIndex("dbo.MotorsportRaceResults", new[] { "MotorsportDriverId" });
             DropIndex("dbo.MotorsportRaces", new[] { "MotorsportRaceResult_MotorsportRaceId", "MotorsportRaceResult_MotorsportDriverId" });
             DropIndex("dbo.MotorsportRaces", new[] { "MotorsportLeague_Id" });
+            DropIndex("dbo.MotorsportGrids", new[] { "MotorsportTeam_Id" });
             DropIndex("dbo.MotorsportGrids", new[] { "MotorsportRace_Id" });
             DropIndex("dbo.MotorsportGrids", new[] { "MotorsportDriver_Id" });
             DropIndex("dbo.MotorsportSeasons", new[] { "MotorsportLeague_Id" });
