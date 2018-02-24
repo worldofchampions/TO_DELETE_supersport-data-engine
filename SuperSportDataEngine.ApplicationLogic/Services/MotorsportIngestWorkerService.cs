@@ -550,7 +550,6 @@
                 RaceName = providerRaceEvent.race.name,
                 RaceNameAbbreviation = providerRaceEvent.race.name,
                 MotorsportLeague = motorsportLeague,
-                MotorLeagueId = motorsportLeague.Id,
                 CountryName = providerRaceEvent.venue.country.name,
                 CountryAbbreviation = providerRaceEvent.venue.country.abbreviation,
                 CityName = providerRaceEvent.venue.city,

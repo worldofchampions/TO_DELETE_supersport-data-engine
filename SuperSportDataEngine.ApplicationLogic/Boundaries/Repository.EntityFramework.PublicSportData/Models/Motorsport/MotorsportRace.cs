@@ -9,9 +9,6 @@
         /// <summary> The primary internal record identifier. </summary>
         public Guid Id { get; set; }
 
-        /// <summary> A clustered-key record identifier. </summary>
-        public Guid MotorLeagueId { get; set; }
-
         /// <summary> A unique int record identifier for legacy purposes. </summary>
         public int LegacyRaceId { get; set; }
 
@@ -31,9 +28,6 @@
 
         /// <summary> A CMS driven value. </summary>
         public string RaceNameAbbreviationCmsOverride { get; set; }
-
-        /// <summary> A CMS driven value. </summary>
-        public string RaceDisplayNameCmsOverride { get; set; }
 
         /// <summary>
         /// A CMS driven value to indicate that a race should not be served out, e.g. to cater for
@@ -63,7 +57,7 @@
 
         public DateTimeOffset? StartDateTimeUtc { get; set; }
 
-        //TODO: Figure out how to calculate this. Confirm if provider does not serves it.
+        //TODO: Figure out how to calculate this. Confirm if provider does not serve it.
         public DateTimeOffset? EndDateTimeUtc { get; set; }
 
         public string CountryName { get; set; }
