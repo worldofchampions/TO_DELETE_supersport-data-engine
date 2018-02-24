@@ -420,24 +420,11 @@
         private void UpdateResultsInRepo(MotorsportRaceResult resultInRepo, Result result)
         {
             resultInRepo.DriverTotalPoints = int.Parse(result.points.driver.total);
-            resultInRepo.DriverPenaltyPoints = int.Parse(result.points.driver.penalty);
-            resultInRepo.DriverBonusPoints = int.Parse(result.points.driver.bonus);
-
-            resultInRepo.OwnerTotalPoints = int.Parse(result.points.owner.total);
-            resultInRepo.OwnerBonusPoints = int.Parse(result.points.owner.bonus);
-            resultInRepo.OwnerPenaltyPoints = int.Parse(result.points.owner.penalty);
-
             resultInRepo.FinishingTimeHours = result.finishingTime.hours;
             resultInRepo.FinishingTimeMinutes = result.finishingTime.minutes;
             resultInRepo.FinishingTimeSeconds = result.finishingTime.seconds;
-
-            resultInRepo.IsFastest = result.laps.isFastest;
-            resultInRepo.LapsLed = result.laps.totalLed;
-            resultInRepo.LapsBehind = result.laps.behind;
-            resultInRepo.LapsCompleted = result.laps.completed;
-
             resultInRepo.Position = result.carPosition.position;
-            resultInRepo.StartingPosition = result.carPosition.startingPosition;
+            resultInRepo.GridPosition = result.carPosition.startingPosition;
 
             _publicSportDataUnitOfWork.MotorsportRaceResults.Update(resultInRepo);
         }
@@ -447,24 +434,12 @@
             var newEntry = new MotorsportRaceResult
             {
                 Position = result.carPosition.position,
-                StartingPosition = result.carPosition.startingPosition,
-
+                GridPosition = result.carPosition.startingPosition,
                 DriverTotalPoints = int.Parse(result.points.driver.total),
-                DriverPenaltyPoints = int.Parse(result.points.driver.penalty),
-                DriverBonusPoints = int.Parse(result.points.driver.bonus),
-
-                OwnerTotalPoints = int.Parse(result.points.owner.total),
-                OwnerBonusPoints = int.Parse(result.points.owner.bonus),
-                OwnerPenaltyPoints = int.Parse(result.points.owner.penalty),
-
                 FinishingTimeHours = result.finishingTime.hours,
                 FinishingTimeMinutes = result.finishingTime.minutes,
                 FinishingTimeSeconds = result.finishingTime.seconds,
                 FinishingTimeMilliseconds = result.finishingTime.milliseconds,
-
-                IsFastest = result.laps.isFastest,
-                LapsLed = result.laps.totalLed,
-                LapsBehind = result.laps.behind,
                 LapsCompleted = result.laps.completed,
             };
 

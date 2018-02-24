@@ -11,18 +11,18 @@
         /// <summary> A clustered-key record identifier. </summary>
         public Guid MotorsportDriverId { get; set; }
 
-        public int LapsCompleted { get; set; }
-
-        public int LapsLed { get; set; }
-
-        public int LapsBehind { get; set; }
+        public string CircuitName { get; set; }
 
         public int Position { get; set; }
 
-        public int StartingPosition { get; set; }
+        public int LapsCompleted { get; set; }
 
-        public bool IsFastest { get; set; }
+        public bool CompletedRace { get; set; }
 
+        public string OutReason { get; set; }
+        
+        public int GridPosition { get; set; }
+        
         public int FinishingTimeHours { get; set; }
 
         public int FinishingTimeMinutes { get; set; }
@@ -33,17 +33,23 @@
 
         public int DriverTotalPoints { get; set; }
 
-        public int DriverBonusPoints { get; set; }
+        // TODO: Confirm if provider serves fastes lap info
+        //public int FastesLap { get; set; }
 
-        public int DriverPenaltyPoints { get; set; }
+        //public int FastestLapTimeHours { get; set; }
 
-        public int OwnerTotalPoints { get; set; }
+        //public int FastestLapTimeMinutes { get; set; }
 
-        public int OwnerBonusPoints { get; set; }
+        //public int FastestLapTimeSeconds { get; set; }
 
-        public int OwnerPenaltyPoints { get; set; }
+        //public int FastestLapTimeMilliseconds { get; set; }
 
-        public MotorsportDriver MotorsportDriver { get; set; }
+        // TODO: Confirm if provider serves this value
+        // Not a priority: Whishlist item from BRD
+        //public int PitStops { get; set; }
 
+        public virtual MotorsportDriver MotorsportDriver { get; set; }
+
+        public virtual MotorsportTeam MotorsportTeam { get; set; }
     }
 }
