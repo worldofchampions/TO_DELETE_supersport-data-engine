@@ -477,9 +477,8 @@
         private void UpdateLeagueInRepo(League leagueFromProvider, MotorsportLeague leagueInRepo)
         {
             leagueInRepo.ProviderSlug = leagueFromProvider.league.subLeague.abbreviation;
-            leagueInRepo.Abbreviation = leagueFromProvider.league.subLeague.abbreviation;
+
             leagueInRepo.Name = leagueFromProvider.league.subLeague.name;
-            leagueInRepo.DisplayName = leagueFromProvider.league.subLeague.displayName;
 
             _publicSportDataUnitOfWork.MotorsportLeagues.Update(leagueInRepo);
         }
@@ -490,9 +489,7 @@
             {
                 ProviderSlug = leagueFromProvider.league.uriPaths.FirstOrDefault()?.path,
                 Name = leagueFromProvider.league.subLeague.name,
-                DisplayName = leagueFromProvider.league.subLeague.displayName,
                 ProviderLeagueId = leagueFromProvider.league.subLeague.subLeagueId,
-                Abbreviation = leagueFromProvider.league.subLeague.abbreviation,
                 Slug = leagueFromProvider.league.uriPaths.FirstOrDefault()?.path,
                 DataProvider = DataProvider.Stats
             };

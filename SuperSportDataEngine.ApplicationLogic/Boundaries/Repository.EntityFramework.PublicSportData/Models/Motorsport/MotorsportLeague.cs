@@ -18,9 +18,6 @@
         /// <summary> A provider driven value. </summary>
         public string Name { get; set; }
 
-        /// <summary> A provider driven value. </summary>
-        public string ProviderSlug { get; set; }
-
         /// <summary> A CMS driven value. </summary>
         public string NameCmsOverride { get; set; }
 
@@ -28,13 +25,7 @@
         public string Slug { get; set; }
 
         /// <summary> A provider driven value. </summary>
-        public string Abbreviation { get; set; }
-
-        /// <summary> A provider driven value. </summary>
-        public string DisplayName { get; set; }
-
-        /// <summary> A CMS driven value. </summary>
-        public string DisplayNameCmsOverride { get; set; }
+        public string ProviderSlug { get; set; }
 
         /// <summary> A CMS driven value to indicate if a league is enabled for ingest. </summary>
         public bool IsEnabled { get; set; }
