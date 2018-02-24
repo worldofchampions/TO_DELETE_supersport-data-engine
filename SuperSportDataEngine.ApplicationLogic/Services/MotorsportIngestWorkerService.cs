@@ -597,18 +597,9 @@
                 return;
 
             repoStanding.Points = providerStanding.points;
-            repoStanding.Rank = providerStanding.rank;
+            repoStanding.Position = providerStanding.rank;
             repoStanding.Wins = providerStanding.finishes.first;
-            repoStanding.FinishedSecond = providerStanding.finishes.second;
-            repoStanding.FinishedThird = providerStanding.finishes.third;
-            repoStanding.Top5Finishes = providerStanding.finishes.top5;
-            repoStanding.Top10Finishes = providerStanding.finishes.top10;
-            repoStanding.Top15Finishes = providerStanding.finishes.top15;
-            repoStanding.Top20Finishes = providerStanding.finishes.top20;
-            repoStanding.DidNotFinish = providerStanding.finishes.didNotFinish;
-            repoStanding.LapsCompleted = providerStanding.laps.completed;
-            repoStanding.LapsTotalLed = providerStanding.laps.totalLed;
-
+            
             _publicSportDataUnitOfWork.MotorsportDriverStandings.Update(repoStanding);
         }
 
@@ -629,17 +620,9 @@
             {
                 MotorsportLeague = league,
                 Points = providerStanding.points,
-                Rank = providerStanding.rank,
+                Position = providerStanding.rank,
                 Wins = providerStanding.finishes.first,
-                FinishedSecond = providerStanding.finishes.second,
-                FinishedThird = providerStanding.finishes.third,
-                Top5Finishes = providerStanding.finishes.top5,
-                Top10Finishes = providerStanding.finishes.top10,
-                Top15Finishes = providerStanding.finishes.top15,
-                Top20Finishes = providerStanding.finishes.top20,
-                DidNotFinish = providerStanding.finishes.didNotFinish,
-                LapsCompleted = providerStanding.laps.completed,
-                LapsTotalLed = providerStanding.laps.totalLed,
+
                 MotorsportDriver = repoDriver
             };
 
