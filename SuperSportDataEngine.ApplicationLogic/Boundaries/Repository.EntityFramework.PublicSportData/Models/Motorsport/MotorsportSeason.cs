@@ -12,15 +12,14 @@
         /// <summary> The provider's record identifier. </summary>
         public int ProviderSeasonId { get; set; }
 
-        //TODO: Confirm if we need these and can get from provider.
-        ///// <summary> A provider driven value. </summary>
-        //public string Name { get; set; }
+        /// <summary> A provider driven value. </summary>
+        public string Name { get; set; }
 
-        ///// <summary> A provider driven value. </summary>
-        //public DateTimeOffset StartDateTime { get; set; }
+        /// <summary> A provider driven value. </summary>
+        public DateTimeOffset StartDateTime { get; set; }
 
-        ///// <summary> A provider driven value. </summary>
-        //public DateTimeOffset EndDateTime { get; set; }
+        /// <summary> A provider driven value. </summary>
+        public DateTimeOffset EndDateTime { get; set; }
 
         /// <summary> A provider driven value. </summary>
         public bool IsActive { get; set; }
