@@ -42,7 +42,7 @@
             {
                 var providerSeasonId = await _motorService.GetProviderSeasonIdForLeague(league.Id, cancellationToken);
 
-                var leagueDrivers = _statsProzoneMotorIngestService.IngestLeagueDrivers(league.ProviderSlug, providerSeasonId);
+                var leagueDrivers = _statsProzoneMotorIngestService.IngestDriversForLeague(league.ProviderSlug, providerSeasonId);
 
                 await PersistLeagueDriversInRepository(leagueDrivers);
             }
@@ -58,23 +58,8 @@
                 {
                     if (league.ProviderSlug is null) continue;
 
-                    var tournamentTeams = _statsProzoneMotorIngestService.IngestTournamentTeams(league.ProviderSlug);
+                    var tournamentTeams = _statsProzoneMotorIngestService.IngestTeamsForLeague(league.ProviderSlug);
                     await PersistTournamentTeamsInRepository(tournamentTeams);
-                }
-            }
-        }
-
-        public async Task IngestOwnersForActiveLeagues(CancellationToken cancellationToken)
-        {
-            var motorLeagues = _publicSportDataUnitOfWork.MotorsportLeagues.Where(league => league.IsEnabled);
-            if (motorLeagues != null)
-            {
-                foreach (var league in motorLeagues)
-                {
-                    if (league.ProviderSlug is null) continue;
-
-                    var owners = _statsProzoneMotorIngestService.IngestTournamentOwners(league.ProviderSlug);
-                    await PersistOwnersInRepository(owners);
                 }
             }
         }
@@ -88,7 +73,10 @@
                 {
                     if (league.ProviderSlug is null) continue;
 
-                    var driverStandings = _statsProzoneMotorIngestService.IngestDriverStandings(league.ProviderSlug);
+                    var providerSeason = await _motorService.GetProviderSeasonIdForLeague(league.Id, cancellationToken);
+
+                    var driverStandings = _statsProzoneMotorIngestService.IngestDriverStandings(league.ProviderSlug, providerSeason);
+
                     await PersistDriverStandingsInRepository(driverStandings, league, cancellationToken);
                 }
             }
@@ -97,13 +85,17 @@
         public async Task IngestTeamStandingsForActiveLeagues(CancellationToken cancellationToken)
         {
             var motorLeagues = _publicSportDataUnitOfWork.MotorsportLeagues.Where(league => league.IsEnabled);
+
             if (motorLeagues != null)
             {
                 foreach (var league in motorLeagues)
                 {
                     if (league.ProviderSlug is null) continue;
 
-                    var teamStandings = _statsProzoneMotorIngestService.IngestDriverStandings(league.ProviderSlug);
+                    var providerSeason = await _motorService.GetProviderSeasonIdForLeague(league.Id, cancellationToken);
+
+                    var teamStandings = _statsProzoneMotorIngestService.IngestDriverStandings(league.ProviderSlug, providerSeason);
+
                     await PersistTeamStandingsInRepository(teamStandings, cancellationToken);
                 }
             }
@@ -138,26 +130,15 @@
             {
                 for (var providerSeasonId = currentYear - 2; providerSeasonId <= currentYear; providerSeasonId++)
                 {
-                    var tournamentGrid = _statsProzoneMotorIngestService.IngestLeagueGrid(league.Slug, providerSeasonId);
+                    var motorsportRaces =
+                        await _motorService.GetLeagueRacesByProviderSeasonId(league.Id, providerSeasonId);
 
-                    await PersistGridInRepository(tournamentGrid, cancellationToken);
-                }
-            }
-        }
+                    foreach (var race in motorsportRaces)
+                    {
+                        var tournamentGrid = _statsProzoneMotorIngestService.IngestRaceGrid(league.Slug, providerSeasonId, race.ProviderRaceId);
 
-        public async Task IngestRaceGrid(MotorResultRequestParams requestParams, CancellationToken cancellationToken)
-        {
-            var currentYear = DateTime.Now.Year;
-
-            var activeLeagues = await _motorService.GetActiveLeagues();
-
-            foreach (var league in activeLeagues)
-            {
-                for (var providerSeasonId = currentYear - 2; providerSeasonId <= currentYear; providerSeasonId++)
-                {
-                    var tournamentGrid = _statsProzoneMotorIngestService.IngestLeagueGrid(league.Slug, providerSeasonId);
-
-                    await PersistGridInRepository(tournamentGrid, cancellationToken);
+                        await PersistGridInRepository(tournamentGrid, cancellationToken); 
+                    }
                 }
             }
         }
@@ -172,9 +153,15 @@
             {
                 for (var providerSeasonId = currentYear - 2; providerSeasonId <= currentYear; providerSeasonId++)
                 {
-                    var tournamentGrid = _statsProzoneMotorIngestService.IngestLeagueGrid(league.Slug, providerSeasonId);
+                    var motorsportRaces =
+                        await _motorService.GetLeagueRacesByProviderSeasonId(league.Id, providerSeasonId);
 
-                    await PersistGridInRepository(tournamentGrid, cancellationToken);
+                    foreach (var race in motorsportRaces)
+                    {
+                        var tournamentGrid = _statsProzoneMotorIngestService.IngestRaceGrid(league.Slug, providerSeasonId, race.ProviderRaceId);
+
+                        await PersistGridInRepository(tournamentGrid, cancellationToken);
+                    }
                 }
             }
         }

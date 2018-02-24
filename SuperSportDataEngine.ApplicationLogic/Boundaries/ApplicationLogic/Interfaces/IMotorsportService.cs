@@ -12,5 +12,6 @@
         Task<IEnumerable<MotorsportLeague>> GetActiveLeagues();
         Task<int> GetProviderSeasonIdForLeague(Guid leagueId, CancellationToken cancellationToken);
         Task<SchedulerStateForManagerJobPolling> GetSchedulerStateForManagerJobPolling(Guid leagueId);
+        Task<IEnumerable<MotorsportRace>> GetLeagueRacesByProviderSeasonId(Guid leagueId, int providerSeasonId);
     }
 }

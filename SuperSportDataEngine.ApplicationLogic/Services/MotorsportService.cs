@@ -40,5 +40,13 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         {
             return await  Task.FromResult(SchedulerStateForManagerJobPolling.NotRunning);
         }
+
+        public async Task<IEnumerable<MotorsportRace>> GetLeagueRacesByProviderSeasonId(Guid leagueId, int providerSeasonId)
+        {
+            //TODO 
+            var races = new List<MotorsportRace>();
+
+            return await Task.FromResult(races);
+        }
     }
 }

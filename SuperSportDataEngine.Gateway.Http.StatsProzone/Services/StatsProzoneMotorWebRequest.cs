@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Net;
-using System.Security.Cryptography;
-using System.Text;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RequestModels;
-
-namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
+﻿namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.Net;
+    using System.Security.Cryptography;
+    using System.Text;
+
     public class StatsProzoneMotorWebRequest : IProviderWebRequest
     {
         private readonly string _statsApiSharedSecret;// = "JDgQnhPVZQ";
@@ -40,7 +39,10 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
         public WebRequest GetRequestForTeams(string providerSlug)
         {
-            var teamsUrl = $"/v1/stats/motor/{providerSlug}/teams/";
+            // Using the owners endpoint here is deliberate. 
+            // The teams endpoint does not work!
+            // Contact provider before changing this approach.
+            var teamsUrl = $"/v1/stats/motor/{providerSlug}/owners/";
 
             var requestSignature = GetRequestSignature();
 
@@ -55,13 +57,13 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             return requestForTeam;
         }
 
-        public WebRequest GetRequestForStandings(string standingsTypeId, string providerSlug)
+        public WebRequest GetRequestForStandings(string standingsTypeId, string providerSlug, int providerSeasonId)
         {
             var standingsUrl = $"/v1/stats/motor/{providerSlug}/standings/";
 
             var requestSignature = GetRequestSignature();
 
-            var queryString = $"?standingsTypeId={standingsTypeId}&languageId=1&api_key={_statsApiKey}&sig={requestSignature}";
+            var queryString = $"?season={providerSeasonId}standingsTypeId={standingsTypeId}&languageId=1&api_key={_statsApiKey}&sig={requestSignature}";
 
             var requestUriString = _statsApiBaseUrl + standingsUrl + queryString;
 

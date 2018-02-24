@@ -8,12 +8,10 @@
     {
         Task IngestDriversForActiveLeagues(CancellationToken cancellationToken);
         Task IngestTeamsForActiveLeagues(CancellationToken cancellationToken);
-        Task IngestOwnersForActiveLeagues(CancellationToken cancellationToken);
         Task IngestDriverStandingsForActiveLeagues(CancellationToken cancellationToken);
         Task IngestTeamStandingsForActiveLeagues(CancellationToken cancellationToken);
         Task IngestRacesForActiveLeagues(CancellationToken cancellationToken);
         Task IngestRaceResults(CancellationToken cancellationToken);
-        Task IngestRaceGrid(MotorResultRequestParams requestParams, CancellationToken cancellationToken);
         Task IngestLeagues(CancellationToken cancellationToken);
         Task IngestRaceGridsForPastSeasons(CancellationToken cancellationToken);
     }
