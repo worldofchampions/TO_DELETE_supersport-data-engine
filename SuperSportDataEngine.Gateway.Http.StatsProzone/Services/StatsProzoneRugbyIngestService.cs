@@ -565,6 +565,7 @@
 
         private void CheckIfRequestTakingTooLong(WebRequest request, dynamic o)
         {
+            _logger.Info("MadeProviderRequest." + request.RequestUri, "Made provider request to: " + request.RequestUri.ToString());
             TimeSpan timeDifference = (o.ResponseTime - o.RequestTime);
             var milliseconds = timeDifference.TotalMilliseconds;
 
