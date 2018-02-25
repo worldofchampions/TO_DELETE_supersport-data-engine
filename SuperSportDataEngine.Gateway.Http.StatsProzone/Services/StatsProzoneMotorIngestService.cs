@@ -100,23 +100,32 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
         public MotorEntitiesResponse IngestLeagueCalendar(string providerSlug, int providerSeasonId)
         {
-            var requestForSchedule = _statsMotorsportWebRequest.GetRequestForSchedule(providerSlug, providerSeasonId);
-
-            MotorEntitiesResponse tournamentSchedule;
-
-            using (var webResponse = requestForSchedule.GetResponse())
+            try
             {
-                using (var responseStream = webResponse.GetResponseStream())
+                var requestForSchedule = _statsMotorsportWebRequest.GetRequestForSchedule(providerSlug, providerSeasonId);
+
+                MotorEntitiesResponse tournamentSchedule;
+
+                using (var webResponse = requestForSchedule.GetResponse())
                 {
-                    if (responseStream is null) return null;
+                    using (var responseStream = webResponse.GetResponseStream())
+                    {
+                        if (responseStream is null) return null;
 
-                    var streamReader = new StreamReader(responseStream, Encoding.UTF8);
+                        var streamReader = new StreamReader(responseStream, Encoding.UTF8);
 
-                    tournamentSchedule = JsonConvert.DeserializeObject<MotorEntitiesResponse>(streamReader.ReadToEnd());
+                        tournamentSchedule = JsonConvert.DeserializeObject<MotorEntitiesResponse>(streamReader.ReadToEnd());
+                    }
                 }
-            }
 
-            return tournamentSchedule;
+                return tournamentSchedule;
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+
+                return null;
+            }
         }
 
         public MotorEntitiesResponse IngestRaceResults(string providerSlug, int providerSeasonId, int providerRaceId)

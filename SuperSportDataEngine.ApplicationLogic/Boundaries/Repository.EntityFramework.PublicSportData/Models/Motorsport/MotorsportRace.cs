@@ -55,19 +55,6 @@
         /// </summary> 
         public bool CmsOverrideModeIsActive { get; set; }
 
-        public DateTimeOffset? StartDateTimeUtc { get; set; }
-
-        //TODO: Figure out how to calculate this. Confirm if provider does not serve it.
-        public DateTimeOffset? EndDateTimeUtc { get; set; }
-
-        public string CountryName { get; set; }
-
-        public string CountryAbbreviation { get; set; }
-
-        public string CityName { get; set; }
-
-        public string VenueName { get; set; }
-
         public virtual MotorsportLeague MotorsportLeague { get; set; }
 
         public virtual MotorsportRaceResult MotorsportRaceResult { get; set; }

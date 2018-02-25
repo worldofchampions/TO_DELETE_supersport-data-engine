@@ -6,13 +6,13 @@
     public class MotorsportTeamStanding: BaseModel
     {
         /// <summary> A clustered-key record identifier. </summary>
-        public Guid MotorLeagueId { get; set; }
+        public Guid MotorsportLeagueId { get; set; }
 
         /// <summary> A clustered-key record identifier. </summary>
-        public Guid MotorSeasonId { get; set; }
+        public Guid MotorsportSeasonId { get; set; }
 
         /// <summary> A clustered-key record identifier. </summary>
-        public Guid MotorTeamId { get; set; }
+        public Guid MotorsportTeamId { get; set; }
 
         public int Points { get; set; }
 

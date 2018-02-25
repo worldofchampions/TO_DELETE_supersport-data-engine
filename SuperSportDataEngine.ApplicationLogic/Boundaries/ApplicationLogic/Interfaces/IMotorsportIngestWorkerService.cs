@@ -12,6 +12,7 @@
         Task IngestDriverStandingsForActiveLeagues(CancellationToken cancellationToken);
         Task IngestTeamStandingsForActiveLeagues(CancellationToken cancellationToken);
         Task IngestRacesForActiveLeagues(CancellationToken cancellationToken);
+        Task IngestHistoricRaces(CancellationToken cancellationToken);
         Task IngestRaceGridsForPastSeasons(CancellationToken cancellationToken);
         Task IngestRaceResults(CancellationToken cancellationToken);
     }

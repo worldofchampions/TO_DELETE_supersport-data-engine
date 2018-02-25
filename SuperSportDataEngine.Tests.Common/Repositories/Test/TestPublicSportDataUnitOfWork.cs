@@ -33,7 +33,7 @@ namespace SuperSportDataEngine.Tests.Common.Repositories.Test
         public IBaseEntityFrameworkRepository<MotorsportTeamStanding> MotorsportTeamStandings { get; set; }
         public IBaseEntityFrameworkRepository<MotorsportTeam> MotortsportTeams { get; set; }
         public IBaseEntityFrameworkRepository<MotorsportRaceResult> MotorTeamResults { get; set; }
-        public IBaseEntityFrameworkRepository<MotorsportGrid> MotorsportGrids { get; set; }
+        public IBaseEntityFrameworkRepository<MotorsportRaceGrid> MotorsportRaceGrids { get; set; }
 
         public TestPublicSportDataUnitOfWork()
         {

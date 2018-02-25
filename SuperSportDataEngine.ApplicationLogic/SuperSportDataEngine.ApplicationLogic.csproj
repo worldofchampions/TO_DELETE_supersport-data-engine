@@ -120,9 +120,10 @@
     <Compile Include="Boundaries\Repository.EntityFramework.Common\Models\Enums\MotorsportRaceStatus.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.Common\Models\Enums\MotorsportSportType.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Enums\RugbyLogType.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Motorsport\MotorsportRaceCalendar.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Motorsport\MotorsportDriver.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Motorsport\MotorsportDriverStanding.cs" />
-    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Motorsport\MotorsportGrid.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Motorsport\MotorsportRaceGrid.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Motorsport\MotorsportLeague.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Motorsport\MotorsportRace.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\Motorsport\MotorsportRaceResult.cs" />

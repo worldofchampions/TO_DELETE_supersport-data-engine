@@ -27,7 +27,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFram
 
         IBaseEntityFrameworkRepository<MotorsportDriver> MotorsportDrivers { get; }
         IBaseEntityFrameworkRepository<MotorsportDriverStanding> MotorsportDriverStandings { get; }
-        IBaseEntityFrameworkRepository<MotorsportGrid> MotorsportGrids { get; }
+        IBaseEntityFrameworkRepository<MotorsportRaceGrid> MotorsportRaceGrids { get; }
         IBaseEntityFrameworkRepository<MotorsportLeague> MotorsportLeagues { get; }
         IBaseEntityFrameworkRepository<MotorsportRace> MotorsportRaces { get; }
         IBaseEntityFrameworkRepository<MotorsportRaceResult> MotorsportRaceResults { get; }

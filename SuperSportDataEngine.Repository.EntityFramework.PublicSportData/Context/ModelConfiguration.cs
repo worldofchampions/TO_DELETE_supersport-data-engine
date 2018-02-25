@@ -83,9 +83,9 @@
             modelBuilder.Entity<MotorsportDriver>().Property(x => x.LegacyDriverId).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
             modelBuilder.Entity<MotorsportDriver>().Property(x => x.ProviderDriverId).HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Seek_ProviderDriverId")));
 
-            modelBuilder.Entity<MotorsportDriverStanding>().HasKey(x => new { x.MotorLeagueId, x.MotorSeasonId, x.MotorTeamId, x.MotorDriverId });
+            modelBuilder.Entity<MotorsportDriverStanding>().HasKey(x => new { x.MotorsportLeagueId, x.MotorsportSeasonId, x.MotorsportTeamId, x.MotorsportDriverId });
 
-            modelBuilder.Entity<MotorsportGrid>().HasKey(x => new { x.RaceId, x.DriverId });
+            modelBuilder.Entity<MotorsportRaceGrid>().HasKey(x => new { x.MotorsportRaceId, x.MotorsportDriverId });
 
             modelBuilder.Entity<MotorsportLeague>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
             modelBuilder.Entity<MotorsportLeague>().Property(x => x.LegacyLeagueId).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
@@ -101,6 +101,8 @@
             modelBuilder.Entity<MotorsportRace>().Property(x => x.ProviderRaceId).IsRequired();
             modelBuilder.Entity<MotorsportRace>().Property(x => x.RaceName).IsRequired();
 
+            modelBuilder.Entity<MotorsportRaceCalendar>().HasKey(x => new { x.MotorsportRaceId, x.MotorsportSeasonId });
+
             modelBuilder.Entity<MotorsportRaceResult>().HasKey(x => new { x.MotorsportRaceId, x.MotorsportDriverId });
 
             modelBuilder.Entity<MotorsportSeason>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
@@ -109,7 +111,7 @@
             modelBuilder.Entity<MotorsportTeam>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
             modelBuilder.Entity<MotorsportTeam>().Property(x => x.ProviderTeamId).HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Seek_ProviderTeamId")));
 
-            modelBuilder.Entity<MotorsportTeamStanding>().HasKey(x => new { x.MotorLeagueId, x.MotorSeasonId, x.MotorTeamId });
+            modelBuilder.Entity<MotorsportTeamStanding>().HasKey(x => new { x.MotorsportLeagueId, x.MotorsportSeasonId, x.MotorsportTeamId });
         }
     }
 }

@@ -132,6 +132,30 @@
             }
         }
 
+        public async Task IngestHistoricRaces(CancellationToken cancellationToken)
+        {
+            var motorLeagues = await _motorService.GetActiveLeagues();
+
+            if (motorLeagues != null)
+            {
+                var currentSeason = DateTime.Now.Year;
+
+                var pastSeason = currentSeason - 2;
+
+                foreach (var league in motorLeagues)
+                {
+                    if (league.ProviderSlug is null) continue;
+
+                    for (var providerSeasonId = pastSeason; providerSeasonId <= currentSeason; providerSeasonId++)
+                    {
+                        var races = _statsProzoneMotorIngestService.IngestLeagueCalendar(league.ProviderSlug, providerSeasonId);
+
+                        await PersistRacesInRepository(races, league, cancellationToken); 
+                    }
+                }
+            }
+        }
+
         public async Task IngestRaceResults(CancellationToken cancellationToken)
         {
             var currentYear = DateTime.Now.Year;
@@ -404,7 +428,7 @@
                 if (playerId is null) continue;
 
                 var gridInRepo =
-                    _publicSportDataUnitOfWork.MotorsportGrids.FirstOrDefault(r => r.MotorsportDriver.ProviderDriverId == playerId);
+                    _publicSportDataUnitOfWork.MotorsportRaceGrids.FirstOrDefault(r => r.MotorsportDriver.ProviderDriverId == playerId);
 
                 if (gridInRepo is null)
                 {
@@ -419,17 +443,17 @@
             await _publicSportDataUnitOfWork.SaveChangesAsync();
         }
 
-        private void UpdateGridEntryInRepo(MotorsportGrid gridInRepo, Result providerGridEntry)
+        private void UpdateGridEntryInRepo(MotorsportRaceGrid raceGridInRepo, Result providerGridEntry)
         {
             var qualifyingRun = providerGridEntry?.qualifying?.qualifyingRuns?.FirstOrDefault();
             if (qualifyingRun is null) return;
 
-            gridInRepo.Position = providerGridEntry.carPosition.startingPosition;
-            gridInRepo.QualifyingTimeMinutes = qualifyingRun.time.minutes;
-            gridInRepo.QualifyingTimeSeconds = qualifyingRun.time.seconds;
-            gridInRepo.QualifyingTimeMilliseconds = qualifyingRun.time.milliseconds;
+            raceGridInRepo.Position = providerGridEntry.carPosition.startingPosition;
+            raceGridInRepo.QualifyingTimeMinutes = qualifyingRun.time.minutes;
+            raceGridInRepo.QualifyingTimeSeconds = qualifyingRun.time.seconds;
+            raceGridInRepo.QualifyingTimeMilliseconds = qualifyingRun.time.milliseconds;
 
-            _publicSportDataUnitOfWork.MotorsportGrids.Update(gridInRepo);
+            _publicSportDataUnitOfWork.MotorsportRaceGrids.Update(raceGridInRepo);
         }
 
         private void AddNewGridEntryToRepo(Result providerGridEntry)
@@ -440,17 +464,17 @@
             var driverInRepo = _publicSportDataUnitOfWork.MotorsportDrivers.FirstOrDefault(d => d.ProviderDriverId == providerGridEntry.player.playerId);
             if (driverInRepo is null) return;
 
-            var newGridEntry = new MotorsportGrid
+            var newGridEntry = new MotorsportRaceGrid
             {
                 MotorsportDriver = driverInRepo,
-                DriverId = driverInRepo.Id,
+                MotorsportDriverId = driverInRepo.Id,
                 Position = providerGridEntry.carPosition.startingPosition,
                 QualifyingTimeMinutes = qualifyingRun.time.minutes,
                 QualifyingTimeSeconds = qualifyingRun.time.seconds,
                 QualifyingTimeMilliseconds = qualifyingRun.time.milliseconds
             };
 
-            _publicSportDataUnitOfWork.MotorsportGrids.Add(newGridEntry);
+            _publicSportDataUnitOfWork.MotorsportRaceGrids.Add(newGridEntry);
         }
 
         private void UpdateResultsInRepo(MotorsportRaceResult resultInRepo, Result result)
@@ -539,14 +563,8 @@
 
         private void UpdateRaceEventInRepo(Event providerRaceEvent, MotorsportRace raceInRepo)
         {
-            var startDate = providerRaceEvent.startDate.FirstOrDefault(d => d.dateType.ToLowerInvariant().Equals("utc"));
-            raceInRepo.StartDateTimeUtc = DateTimeOffset.Parse(startDate?.full.ToString(CultureInfo.InvariantCulture));
             raceInRepo.RaceName = providerRaceEvent.race.name;
             raceInRepo.RaceNameAbbreviation = providerRaceEvent.race.name;
-            raceInRepo.CountryName = providerRaceEvent.venue.country.name;
-            raceInRepo.CountryAbbreviation = providerRaceEvent.venue.country.abbreviation;
-            raceInRepo.CityName = providerRaceEvent.venue.city;
-            raceInRepo.VenueName = providerRaceEvent.venue.name;
             raceInRepo.DataProvider = DataProvider.Stats;
 
             _publicSportDataUnitOfWork.MotorsportRaces.Update(raceInRepo);
@@ -554,18 +572,12 @@
 
         private void AddNewRaceEventToRepo(Event providerRaceEvent, MotorsportLeague motorsportLeague)
         {
-            var startDate = providerRaceEvent.startDate.FirstOrDefault(d => d.dateType.ToLowerInvariant().Equals("utc"));
             var newRace = new MotorsportRace
             {
                 ProviderRaceId = providerRaceEvent.race.raceId,
                 RaceName = providerRaceEvent.race.name,
                 RaceNameAbbreviation = providerRaceEvent.race.name,
                 MotorsportLeague = motorsportLeague,
-                CountryName = providerRaceEvent.venue.country.name,
-                CountryAbbreviation = providerRaceEvent.venue.country.abbreviation,
-                CityName = providerRaceEvent.venue.city,
-                VenueName = providerRaceEvent.venue.name,
-                StartDateTimeUtc = DateTimeOffset.Parse(startDate?.full.ToString(CultureInfo.InvariantCulture)),
 
                 DataProvider = DataProvider.Stats
             };

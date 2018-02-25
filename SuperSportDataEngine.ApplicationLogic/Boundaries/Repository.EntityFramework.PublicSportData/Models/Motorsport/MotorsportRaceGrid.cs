@@ -3,16 +3,16 @@
     using System;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Base;
 
-    public class MotorsportGrid: BaseModel
+    public class MotorsportRaceGrid: BaseModel
     {
         /// <summary> A clustered-key record identifier. </summary>
-        public Guid RaceId { get; set; }
+        public Guid MotorsportRaceId { get; set; }
 
         /// <summary> A clustered-key record identifier. </summary>
-        public Guid DriverId { get; set; }
+        public Guid MotorsportDriverId { get; set; }
 
         /// <summary> A clustered-key record identifier. </summary>
-        public Guid TeamId { get; set; }
+        public Guid MotorsportTeamId { get; set; }
 
         public int Position { get; set; }
 
