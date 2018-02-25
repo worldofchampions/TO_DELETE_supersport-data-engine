@@ -34,29 +34,25 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                 "dbo.MotorsportDriverStandings",
                 c => new
                     {
-                        MotorLeagueId = c.Guid(nullable: false),
-                        MotorSeasonId = c.Guid(nullable: false),
-                        MotorTeamId = c.Guid(nullable: false),
-                        MotorDriverId = c.Guid(nullable: false),
+                        MotorsportLeagueId = c.Guid(nullable: false),
+                        MotorsportSeasonId = c.Guid(nullable: false),
+                        MotorsportTeamId = c.Guid(nullable: false),
+                        MotorsportDriverId = c.Guid(nullable: false),
                         Points = c.Int(nullable: false),
                         Position = c.Int(nullable: false),
                         Wins = c.Int(nullable: false),
                         TimestampCreated = c.DateTimeOffset(nullable: false, precision: 7),
                         TimestampUpdated = c.DateTimeOffset(nullable: false, precision: 7),
-                        MotorsportDriver_Id = c.Guid(),
-                        MotorsportLeague_Id = c.Guid(),
-                        MotorsportTeam_Id = c.Guid(),
-                        RugbySeason_Id = c.Guid(),
                     })
-                .PrimaryKey(t => new { t.MotorLeagueId, t.MotorSeasonId, t.MotorTeamId, t.MotorDriverId })
-                .ForeignKey("dbo.MotorsportDrivers", t => t.MotorsportDriver_Id)
-                .ForeignKey("dbo.MotorsportLeagues", t => t.MotorsportLeague_Id)
-                .ForeignKey("dbo.MotorsportTeams", t => t.MotorsportTeam_Id)
-                .ForeignKey("dbo.MotorsportSeasons", t => t.RugbySeason_Id)
-                .Index(t => t.MotorsportDriver_Id)
-                .Index(t => t.MotorsportLeague_Id)
-                .Index(t => t.MotorsportTeam_Id)
-                .Index(t => t.RugbySeason_Id);
+                .PrimaryKey(t => new { t.MotorsportLeagueId, t.MotorsportSeasonId, t.MotorsportTeamId, t.MotorsportDriverId })
+                .ForeignKey("dbo.MotorsportDrivers", t => t.MotorsportDriverId, cascadeDelete: true)
+                .ForeignKey("dbo.MotorsportLeagues", t => t.MotorsportLeagueId, cascadeDelete: true)
+                .ForeignKey("dbo.MotorsportTeams", t => t.MotorsportTeamId, cascadeDelete: true)
+                .ForeignKey("dbo.MotorsportSeasons", t => t.MotorsportSeasonId, cascadeDelete: true)
+                .Index(t => t.MotorsportLeagueId)
+                .Index(t => t.MotorsportSeasonId)
+                .Index(t => t.MotorsportTeamId)
+                .Index(t => t.MotorsportDriverId);
             
             CreateTable(
                 "dbo.MotorsportLeagues",
@@ -115,12 +111,12 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                 .Index(t => t.MotorsportLeague_Id);
             
             CreateTable(
-                "dbo.MotorsportGrids",
+                "dbo.MotorsportRaceGrids",
                 c => new
                     {
-                        RaceId = c.Guid(nullable: false),
-                        DriverId = c.Guid(nullable: false),
-                        TeamId = c.Guid(nullable: false),
+                        MotorsportRaceId = c.Guid(nullable: false),
+                        MotorsportDriverId = c.Guid(nullable: false),
+                        MotorsportTeamId = c.Guid(nullable: false),
                         Position = c.Int(nullable: false),
                         QualifyingTimeHours = c.Int(nullable: false),
                         QualifyingTimeMinutes = c.Int(nullable: false),
@@ -128,17 +124,14 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                         QualifyingTimeMilliseconds = c.Int(nullable: false),
                         TimestampCreated = c.DateTimeOffset(nullable: false, precision: 7),
                         TimestampUpdated = c.DateTimeOffset(nullable: false, precision: 7),
-                        MotorsportDriver_Id = c.Guid(),
-                        MotorsportRace_Id = c.Guid(),
-                        MotorsportTeam_Id = c.Guid(),
                     })
-                .PrimaryKey(t => new { t.RaceId, t.DriverId })
-                .ForeignKey("dbo.MotorsportDrivers", t => t.MotorsportDriver_Id)
-                .ForeignKey("dbo.MotorsportRaces", t => t.MotorsportRace_Id)
-                .ForeignKey("dbo.MotorsportTeams", t => t.MotorsportTeam_Id)
-                .Index(t => t.MotorsportDriver_Id)
-                .Index(t => t.MotorsportRace_Id)
-                .Index(t => t.MotorsportTeam_Id);
+                .PrimaryKey(t => new { t.MotorsportRaceId, t.MotorsportDriverId })
+                .ForeignKey("dbo.MotorsportDrivers", t => t.MotorsportDriverId, cascadeDelete: true)
+                .ForeignKey("dbo.MotorsportRaces", t => t.MotorsportRaceId, cascadeDelete: true)
+                .ForeignKey("dbo.MotorsportTeams", t => t.MotorsportTeamId, cascadeDelete: true)
+                .Index(t => t.MotorsportRaceId)
+                .Index(t => t.MotorsportDriverId)
+                .Index(t => t.MotorsportTeamId);
             
             CreateTable(
                 "dbo.MotorsportRaces",
@@ -156,12 +149,6 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                         IsDisabledInbound = c.Boolean(nullable: false),
                         IsLiveScored = c.Boolean(nullable: false),
                         CmsOverrideModeIsActive = c.Boolean(nullable: false),
-                        StartDateTimeUtc = c.DateTimeOffset(precision: 7),
-                        EndDateTimeUtc = c.DateTimeOffset(precision: 7),
-                        CountryName = c.String(),
-                        CountryAbbreviation = c.String(),
-                        CityName = c.String(),
-                        VenueName = c.String(),
                         DataProvider = c.Int(nullable: false),
                         TimestampCreated = c.DateTimeOffset(nullable: false, precision: 7),
                         TimestampUpdated = c.DateTimeOffset(nullable: false, precision: 7),
@@ -203,70 +190,93 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                 .Index(t => t.MotorsportTeam_Id);
             
             CreateTable(
+                "dbo.MotorsportRaceCalendars",
+                c => new
+                    {
+                        MotorsportRaceId = c.Guid(nullable: false),
+                        MotorsportSeasonId = c.Guid(nullable: false),
+                        StartDateTimeUtc = c.DateTimeOffset(precision: 7),
+                        EndDateTimeUtc = c.DateTimeOffset(precision: 7),
+                        CountryName = c.String(),
+                        CountryAbbreviation = c.String(),
+                        CityName = c.String(),
+                        VenueName = c.String(),
+                        TimestampCreated = c.DateTimeOffset(nullable: false, precision: 7),
+                        TimestampUpdated = c.DateTimeOffset(nullable: false, precision: 7),
+                    })
+                .PrimaryKey(t => new { t.MotorsportRaceId, t.MotorsportSeasonId })
+                .ForeignKey("dbo.MotorsportRaces", t => t.MotorsportRaceId, cascadeDelete: true)
+                .ForeignKey("dbo.MotorsportSeasons", t => t.MotorsportSeasonId, cascadeDelete: true)
+                .Index(t => t.MotorsportRaceId)
+                .Index(t => t.MotorsportSeasonId);
+            
+            CreateTable(
                 "dbo.MotorsportTeamStandings",
                 c => new
                     {
-                        MotorLeagueId = c.Guid(nullable: false),
-                        MotorSeasonId = c.Guid(nullable: false),
-                        MotorTeamId = c.Guid(nullable: false),
+                        MotorsportLeagueId = c.Guid(nullable: false),
+                        MotorsportSeasonId = c.Guid(nullable: false),
+                        MotorsportTeamId = c.Guid(nullable: false),
                         Points = c.Int(nullable: false),
                         Position = c.Int(nullable: false),
                         TimestampCreated = c.DateTimeOffset(nullable: false, precision: 7),
                         TimestampUpdated = c.DateTimeOffset(nullable: false, precision: 7),
-                        MotorsportLeague_Id = c.Guid(),
-                        MotorsportSeason_Id = c.Guid(),
-                        MotorsportTeam_Id = c.Guid(),
                     })
-                .PrimaryKey(t => new { t.MotorLeagueId, t.MotorSeasonId, t.MotorTeamId })
-                .ForeignKey("dbo.MotorsportLeagues", t => t.MotorsportLeague_Id)
-                .ForeignKey("dbo.MotorsportSeasons", t => t.MotorsportSeason_Id)
-                .ForeignKey("dbo.MotorsportTeams", t => t.MotorsportTeam_Id)
-                .Index(t => t.MotorsportLeague_Id)
-                .Index(t => t.MotorsportSeason_Id)
-                .Index(t => t.MotorsportTeam_Id);
+                .PrimaryKey(t => new { t.MotorsportLeagueId, t.MotorsportSeasonId, t.MotorsportTeamId })
+                .ForeignKey("dbo.MotorsportLeagues", t => t.MotorsportLeagueId, cascadeDelete: true)
+                .ForeignKey("dbo.MotorsportSeasons", t => t.MotorsportSeasonId, cascadeDelete: true)
+                .ForeignKey("dbo.MotorsportTeams", t => t.MotorsportTeamId, cascadeDelete: true)
+                .Index(t => t.MotorsportLeagueId)
+                .Index(t => t.MotorsportSeasonId)
+                .Index(t => t.MotorsportTeamId);
             
         }
         
         public override void Down()
         {
-            DropForeignKey("dbo.MotorsportTeamStandings", "MotorsportTeam_Id", "dbo.MotorsportTeams");
-            DropForeignKey("dbo.MotorsportTeamStandings", "MotorsportSeason_Id", "dbo.MotorsportSeasons");
-            DropForeignKey("dbo.MotorsportTeamStandings", "MotorsportLeague_Id", "dbo.MotorsportLeagues");
-            DropForeignKey("dbo.MotorsportGrids", "MotorsportTeam_Id", "dbo.MotorsportTeams");
-            DropForeignKey("dbo.MotorsportGrids", "MotorsportRace_Id", "dbo.MotorsportRaces");
+            DropForeignKey("dbo.MotorsportTeamStandings", "MotorsportTeamId", "dbo.MotorsportTeams");
+            DropForeignKey("dbo.MotorsportTeamStandings", "MotorsportSeasonId", "dbo.MotorsportSeasons");
+            DropForeignKey("dbo.MotorsportTeamStandings", "MotorsportLeagueId", "dbo.MotorsportLeagues");
+            DropForeignKey("dbo.MotorsportRaceCalendars", "MotorsportSeasonId", "dbo.MotorsportSeasons");
+            DropForeignKey("dbo.MotorsportRaceCalendars", "MotorsportRaceId", "dbo.MotorsportRaces");
+            DropForeignKey("dbo.MotorsportRaceGrids", "MotorsportTeamId", "dbo.MotorsportTeams");
+            DropForeignKey("dbo.MotorsportRaceGrids", "MotorsportRaceId", "dbo.MotorsportRaces");
             DropForeignKey("dbo.MotorsportRaces", new[] { "MotorsportRaceResult_MotorsportRaceId", "MotorsportRaceResult_MotorsportDriverId" }, "dbo.MotorsportRaceResults");
             DropForeignKey("dbo.MotorsportRaceResults", "MotorsportTeam_Id", "dbo.MotorsportTeams");
             DropForeignKey("dbo.MotorsportRaceResults", "MotorsportDriverId", "dbo.MotorsportDrivers");
             DropForeignKey("dbo.MotorsportRaces", "MotorsportLeague_Id", "dbo.MotorsportLeagues");
-            DropForeignKey("dbo.MotorsportGrids", "MotorsportDriver_Id", "dbo.MotorsportDrivers");
-            DropForeignKey("dbo.MotorsportDriverStandings", "RugbySeason_Id", "dbo.MotorsportSeasons");
+            DropForeignKey("dbo.MotorsportRaceGrids", "MotorsportDriverId", "dbo.MotorsportDrivers");
+            DropForeignKey("dbo.MotorsportDriverStandings", "MotorsportSeasonId", "dbo.MotorsportSeasons");
             DropForeignKey("dbo.MotorsportSeasons", "MotorsportLeague_Id", "dbo.MotorsportLeagues");
-            DropForeignKey("dbo.MotorsportDriverStandings", "MotorsportTeam_Id", "dbo.MotorsportTeams");
-            DropForeignKey("dbo.MotorsportDriverStandings", "MotorsportLeague_Id", "dbo.MotorsportLeagues");
-            DropForeignKey("dbo.MotorsportDriverStandings", "MotorsportDriver_Id", "dbo.MotorsportDrivers");
-            DropIndex("dbo.MotorsportTeamStandings", new[] { "MotorsportTeam_Id" });
-            DropIndex("dbo.MotorsportTeamStandings", new[] { "MotorsportSeason_Id" });
-            DropIndex("dbo.MotorsportTeamStandings", new[] { "MotorsportLeague_Id" });
+            DropForeignKey("dbo.MotorsportDriverStandings", "MotorsportTeamId", "dbo.MotorsportTeams");
+            DropForeignKey("dbo.MotorsportDriverStandings", "MotorsportLeagueId", "dbo.MotorsportLeagues");
+            DropForeignKey("dbo.MotorsportDriverStandings", "MotorsportDriverId", "dbo.MotorsportDrivers");
+            DropIndex("dbo.MotorsportTeamStandings", new[] { "MotorsportTeamId" });
+            DropIndex("dbo.MotorsportTeamStandings", new[] { "MotorsportSeasonId" });
+            DropIndex("dbo.MotorsportTeamStandings", new[] { "MotorsportLeagueId" });
+            DropIndex("dbo.MotorsportRaceCalendars", new[] { "MotorsportSeasonId" });
+            DropIndex("dbo.MotorsportRaceCalendars", new[] { "MotorsportRaceId" });
             DropIndex("dbo.MotorsportRaceResults", new[] { "MotorsportTeam_Id" });
             DropIndex("dbo.MotorsportRaceResults", new[] { "MotorsportDriverId" });
             DropIndex("dbo.MotorsportRaces", new[] { "MotorsportRaceResult_MotorsportRaceId", "MotorsportRaceResult_MotorsportDriverId" });
             DropIndex("dbo.MotorsportRaces", new[] { "MotorsportLeague_Id" });
-            DropIndex("dbo.MotorsportGrids", new[] { "MotorsportTeam_Id" });
-            DropIndex("dbo.MotorsportGrids", new[] { "MotorsportRace_Id" });
-            DropIndex("dbo.MotorsportGrids", new[] { "MotorsportDriver_Id" });
+            DropIndex("dbo.MotorsportRaceGrids", new[] { "MotorsportTeamId" });
+            DropIndex("dbo.MotorsportRaceGrids", new[] { "MotorsportDriverId" });
+            DropIndex("dbo.MotorsportRaceGrids", new[] { "MotorsportRaceId" });
             DropIndex("dbo.MotorsportSeasons", new[] { "MotorsportLeague_Id" });
             DropIndex("dbo.MotorsportSeasons", "Seek_ProviderSeasonId");
             DropIndex("dbo.MotorsportTeams", "Seek_ProviderTeamId");
             DropIndex("dbo.MotorsportLeagues", "Unique_Slug");
-            DropIndex("dbo.MotorsportDriverStandings", new[] { "RugbySeason_Id" });
-            DropIndex("dbo.MotorsportDriverStandings", new[] { "MotorsportTeam_Id" });
-            DropIndex("dbo.MotorsportDriverStandings", new[] { "MotorsportLeague_Id" });
-            DropIndex("dbo.MotorsportDriverStandings", new[] { "MotorsportDriver_Id" });
+            DropIndex("dbo.MotorsportDriverStandings", new[] { "MotorsportDriverId" });
+            DropIndex("dbo.MotorsportDriverStandings", new[] { "MotorsportTeamId" });
+            DropIndex("dbo.MotorsportDriverStandings", new[] { "MotorsportSeasonId" });
+            DropIndex("dbo.MotorsportDriverStandings", new[] { "MotorsportLeagueId" });
             DropIndex("dbo.MotorsportDrivers", "Seek_ProviderDriverId");
             DropTable("dbo.MotorsportTeamStandings");
+            DropTable("dbo.MotorsportRaceCalendars");
             DropTable("dbo.MotorsportRaceResults");
             DropTable("dbo.MotorsportRaces");
-            DropTable("dbo.MotorsportGrids");
+            DropTable("dbo.MotorsportRaceGrids");
             DropTable("dbo.MotorsportSeasons");
             DropTable("dbo.MotorsportTeams");
             DropTable("dbo.MotorsportLeagues");
