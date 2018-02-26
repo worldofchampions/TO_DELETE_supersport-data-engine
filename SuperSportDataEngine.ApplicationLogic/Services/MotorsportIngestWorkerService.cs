@@ -129,7 +129,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
                     var providerSeasonId = await _motorsportService.GetProviderSeasonIdForLeague(league.Id, cancellationToken);
 
-                    var races = _statsProzoneMotorIngestService.IngestLeagueCalendar(league.ProviderSlug, providerSeasonId);
+                    var races = _statsProzoneMotorIngestService.IngestLeagueRaces(league.ProviderSlug, providerSeasonId);
 
                     await PersistRacesInRepository(races, league, cancellationToken);
                 }
@@ -283,14 +283,14 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             foreach (var providerRace in racesFromProvider)
             {
-                var raceInRepo = _publicSportDataUnitOfWork.MotorsportRaces.FirstOrDefault(r => r.ProviderRaceId == providerRace.race.raceId);
+                var raceInRepo = _publicSportDataUnitOfWork.MotorsportRaces.FirstOrDefault(r => r.ProviderRaceId == providerRace.raceId);
                 if (raceInRepo is null)
                 {
-                    AddNewRaceEventToRepo(providerRace, league);
+                    AddNewRaceToRepo(providerRace, league);
                 }
                 else
                 {
-                    UpdateRaceEventInRepo(providerRace, raceInRepo);
+                    UpdateRaceInRepo(providerRace, raceInRepo);
                 }
             }
 
@@ -601,22 +601,22 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             _publicSportDataUnitOfWork.MotorsportDrivers.Add(driver);
         }
 
-        private void UpdateRaceEventInRepo(Event providerRaceEvent, MotorsportRace raceInRepo)
+        private void UpdateRaceInRepo(Race providerRaceEvent, MotorsportRace raceInRepo)
         {
-            raceInRepo.RaceName = providerRaceEvent.race.name;
-            raceInRepo.RaceNameAbbreviation = providerRaceEvent.race.name;
+            raceInRepo.RaceName = providerRaceEvent.name;
+            raceInRepo.RaceNameAbbreviation = providerRaceEvent.name;
             raceInRepo.DataProvider = DataProvider.Stats;
 
             _publicSportDataUnitOfWork.MotorsportRaces.Update(raceInRepo);
         }
 
-        private void AddNewRaceEventToRepo(Event providerRaceEvent, MotorsportLeague motorsportLeague)
+        private void AddNewRaceToRepo(Race providerRaceEvent, MotorsportLeague motorsportLeague)
         {
             var newRace = new MotorsportRace
             {
-                ProviderRaceId = providerRaceEvent.race.raceId,
-                RaceName = providerRaceEvent.race.name,
-                RaceNameAbbreviation = providerRaceEvent.race.name,
+                ProviderRaceId = providerRaceEvent.raceId,
+                RaceName = providerRaceEvent.name,
+                RaceNameAbbreviation = providerRaceEvent.name,
                 MotorsportLeague = motorsportLeague,
 
                 DataProvider = DataProvider.Stats
@@ -781,7 +781,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             return ExtractResultsFromProviderResponse(response);
         }
 
-        private static IEnumerable<Event> ExtractRacesFromProviderResponse(MotorsportEntitiesResponse response)
+        private static IEnumerable<Race> ExtractRacesFromProviderResponse(MotorsportEntitiesResponse response)
         {
             if (response != null && response.recordCount <= 0)
                 return null;
@@ -789,11 +789,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             var races = response
                 ?.apiResults.FirstOrDefault()
                 ?.league
-                .subLeague
-                .season
-                .eventType
-                .FirstOrDefault()
-                ?.events;
+                .races;
 
             return races;
         }

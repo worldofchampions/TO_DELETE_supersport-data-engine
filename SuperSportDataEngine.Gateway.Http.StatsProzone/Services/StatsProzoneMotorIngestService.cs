@@ -70,17 +70,17 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             }
             catch (WebException)
             {
-                // Provider must have returned error object hence failed to serealize it.
+                // Provider must have returned error object hence failed to serialize it.
                 // TODO rework handling of this
                 return null;
             }
         }
 
-        public MotorsportEntitiesResponse IngestTournamentRaces(string providerSlug)
+        public MotorsportEntitiesResponse IngestLeagueRaces(string providerSlug, int providerSeasonId)
         {
-            var statsWebRequest = _statsMotorsportWebRequest.GetRequestForRaces(providerSlug);
+            var statsWebRequest = _statsMotorsportWebRequest.GetRequestForRaces(providerSlug, providerSeasonId);
 
-            MotorsportEntitiesResponse tournamentRacesEntitiesResponse;
+            MotorsportEntitiesResponse racesEntitiesResponse;
 
             using (var statsWebResponse = statsWebRequest.GetResponse())
             {
@@ -90,12 +90,12 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
                     var streamReader = new StreamReader(responseStream, Encoding.UTF8);
 
-                    tournamentRacesEntitiesResponse =
+                    racesEntitiesResponse =
                         JsonConvert.DeserializeObject<MotorsportEntitiesResponse>(streamReader.ReadToEnd());
                 }
             }
 
-            return tournamentRacesEntitiesResponse;
+            return racesEntitiesResponse;
         }
 
         public MotorsportEntitiesResponse IngestLeagueCalendar(string providerSlug, int providerSeasonId)
