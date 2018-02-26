@@ -320,7 +320,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         private async Task IngestSeason(CancellationToken cancellationToken, RugbyTournament tournament, int year)
         {
             var season = await _statsProzoneIngestService.IngestSeasonData(cancellationToken, tournament.ProviderTournamentId, year);
-
             if (season == null)
             {
                 return;
@@ -385,10 +384,42 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                     }
                 }
 
+                CheckIfAllFixturesForCurrentRoundHasEnded(seasonEntry);
+
                 _rugbySeasonRepository.Update(seasonEntry);
             }
 
             await _rugbySeasonRepository.SaveAsync();
+        }
+
+        private async void CheckIfAllFixturesForCurrentRoundHasEnded(RugbySeason seasonEntry)
+        {
+            var roundNumber = seasonEntry.CurrentRoundNumber;
+            var fixturesForRoundResponse = 
+                    await _statsProzoneIngestService.IngestRoundFixturesForTournament(
+                        seasonEntry.RugbyTournament.ProviderTournamentId, 
+                        seasonEntry.ProviderSeasonId,
+                        roundNumber);
+
+            if (fixturesForRoundResponse == null)
+                return;
+
+            var roundFixtures = fixturesForRoundResponse.RoundFixtures.roundFixtures.FirstOrDefault();
+            if (roundFixtures == null)
+                return;
+
+            var doesRoundHaveUnendedFixtures =
+                    roundFixtures.gameFixtures
+                        .Any(f => 
+                            GetFixtureStatusFromProviderFixtureState(
+                                null, f.gameStateName) != RugbyFixtureStatus.Result);
+
+            // If the current round has all the fixtures as completed.
+            // Increase the round number.
+            if(!doesRoundHaveUnendedFixtures)
+            {
+                seasonEntry.CurrentRoundNumber++;
+            }
         }
 
         public async Task IngestFixturesForActiveTournaments(CancellationToken cancellationToken)
