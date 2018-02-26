@@ -54,6 +54,7 @@
 
     public class Season
     {
+        public List<Owner> owners { get; set; }
         public int season { get; set; }
         public string name { get; set; }
         public bool isActive { get; set; }

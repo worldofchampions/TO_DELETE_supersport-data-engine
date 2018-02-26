@@ -65,18 +65,15 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task IngestTeamsForActiveLeagues(CancellationToken cancellationToken)
         {
-            var motorLeagues = _publicSportDataUnitOfWork.MotorsportLeagues.Where(league => league.IsEnabled);
+            var motorLeagues = _publicSportDataUnitOfWork.MotorsportLeagues.Where(league => league.IsEnabled).ToList();
 
-            if (motorLeagues != null)
+            foreach (var league in motorLeagues)
             {
-                foreach (var league in motorLeagues)
-                {
-                    if (league.ProviderSlug is null) continue;
+                if (league.ProviderSlug is null) continue;
 
-                    var tournamentTeams = _statsProzoneMotorIngestService.IngestTeamsForLeague(league.ProviderSlug);
+                var teams = _statsProzoneMotorIngestService.IngestTeamsForLeague(league.ProviderSlug);
 
-                    await PersistTournamentTeamsInRepository(tournamentTeams);
-                }
+                await PersistTeamsInRepository(teams);
             }
         }
 
@@ -414,6 +411,33 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             }
         }
 
+        private async Task PersistTeamsInRepository(MotorsportEntitiesResponse response)
+        {
+            var ownersFromProvider = ExtractOwnersFromProviderResponse(response);
+
+            if (ownersFromProvider is null)
+            {
+                return;
+            }
+
+            foreach (var owner in ownersFromProvider)
+            {
+                var ownerInRepo =
+                    _publicSportDataUnitOfWork.MotortsportTeams.FirstOrDefault(t => t.ProviderTeamId == owner.ownerId);
+
+                if (ownerInRepo is null)
+                {
+                    AddNewOwnerToRepo(owner);
+                }
+                else
+                {
+                    UpdateOwnerInRepo(ownerInRepo, owner);
+                }
+            }
+
+            await _publicSportDataUnitOfWork.SaveChangesAsync();
+        }
+
         private async Task PersistTeamStandingsInRepository(MotorsportEntitiesResponse providerResponse,
             CancellationToken cancellationToken)
         {
@@ -692,6 +716,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             _publicSportDataUnitOfWork.MotorsportRaceCalendars.Add(raceCalendar);
         }
+
         private void UpdateOwnerInRepo(MotorsportTeam ownerInRepo, Owner owner)
         {
             if (owner is null || owner.name is null)
@@ -707,14 +732,14 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             if (owner is null || owner.name is null)
                 return;
 
-            var newOwner = new MotorsportTeam
+            var motorsportTeam = new MotorsportTeam
             {
                 Name = owner.name,
                 ProviderTeamId = owner.ownerId,
                 DataProvider = DataProvider.Stats
             };
 
-            _publicSportDataUnitOfWork.MotortsportTeams.Add(newOwner);
+            _publicSportDataUnitOfWork.MotortsportTeams.Add(motorsportTeam);
         }
 
         private void UpdateDriverStandingInRepo(Player providerStanding, MotorsportDriverStanding repoStanding)
@@ -943,17 +968,13 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             var results = response
                 ?.apiResults.FirstOrDefault()
-                ?.leagues.FirstOrDefault()
-                ?.league.subLeague
-                ?.owners;
+                ?.league
+                .subLeague
+                .season
+                .owners;
 
             return results;
         }
 
-        private static async Task PersistTournamentTeamsInRepository(MotorsportEntitiesResponse response)
-        {
-            // STATS API does not provide such data under teams end-point. 
-            // We Ingest it using their "Owners" end-point.
-        }
     }
 }
