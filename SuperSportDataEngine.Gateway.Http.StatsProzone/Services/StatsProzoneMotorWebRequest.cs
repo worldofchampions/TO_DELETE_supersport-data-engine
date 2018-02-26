@@ -108,13 +108,13 @@
             return requestForTeam;
         }
 
-        public WebRequest GetRequestForSchedule(string providerSlug, int providerSeasonId)
+        public WebRequest GetRequestForSchedule(string providerSlug, int providerSeasonId, int providerRaceId)
         {
             var eventsUrl = $"/v1/stats/motor/{providerSlug}/events/";
 
             var requestSignature = GetRequestSignature();
 
-            var queryString = $"?season={providerSeasonId}&api_key={_statsApiKey}&sig={requestSignature}";
+            var queryString = $"?season={providerSeasonId}&raceId={providerRaceId}&api_key={_statsApiKey}&sig={requestSignature}";
 
             var requestUriString = _statsApiBaseUrl + eventsUrl + queryString;
 

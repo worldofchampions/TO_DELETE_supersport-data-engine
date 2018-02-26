@@ -48,5 +48,21 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             return await Task.FromResult(races);
         }
+
+        public async Task<IEnumerable<MotorsportRace>> GetRacesForLeague(Guid leagueId)
+        {
+            var races = await _publicSportDataUnitOfWork.MotorsportRaces.AllAsync();
+
+            return races;
+        }
+
+        public async Task<MotorsportSeason> GetCurrentSeasonForLeague(Guid leagueId, CancellationToken cancellationToken)
+        {
+            var season =
+                 _publicSportDataUnitOfWork.MotorsportSeasons.FirstOrDefault(s =>
+                    s.IsCurrent && s.MotorsportLeague.Id == leagueId);
+
+            return await Task.FromResult(season);
+        }
     }
 }

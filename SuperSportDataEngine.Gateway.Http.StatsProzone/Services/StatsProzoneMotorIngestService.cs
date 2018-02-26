@@ -63,7 +63,6 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
                         seasons = JsonConvert.DeserializeObject<MotorsportEntitiesResponse>(streamReader.ReadToEnd());
                     }
-
                 }
 
                 return seasons;
@@ -98,13 +97,13 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             return racesEntitiesResponse;
         }
 
-        public MotorsportEntitiesResponse IngestLeagueCalendar(string providerSlug, int providerSeasonId)
+        public MotorsportEntitiesResponse IngestLeagueCalendar(string providerSlug, int providerSeasonId, int providerRaceId)
         {
             try
             {
-                var requestForSchedule = _statsMotorsportWebRequest.GetRequestForSchedule(providerSlug, providerSeasonId);
+                var requestForSchedule = _statsMotorsportWebRequest.GetRequestForSchedule(providerSlug, providerSeasonId, providerRaceId);
 
-                MotorsportEntitiesResponse tournamentSchedule;
+                MotorsportEntitiesResponse leagueCalendar;
 
                 using (var webResponse = requestForSchedule.GetResponse())
                 {
@@ -114,16 +113,16 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
                         var streamReader = new StreamReader(responseStream, Encoding.UTF8);
 
-                        tournamentSchedule = JsonConvert.DeserializeObject<MotorsportEntitiesResponse>(streamReader.ReadToEnd());
+                        leagueCalendar = JsonConvert.DeserializeObject<MotorsportEntitiesResponse>(streamReader.ReadToEnd());
                     }
                 }
 
-                return tournamentSchedule;
+                return leagueCalendar;
             }
-            catch (Exception exception)
+            catch (WebException)
             {
-                Console.WriteLine(exception);
-
+                // Provider must have returned error object hence failed to serialize it.
+                // TODO rework handling of this
                 return null;
             }
         }

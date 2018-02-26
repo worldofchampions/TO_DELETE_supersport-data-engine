@@ -34,6 +34,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFram
         IBaseEntityFrameworkRepository<MotorsportSeason> MotorsportSeasons { get; }
         IBaseEntityFrameworkRepository<MotorsportTeam> MotortsportTeams { get; }
         IBaseEntityFrameworkRepository<MotorsportTeamStanding> MotorsportTeamStandings { get; }
+        IBaseEntityFrameworkRepository<MotorsportRaceCalendar> MotorsportRaceCalendars { get; set; }
 
         int SaveChanges();
         Task<int> SaveChangesAsync();
