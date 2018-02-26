@@ -405,7 +405,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                         _publicSportDataUnitOfWork.MotorsportDriverStandings.FirstOrDefault(s => s.MotorsportDriver.ProviderDriverId == providerEntry.playerId);
                     if (driverStanding is null)
                     {
-                        AddNewDriverStandingToRepo(providerEntry, league, season);
+                        await AddNewDriverStandingToRepo(providerEntry, league, season);
                     }
                     else
                     {
@@ -701,13 +701,30 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 ProviderDriverId = providerDriver.playerId,
                 FirstName = providerDriver.firstName,
                 LastName = providerDriver.lastName,
-                HeightInCentimeters = providerDriver.height.centimeters,
-                WeightInKilograms = providerDriver.weight.kilograms,
-                CountryName = providerDriver.birth.country.name,
-                ProviderCarId = providerDriver.car.make.makeId,
-                CarNumber = providerDriver.car.carNumber,
                 DataProvider = DataProvider.Stats
             };
+
+            if (providerDriver.weight != null)
+            {
+                driver.ProviderCarId = providerDriver.car.make.makeId;
+                driver.CarNumber = providerDriver.car.carNumber;
+            }
+
+            if (providerDriver.weight != null)
+            {
+                driver.HeightInCentimeters = providerDriver.weight.kilograms;
+
+            }
+
+            if (providerDriver.height != null)
+            {
+                driver.HeightInCentimeters = providerDriver.height.centimeters;
+            }
+
+            if (providerDriver.birth != null)
+            {
+                driver.CountryName = providerDriver.birth.country.name;
+            }
 
             _publicSportDataUnitOfWork.MotorsportDrivers.Add(driver);
         }
@@ -799,20 +816,36 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             _publicSportDataUnitOfWork.MotorsportDriverStandings.Update(repoStanding);
         }
 
-        private void AddNewDriverStandingToRepo(Player providerStanding, MotorsportLeague league, MotorsportSeason season)
+        private async Task AddNewDriverStandingToRepo(Player providerStanding, MotorsportLeague league, MotorsportSeason season)
         {
             if (providerStanding is null || providerStanding.finishes is null)
                 return;
 
-            var repoDriver = _publicSportDataUnitOfWork.MotorsportDrivers.FirstOrDefault(d => d.ProviderDriverId == providerStanding.playerId);
+            var repoDriver = 
+                _publicSportDataUnitOfWork.MotorsportDrivers.FirstOrDefault(d => d.ProviderDriverId == providerStanding.playerId);
 
-            var repoTeam = _publicSportDataUnitOfWork.MotortsportTeams.FirstOrDefault(t => t.ProviderTeamId == providerStanding.owner.ownerId);
+            var repoTeam = 
+                _publicSportDataUnitOfWork.MotortsportTeams.FirstOrDefault(t => t.ProviderTeamId == providerStanding.owner.ownerId);
 
-            if (repoDriver is null || repoTeam is null)
+            if (repoDriver is null)
             {
                 // TODO: Add driver & team to Repo?
-                return;
+                AddNewDriverToRepo(providerStanding);
+                await  _publicSportDataUnitOfWork.SaveChangesAsync();
+                repoDriver =
+                    _publicSportDataUnitOfWork.MotorsportDrivers.FirstOrDefault(d => d.ProviderDriverId == providerStanding.playerId);
             }
+
+            if (repoTeam is null)
+            {
+                // TODO: Add driver & team to Repo?
+                AddNewOwnerToRepo(providerStanding.owner);
+
+                await _publicSportDataUnitOfWork.SaveChangesAsync();
+                repoTeam = 
+                    _publicSportDataUnitOfWork.MotortsportTeams.FirstOrDefault(t => t.ProviderTeamId == providerStanding.owner.ownerId);
+            }
+
 
             var standingEntry = new MotorsportDriverStanding
             {
