@@ -5,6 +5,7 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
 
 namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
@@ -16,6 +17,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
     public class RugbyController : ApiController
     {
         IRugbyCmsService _rugbyService;
+        public static string path = HttpContext.Current.Request.Url.AbsolutePath;
 
         /// <summary>
         /// Rugby Constructor
@@ -41,7 +43,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         {
             try
             {
-                var tournaments = await _rugbyService.GetAllTournaments(pageIndex, pageSize, query);
+                var tournaments = await _rugbyService.GetAllTournaments(pageIndex, pageSize, path, query);
                 return Request.CreateResponse(HttpStatusCode.OK, tournaments);
             }
             catch(Exception ex)
@@ -63,7 +65,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         {
             try
             {
-                var fixtures = await _rugbyService.GetAllFixtures(pageIndex, pageSize);
+                var fixtures = await _rugbyService.GetAllFixtures(pageIndex, pageSize, path);
                 return Request.CreateResponse(HttpStatusCode.OK, fixtures);
             }
             catch(Exception ex)
@@ -85,7 +87,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         {
             try
             {
-                var seasons = await _rugbyService.GetAllSeasons(pageIndex, pageSize);
+                var seasons = await _rugbyService.GetAllSeasons(pageIndex, pageSize, path);
                 return Request.CreateResponse(HttpStatusCode.OK, seasons);
             }
             catch(Exception ex)
@@ -107,7 +109,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         {
             try
             {
-                var teams = await _rugbyService.GetAllTeams(pageIndex, pageSize);
+                var teams = await _rugbyService.GetAllTeams(pageIndex, pageSize, path);
                 return Request.CreateResponse(HttpStatusCode.OK, teams);
             }
             catch(Exception ex)
@@ -129,7 +131,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         {
             try
             {
-                var players = await _rugbyService.GetAllPlayers(pageIndex, pageSize);
+                var players = await _rugbyService.GetAllPlayers(pageIndex, pageSize, path);
                 return Request.CreateResponse(HttpStatusCode.OK, players);
             }
             catch(Exception ex)
@@ -152,7 +154,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         {
             try
             {
-                var tournamentSeasons = await _rugbyService.GetSeasonsForTournament(tournamentId, pageIndex, pageSize);
+                var tournamentSeasons = await _rugbyService.GetSeasonsForTournament(tournamentId, pageIndex, pageSize, path);
                 return Request.CreateResponse(HttpStatusCode.OK, tournamentSeasons);
             }
             catch (Exception ex)
@@ -175,7 +177,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         {
             try
             {
-                var seasonFixtures = await _rugbyService.GetFixturesForTournamentSeason(seasonId, pageIndex, pageSize);
+                var seasonFixtures = await _rugbyService.GetFixturesForTournamentSeason(seasonId, pageIndex, pageSize, path);
                 return Request.CreateResponse(HttpStatusCode.OK, seasonFixtures);
             }
             catch (Exception ex)

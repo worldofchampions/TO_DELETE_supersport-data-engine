@@ -3,6 +3,7 @@ using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramewor
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
 using System;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -37,105 +38,103 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             _rugbyPlayerRepository = rugbyPlayerRepository;
 
             var config = new MapperConfiguration(
-                cfg => { cfg.CreateMap<RugbyTournament, RugbyTournamentEntity>();
-                        cfg.CreateMap<RugbyFixture, RugbyFixtureEntity>();
-                        cfg.CreateMap<RugbySeason, RugbySeasonEntity>();
-                        cfg.CreateMap<RugbyTeam, RugbyTeamEntity>();
-                        cfg.CreateMap<RugbyPlayer, RugbyPlayerEntity>();
+                cfg =>
+                {
+                    cfg.CreateMap<RugbyTournament, RugbyTournamentEntity>();
+                    cfg.CreateMap<RugbyFixture, RugbyFixtureEntity>();
+                    cfg.CreateMap<RugbySeason, RugbySeasonEntity>();
+                    cfg.CreateMap<RugbyTeam, RugbyTeamEntity>();
+                    cfg.CreateMap<RugbyPlayer, RugbyPlayerEntity>();
                 });
             iMapper = config.CreateMapper();
         }
 
-        public async Task<IEnumerable<RugbyTournamentEntity>> GetAllTournaments(int pageIndex, int pageSize, string query = null)
+        public async Task<PagedResultsEntity<RugbyTournamentEntity>> GetAllTournaments(int pageIndex, int pageSize, string abpath, string query = null)
         {
-            var tournaments = (IEnumerable<RugbyTournament>)null;
+            var tournaments = (PagedResultsEntity<RugbyTournamentEntity>)null;
 
             if (!String.IsNullOrEmpty(query))
             {
-                tournaments = await Task.FromResult(_rugbyTournamentRepository.Where(q => q.Name.Contains(query) 
-                                                        || q.NameCmsOverride.Contains(query) )
-                                                        .Skip(pageIndex * pageSize).Take(pageSize));
+                tournaments = await CreatePagedResults<RugbyTournament, RugbyTournamentEntity>(
+                                    _rugbyTournamentRepository.Where(q => q.Name.Contains(query)
+                                                        || q.NameCmsOverride.Contains(query)), pageIndex, pageSize, abpath);
             }
             else
             {
-                tournaments = await Task.FromResult(_rugbyTournamentRepository.All().Skip(pageIndex * pageSize).Take(pageSize));
+                tournaments = await CreatePagedResults<RugbyTournament, RugbyTournamentEntity>(_rugbyTournamentRepository.All(), pageIndex, pageSize, abpath);
             }
-            
-            if (tournaments.Any())
-            {
-                return iMapper.Map<IEnumerable<RugbyTournament>, IEnumerable<RugbyTournamentEntity>>(tournaments);
-            }
-            return null;
-        }
 
-        public async Task<IEnumerable<RugbyFixtureEntity>> GetAllFixtures(int pageIndex, int pageSize)
-        {
-            var fixtures = await Task.FromResult(_rugbyFixtureRepository.All().Skip(pageIndex * pageSize).Take(pageSize));
-
-            if (fixtures.Any())
+            if (tournaments.Results.Any())
             {
-                return iMapper.Map<IEnumerable<RugbyFixture>, IEnumerable<RugbyFixtureEntity>>(fixtures);
+                return tournaments;
             }
             return null;
         }
 
-        public async Task<IEnumerable<RugbySeasonEntity>> GetAllSeasons(int pageIndex, int pageSize)
+        public async Task<PagedResultsEntity<RugbyFixtureEntity>> GetAllFixtures(int pageIndex, int pageSize, string abpath, string query = null)
         {
-            var seasons = await Task.FromResult(_rugbySeasonRepository.All().Skip(pageIndex * pageSize).Take(pageSize));
+            var fixtures = await CreatePagedResults<RugbyFixture, RugbyFixtureEntity>(_rugbyFixtureRepository.All(), pageIndex, pageSize, abpath);
 
-            if (seasons.Any())
+            if (fixtures.Results.Any())
             {
-                return iMapper.Map<IEnumerable<RugbySeason>, IEnumerable<RugbySeasonEntity>>(seasons);
+                return fixtures;
             }
             return null;
         }
 
-        public async Task<IEnumerable<RugbyTeamEntity>> GetAllTeams(int pageIndex, int pageSize)
+        public async Task<PagedResultsEntity<RugbySeasonEntity>> GetAllSeasons(int pageIndex, int pageSize, string abpath, string query = null)
         {
-            var teams = await Task.FromResult(_rugbyTeamRepository.All().Skip(pageIndex * pageSize).Take(pageSize));
+            var seasons = await CreatePagedResults<RugbySeason, RugbySeasonEntity>(_rugbySeasonRepository.All(), pageIndex, pageSize, abpath);
 
-            if (teams.Any())
+            if (seasons.Results.Any())
             {
-                return iMapper.Map<IEnumerable<RugbyTeam>, IEnumerable<RugbyTeamEntity>>(teams);
+                return seasons;
             }
             return null;
         }
 
-        public async Task<IEnumerable<RugbyPlayerEntity>> GetAllPlayers(int pageIndex, int pageSize)
+        public async Task<PagedResultsEntity<RugbyTeamEntity>> GetAllTeams(int pageIndex, int pageSize, string abpath, string query = null)
         {
-            var players = await Task.FromResult(_rugbyPlayerRepository.All().Skip(pageIndex * pageSize).Take(pageSize));
+            var teams = await CreatePagedResults<RugbyTeam, RugbyTeamEntity>(_rugbyTeamRepository.All(), pageIndex, pageSize, abpath);
 
-            if (players.Any())
+            if (teams.Results.Any())
             {
-                return iMapper.Map<IEnumerable<RugbyPlayer>, IEnumerable<RugbyPlayerEntity>>(players);
+                return teams;
             }
             return null;
         }
 
-        public async Task<IEnumerable<RugbySeasonEntity>> GetSeasonsForTournament(Guid tournamentId, int pageIndex, int pageSize)
+        public async Task<PagedResultsEntity<RugbyPlayerEntity>> GetAllPlayers(int pageIndex, int pageSize, string abpath, string query = null)
         {
-            var tournamentSeasons = await Task.FromResult(_rugbySeasonRepository.Where(
-                                                            query => query.RugbyTournament.Id == tournamentId)
-                                                            .Skip(pageIndex * pageSize)
-                                                            .Take(pageSize));
+            var players = await CreatePagedResults<RugbyPlayer, RugbyPlayerEntity>(_rugbyPlayerRepository.All(), pageIndex, pageSize, abpath);
 
-            if (tournamentSeasons.Any())
+            if (players.Results.Any())
             {
-                return iMapper.Map<IEnumerable<RugbySeason>, IEnumerable<RugbySeasonEntity>>(tournamentSeasons);
+                return players;
             }
             return null;
         }
 
-        public async Task<IEnumerable<RugbyFixtureEntity>> GetFixturesForTournamentSeason(Guid seasonId, int pageIndex, int pageSize)
+        public async Task<PagedResultsEntity<RugbySeasonEntity>> GetSeasonsForTournament(Guid tournamentId, int pageIndex, int pageSize, string abpath, string query = null)
         {
-            var tournamentSeasonFixtures = await Task.FromResult(_rugbyFixtureRepository.Where(
-                                                            query => query.RugbySeason.Id == seasonId)
-                                                            .Skip(pageIndex * pageSize)
-                                                            .Take(pageSize));
+            var tournamentSeasons = await CreatePagedResults<RugbySeason, RugbySeasonEntity>(_rugbySeasonRepository.Where(
+                                                            season => season.RugbyTournament.Id == tournamentId), pageIndex, pageSize, abpath);
 
-            if (tournamentSeasonFixtures.Any())
+            if (tournamentSeasons.Results.Any())
             {
-                return iMapper.Map<IEnumerable<RugbyFixture>, IEnumerable<RugbyFixtureEntity>>(tournamentSeasonFixtures);
+                return tournamentSeasons;
+            }
+            return null;
+        }
+
+        public async Task<PagedResultsEntity<RugbyFixtureEntity>> GetFixturesForTournamentSeason(Guid seasonId, int pageIndex, int pageSize, string abpath, string query = null)
+        {
+            var tournamentSeasonFixtures = await CreatePagedResults<RugbyFixture, RugbyFixtureEntity>(_rugbyFixtureRepository.Where(
+                                                            fixture => fixture.RugbySeason.Id == seasonId), pageIndex, pageSize, abpath);
+
+            if (tournamentSeasonFixtures.Results.Any())
+            {
+                return tournamentSeasonFixtures;
             }
             return null;
         }
@@ -249,7 +248,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
 
             if (rugbyFixtureEntity != null)
             {
-                var rugbyFixture= (await Task.FromResult(_rugbyFixtureRepository.FirstOrDefault(
+                var rugbyFixture = (await Task.FromResult(_rugbyFixtureRepository.FirstOrDefault(
                                                             fixture => fixture.Id == id)));
 
                 if (rugbyFixture != null)
@@ -356,6 +355,30 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
 
             }
             return success;
+        }
+
+        protected async Task<PagedResultsEntity<TReturn>> CreatePagedResults<T, TReturn>(IEnumerable<T> queryable, int pageIndex, int pageSize, string abpath)
+        {
+            var skipAmount = pageSize * (pageIndex - 1);
+
+            var projection = queryable.Skip(skipAmount).Take(pageSize);
+            var totalNumberOfRecords = await Task.FromResult(queryable.Count());
+
+            var mod = totalNumberOfRecords % pageSize;
+            var totalPageCount = (totalNumberOfRecords / pageSize) + (mod == 0 ? 0 : 1);
+             
+            var nextPageUrl = pageIndex == totalPageCount ? null : abpath + string.Format("?pageIndex={0}&pageSize={1}", pageIndex + 1, pageSize);
+
+            var results = iMapper.Map<IEnumerable<T>, IEnumerable<TReturn>>(projection);
+            return new PagedResultsEntity<TReturn>
+            {
+                Results = results,
+                PageNumber = pageIndex,
+                PageSize = projection.Count(),
+                TotalNumberOfPages = totalPageCount,
+                TotalNumberOfRecords = totalNumberOfRecords,
+                NextPageUrl = nextPageUrl
+            };
         }
     }
 }
