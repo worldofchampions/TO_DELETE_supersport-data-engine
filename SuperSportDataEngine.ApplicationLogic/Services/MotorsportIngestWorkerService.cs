@@ -21,24 +21,24 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
     {
         private readonly IStatsProzoneMotorIngestService _statsProzoneMotorIngestService;
         private readonly IPublicSportDataUnitOfWork _publicSportDataUnitOfWork;
-        private readonly IMotorsportService _motorService;
+        private readonly IMotorsportService _motorsportService;
         private readonly ILoggingService _loggingService;
 
         public MotorsportIngestWorkerService(
             IStatsProzoneMotorIngestService statsProzoneMotorIngestService,
             IPublicSportDataUnitOfWork publicSportDataUnitOfWork,
             ILoggingService loggingService,
-            IMotorsportService motorService)
+            IMotorsportService motorsportService)
         {
             _statsProzoneMotorIngestService = statsProzoneMotorIngestService;
             _publicSportDataUnitOfWork = publicSportDataUnitOfWork;
             _loggingService = loggingService;
-            _motorService = motorService;
+            _motorsportService = motorsportService;
         }
 
         public async Task IngestSeasons(CancellationToken cancellationToken)
         {
-            var motorsportLeagues = await _motorService.GetActiveLeagues();
+            var motorsportLeagues = await _motorsportService.GetActiveLeagues();
 
             foreach (var race in motorsportLeagues)
             {
@@ -50,11 +50,11 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task IngestDriversForActiveLeagues(CancellationToken cancellationToken)
         {
-            var activeLeagues = await _motorService.GetActiveLeagues();
+            var activeLeagues = await _motorsportService.GetActiveLeagues();
 
             foreach (var league in activeLeagues)
             {
-                var providerSeasonId = await _motorService.GetProviderSeasonIdForLeague(league.Id, cancellationToken);
+                var providerSeasonId = await _motorsportService.GetProviderSeasonIdForLeague(league.Id, cancellationToken);
 
                 var leagueDrivers = _statsProzoneMotorIngestService.IngestDriversForLeague(league.ProviderSlug, providerSeasonId);
 
@@ -89,7 +89,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 {
                     if (league.ProviderSlug is null) continue;
 
-                    var providerSeason = await _motorService.GetProviderSeasonIdForLeague(league.Id, cancellationToken);
+                    var providerSeason = await _motorsportService.GetProviderSeasonIdForLeague(league.Id, cancellationToken);
 
                     var driverStandings = _statsProzoneMotorIngestService.IngestDriverStandings(league.ProviderSlug, providerSeason);
 
@@ -108,7 +108,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 {
                     if (league.ProviderSlug is null) continue;
 
-                    var providerSeason = await _motorService.GetProviderSeasonIdForLeague(league.Id, cancellationToken);
+                    var providerSeason = await _motorsportService.GetProviderSeasonIdForLeague(league.Id, cancellationToken);
 
                     var teamStandings = _statsProzoneMotorIngestService.IngestDriverStandings(league.ProviderSlug, providerSeason);
 
@@ -119,7 +119,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task IngestRacesForActiveLeagues(CancellationToken cancellationToken)
         {
-            var motorLeagues = await _motorService.GetActiveLeagues();
+            var motorLeagues = await _motorsportService.GetActiveLeagues();
 
             if (motorLeagues != null)
             {
@@ -127,7 +127,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 {
                     if (league.ProviderSlug is null) continue;
 
-                    var providerSeasonId = await _motorService.GetProviderSeasonIdForLeague(league.Id, cancellationToken);
+                    var providerSeasonId = await _motorsportService.GetProviderSeasonIdForLeague(league.Id, cancellationToken);
 
                     var races = _statsProzoneMotorIngestService.IngestLeagueCalendar(league.ProviderSlug, providerSeasonId);
 
@@ -138,7 +138,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task IngestHistoricRaces(CancellationToken cancellationToken)
         {
-            var motorLeagues = await _motorService.GetActiveLeagues();
+            var motorLeagues = await _motorsportService.GetActiveLeagues();
 
             if (motorLeagues != null)
             {
@@ -164,14 +164,14 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         {
             var currentYear = DateTime.Now.Year;
 
-            var activeLeagues = await _motorService.GetActiveLeagues();
+            var activeLeagues = await _motorsportService.GetActiveLeagues();
 
             foreach (var league in activeLeagues)
             {
                 for (var providerSeasonId = currentYear - 2; providerSeasonId <= currentYear; providerSeasonId++)
                 {
                     var motorsportRaces =
-                        await _motorService.GetLeagueRacesByProviderSeasonId(league.Id, providerSeasonId);
+                        await _motorsportService.GetLeagueRacesByProviderSeasonId(league.Id, providerSeasonId);
 
                     foreach (var race in motorsportRaces)
                     {
@@ -223,14 +223,14 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         {
             var currentYear = DateTime.Now.Year;
 
-            var activeLeagues = await _motorService.GetActiveLeagues();
+            var activeLeagues = await _motorsportService.GetActiveLeagues();
 
             foreach (var league in activeLeagues)
             {
                 for (var providerSeasonId = currentYear - 2; providerSeasonId <= currentYear; providerSeasonId++)
                 {
                     var motorsportRaces =
-                        await _motorService.GetLeagueRacesByProviderSeasonId(league.Id, providerSeasonId);
+                        await _motorsportService.GetLeagueRacesByProviderSeasonId(league.Id, providerSeasonId);
 
                     foreach (var race in motorsportRaces)
                     {
