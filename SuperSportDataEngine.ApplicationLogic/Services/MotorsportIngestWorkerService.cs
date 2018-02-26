@@ -64,6 +64,7 @@
         public async Task IngestTeamsForActiveLeagues(CancellationToken cancellationToken)
         {
             var motorLeagues = _publicSportDataUnitOfWork.MotorsportLeagues.Where(league => league.IsEnabled);
+
             if (motorLeagues != null)
             {
                 foreach (var league in motorLeagues)
@@ -71,6 +72,7 @@
                     if (league.ProviderSlug is null) continue;
 
                     var tournamentTeams = _statsProzoneMotorIngestService.IngestTeamsForLeague(league.ProviderSlug);
+
                     await PersistTournamentTeamsInRepository(tournamentTeams);
                 }
             }
@@ -156,7 +158,7 @@
             }
         }
 
-        public async Task IngestRaceResults(CancellationToken cancellationToken)
+        public async Task IngestResultsForActiveLeagues(CancellationToken cancellationToken)
         {
             var currentYear = DateTime.Now.Year;
 
@@ -179,7 +181,43 @@
             }
         }
 
-        public async Task IngestRaceGridsForPastSeasons(CancellationToken cancellationToken)
+        public Task IngestLeagueCalendarForPastSeasons(CancellationToken cancellationToken)
+        {
+            //TODO
+            return Task.FromResult(0);
+        }
+
+        public Task IngestCalendarsForActiveLeagues(CancellationToken cancellationToken)
+        {
+            //TODO
+            return Task.FromResult(0);
+        }
+
+        public Task IngestRaceGridsForActiveLeagues(CancellationToken cancellationToken)
+        {
+            //TODO
+            return Task.FromResult(0);
+        }
+
+        public Task IngestHistoricResults(CancellationToken cancellationToken)
+        {
+            //TODO
+            return Task.FromResult(0);
+        }
+
+        public Task IngestHistoricTeamStandings(CancellationToken cancellationToken)
+        {
+            //TODO
+            return Task.FromResult(0);
+        }
+
+        public Task IngestHistoricDriverStandings(CancellationToken cancellationToken)
+        {
+            //TODO
+            return Task.FromResult(0);
+        }
+
+        public async Task IngestHistoricGrids(CancellationToken cancellationToken)
         {
             var currentYear = DateTime.Now.Year;
 
