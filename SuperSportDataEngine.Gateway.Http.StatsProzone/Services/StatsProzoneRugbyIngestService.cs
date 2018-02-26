@@ -21,6 +21,7 @@
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.ResponseModels.RugbyRoundFixturesResponse;
 
     public class StatsProzoneRugbyIngestService : IStatsProzoneRugbyIngestService
     {
@@ -574,6 +575,46 @@
                 _logger.Warn($"HTTPRequestTooLong.{request.RequestUri}",
                     $"HTTP request taking too long. {request.GetBaseUri()}. Warning level is {_maximumTimeForRequestWithResponseInMilliseconds / 1000.0} seconds; took " +
                     milliseconds / 1000.0 + " seconds.");
+            }
+        }
+
+        public async Task<RugbyRoundFixturesResponse> IngestRoundFixturesForTournament(int providerTournamentId, int providerSeasonId, int roundNumber)
+        {
+            WebRequest request =
+                WebRequest.Create("http://rugbyunion-api.stats.com/api/ru/competitions/roundFixtures/" + providerTournamentId + "/" + providerSeasonId + "/" + roundNumber);
+
+            request.Method = "GET";
+
+            request.Headers["Authorization"] = "Basic U3VwZXJTcG9ydF9NZWRpYTpTdTkzUjdyMFA1";
+            request.ContentType = "application/json; charset=UTF-8";
+
+            var rugbyRoundFixturesResponse =
+                new RugbyRoundFixturesResponse()
+                {
+                    RequestTime = DateTime.Now
+                };
+
+            using (WebResponse response = await request.GetResponseAsync())
+            {
+                if (response == null)
+                    return null;
+
+                using (Stream responseStream = response.GetResponseStream())
+                {
+                    StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
+                    string stats = reader.ReadToEnd();
+                    rugbyRoundFixturesResponse.RoundFixtures =
+                        JsonConvert.DeserializeObject<RugbyRoundFixtures>(stats);
+
+                    // Not to be confused with the DateTime.Now call more above.
+                    // This might be delayed due to provider being slow to process request,
+                    // and is intended.
+                    rugbyRoundFixturesResponse.ResponseTime = DateTime.Now;
+
+                    CheckIfRequestTakingTooLong(request, rugbyRoundFixturesResponse);
+
+                    return rugbyRoundFixturesResponse;
+                }
             }
         }
     }
