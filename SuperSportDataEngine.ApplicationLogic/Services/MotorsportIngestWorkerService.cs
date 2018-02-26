@@ -489,7 +489,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 if (playerId is null) continue;
 
                 var resultInRepo =
-                    _publicSportDataUnitOfWork.MotorsportRaceResults.FirstOrDefault(r => r.MotorsportDriver.ProviderDriverId == playerId);
+                    _publicSportDataUnitOfWork.MotorsportRaceResults.FirstOrDefault(
+                        r => r.MotorsportDriver.ProviderDriverId == playerId
+                        && r.MotorsportRaceId == race.Id);
 
                 if (resultInRepo is null)
                 {
