@@ -247,7 +247,7 @@
             await PersistLeaguesInRepository(leagues, cancellationToken);
         }
 
-        private async Task PersistLeagueDriversInRepository(MotorEntitiesResponse providerResponse)
+        private async Task PersistLeagueDriversInRepository(MotorsportEntitiesResponse providerResponse)
         {
             var driversFromProvider = ExtractDriversFromProviderResponse(providerResponse);
 
@@ -272,7 +272,7 @@
             }
         }
 
-        private async Task PersistRacesInRepository(MotorEntitiesResponse providerResponse,
+        private async Task PersistRacesInRepository(MotorsportEntitiesResponse providerResponse,
             MotorsportLeague league, CancellationToken cancellationToken)
         {
             var racesFromProvider = ExtractRacesFromProviderResponse(providerResponse);
@@ -295,7 +295,7 @@
             await _publicSportDataUnitOfWork.SaveChangesAsync();
         }
 
-        private async Task PersistLeaguesInRepository(MotorEntitiesResponse providerResponse,
+        private async Task PersistLeaguesInRepository(MotorsportEntitiesResponse providerResponse,
             CancellationToken cancellationToken)
         {
             var leaguesFromProvider = ExtractLeaguesFromProviderResponse(providerResponse);
@@ -320,7 +320,7 @@
             }
         }
 
-        private async Task PersistSeasonsInRepository(MotorEntitiesResponse providerResponse, CancellationToken cancellationToken)
+        private async Task PersistSeasonsInRepository(MotorsportEntitiesResponse providerResponse, CancellationToken cancellationToken)
         {
             var seasonsFromProviderResponse = ExtractSeasonsFromProviderResponse(providerResponse);
 
@@ -346,7 +346,7 @@
             }
         }
 
-        private async Task PersistDriverStandingsInRepository(MotorEntitiesResponse providerResponse, MotorsportLeague league,
+        private async Task PersistDriverStandingsInRepository(MotorsportEntitiesResponse providerResponse, MotorsportLeague league,
             CancellationToken cancellationToken)
         {
             var standingsFromProvider = ExtractDriverStandingsFromProviderResponse(providerResponse);
@@ -370,7 +370,7 @@
             }
         }
 
-        private async Task PersistTeamStandingsInRepository(MotorEntitiesResponse providerResponse,
+        private async Task PersistTeamStandingsInRepository(MotorsportEntitiesResponse providerResponse,
             CancellationToken cancellationToken)
         {
             var teams = ExtractTeamStandingsFromProviderResponse(providerResponse);
@@ -394,7 +394,7 @@
             }
         }
 
-        private async Task PersistOwnersInRepository(MotorEntitiesResponse response)
+        private async Task PersistOwnersInRepository(MotorsportEntitiesResponse response)
         {
             var ownersFromProvider = ExtractOwnersFromProviderResponse(response);
 
@@ -421,7 +421,7 @@
 
         }
 
-        private async Task PersistResultsInRepository(MotorEntitiesResponse response, CancellationToken cancellationToken)
+        private async Task PersistResultsInRepository(MotorsportEntitiesResponse response, CancellationToken cancellationToken)
         {
             var resultsFromProviderResponse = ExtractResultsFromProviderResponse(response);
 
@@ -451,7 +451,7 @@
             await _publicSportDataUnitOfWork.SaveChangesAsync();
         }
 
-        private async Task PersistGridInRepository(MotorEntitiesResponse response, CancellationToken cancellationToken)
+        private async Task PersistGridInRepository(MotorsportEntitiesResponse response, CancellationToken cancellationToken)
         {
             var gridFromProviderResponse = ExtractRaceGridFromProviderResponse(response);
 
@@ -744,7 +744,7 @@
             _publicSportDataUnitOfWork.MotorsportSeasons.Add(motorsportSeason);
         }
 
-        private static IEnumerable<Season> ExtractSeasonsFromProviderResponse(MotorEntitiesResponse providerResponse)
+        private static IEnumerable<Season> ExtractSeasonsFromProviderResponse(MotorsportEntitiesResponse providerResponse)
         {
             if (providerResponse != null && providerResponse.recordCount <= 0)
                 return null;
@@ -757,7 +757,7 @@
             return seasons;
         }
 
-        private static IEnumerable<Result> ExtractResultsFromProviderResponse(MotorEntitiesResponse response)
+        private static IEnumerable<Result> ExtractResultsFromProviderResponse(MotorsportEntitiesResponse response)
         {
             if (response != null && response.recordCount <= 0)
                 return null;
@@ -774,12 +774,12 @@
             return result;
         }
 
-        private static IEnumerable<Result> ExtractRaceGridFromProviderResponse(MotorEntitiesResponse response)
+        private static IEnumerable<Result> ExtractRaceGridFromProviderResponse(MotorsportEntitiesResponse response)
         {
             return ExtractResultsFromProviderResponse(response);
         }
 
-        private static IEnumerable<Event> ExtractRacesFromProviderResponse(MotorEntitiesResponse response)
+        private static IEnumerable<Event> ExtractRacesFromProviderResponse(MotorsportEntitiesResponse response)
         {
             if (response != null && response.recordCount <= 0)
                 return null;
@@ -796,7 +796,7 @@
             return races;
         }
 
-        private static IEnumerable<League> ExtractLeaguesFromProviderResponse(MotorEntitiesResponse response)
+        private static IEnumerable<League> ExtractLeaguesFromProviderResponse(MotorsportEntitiesResponse response)
         {
             if (response != null && response.recordCount <= 0)
                 return null;
@@ -808,7 +808,7 @@
             return leagues;
         }
 
-        private static IEnumerable<Player> ExtractDriverStandingsFromProviderResponse(MotorEntitiesResponse response)
+        private static IEnumerable<Player> ExtractDriverStandingsFromProviderResponse(MotorsportEntitiesResponse response)
         {
             if (response != null && response.recordCount <= 0)
                 return null;
@@ -824,7 +824,7 @@
             return result;
         }
 
-        private static IEnumerable<Player> ExtractDriversFromProviderResponse(MotorEntitiesResponse response)
+        private static IEnumerable<Player> ExtractDriversFromProviderResponse(MotorsportEntitiesResponse response)
         {
             if (response != null && response.recordCount <= 0)
                 return null;
@@ -838,7 +838,7 @@
             return players;
         }
 
-        private static IEnumerable<Team> ExtractTeamStandingsFromProviderResponse(MotorEntitiesResponse response)
+        private static IEnumerable<Team> ExtractTeamStandingsFromProviderResponse(MotorsportEntitiesResponse response)
         {
             if (response != null && response.recordCount <= 0)
                 return null;
@@ -854,7 +854,7 @@
             return teams;
         }
 
-        private static IEnumerable<Owner> ExtractOwnersFromProviderResponse(MotorEntitiesResponse response)
+        private static IEnumerable<Owner> ExtractOwnersFromProviderResponse(MotorsportEntitiesResponse response)
         {
             if (response != null && response.recordCount <= 0)
                 return null;
@@ -868,7 +868,7 @@
             return results;
         }
 
-        private static async Task PersistTournamentTeamsInRepository(MotorEntitiesResponse response)
+        private static async Task PersistTournamentTeamsInRepository(MotorsportEntitiesResponse response)
         {
             // STATS API does not provide such data under teams end-point. 
             // We Ingest it using their "Owners" end-point.

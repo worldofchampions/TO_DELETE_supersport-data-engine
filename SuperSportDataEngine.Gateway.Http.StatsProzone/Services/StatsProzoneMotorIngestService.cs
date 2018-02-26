@@ -22,11 +22,11 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             _statsMotorsportWebRequest = statsMotorsportWebRequest;
         }
 
-        public MotorEntitiesResponse IngestLeagues()
+        public MotorsportEntitiesResponse IngestLeagues()
         {
             var webRequestForTournamentsIngest = _statsMotorsportWebRequest.GetRequestForTournaments();
 
-            MotorEntitiesResponse leagues;
+            MotorsportEntitiesResponse leagues;
 
             using (var webResponse = webRequestForTournamentsIngest.GetResponse())
             {
@@ -36,20 +36,20 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
                     var streamReader = new StreamReader(responseStream, Encoding.UTF8);
 
-                    leagues = JsonConvert.DeserializeObject<MotorEntitiesResponse>(streamReader.ReadToEnd());
+                    leagues = JsonConvert.DeserializeObject<MotorsportEntitiesResponse>(streamReader.ReadToEnd());
                 }
             }
 
             return leagues;
         }
 
-        public MotorEntitiesResponse IngestLeagueSeasons(string providerSlug)
+        public MotorsportEntitiesResponse IngestLeagueSeasons(string providerSlug)
         {
             var webRequestForTournamentsIngest = _statsMotorsportWebRequest.GetRequestForLeagueSeasons(providerSlug);
 
             try
             {
-                MotorEntitiesResponse seasons;
+                MotorsportEntitiesResponse seasons;
 
                 using (var webResponse = webRequestForTournamentsIngest.GetResponse())
                 {
@@ -61,7 +61,7 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
                         var streamReader = new StreamReader(responseStream, Encoding.UTF8);
 
-                        seasons = JsonConvert.DeserializeObject<MotorEntitiesResponse>(streamReader.ReadToEnd());
+                        seasons = JsonConvert.DeserializeObject<MotorsportEntitiesResponse>(streamReader.ReadToEnd());
                     }
 
                 }
@@ -76,11 +76,11 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             }
         }
 
-        public MotorEntitiesResponse IngestTournamentRaces(string providerSlug)
+        public MotorsportEntitiesResponse IngestTournamentRaces(string providerSlug)
         {
             var statsWebRequest = _statsMotorsportWebRequest.GetRequestForRaces(providerSlug);
 
-            MotorEntitiesResponse tournamentRacesEntitiesResponse;
+            MotorsportEntitiesResponse tournamentRacesEntitiesResponse;
 
             using (var statsWebResponse = statsWebRequest.GetResponse())
             {
@@ -91,20 +91,20 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
                     var streamReader = new StreamReader(responseStream, Encoding.UTF8);
 
                     tournamentRacesEntitiesResponse =
-                        JsonConvert.DeserializeObject<MotorEntitiesResponse>(streamReader.ReadToEnd());
+                        JsonConvert.DeserializeObject<MotorsportEntitiesResponse>(streamReader.ReadToEnd());
                 }
             }
 
             return tournamentRacesEntitiesResponse;
         }
 
-        public MotorEntitiesResponse IngestLeagueCalendar(string providerSlug, int providerSeasonId)
+        public MotorsportEntitiesResponse IngestLeagueCalendar(string providerSlug, int providerSeasonId)
         {
             try
             {
                 var requestForSchedule = _statsMotorsportWebRequest.GetRequestForSchedule(providerSlug, providerSeasonId);
 
-                MotorEntitiesResponse tournamentSchedule;
+                MotorsportEntitiesResponse tournamentSchedule;
 
                 using (var webResponse = requestForSchedule.GetResponse())
                 {
@@ -114,7 +114,7 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
                         var streamReader = new StreamReader(responseStream, Encoding.UTF8);
 
-                        tournamentSchedule = JsonConvert.DeserializeObject<MotorEntitiesResponse>(streamReader.ReadToEnd());
+                        tournamentSchedule = JsonConvert.DeserializeObject<MotorsportEntitiesResponse>(streamReader.ReadToEnd());
                     }
                 }
 
@@ -128,12 +128,12 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             }
         }
 
-        public MotorEntitiesResponse IngestRaceResults(string providerSlug, int providerSeasonId, int providerRaceId)
+        public MotorsportEntitiesResponse IngestRaceResults(string providerSlug, int providerSeasonId, int providerRaceId)
         {
             var raceResultsRequest =
                 _statsMotorsportWebRequest.GetRequestForRaceResults(providerSlug, providerSeasonId, providerRaceId);
 
-            MotorEntitiesResponse raceResultsResponse;
+            MotorsportEntitiesResponse raceResultsResponse;
 
             using (var webResponse = raceResultsRequest.GetResponse())
             {
@@ -144,24 +144,24 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
                     var streamReader = new StreamReader(responseStream, Encoding.UTF8);
 
                     raceResultsResponse =
-                        JsonConvert.DeserializeObject<MotorEntitiesResponse>(streamReader.ReadToEnd());
+                        JsonConvert.DeserializeObject<MotorsportEntitiesResponse>(streamReader.ReadToEnd());
                 }
             }
 
             return raceResultsResponse;
         }
 
-        public MotorEntitiesResponse IngestRaceGrid(string providerSlug, int providerSeasonId, int raceId)
+        public MotorsportEntitiesResponse IngestRaceGrid(string providerSlug, int providerSeasonId, int raceId)
         {
             return IngestRaceResults(providerSlug, providerSeasonId, providerSeasonId);
         }
 
-        public MotorEntitiesResponse IngestDriversForLeague(string providerSlug, int providerSeasonId)
+        public MotorsportEntitiesResponse IngestDriversForLeague(string providerSlug, int providerSeasonId)
         {
             var webRequestForDriverIngest =
                 _statsMotorsportWebRequest.GetRequestForDrivers(providerSlug, providerSeasonId);
 
-            MotorEntitiesResponse tournamentDrivers;
+            MotorsportEntitiesResponse tournamentDrivers;
 
             using (var webResponse = webRequestForDriverIngest.GetResponse())
             {
@@ -171,18 +171,18 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
                     var streamReader = new StreamReader(responseStream, Encoding.UTF8);
 
-                    tournamentDrivers = JsonConvert.DeserializeObject<MotorEntitiesResponse>(streamReader.ReadToEnd());
+                    tournamentDrivers = JsonConvert.DeserializeObject<MotorsportEntitiesResponse>(streamReader.ReadToEnd());
                 }
             }
 
             return tournamentDrivers;
         }
 
-        public MotorEntitiesResponse IngestTeamsForLeague(string providerSlug)
+        public MotorsportEntitiesResponse IngestTeamsForLeague(string providerSlug)
         {
             var webRequestForTeamIngestIngest = _statsMotorsportWebRequest.GetRequestForTeams(providerSlug);
 
-            MotorEntitiesResponse tournamentTeamsResponse;
+            MotorsportEntitiesResponse tournamentTeamsResponse;
 
             using (var webResponse = webRequestForTeamIngestIngest.GetResponse())
             {
@@ -192,32 +192,32 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
                     var streamReader = new StreamReader(responseStream, Encoding.UTF8);
 
-                    tournamentTeamsResponse = JsonConvert.DeserializeObject<MotorEntitiesResponse>(streamReader.ReadToEnd());
+                    tournamentTeamsResponse = JsonConvert.DeserializeObject<MotorsportEntitiesResponse>(streamReader.ReadToEnd());
                 }
             }
 
             return tournamentTeamsResponse;
         }
 
-        public MotorEntitiesResponse IngestDriverStandings(string providerSlug, int providerSeasonId)
+        public MotorsportEntitiesResponse IngestDriverStandings(string providerSlug, int providerSeasonId)
         {
             var driverStandings = IngestStandings(providerSlug, DriverStandingsTypeId, providerSeasonId);
 
             return driverStandings;
         }
 
-        public MotorEntitiesResponse IngestTeamStandings(string providerSlug, int providerSeasonId)
+        public MotorsportEntitiesResponse IngestTeamStandings(string providerSlug, int providerSeasonId)
         {
             var teamStandings = IngestStandings(providerSlug, TeamStandingsTypeId, providerSeasonId);
 
             return teamStandings;
         }
 
-        private MotorEntitiesResponse IngestStandings(string providerSlug, string standingsTypeId, int providerSeasonId)
+        private MotorsportEntitiesResponse IngestStandings(string providerSlug, string standingsTypeId, int providerSeasonId)
         {
             var webRequestForStandingsIngest = _statsMotorsportWebRequest.GetRequestForStandings(providerSlug, standingsTypeId, providerSeasonId);
 
-            MotorEntitiesResponse standings;
+            MotorsportEntitiesResponse standings;
 
             using (var webResponse = webRequestForStandingsIngest.GetResponse())
             {
@@ -227,7 +227,7 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
                     var streamReader = new StreamReader(responseStream, Encoding.UTF8);
 
-                    standings = JsonConvert.DeserializeObject<MotorEntitiesResponse>(streamReader.ReadToEnd());
+                    standings = JsonConvert.DeserializeObject<MotorsportEntitiesResponse>(streamReader.ReadToEnd());
                 }
             }
 
