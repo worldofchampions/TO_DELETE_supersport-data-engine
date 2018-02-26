@@ -2,6 +2,12 @@
 {
     public enum MotorsportRaceStatus
     {
-        //TODO : COnfirm values using what we get from the provider
+        PreRace = 1,
+        InProgress = 2,
+        Postponed = 5,
+        Suspended = 6,
+        Delayed = 23,
+        Cancelled = 9,
+        Normal = 25
     }
 }
