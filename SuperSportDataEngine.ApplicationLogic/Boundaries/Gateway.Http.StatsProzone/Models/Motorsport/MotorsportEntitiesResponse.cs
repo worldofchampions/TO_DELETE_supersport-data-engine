@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport;
 
 namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motor
 {
-    public class MotorEntitiesResponse
+    public class MotorsportEntitiesResponse
     {
         public string status { get; set; }
         public int recordCount { get; set; }
