@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.ApplicationLogic.Services
+﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport;
+
+namespace SuperSportDataEngine.ApplicationLogic.Services
 {
     using System;
     using System.Collections.Generic;
