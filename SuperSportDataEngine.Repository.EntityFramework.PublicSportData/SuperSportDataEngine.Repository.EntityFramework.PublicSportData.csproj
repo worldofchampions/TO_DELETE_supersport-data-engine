@@ -252,9 +252,9 @@
     <Compile Include="Migrations\201802191222054_Added_PlayerStats_Model.Designer.cs">
       <DependentUpon>201802191222054_Added_PlayerStats_Model.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201802251417222_Motorsport_Initial_Migration.cs" />
-    <Compile Include="Migrations\201802251417222_Motorsport_Initial_Migration.Designer.cs">
-      <DependentUpon>201802251417222_Motorsport_Initial_Migration.cs</DependentUpon>
+    <Compile Include="Migrations\201802260851014_Motorsport_Initial_Migration.cs" />
+    <Compile Include="Migrations\201802260851014_Motorsport_Initial_Migration.Designer.cs">
+      <DependentUpon>201802260851014_Motorsport_Initial_Migration.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyLogGroupsForLasVegasSevens2018.cs" />
@@ -422,8 +422,8 @@
     <EmbeddedResource Include="Migrations\201802191222054_Added_PlayerStats_Model.resx">
       <DependentUpon>201802191222054_Added_PlayerStats_Model.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201802251417222_Motorsport_Initial_Migration.resx">
-      <DependentUpon>201802251417222_Motorsport_Initial_Migration.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201802260851014_Motorsport_Initial_Migration.resx">
+      <DependentUpon>201802260851014_Motorsport_Initial_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

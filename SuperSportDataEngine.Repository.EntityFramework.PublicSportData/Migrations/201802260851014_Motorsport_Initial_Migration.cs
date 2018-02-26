@@ -67,6 +67,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                         ProviderSlug = c.String(nullable: false),
                         IsEnabled = c.Boolean(nullable: false),
                         DataProvider = c.Int(nullable: false),
+                        MotorsportSportType = c.Int(nullable: false),
                         TimestampCreated = c.DateTimeOffset(nullable: false, precision: 7),
                         TimestampUpdated = c.DateTimeOffset(nullable: false, precision: 7),
                     })
