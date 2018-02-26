@@ -470,33 +470,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             }
         }
 
-        private async Task PersistOwnersInRepository(MotorsportEntitiesResponse response)
-        {
-            var ownersFromProvider = ExtractOwnersFromProviderResponse(response);
-
-            if (ownersFromProvider is null)
-            {
-                return;
-            }
-
-            foreach (var owner in ownersFromProvider)
-            {
-                var ownerInRepo = _publicSportDataUnitOfWork.MotortsportTeams.FirstOrDefault(o => o.ProviderTeamId == owner.ownerId);
-
-                if (ownerInRepo is null)
-                {
-                    AddNewOwnerToRepo(owner);
-                }
-                else
-                {
-                    UpdateOwnerInRepo(ownerInRepo, owner);
-                }
-            }
-
-            await _publicSportDataUnitOfWork.SaveChangesAsync();
-
-        }
-
         private async Task PersistResultsInRepository(
             MotorsportEntitiesResponse response,
             MotorsportRace race,
