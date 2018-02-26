@@ -202,10 +202,24 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             }
         }
 
-        public Task IngestRaceGridsForActiveLeagues(CancellationToken cancellationToken)
+        public async Task IngestRaceGridsForActiveLeagues(CancellationToken cancellationToken)
         {
-            //TODO
-            return Task.FromResult(0);
+            var activeLeagues = await _motorsportService.GetActiveLeagues();
+
+            foreach (var league in activeLeagues)
+            {
+                var season = await _motorsportService.GetCurrentSeasonForLeague(league.Id, cancellationToken);
+
+                var motorsportRaces = await _motorsportService.GetRacesForLeague(league.Id);
+
+                foreach (var race in motorsportRaces)
+                {
+                    var raceResults =
+                        _statsProzoneMotorIngestService.IngestRaceGrid(league.Slug, season.ProviderSeasonId, race.ProviderRaceId);
+
+                    await PersistGridInRepository(raceResults, race, cancellationToken);
+                }
+            }
         }
 
         public Task IngestHistoricResults(CancellationToken cancellationToken)
@@ -243,7 +257,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                     {
                         var tournamentGrid = _statsProzoneMotorIngestService.IngestRaceGrid(league.Slug, providerSeasonId, race.ProviderRaceId);
 
-                        await PersistGridInRepository(tournamentGrid, cancellationToken);
+                        await PersistGridInRepository(tournamentGrid, race, cancellationToken);
                     }
                 }
             }
@@ -517,7 +531,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             await _publicSportDataUnitOfWork.SaveChangesAsync();
         }
 
-        private async Task PersistGridInRepository(MotorsportEntitiesResponse response, CancellationToken cancellationToken)
+        private async Task PersistGridInRepository(MotorsportEntitiesResponse response, MotorsportRace race, CancellationToken cancellationToken)
         {
             var gridFromProviderResponse = ExtractRaceGridFromProviderResponse(response);
 
@@ -536,7 +550,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
                 if (gridInRepo is null)
                 {
-                    AddNewGridEntryToRepo(providerGridEntry);
+                    AddNewGridEntryToRepo(providerGridEntry, race);
                 }
                 else
                 {
@@ -560,13 +574,16 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             _publicSportDataUnitOfWork.MotorsportRaceGrids.Update(raceGridInRepo);
         }
 
-        private void AddNewGridEntryToRepo(Result providerGridEntry)
+        private void AddNewGridEntryToRepo(Result providerGridEntry, MotorsportRace race)
         {
             var qualifyingRun = providerGridEntry?.qualifying?.qualifyingRuns?.FirstOrDefault();
             if (qualifyingRun is null) return;
 
             var driverInRepo = _publicSportDataUnitOfWork.MotorsportDrivers.FirstOrDefault(d => d.ProviderDriverId == providerGridEntry.player.playerId);
             if (driverInRepo is null) return;
+
+            var teamInRepo = _publicSportDataUnitOfWork.MotortsportTeams.FirstOrDefault(d => d.ProviderTeamId == providerGridEntry.owner.ownerId);
+            if (teamInRepo is null) return;
 
             var newGridEntry = new MotorsportRaceGrid
             {
@@ -575,7 +592,11 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 Position = providerGridEntry.carPosition.startingPosition,
                 QualifyingTimeMinutes = qualifyingRun.time.minutes,
                 QualifyingTimeSeconds = qualifyingRun.time.seconds,
-                QualifyingTimeMilliseconds = qualifyingRun.time.milliseconds
+                QualifyingTimeMilliseconds = qualifyingRun.time.milliseconds,
+                MotorsportRace = race,
+                MotorsportRaceId = race.Id,
+                MotorsportTeam = teamInRepo,
+                MotorsportTeamId = teamInRepo.Id
             };
 
             _publicSportDataUnitOfWork.MotorsportRaceGrids.Add(newGridEntry);

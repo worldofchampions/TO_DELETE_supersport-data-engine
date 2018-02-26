@@ -74,7 +74,7 @@
             return webRequestForStandings;
         }
 
-        public WebRequest GetRequestForTournaments()
+        public WebRequest GetRequestForLeagues()
         {
             const string statsMotorLeaguesUrl = "/v1/stats/motor/leagues/";
 
@@ -84,11 +84,11 @@
 
             var requestUriString = _statsApiBaseUrl + statsMotorLeaguesUrl + queryString;
 
-            var requestForTournaments = WebRequest.Create(requestUriString);
+            var requestForLeagues = WebRequest.Create(requestUriString);
 
-            requestForTournaments.Method = "GET";
+            requestForLeagues.Method = "GET";
 
-            return requestForTournaments;
+            return requestForLeagues;
         }
 
         public WebRequest GetRequestForRaces(string providerSlug, int providerSeasonId)
@@ -101,11 +101,11 @@
 
             var requestUriString = _statsApiBaseUrl + racesUrl + queryString;
 
-            var requestForTeam = WebRequest.Create(requestUriString);
+            var requestForRaces = WebRequest.Create(requestUriString);
 
-            requestForTeam.Method = "GET";
+            requestForRaces.Method = "GET";
 
-            return requestForTeam;
+            return requestForRaces;
         }
 
         public WebRequest GetRequestForSchedule(string providerSlug, int providerSeasonId, int providerRaceId)
@@ -118,11 +118,11 @@
 
             var requestUriString = _statsApiBaseUrl + eventsUrl + queryString;
 
-            var requestForTournamentSchedule = WebRequest.Create(requestUriString);
+            var requestForSchedule = WebRequest.Create(requestUriString);
 
-            requestForTournamentSchedule.Method = "GET";
+            requestForSchedule.Method = "GET";
 
-            return requestForTournamentSchedule;
+            return requestForSchedule;
         }
 
         public WebRequest GetRequestForRaceResults(string providerSlug, int providerSeasonId, int providerRaceId)
@@ -136,11 +136,11 @@
 
             var requestUriString = _statsApiBaseUrl + raceResultsUrl + queryString;
 
-            var requestForTournamentSchedule = WebRequest.Create(requestUriString);
+            var requestForRaceResults = WebRequest.Create(requestUriString);
 
-            requestForTournamentSchedule.Method = "GET";
+            requestForRaceResults.Method = "GET";
 
-            return requestForTournamentSchedule;
+            return requestForRaceResults;
         }
 
         public WebRequest GetRequestForLeagueSeasons(string providerSlug)
@@ -153,11 +153,29 @@
 
             var requestUriString = _statsApiBaseUrl + seasonsUrl + queryString;
 
-            var requestForTeam = WebRequest.Create(requestUriString);
+            var requestForLeagueSeasons = WebRequest.Create(requestUriString);
 
-            requestForTeam.Method = "GET";
+            requestForLeagueSeasons.Method = "GET";
 
-            return requestForTeam;
+            return requestForLeagueSeasons;
+        }
+
+        public WebRequest GetRequestForRaceGrid(string providerSlug, int providerSeasonId, int providerRaceId)
+        {
+            var raceResultsUrl = $"/v1/stats/motor/{providerSlug}/events/";
+
+            var requestSignature = GetRequestSignature();
+
+            var queryString =
+                $"?box=true&qualifyingRuns=true&season={providerSeasonId}&raceId={providerRaceId}&api_key={_statsApiKey}&sig={requestSignature}";
+
+            var requestUriString = _statsApiBaseUrl + raceResultsUrl + queryString;
+
+            var requestForTournamentSchedule = WebRequest.Create(requestUriString);
+
+            requestForTournamentSchedule.Method = "GET";
+
+            return requestForTournamentSchedule;
         }
 
         public WebRequest GetRequestForOwners(string providerSlug)

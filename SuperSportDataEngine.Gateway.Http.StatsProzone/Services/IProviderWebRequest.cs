@@ -6,11 +6,12 @@
         WebRequest GetRequestForDrivers(string providerSlug, int? seasonId = null);
         WebRequest GetRequestForTeams(string providerSlug);
         WebRequest GetRequestForStandings(string providerSlug, string standingsTypeId, int providerSeasonId);
-        WebRequest GetRequestForTournaments();
+        WebRequest GetRequestForLeagues();
         WebRequest GetRequestForRaces(string providerSlug, int providerSeasonId);
         WebRequest GetRequestForSchedule(string providerSlug, int providerSeasonId, int providerRaceId);
         WebRequest GetRequestForOwners(string providerSlug);
         WebRequest GetRequestForRaceResults(string providerSlug, int providerSeasonId, int providerRaceId);
         WebRequest GetRequestForLeagueSeasons(string providerSlug);
+        WebRequest GetRequestForRaceGrid(string providerSlug, int providerSeasonId, int providerRaceId);
     }
 }
