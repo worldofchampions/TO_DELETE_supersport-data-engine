@@ -521,7 +521,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 if (playerId is null) continue;
 
                 var gridInRepo =
-                    _publicSportDataUnitOfWork.MotorsportRaceGrids.FirstOrDefault(r => r.MotorsportDriver.ProviderDriverId == playerId);
+                    _publicSportDataUnitOfWork.MotorsportRaceGrids.FirstOrDefault(
+                        g => g.MotorsportDriver.ProviderDriverId == playerId
+                        && g.MotorsportRaceId == race.Id);
 
                 if (gridInRepo is null)
                 {
@@ -813,14 +815,14 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             var repoDriver = _publicSportDataUnitOfWork.MotorsportDrivers.FirstOrDefault(d => d.ProviderDriverId == providerStanding.playerId);
 
-            var repoTeam = 
+            var repoTeam =
                 _publicSportDataUnitOfWork.MotortsportTeams.FirstOrDefault(t => t.ProviderTeamId == providerStanding.owner.ownerId);
 
             if (repoDriver is null)
             {
                 AddNewDriverToRepo(providerStanding);
 
-                await  _publicSportDataUnitOfWork.SaveChangesAsync();
+                await _publicSportDataUnitOfWork.SaveChangesAsync();
 
                 repoDriver =
                     _publicSportDataUnitOfWork.MotorsportDrivers.FirstOrDefault(d => d.ProviderDriverId == providerStanding.playerId);
@@ -832,7 +834,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
                 await _publicSportDataUnitOfWork.SaveChangesAsync();
 
-                repoTeam = 
+                repoTeam =
                     _publicSportDataUnitOfWork.MotortsportTeams.FirstOrDefault(t => t.ProviderTeamId == providerStanding.owner.ownerId);
             }
 
