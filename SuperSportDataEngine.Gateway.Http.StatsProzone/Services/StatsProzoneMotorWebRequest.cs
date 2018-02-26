@@ -132,7 +132,7 @@
             var requestSignature = GetRequestSignature();
 
             var queryString =
-                $"?box=true&season={providerSeasonId}&api_key={_statsApiKey}&sig={requestSignature}";
+                $"?box=true&season={providerSeasonId}&raceId={providerRaceId}&api_key={_statsApiKey}&sig={requestSignature}";
 
             var requestUriString = _statsApiBaseUrl + raceResultsUrl + queryString;
 

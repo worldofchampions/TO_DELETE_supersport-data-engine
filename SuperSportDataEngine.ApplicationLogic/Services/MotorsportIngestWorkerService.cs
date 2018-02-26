@@ -89,7 +89,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
                 var driverStandings = _statsProzoneMotorIngestService.IngestDriverStandings(league.ProviderSlug, season.ProviderSeasonId);
 
-                await PersistDriverStandingsInRepository(driverStandings, league, season,cancellationToken);
+                await PersistDriverStandingsInRepository(driverStandings, league, season, cancellationToken);
             }
         }
 
@@ -105,7 +105,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
                 var teamStandings = _statsProzoneMotorIngestService.IngestTeamStandings(league.ProviderSlug, season.ProviderSeasonId);
 
-                await PersistTeamStandingsInRepository(teamStandings, league, season ,cancellationToken);
+                await PersistTeamStandingsInRepository(teamStandings, league, season, cancellationToken);
             }
         }
 
@@ -154,23 +154,20 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task IngestResultsForActiveLeagues(CancellationToken cancellationToken)
         {
-            var currentYear = DateTime.Now.Year;
-
             var activeLeagues = await _motorsportService.GetActiveLeagues();
 
             foreach (var league in activeLeagues)
             {
-                for (var providerSeasonId = currentYear - 2; providerSeasonId <= currentYear; providerSeasonId++)
+                var season = await _motorsportService.GetCurrentSeasonForLeague(league.Id, cancellationToken);
+
+                var motorsportRaces = await _motorsportService.GetRacesForLeague(league.Id);
+
+                foreach (var race in motorsportRaces)
                 {
-                    var motorsportRaces =
-                        await _motorsportService.GetLeagueRacesByProviderSeasonId(league.Id, providerSeasonId);
+                    var raceResults =
+                        _statsProzoneMotorIngestService.IngestRaceResults(league.Slug, season.ProviderSeasonId, race.ProviderRaceId);
 
-                    foreach (var race in motorsportRaces)
-                    {
-                        var tournamentGrid = _statsProzoneMotorIngestService.IngestRaceGrid(league.Slug, providerSeasonId, race.ProviderRaceId);
-
-                        await PersistGridInRepository(tournamentGrid, cancellationToken);
-                    }
+                    await PersistResultsInRepository(raceResults, race, cancellationToken);
                 }
             }
         }
@@ -486,7 +483,10 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         }
 
-        private async Task PersistResultsInRepository(MotorsportEntitiesResponse response, CancellationToken cancellationToken)
+        private async Task PersistResultsInRepository(
+            MotorsportEntitiesResponse response,
+            MotorsportRace race,
+            CancellationToken cancellationToken)
         {
             var resultsFromProviderResponse = ExtractResultsFromProviderResponse(response);
 
@@ -498,6 +498,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             foreach (var result in resultsFromProviderResponse)
             {
                 var playerId = result?.player?.playerId;
+
                 if (playerId is null) continue;
 
                 var resultInRepo =
@@ -505,7 +506,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
                 if (resultInRepo is null)
                 {
-                    AddNewResultsToRepo(result);
+                    AddNewResultsToRepo(result, race);
                 }
                 else
                 {
@@ -583,33 +584,59 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         private void UpdateResultsInRepo(MotorsportRaceResult resultInRepo, Result result)
         {
             resultInRepo.DriverTotalPoints = int.Parse(result.points.driver.total);
-            resultInRepo.FinishingTimeHours = result.finishingTime.hours;
-            resultInRepo.FinishingTimeMinutes = result.finishingTime.minutes;
-            resultInRepo.FinishingTimeSeconds = result.finishingTime.seconds;
+
+            if (result.finishingTime != null)
+            {
+                resultInRepo.FinishingTimeHours = result.finishingTime.hours;
+                resultInRepo.FinishingTimeMinutes = result.finishingTime.minutes;
+                resultInRepo.FinishingTimeSeconds = result.finishingTime.seconds;
+            }
+
             resultInRepo.Position = result.carPosition.position;
             resultInRepo.GridPosition = result.carPosition.startingPosition;
+            resultInRepo.OutReason = result.carStatus.name;
+            resultInRepo.CompletedRace = !result.carStatus.carStatusId.Equals(0);
 
             _publicSportDataUnitOfWork.MotorsportRaceResults.Update(resultInRepo);
         }
 
-        private void AddNewResultsToRepo(Result result)
+        private void AddNewResultsToRepo(Result result, MotorsportRace race)
         {
-            var newEntry = new MotorsportRaceResult
+            var driver =
+                _publicSportDataUnitOfWork.MotorsportDrivers.FirstOrDefault(d =>
+                    d.ProviderDriverId == result.player.playerId);
+
+            if (driver is null) return;
+
+            var team =
+                _publicSportDataUnitOfWork.MotortsportTeams.FirstOrDefault(
+                    t => t.ProviderTeamId == result.owner.ownerId);
+
+            if (team is null) return;
+
+            var motorsportRaceResult = new MotorsportRaceResult
             {
                 Position = result.carPosition.position,
                 GridPosition = result.carPosition.startingPosition,
                 DriverTotalPoints = int.Parse(result.points.driver.total),
-                FinishingTimeHours = result.finishingTime.hours,
-                FinishingTimeMinutes = result.finishingTime.minutes,
-                FinishingTimeSeconds = result.finishingTime.seconds,
-                FinishingTimeMilliseconds = result.finishingTime.milliseconds,
+
                 LapsCompleted = result.laps.completed,
+                MotorsportTeam = team,
+                MotorsportDriver = driver,
+                MotorsportDriverId = driver.Id,
+                MotorsportRaceId = race.Id,
+                OutReason = result.carStatus.name
             };
 
-            var driver = _publicSportDataUnitOfWork.MotorsportDrivers.FirstOrDefault(d => d.ProviderDriverId == result.player.playerId);
-            newEntry.MotorsportDriverId = driver.Id;
+            if (result.finishingTime != null)
+            {
+                motorsportRaceResult.FinishingTimeHours = result.finishingTime.hours;
+                motorsportRaceResult.FinishingTimeMinutes = result.finishingTime.minutes;
+                motorsportRaceResult.FinishingTimeSeconds = result.finishingTime.seconds;
+                motorsportRaceResult.FinishingTimeMilliseconds = result.finishingTime.milliseconds;
+            }
 
-            _publicSportDataUnitOfWork.MotorsportRaceResults.Add(newEntry);
+            _publicSportDataUnitOfWork.MotorsportRaceResults.Add(motorsportRaceResult);
         }
 
         private void UpdateLeagueInRepo(League leagueFromProvider, MotorsportLeague leagueInRepo)
@@ -648,7 +675,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         private void AddNewDriverToRepo(Player providerDriver)
         {
-
             var driver = new MotorsportDriver
             {
                 ProviderDriverId = providerDriver.playerId,
@@ -796,7 +822,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             _publicSportDataUnitOfWork.MotorsportTeamStandings.Update(repoStanding);
         }
 
-        private void AddNewTeamStandingToRepo(Team providerTeam, MotorsportLeague league ,MotorsportSeason season)
+        private void AddNewTeamStandingToRepo(Team providerTeam, MotorsportLeague league, MotorsportSeason season)
         {
             if (providerTeam is null || providerTeam.finishes is null)
                 return;
