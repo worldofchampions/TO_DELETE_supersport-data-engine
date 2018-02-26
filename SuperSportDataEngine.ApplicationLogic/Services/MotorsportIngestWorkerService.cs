@@ -95,20 +95,17 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task IngestTeamStandingsForActiveLeagues(CancellationToken cancellationToken)
         {
-            var motorLeagues = _publicSportDataUnitOfWork.MotorsportLeagues.Where(league => league.IsEnabled);
+            var motorLeagues = _publicSportDataUnitOfWork.MotorsportLeagues.Where(league => league.IsEnabled).ToList();
 
-            if (motorLeagues != null)
+            foreach (var league in motorLeagues)
             {
-                foreach (var league in motorLeagues)
-                {
-                    if (league.ProviderSlug is null) continue;
+                if (league.ProviderSlug is null) continue;
 
-                    var providerSeason = await _motorsportService.GetProviderSeasonIdForLeague(league.Id, cancellationToken);
+                var season = await _motorsportService.GetCurrentSeasonForLeague(league.Id, cancellationToken);
 
-                    var teamStandings = _statsProzoneMotorIngestService.IngestDriverStandings(league.ProviderSlug, providerSeason);
+                var teamStandings = _statsProzoneMotorIngestService.IngestTeamStandings(league.ProviderSlug, season.ProviderSeasonId);
 
-                    await PersistTeamStandingsInRepository(teamStandings, cancellationToken);
-                }
+                await PersistTeamStandingsInRepository(teamStandings, league, season ,cancellationToken);
             }
         }
 
@@ -436,23 +433,25 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             await _publicSportDataUnitOfWork.SaveChangesAsync();
         }
 
-        private async Task PersistTeamStandingsInRepository(MotorsportEntitiesResponse providerResponse,
+        private async Task PersistTeamStandingsInRepository(MotorsportEntitiesResponse providerResponse, MotorsportLeague league, MotorsportSeason season,
             CancellationToken cancellationToken)
         {
-            var teams = ExtractTeamStandingsFromProviderResponse(providerResponse);
-            if (teams != null)
+            var teamStandingsFromProviderResponse = ExtractTeamStandingsFromProviderResponse(providerResponse);
+
+            if (teamStandingsFromProviderResponse != null)
             {
-                foreach (var team in teams)
+                foreach (var providerStanding in teamStandingsFromProviderResponse)
                 {
-                    var teamStanding =
-                        _publicSportDataUnitOfWork.MotorsportTeamStandings.FirstOrDefault(s => s.MotorsportTeam.ProviderTeamId == team.teamId);
-                    if (teamStanding is null)
+                    var repoStanding =
+                        _publicSportDataUnitOfWork.MotorsportTeamStandings.FirstOrDefault(s => s.MotorsportTeam.ProviderTeamId == providerStanding.teamId);
+
+                    if (repoStanding is null)
                     {
-                        AddNewTeamStandingToRepo(team);
+                        AddNewTeamStandingToRepo(providerStanding, league, season);
                     }
                     else
                     {
-                        UpdateTeamStandingInRepo(team, teamStanding);
+                        UpdateTeamStandingInRepo(providerStanding, repoStanding);
                     }
                 }
 
@@ -797,7 +796,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             _publicSportDataUnitOfWork.MotorsportTeamStandings.Update(repoStanding);
         }
 
-        private void AddNewTeamStandingToRepo(Team providerTeam)
+        private void AddNewTeamStandingToRepo(Team providerTeam, MotorsportLeague league ,MotorsportSeason season)
         {
             if (providerTeam is null || providerTeam.finishes is null)
                 return;
@@ -809,8 +808,14 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             var teamStanding = new MotorsportTeamStanding
             {
+                MotorsportTeamId = teamFromRepo.Id,
+                MotorsportLeagueId = league.Id,
+                MotorsportSeasonId = season.Id,
+                Position = providerTeam.rank,
                 Points = providerTeam.points,
-                Position = providerTeam.rank
+                MotorsportSeason = season,
+                MotorsportTeam = teamFromRepo,
+                MotorsportLeague = league
             };
 
             _publicSportDataUnitOfWork.MotorsportTeamStandings.Add(teamStanding);
@@ -958,7 +963,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             var teams = response
                 ?.apiResults.FirstOrDefault()
-                ?.leagues.FirstOrDefault()
                 ?.league.subLeague
                 ?.season
                 ?.standings
