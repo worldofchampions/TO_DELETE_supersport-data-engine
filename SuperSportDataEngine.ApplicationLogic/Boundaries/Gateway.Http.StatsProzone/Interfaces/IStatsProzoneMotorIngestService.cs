@@ -3,15 +3,15 @@
     using Models.Motor;
     public interface IStatsProzoneMotorIngestService
     {
-        MotorsportEntitiesResponse IngestLeagues();
-        MotorsportEntitiesResponse IngestLeagueSeasons(string providerSlug);
-        MotorsportEntitiesResponse IngestDriversForLeague(string providerSlug, int providerSeasonId);
-        MotorsportEntitiesResponse IngestTeamsForLeague(string providerSlug);
-        MotorsportEntitiesResponse IngestDriverStandings(string providerSlug, int providerSeasonId);
-        MotorsportEntitiesResponse IngestTeamStandings(string providerSlug, int providerSeasonId);
-        MotorsportEntitiesResponse IngestTournamentRaces(string providerSlug);
-        MotorsportEntitiesResponse IngestLeagueCalendar(string providerSlug, int providerSeasonId);
-        MotorsportEntitiesResponse IngestRaceResults(string providerSlug, int providerSeasonId, int providerRaceId);
-        MotorsportEntitiesResponse IngestRaceGrid(string providerSlug, int providerSeasonId, int providerRaceId);
+        MotorEntitiesResponse IngestLeagues();
+        MotorEntitiesResponse IngestLeagueSeasons(string providerSlug);
+        MotorEntitiesResponse IngestDriversForLeague(string providerSlug, int providerSeasonId);
+        MotorEntitiesResponse IngestTeamsForLeague(string providerSlug);
+        MotorEntitiesResponse IngestDriverStandings(string providerSlug, int providerSeasonId);
+        MotorEntitiesResponse IngestTeamStandings(string providerSlug, int providerSeasonId);
+        MotorEntitiesResponse IngestTournamentRaces(string providerSlug);
+        MotorEntitiesResponse IngestLeagueCalendar(string providerSlug, int providerSeasonId);
+        MotorEntitiesResponse IngestRaceResults(string providerSlug, int providerSeasonId, int providerRaceId);
+        MotorEntitiesResponse IngestRaceGrid(string providerSlug, int providerSeasonId, int providerRaceId);
     }
 }
