@@ -57,13 +57,13 @@
             return requestForTeam;
         }
 
-        public WebRequest GetRequestForStandings(string standingsTypeId, string providerSlug, int providerSeasonId)
+        public WebRequest GetRequestForStandings(string providerSlug, string standingsTypeId, int providerSeasonId)
         {
             var standingsUrl = $"/v1/stats/motor/{providerSlug}/standings/";
 
             var requestSignature = GetRequestSignature();
 
-            var queryString = $"?season={providerSeasonId}standingsTypeId={standingsTypeId}&languageId=1&api_key={_statsApiKey}&sig={requestSignature}";
+            var queryString = $"?season={providerSeasonId}&standingsTypeId={standingsTypeId}&languageId=1&api_key={_statsApiKey}&sig={requestSignature}";
 
             var requestUriString = _statsApiBaseUrl + standingsUrl + queryString;
 

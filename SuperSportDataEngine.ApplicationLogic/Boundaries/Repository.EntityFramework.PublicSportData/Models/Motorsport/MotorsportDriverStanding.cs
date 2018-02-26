@@ -25,7 +25,7 @@
 
         public virtual MotorsportLeague MotorsportLeague { get; set; }
 
-        public virtual MotorsportSeason RugbySeason { get; set; }
+        public virtual MotorsportSeason MotorsportSeason { get; set; }
 
         public virtual MotorsportTeam MotorsportTeam { get; set; }
 

@@ -79,19 +79,17 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task IngestDriverStandingsForActiveLeagues(CancellationToken cancellationToken)
         {
-            var motorLeagues = _publicSportDataUnitOfWork.MotorsportLeagues.Where(race => race.IsEnabled);
-            if (motorLeagues != null)
+            var motorLeagues = _publicSportDataUnitOfWork.MotorsportLeagues.Where(race => race.IsEnabled).ToList();
+
+            foreach (var league in motorLeagues)
             {
-                foreach (var league in motorLeagues)
-                {
-                    if (league.ProviderSlug is null) continue;
+                if (league.ProviderSlug is null) continue;
 
-                    var providerSeason = await _motorsportService.GetProviderSeasonIdForLeague(league.Id, cancellationToken);
+                var season = await _motorsportService.GetCurrentSeasonForLeague(league.Id, cancellationToken);
 
-                    var driverStandings = _statsProzoneMotorIngestService.IngestDriverStandings(league.ProviderSlug, providerSeason);
+                var driverStandings = _statsProzoneMotorIngestService.IngestDriverStandings(league.ProviderSlug, season.ProviderSeasonId);
 
-                    await PersistDriverStandingsInRepository(driverStandings, league, cancellationToken);
-                }
+                await PersistDriverStandingsInRepository(driverStandings, league, season,cancellationToken);
             }
         }
 
@@ -387,7 +385,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             }
         }
 
-        private async Task PersistDriverStandingsInRepository(MotorsportEntitiesResponse providerResponse, MotorsportLeague league,
+        private async Task PersistDriverStandingsInRepository(MotorsportEntitiesResponse providerResponse, MotorsportLeague league, MotorsportSeason season,
             CancellationToken cancellationToken)
         {
             var standingsFromProvider = ExtractDriverStandingsFromProviderResponse(providerResponse);
@@ -399,7 +397,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                         _publicSportDataUnitOfWork.MotorsportDriverStandings.FirstOrDefault(s => s.MotorsportDriver.ProviderDriverId == providerEntry.playerId);
                     if (driverStanding is null)
                     {
-                        AddNewDriverStandingToRepo(providerEntry, league);
+                        AddNewDriverStandingToRepo(providerEntry, league, season);
                     }
                     else
                     {
@@ -651,6 +649,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         private void AddNewDriverToRepo(Player providerDriver)
         {
+
             var driver = new MotorsportDriver
             {
                 ProviderDriverId = providerDriver.playerId,
@@ -754,17 +753,19 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             _publicSportDataUnitOfWork.MotorsportDriverStandings.Update(repoStanding);
         }
 
-        private void AddNewDriverStandingToRepo(Player providerStanding, MotorsportLeague league)
+        private void AddNewDriverStandingToRepo(Player providerStanding, MotorsportLeague league, MotorsportSeason season)
         {
             if (providerStanding is null || providerStanding.finishes is null)
                 return;
 
             var repoDriver = _publicSportDataUnitOfWork.MotorsportDrivers.FirstOrDefault(d => d.ProviderDriverId == providerStanding.playerId);
-            if (repoDriver is null)
+
+            var repoTeam = _publicSportDataUnitOfWork.MotortsportTeams.FirstOrDefault(t => t.ProviderTeamId == providerStanding.owner.ownerId);
+
+            if (repoDriver is null || repoTeam is null)
             {
-                AddNewDriverToRepo(providerStanding);
-                _publicSportDataUnitOfWork.SaveChangesAsync();
-                repoDriver = _publicSportDataUnitOfWork.MotorsportDrivers.FirstOrDefault(d => d.ProviderDriverId == providerStanding.playerId);
+                // TODO: Add driver & team to Repo?
+                return;
             }
 
             var standingEntry = new MotorsportDriverStanding
@@ -773,8 +774,13 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 Points = providerStanding.points,
                 Position = providerStanding.rank,
                 Wins = providerStanding.finishes.first,
-
-                MotorsportDriver = repoDriver
+                MotorsportDriverId = repoDriver.Id,
+                MotorsportDriver = repoDriver,
+                MotorsportTeam = repoTeam,
+                MotorsportTeamId = repoTeam.Id,
+                MotorsportSeason = season,
+                MotorsportSeasonId = season.Id,
+                MotorsportLeagueId = league.Id
             };
 
             _publicSportDataUnitOfWork.MotorsportDriverStandings.Add(standingEntry);
@@ -922,8 +928,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             var result = response
                 ?.apiResults.FirstOrDefault()
-                ?.leagues.FirstOrDefault()
-                ?.league.subLeague
+                ?.league
+                .subLeague
                 ?.season
                 ?.standings
                 ?.players;
