@@ -21,6 +21,7 @@
     using System.Text;
     using System.Threading;
     using System.Threading.Tasks;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.ResponseModels.RugbyRoundFixturesResponse;
 
     public class StatsProzoneRugbyIngestService : IStatsProzoneRugbyIngestService
     {
@@ -436,6 +437,48 @@
             }
         }
 
+        public async Task<RugbyPlayerStatsResponse> IngestPlayerStatsForTournament(int providerTournamentId, int providerSeasonId,
+            CancellationToken cancellationToken)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return null;
+
+            try
+            {
+                var webRequest = GetWebRequestForPlayerStatsEndpoint(providerTournamentId, providerSeasonId);
+
+                using (var response = await webRequest.GetResponseAsync())
+                {
+                    if (response == null)
+                        return null;
+
+                    var playerStatsResponse = new RugbyPlayerStatsResponse { RequestTime = DateTime.Now };
+
+                    using (var responseStream = response.GetResponseStream())
+                    {
+                        if (responseStream != null)
+                        {
+                            var reader = new StreamReader(responseStream, Encoding.UTF8);
+                            var stats = reader.ReadToEnd();
+
+                            playerStatsResponse.RugbyPlayerStats = JsonConvert.DeserializeObject<RugbyPlayerStats>(stats);
+                        }
+
+                        playerStatsResponse.ResponseTime = DateTime.Now;
+
+                        CheckIfRequestTakingTooLong(webRequest, playerStatsResponse);
+
+                        return playerStatsResponse;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                await _logger.Debug(System.Reflection.MethodBase.GetCurrentMethod().Name, e.StackTrace);
+                return null;
+            }
+        }
+
         private async Task<RugbyEventsFlowResponse> EventsFlowResponse(long providerFixtureId)
         {
             WebRequest request =
@@ -476,9 +519,24 @@
             }
         }
 
+        private static WebRequest GetWebRequestForPlayerStatsEndpoint(int competitionId, int seasonId)
+        {
+            const string baseUrl = "http://rugbyunion-api.stats.com/api/RU/playerStats/";
+
+            var request = WebRequest.Create(baseUrl + competitionId + "/" + seasonId);
+
+            request.Method = "GET";
+
+            request.Headers["Authorization"] = "Basic U3VwZXJTcG9ydF9NZWRpYTpTdTkzUjdyMFA1";
+
+            request.ContentType = "application/json; charset=UTF-8";
+
+            return request;
+        }
+
         private static WebRequest GetWebRequestForLogsEndpoint(int competitionId, int seasonId)
         {
-            var baseUrl = "http://rugbyunion-api.stats.com/api/RU/competitions/ladder/";
+            const string baseUrl = "http://rugbyunion-api.stats.com/api/RU/competitions/ladder/";
 
             var request = WebRequest.Create(baseUrl + competitionId + "/" + seasonId);
 
@@ -493,7 +551,7 @@
 
         private static WebRequest GetWebRequestForLogsEndpoint(int competitionId, int seasonId, int? numberOfRounds)
         {
-            var baseUrl = "http://rugbyunion-api.stats.com/api/RU/competitions/ladder/";
+            const string baseUrl = "http://rugbyunion-api.stats.com/api/RU/competitions/ladder/";
 
             var request = WebRequest.Create(baseUrl + competitionId + "/" + seasonId + "/" + (numberOfRounds != null ? numberOfRounds.ToString() : ""));
 
@@ -508,6 +566,7 @@
 
         private void CheckIfRequestTakingTooLong(WebRequest request, dynamic o)
         {
+            _logger.Info("MadeProviderRequest." + request.RequestUri, "Made provider request to: " + request.RequestUri.ToString());
             TimeSpan timeDifference = (o.ResponseTime - o.RequestTime);
             var milliseconds = timeDifference.TotalMilliseconds;
 
@@ -516,6 +575,46 @@
                 _logger.Warn($"HTTPRequestTooLong.{request.RequestUri}",
                     $"HTTP request taking too long. {request.GetBaseUri()}. Warning level is {_maximumTimeForRequestWithResponseInMilliseconds / 1000.0} seconds; took " +
                     milliseconds / 1000.0 + " seconds.");
+            }
+        }
+
+        public async Task<RugbyRoundFixturesResponse> IngestRoundFixturesForTournament(int providerTournamentId, int providerSeasonId, int roundNumber)
+        {
+            WebRequest request =
+                WebRequest.Create("http://rugbyunion-api.stats.com/api/ru/competitions/roundFixtures/" + providerTournamentId + "/" + providerSeasonId + "/" + roundNumber);
+
+            request.Method = "GET";
+
+            request.Headers["Authorization"] = "Basic U3VwZXJTcG9ydF9NZWRpYTpTdTkzUjdyMFA1";
+            request.ContentType = "application/json; charset=UTF-8";
+
+            var rugbyRoundFixturesResponse =
+                new RugbyRoundFixturesResponse()
+                {
+                    RequestTime = DateTime.Now
+                };
+
+            using (WebResponse response = await request.GetResponseAsync())
+            {
+                if (response == null)
+                    return null;
+
+                using (Stream responseStream = response.GetResponseStream())
+                {
+                    StreamReader reader = new StreamReader(responseStream, Encoding.UTF8);
+                    string stats = reader.ReadToEnd();
+                    rugbyRoundFixturesResponse.RoundFixtures =
+                        JsonConvert.DeserializeObject<RugbyRoundFixtures>(stats);
+
+                    // Not to be confused with the DateTime.Now call more above.
+                    // This might be delayed due to provider being slow to process request,
+                    // and is intended.
+                    rugbyRoundFixturesResponse.ResponseTime = DateTime.Now;
+
+                    CheckIfRequestTakingTooLong(request, rugbyRoundFixturesResponse);
+
+                    return rugbyRoundFixturesResponse;
+                }
             }
         }
     }

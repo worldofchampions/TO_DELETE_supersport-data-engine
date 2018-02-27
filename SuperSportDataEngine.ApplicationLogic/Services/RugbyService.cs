@@ -27,7 +27,9 @@
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> _schedulerTrackingRugbyTournamentRepository;
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> _schedulerTrackingRugbySeasonRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyFixture> _rugbyFixturesRepository;
+        private readonly IBaseEntityFrameworkRepository<RugbyPlayerStatistics> _rugbyPlayerStatisticsRepository;
         private readonly IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> _schedulerTrackingRugbyFixtureRepository;
+
         private readonly ILoggingService _logger;
 
         public RugbyService(
@@ -41,6 +43,7 @@
             IBaseEntityFrameworkRepository<RugbySeason> rugbySeasonRepository,
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> schedulerTrackingRugbySeasonRepository,
             IBaseEntityFrameworkRepository<RugbyFixture> rugbyFixturesRepository,
+            IBaseEntityFrameworkRepository<RugbyPlayerStatistics> rugbyPlayerStatisticsRepository,
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> schedulerTrackingRugbyTournamentRepository,
             IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> schedulerTrackingRugbyFixtureRepository,
             ILoggingService logger)
@@ -56,6 +59,7 @@
             _rugbySeasonRepository = rugbySeasonRepository;
             _schedulerTrackingRugbySeasonRepository = schedulerTrackingRugbySeasonRepository;
             _rugbyFixturesRepository = rugbyFixturesRepository;
+            _rugbyPlayerStatisticsRepository = rugbyPlayerStatisticsRepository;
             _schedulerTrackingRugbyFixtureRepository = schedulerTrackingRugbyFixtureRepository;
             _schedulerTrackingRugbyTournamentRepository = schedulerTrackingRugbyTournamentRepository;
         }
@@ -242,7 +246,7 @@
 
             if (tournament == null) return fixtures;
 
-            
+
             var today = DateTime.UtcNow;
 
             fixtures = _rugbyFixturesRepository.Where(t =>
@@ -257,7 +261,10 @@
 
             fixtures = fixtures.Where(f => 
                         f.RugbySeason != null && 
-                        f.RugbySeason.CurrentRoundNumber == f.RoundNumber);
+                        f.RoundNumber == 
+                            (f.RugbySeason.CurrentRoundNumberCmsOverride == null ? 
+                                f.RugbySeason.CurrentRoundNumber : 
+                                f.RugbySeason.CurrentRoundNumberCmsOverride));
 
             return await Task.FromResult(fixtures.ToList());
         }
@@ -289,6 +296,40 @@
             return recentFixturesInResultsState;
         }
 
+        public async Task<IEnumerable<RugbyTournament>> GetTournamentsForJustEndedFixtures()
+        {
+            var rugbyFixtures =
+                (await Task.FromResult(_rugbyFixturesRepository.Where(
+                    x => x.IsDisabledInbound == false &&
+                         x.RugbyFixtureStatus == RugbyFixtureStatus.Result &&
+                         x.RugbyTournament.IsEnabled &&
+                         x.RugbyTournament.IsEnabled)))
+                .ToList();
+
+            var rugbyTournaments = new List<RugbyTournament>();
+
+            foreach (var fixture in rugbyFixtures)
+            {
+                var utcNowDateTime = DateTimeOffset.UtcNow.DateTime;
+                var isPlayedToday = fixture.StartDateTime.Year == utcNowDateTime.Year &&
+                                    fixture.StartDateTime.Month == utcNowDateTime.Month &&
+                                    fixture.StartDateTime.Day == utcNowDateTime.Day;
+
+                if (!isPlayedToday) continue;
+
+                const int gameTimeEstimateInMinutes = 95;
+                var isMatchOver = utcNowDateTime >
+                                  fixture.StartDateTime.DateTime + TimeSpan.FromMinutes(gameTimeEstimateInMinutes);
+                if (!isMatchOver) continue;
+
+                if (rugbyTournaments.Any(t => t.Id == fixture.RugbyTournament.Id)) continue;
+
+                rugbyTournaments.Add(fixture.RugbyTournament);
+            }
+
+            return rugbyTournaments;
+        }
+
         public async Task<IEnumerable<RugbyFixture>> GetTournamentResults(string tournamentSlug)
         {
             if (IsNationalTeamSlug(tournamentSlug))
@@ -312,9 +353,13 @@
                     s.IsCurrent &&
                     s.RugbyTournament.Id == tournament.Id);
 
-            fixturesInResultsState = fixturesInResultsState.Where(f =>
-                season != null &&
-                season.CurrentRoundNumber == f.RoundNumber);
+            fixturesInResultsState = fixturesInResultsState
+                    .Where(f =>
+                        season != null &&
+                        f.RoundNumber ==
+                            (season.CurrentRoundNumberCmsOverride == null ?
+                                season.CurrentRoundNumber :
+                                season.CurrentRoundNumberCmsOverride));
 
             return fixturesInResultsState;
         }
@@ -377,11 +422,15 @@
             if (tournament != null && tournament.HasLogs)
             {
                 logs = _rugbyGroupedLogsRepository
-                    .Where(t => t.RugbyTournament.IsEnabled &&
-                                t.RugbyTournamentId == tournament.Id &&
-                                t.RugbySeason.IsCurrent &&
-                                t.RoundNumber == t.RugbySeason.CurrentRoundNumber &&
-                                t.RugbyLogGroup.IsCoreGroup)
+                    .Where(t => 
+                        t.RugbyTournament.IsEnabled &&
+                        t.RugbyTournamentId == tournament.Id &&
+                        t.RugbySeason.IsCurrent &&
+                        t.RoundNumber ==
+                            (t.RugbySeason.CurrentRoundNumberCmsOverride == null ?
+                                  t.RugbySeason.CurrentRoundNumber :
+                                  t.RugbySeason.CurrentRoundNumberCmsOverride) &&
+                        t.RugbyLogGroup.IsCoreGroup)
                     .OrderBy(g => g.RugbyLogGroup.Id).ThenBy(t => t.LogPosition);
 
                 return await Task.FromResult(logs.ToList());
@@ -398,11 +447,16 @@
 
             if (tournament != null && tournament.HasLogs)
             {
-                flatLogs = _rugbyFlatLogsRepository.Where(t => 
-                        t.RugbyTournament.IsEnabled && 
-                        t.RugbyTournamentId == tournament.Id && 
+                flatLogs = _rugbyFlatLogsRepository
+                    .Where(t =>
+                        t.RugbyTournament.IsEnabled &&
+                        t.RugbyTournamentId == tournament.Id &&
                         t.RugbySeason.IsCurrent &&
-                        t.RugbySeason.CurrentRoundNumber == t.RoundNumber).OrderBy(t => t.LogPosition);
+                        t.RoundNumber ==
+                            (t.RugbySeason.CurrentRoundNumberCmsOverride == null ?
+                                t.RugbySeason.CurrentRoundNumber :
+                                t.RugbySeason.CurrentRoundNumberCmsOverride))
+                    .OrderBy(t => t.LogPosition);
             }
 
             return await Task.FromResult(flatLogs.ToList());
@@ -611,6 +665,64 @@
             var fixtures = _rugbyFixturesRepository.Where(f => f.StartDateTime < today && f.StartDateTime >= fewDaysAgo);
 
             return await Task.FromResult(fixtures.ToList());
+        }
+
+        public async Task<IEnumerable<RugbyPlayerStatistics>> GetTournamentTryScorers(string tournamentSlug)
+        {
+            var tournamentId = await GetTournamentId(tournamentSlug);
+
+            var players = _rugbyPlayerStatisticsRepository
+                .Where(s => s.RugbyTournament.Id == tournamentId)
+                .OrderByDescending(p => p.TriesScored)
+                .ToList();
+
+            if (!players.Any()) return players;
+
+            var currentPlayerTries = players.First().TriesScored;
+            var currentPlayerRank = 1;
+            foreach (var player in players)
+            {
+                var shouldIncrementRank = player.TriesScored < currentPlayerTries;
+                if (shouldIncrementRank)
+                {
+                    currentPlayerRank++;
+                    player.Rank = currentPlayerRank;
+                    currentPlayerTries = player.TriesScored;
+                }
+
+                player.Rank = currentPlayerRank;
+            }
+
+            return players;
+        }
+
+        public async Task<IEnumerable<RugbyPlayerStatistics>> GetTournamentPointsScorers(string tournamentSlug)
+        {
+            var tournamentId = await GetTournamentId(tournamentSlug);
+
+            var players = _rugbyPlayerStatisticsRepository
+                .Where(s => s.RugbyTournament.Id == tournamentId)
+                .OrderByDescending(s => s.TotalPoints)
+                .ToList();
+
+            if (!players.Any()) return players;
+
+            var currentPlayerPoints = players.First().TotalPoints;
+            var currentPlayerRank = 1;
+            foreach (var player in players)
+            {
+                var shouldIncrementRank = player.TotalPoints < currentPlayerPoints;
+                if (shouldIncrementRank)
+                {
+                    currentPlayerPoints = player.TotalPoints;
+                    currentPlayerRank++;
+                    player.Rank = currentPlayerRank;
+                }
+
+                player.Rank = currentPlayerRank;
+            }
+
+            return players;
         }
     }
 }

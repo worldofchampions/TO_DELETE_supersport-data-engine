@@ -1,28 +1,27 @@
-﻿using SuperSportDataEngine.Application.Container.Enums;
+﻿using System;
+using System.Configuration;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Hangfire;
+using Hangfire.Common;
+using Microsoft.Practices.Unity;
+using SuperSportDataEngine.Application.Container;
+using SuperSportDataEngine.Application.Container.Enums;
+using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+using SuperSportDataEngine.ApplicationLogic.Services;
+using SuperSportDataEngine.Common.Logging;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledManager
 {
-    using Hangfire;
-    using Hangfire.Common;
-    using Microsoft.Practices.Unity;
-    using Container;
-    using Common.Hangfire.Configuration;
-    using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-    using ApplicationLogic.Services;
-    using System;
-    using System.Configuration;
-    using System.Linq;
-    using System.Threading;
-    using System.Threading.Tasks;
-
-    public class LogsManagerJob
+    public class PlayerStatisticsManagerJob
     {
-        IRecurringJobManager _recurringJobManager;
-        IUnityContainer _childContainer;
+        private IRecurringJobManager _recurringJobManager;
+        private IUnityContainer _childContainer;
         private static int _maxNumberOfRecentFixturesToConsider;
-        private static int _maxNumberOfHoursToCheckForResults;
 
-        public LogsManagerJob(
+        public PlayerStatisticsManagerJob(
             IRecurringJobManager recurringJobManager,
             IUnityContainer childContainer)
         {
@@ -30,9 +29,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
             _childContainer = childContainer;
             _maxNumberOfRecentFixturesToConsider =
                 int.Parse(ConfigurationManager.AppSettings["MaxNumberOfRecentFixturesToConsider"]);
-
-            _maxNumberOfHoursToCheckForResults =
-                int.Parse(ConfigurationManager.AppSettings["MaxNumberOfHoursToCheckForResults"]);
         }
 
         public async Task DoWorkAsync()
@@ -40,7 +36,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
             CreateContainer();
             ConfigureDependencies();
 
-            await CreateChildJobsForFetchingLogs();
+            await CreateAndDeleteChildJobsForFetchingPlayerStatistics();
         }
 
         private void ConfigureDependencies()
@@ -57,52 +53,54 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
             UnityConfigurationManager.RegisterApiGlobalTypes(_childContainer, ApplicationScope.ServiceSchedulerClient);
         }
 
-        private async Task CreateChildJobsForFetchingLogs()
+        private async Task CreateAndDeleteChildJobsForFetchingPlayerStatistics()
         {
             var today = DateTime.UtcNow.Date;
-            var minTimeToCheckForResults = DateTime.UtcNow - TimeSpan.FromHours(_maxNumberOfHoursToCheckForResults);
+            var now = DateTime.UtcNow;
 
-            // We only want to poll logs for tournaments that have 
-            // fixtures in result state within the last few hours.
-            // This is configurable.
             var todayTournaments =
                 (await _childContainer.Resolve<IRugbyService>().GetRecentResultsFixtures(_maxNumberOfRecentFixturesToConsider))
                 .Where(f => f.StartDateTime.Date == today)
-                .Where(f => f.StartDateTime > minTimeToCheckForResults)
                 .Select(f => f.RugbyTournament)
                 .ToList();
 
             var todayTournamentIds = todayTournaments.Select(t => t.ProviderTournamentId);
 
             var notTodayTournaments = (await _childContainer.Resolve<IRugbyService>().GetCurrentTournaments())
-                .Where(t => !todayTournamentIds.Contains(t.ProviderTournamentId));
+                .Where(t => todayTournamentIds.Contains(t.ProviderTournamentId));
 
             foreach (var tournament in notTodayTournaments)
             {
-                var jobId = ConfigurationManager.AppSettings["ScheduleManagerJob_Logs_CurrentTournaments_JobIdPrefix"] + tournament.Name;
+                var jobId =
+                    ConfigurationManager.AppSettings["ScheduleManagerJob_PlayerStats_CurrentTournaments_JobIdPrefix"] + tournament.Name;
 
                 _recurringJobManager.RemoveIfExists(jobId);
             }
 
             foreach (var tournament in todayTournaments)
             {
-                var seasonId = await _childContainer.Resolve<IRugbyService>().GetCurrentProviderSeasonIdForTournament(CancellationToken.None, tournament.Id);
-                var jobId = ConfigurationManager.AppSettings["ScheduleManagerJob_Logs_CurrentTournaments_JobIdPrefix"] + tournament.Name;
+                var seasonId = 
+                    await _childContainer.Resolve<IRugbyService>().GetCurrentProviderSeasonIdForTournament(CancellationToken.None, tournament.Id);
+
+                var jobId = 
+                    ConfigurationManager.AppSettings["ScheduleManagerJob_PlayerStats_CurrentTournaments_JobIdPrefix"] + tournament.Name;
+
                 var cronExpression =
-                    ConfigurationManager.AppSettings[
-                        "ScheduleManagerJob_Logs_CurrentTournaments_JobCronExpression_OneMinute"];
+                    ConfigurationManager.AppSettings["ScheduleManagerJob_PlayerStats_CurrentTournaments_JobCronExpression"];
 
                 AddOrUpdateHangfireJob(tournament.ProviderTournamentId, seasonId, jobId, cronExpression);
             }
         }
 
-        private void AddOrUpdateHangfireJob(int providerTournamentId, int seasonId, string jobId, string jobCronExpression)
+        private void AddOrUpdateHangfireJob(int tournamentId, int seasonId, string jobId, string jobCronExpression)
         {
+            var rugbyService = _childContainer.Resolve<IRugbyIngestWorkerService>();
+
             _recurringJobManager.AddOrUpdate(
                 jobId,
-                Job.FromExpression(() => (_childContainer.Resolve<IRugbyIngestWorkerService>()).IngestLogsForTournamentSeason(CancellationToken.None, providerTournamentId, seasonId)),
+                Job.FromExpression(() => rugbyService.IngestPlayerStatsForCurrentTournaments(tournamentId, seasonId ,CancellationToken.None)),
                 jobCronExpression,
-                new RecurringJobOptions()
+                new RecurringJobOptions
                 {
                     TimeZone = TimeZoneInfo.Local,
                     QueueName = HangfireQueueConfiguration.HighPriority
