@@ -57,15 +57,16 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         /// </summary>
         /// <param name="pageIndex"></param>
         /// <param name="pageSize"></param>
+        /// <param name="query"></param>
         /// <returns></returns>
 
         [ActionName("fixtures")]
         [HttpGet]
-        public async Task<HttpResponseMessage> GetAllFixtures(int pageIndex, int pageSize)
+        public async Task<HttpResponseMessage> GetAllFixtures(int pageIndex, int pageSize, string query = null)
         {
             try
             {
-                var fixtures = await _rugbyService.GetAllFixtures(pageIndex, pageSize, path);
+                var fixtures = await _rugbyService.GetAllFixtures(pageIndex, pageSize, path, query);
                 return Request.CreateResponse(HttpStatusCode.OK, fixtures);
             }
             catch(Exception ex)
@@ -79,15 +80,16 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         /// </summary>
         /// <param name="pageIndex"></param>
         /// <param name="pageSize"></param>
+        /// <param name="query"></param>
         /// <returns></returns>
-        
+
         [ActionName("seasons")]
         [HttpGet]
-        public async Task<HttpResponseMessage> GetAllSeasons(int pageIndex, int pageSize)
+        public async Task<HttpResponseMessage> GetAllSeasons(int pageIndex, int pageSize, string query = null)
         {
             try
             {
-                var seasons = await _rugbyService.GetAllSeasons(pageIndex, pageSize, path);
+                var seasons = await _rugbyService.GetAllSeasons(pageIndex, pageSize, path, query);
                 return Request.CreateResponse(HttpStatusCode.OK, seasons);
             }
             catch(Exception ex)
@@ -101,15 +103,16 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         /// </summary>
         /// <param name="pageIndex"></param>
         /// <param name="pageSize"></param>
+        /// <param name="query"></param>
         /// <returns></returns>
 
         [ActionName("teams")]
         [HttpGet]
-        public async Task<HttpResponseMessage> GetAllTeams(int pageIndex, int pageSize)
+        public async Task<HttpResponseMessage> GetAllTeams(int pageIndex, int pageSize, string query = null)
         {
             try
             {
-                var teams = await _rugbyService.GetAllTeams(pageIndex, pageSize, path);
+                var teams = await _rugbyService.GetAllTeams(pageIndex, pageSize, path, query);
                 return Request.CreateResponse(HttpStatusCode.OK, teams);
             }
             catch(Exception ex)
@@ -123,15 +126,16 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         /// </summary>
         /// <param name="pageIndex"></param>
         /// <param name="pageSize"></param>
+        /// <param name="query"></param>
         /// <returns></returns>
 
         [ActionName("players")]
         [HttpGet]
-        public async Task<HttpResponseMessage> GetAllPlayers(int pageIndex, int pageSize)
+        public async Task<HttpResponseMessage> GetAllPlayers(int pageIndex, int pageSize, string query = null)
         {
             try
             {
-                var players = await _rugbyService.GetAllPlayers(pageIndex, pageSize, path);
+                var players = await _rugbyService.GetAllPlayers(pageIndex, pageSize, path, query);
                 return Request.CreateResponse(HttpStatusCode.OK, players);
             }
             catch(Exception ex)
@@ -146,15 +150,16 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         /// <param name="tournamentId"></param>
         /// <param name="pageIndex"></param>
         /// <param name="pageSize"></param>
+        /// <param name="query"></param>
         /// <returns></returns>
 
         [Route("api/Rugby/tournament/{tournamentId:guid}/seasons")]
         [HttpGet]
-        public async Task<HttpResponseMessage> GetAllTournamentSeasons(Guid tournamentId, int pageIndex, int pageSize)
+        public async Task<HttpResponseMessage> GetAllTournamentSeasons(Guid tournamentId, int pageIndex, int pageSize, string query = null)
         {
             try
             {
-                var tournamentSeasons = await _rugbyService.GetSeasonsForTournament(tournamentId, pageIndex, pageSize, path);
+                var tournamentSeasons = await _rugbyService.GetSeasonsForTournament(tournamentId, pageIndex, pageSize, path, query);
                 return Request.CreateResponse(HttpStatusCode.OK, tournamentSeasons);
             }
             catch (Exception ex)
@@ -169,15 +174,16 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         /// <param name="seasonId"></param>
         /// <param name="pageIndex"></param>
         /// <param name="pageSize"></param>
+        /// <param name="query"></param>
         /// <returns></returns>
 
         [Route("api/Rugby/season/{seasonId:guid}/fixtures")]
         [HttpGet]
-        public async Task<HttpResponseMessage> GetAllFixturesForTournamentSeason(Guid seasonId, int pageIndex, int pageSize)
+        public async Task<HttpResponseMessage> GetAllFixturesForTournamentSeason(Guid seasonId, int pageIndex, int pageSize, string query = null)
         {
             try
             {
-                var seasonFixtures = await _rugbyService.GetFixturesForTournamentSeason(seasonId, pageIndex, pageSize, path);
+                var seasonFixtures = await _rugbyService.GetFixturesForTournamentSeason(seasonId, pageIndex, pageSize, path, query);
                 return Request.CreateResponse(HttpStatusCode.OK, seasonFixtures);
             }
             catch (Exception ex)
