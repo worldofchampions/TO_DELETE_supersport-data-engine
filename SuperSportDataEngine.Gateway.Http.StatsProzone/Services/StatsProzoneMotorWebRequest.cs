@@ -108,7 +108,7 @@
             return requestForRaces;
         }
 
-        public WebRequest GetRequestForSchedule(string providerSlug, int providerSeasonId, int providerRaceId)
+        public WebRequest GetRequestForCalendar(string providerSlug, int providerSeasonId, int providerRaceId)
         {
             var eventsUrl = $"/v1/stats/motor/{providerSlug}/events/";
 
@@ -143,7 +143,7 @@
             return requestForRaceResults;
         }
 
-        public WebRequest GetRequestForLeagueSeasons(string providerSlug)
+        public WebRequest GetRequestForSeasons(string providerSlug)
         {
             var seasonsUrl = $"/v1/decode/motor/{providerSlug}/seasonStructure/";
 

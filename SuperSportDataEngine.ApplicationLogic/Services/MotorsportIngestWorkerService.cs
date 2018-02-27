@@ -299,12 +299,14 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             MotorsportLeague league, CancellationToken cancellationToken)
         {
             var racesFromProvider = ExtractRacesFromProviderResponse(providerResponse);
+
             if (racesFromProvider is null)
                 return;
 
             foreach (var providerRace in racesFromProvider)
             {
                 var raceInRepo = _publicSportDataUnitOfWork.MotorsportRaces.FirstOrDefault(r => r.ProviderRaceId == providerRace.raceId);
+
                 if (raceInRepo is null)
                 {
                     AddNewRaceToRepo(providerRace, league);
@@ -321,13 +323,16 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         private async Task PersistCalendarInRepository(MotorsportEntitiesResponse providerResponse, MotorsportRace race, MotorsportSeason season, CancellationToken cancellationToken)
         {
             var calendarFromProviderResponse = ExtractCalendarFromProviderResponse(providerResponse);
+
             if (calendarFromProviderResponse is null)
                 return;
 
             foreach (var raceEvent in calendarFromProviderResponse)
             {
                 var calendarInRepo =
-                    _publicSportDataUnitOfWork.MotorsportRaceCalendars.FirstOrDefault(r => r.MotorsportRace.ProviderRaceId == raceEvent.race.raceId);
+                    _publicSportDataUnitOfWork.MotorsportRaceCalendars.FirstOrDefault(r =>
+                    r.MotorsportRace.ProviderRaceId == raceEvent.race.raceId
+                    && r.MotorsportSeason.Id == season.Id);
 
                 if (calendarInRepo is null)
                 {

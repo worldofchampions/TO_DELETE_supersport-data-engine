@@ -8,10 +8,10 @@
         WebRequest GetRequestForStandings(string providerSlug, string standingsTypeId, int providerSeasonId);
         WebRequest GetRequestForLeagues();
         WebRequest GetRequestForRaces(string providerSlug, int providerSeasonId);
-        WebRequest GetRequestForSchedule(string providerSlug, int providerSeasonId, int providerRaceId);
+        WebRequest GetRequestForCalendar(string providerSlug, int providerSeasonId, int providerRaceId);
         WebRequest GetRequestForOwners(string providerSlug);
         WebRequest GetRequestForRaceResults(string providerSlug, int providerSeasonId, int providerRaceId);
-        WebRequest GetRequestForLeagueSeasons(string providerSlug);
+        WebRequest GetRequestForSeasons(string providerSlug);
         WebRequest GetRequestForRaceGrid(string providerSlug, int providerSeasonId, int providerRaceId);
     }
 }

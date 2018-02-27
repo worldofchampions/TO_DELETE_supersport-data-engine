@@ -1,60 +1,66 @@
-﻿using System;
-using System.Net;
-
-namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
+﻿namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 {
+    using System;
+    using System.Net;
     using System.IO;
     using System.Text;
     using Newtonsoft.Json;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motor;
+    using SuperSportDataEngine.Common.Logging;
+    using SuperSportDataEngine.ApplicationLogic.Constants.Providers;
 
     public class StatsProzoneMotorIngestService : IStatsProzoneMotorIngestService
     {
-        private const string TeamStandingsTypeId = "2"; //TODO Move to STATS constants
-
-        private const string DriverStandingsTypeId = "1"; //TODO Move to STATS constants
-
         private readonly IProviderWebRequest _statsMotorsportWebRequest;
+        private readonly ILoggingService _loggingService;
 
-        public StatsProzoneMotorIngestService(IProviderWebRequest statsMotorsportWebRequest)
+        public StatsProzoneMotorIngestService(IProviderWebRequest statsMotorsportWebRequest, ILoggingService loggingService)
         {
             _statsMotorsportWebRequest = statsMotorsportWebRequest;
+            _loggingService = loggingService;
         }
 
         public MotorsportEntitiesResponse IngestLeagues()
         {
-            var webRequestForTournamentsIngest = _statsMotorsportWebRequest.GetRequestForLeagues();
-
-            MotorsportEntitiesResponse leagues;
-
-            using (var webResponse = webRequestForTournamentsIngest.GetResponse())
+            try
             {
-                using (var responseStream = webResponse.GetResponseStream())
+                var requestForLeagues = _statsMotorsportWebRequest.GetRequestForLeagues();
+
+                MotorsportEntitiesResponse leagues;
+
+                using (var webResponse = requestForLeagues.GetResponse())
                 {
-                    if (responseStream == null) return null;
+                    using (var responseStream = webResponse.GetResponseStream())
+                    {
+                        if (responseStream == null) return null;
 
-                    var streamReader = new StreamReader(responseStream, Encoding.UTF8);
+                        var streamReader = new StreamReader(responseStream, Encoding.UTF8);
 
-                    leagues = JsonConvert.DeserializeObject<MotorsportEntitiesResponse>(streamReader.ReadToEnd());
+                        leagues = JsonConvert.DeserializeObject<MotorsportEntitiesResponse>(streamReader.ReadToEnd());
+                    }
                 }
-            }
 
-            return leagues;
+                return leagues;
+            }
+            catch (WebException exception)
+            {
+                LogProviderErrorResponse(exception);
+
+                return null;
+            }
         }
 
         public MotorsportEntitiesResponse IngestLeagueSeasons(string providerSlug)
         {
-            var webRequestForTournamentsIngest = _statsMotorsportWebRequest.GetRequestForLeagueSeasons(providerSlug);
-
             try
             {
+                var requestForSeasons = _statsMotorsportWebRequest.GetRequestForSeasons(providerSlug);
+
                 MotorsportEntitiesResponse seasons;
 
-                using (var webResponse = webRequestForTournamentsIngest.GetResponse())
+                using (var webResponse = requestForSeasons.GetResponse())
                 {
-                    if (((HttpWebResponse)webResponse).StatusCode != HttpStatusCode.OK) return null;
-
                     using (var responseStream = webResponse.GetResponseStream())
                     {
                         if (responseStream == null) return null;
@@ -67,45 +73,54 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
                 return seasons;
             }
-            catch (WebException)
+            catch (WebException exception)
             {
-                // Provider must have returned error object hence failed to serialize it.
-                // TODO rework handling of this
+                LogProviderErrorResponse(exception);
+
                 return null;
             }
         }
 
         public MotorsportEntitiesResponse IngestLeagueRaces(string providerSlug, int providerSeasonId)
         {
-            var statsWebRequest = _statsMotorsportWebRequest.GetRequestForRaces(providerSlug, providerSeasonId);
-
-            MotorsportEntitiesResponse racesEntitiesResponse;
-
-            using (var statsWebResponse = statsWebRequest.GetResponse())
+            try
             {
-                using (var responseStream = statsWebResponse.GetResponseStream())
+                var requestForRaces = _statsMotorsportWebRequest.GetRequestForRaces(providerSlug, providerSeasonId);
+
+                MotorsportEntitiesResponse races;
+
+                using (var statsWebResponse = requestForRaces.GetResponse())
                 {
-                    if (responseStream == null) return null;
+                    using (var responseStream = statsWebResponse.GetResponseStream())
+                    {
+                        if (responseStream == null) return null;
 
-                    var streamReader = new StreamReader(responseStream, Encoding.UTF8);
+                        var streamReader = new StreamReader(responseStream, Encoding.UTF8);
 
-                    racesEntitiesResponse =
-                        JsonConvert.DeserializeObject<MotorsportEntitiesResponse>(streamReader.ReadToEnd());
+                        races = JsonConvert.DeserializeObject<MotorsportEntitiesResponse>(streamReader.ReadToEnd());
+                    }
                 }
-            }
 
-            return racesEntitiesResponse;
+                return races;
+            }
+            catch (WebException exception)
+            {
+                LogProviderErrorResponse(exception);
+
+                return null;
+            }
         }
 
         public MotorsportEntitiesResponse IngestLeagueCalendar(string providerSlug, int providerSeasonId, int providerRaceId)
         {
             try
             {
-                var requestForSchedule = _statsMotorsportWebRequest.GetRequestForSchedule(providerSlug, providerSeasonId, providerRaceId);
+                var requestForCalendar =
+                    _statsMotorsportWebRequest.GetRequestForCalendar(providerSlug, providerSeasonId, providerRaceId);
 
-                MotorsportEntitiesResponse leagueCalendar;
+                MotorsportEntitiesResponse calendar;
 
-                using (var webResponse = requestForSchedule.GetResponse())
+                using (var webResponse = requestForCalendar.GetResponse())
                 {
                     using (var responseStream = webResponse.GetResponseStream())
                     {
@@ -113,142 +128,199 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 
                         var streamReader = new StreamReader(responseStream, Encoding.UTF8);
 
-                        leagueCalendar = JsonConvert.DeserializeObject<MotorsportEntitiesResponse>(streamReader.ReadToEnd());
+                        calendar = JsonConvert.DeserializeObject<MotorsportEntitiesResponse>(streamReader.ReadToEnd());
                     }
                 }
 
-                return leagueCalendar;
+                return calendar;
             }
-            catch (WebException)
+            catch (WebException exception)
             {
-                // Provider must have returned error object hence failed to serialize it.
-                // TODO rework handling of this
+                LogProviderErrorResponse(exception);
+
                 return null;
             }
         }
 
         public MotorsportEntitiesResponse IngestRaceResults(string providerSlug, int providerSeasonId, int providerRaceId)
         {
-            var raceResultsRequest =
-                _statsMotorsportWebRequest.GetRequestForRaceResults(providerSlug, providerSeasonId, providerRaceId);
-
-            MotorsportEntitiesResponse raceResultsResponse;
-
-            using (var webResponse = raceResultsRequest.GetResponse())
+            try
             {
-                using (var responseStream = webResponse.GetResponseStream())
+                var raceResultsRequest =
+                        _statsMotorsportWebRequest.GetRequestForRaceResults(providerSlug, providerSeasonId, providerRaceId);
+
+                MotorsportEntitiesResponse raceResults;
+
+                using (var webResponse = raceResultsRequest.GetResponse())
                 {
-                    if (responseStream is null) return null;
+                    using (var responseStream = webResponse.GetResponseStream())
+                    {
+                        if (responseStream is null) return null;
 
-                    var streamReader = new StreamReader(responseStream, Encoding.UTF8);
+                        var streamReader = new StreamReader(responseStream, Encoding.UTF8);
 
-                    raceResultsResponse =
-                        JsonConvert.DeserializeObject<MotorsportEntitiesResponse>(streamReader.ReadToEnd());
+                        raceResults =
+                            JsonConvert.DeserializeObject<MotorsportEntitiesResponse>(streamReader.ReadToEnd());
+                    }
                 }
-            }
 
-            return raceResultsResponse;
+                return raceResults;
+            }
+            catch (WebException exception)
+            {
+                LogProviderErrorResponse(exception);
+
+                return null;
+            }
         }
 
         public MotorsportEntitiesResponse IngestRaceGrid(string providerSlug, int providerSeasonId, int providerRaceId)
         {
-            var raceResultsRequest =
-                _statsMotorsportWebRequest.GetRequestForRaceGrid(providerSlug, providerSeasonId, providerRaceId);
-
-            MotorsportEntitiesResponse raceResultsResponse;
-
-            using (var webResponse = raceResultsRequest.GetResponse())
+            try
             {
-                using (var responseStream = webResponse.GetResponseStream())
+                var requestForRaceGrid =
+                        _statsMotorsportWebRequest.GetRequestForRaceGrid(providerSlug, providerSeasonId, providerRaceId);
+
+                MotorsportEntitiesResponse raceGrid;
+
+                using (var webResponse = requestForRaceGrid.GetResponse())
                 {
-                    if (responseStream is null) return null;
+                    using (var responseStream = webResponse.GetResponseStream())
+                    {
+                        if (responseStream is null) return null;
 
-                    var streamReader = new StreamReader(responseStream, Encoding.UTF8);
+                        var streamReader = new StreamReader(responseStream, Encoding.UTF8);
 
-                    raceResultsResponse =
-                        JsonConvert.DeserializeObject<MotorsportEntitiesResponse>(streamReader.ReadToEnd());
+                        raceGrid =
+                            JsonConvert.DeserializeObject<MotorsportEntitiesResponse>(streamReader.ReadToEnd());
+                    }
                 }
-            }
 
-            return raceResultsResponse;
+                return raceGrid;
+            }
+            catch (WebException exception)
+            {
+                LogProviderErrorResponse(exception);
+
+                return null;
+            }
         }
 
         public MotorsportEntitiesResponse IngestDriversForLeague(string providerSlug, int providerSeasonId)
         {
-            var webRequestForDriverIngest =
-                _statsMotorsportWebRequest.GetRequestForDrivers(providerSlug, providerSeasonId);
-
-            MotorsportEntitiesResponse tournamentDrivers;
-
-            using (var webResponse = webRequestForDriverIngest.GetResponse())
+            try
             {
-                using (var responseStream = webResponse.GetResponseStream())
+                var requestForDrivers =
+                    _statsMotorsportWebRequest.GetRequestForDrivers(providerSlug, providerSeasonId);
+
+                MotorsportEntitiesResponse drivers;
+
+                using (var webResponse = requestForDrivers.GetResponse())
                 {
-                    if (responseStream is null) return null;
+                    using (var responseStream = webResponse.GetResponseStream())
+                    {
+                        if (responseStream is null) return null;
 
-                    var streamReader = new StreamReader(responseStream, Encoding.UTF8);
+                        var streamReader = new StreamReader(responseStream, Encoding.UTF8);
 
-                    tournamentDrivers = JsonConvert.DeserializeObject<MotorsportEntitiesResponse>(streamReader.ReadToEnd());
+                        drivers = JsonConvert.DeserializeObject<MotorsportEntitiesResponse>(streamReader.ReadToEnd());
+                    }
                 }
-            }
 
-            return tournamentDrivers;
+                return drivers;
+            }
+            catch (WebException exception)
+            {
+                LogProviderErrorResponse(exception);
+
+                return null;
+            }
         }
 
         public MotorsportEntitiesResponse IngestTeamsForLeague(string providerSlug)
         {
-            var webRequestForTeamIngestIngest = _statsMotorsportWebRequest.GetRequestForTeams(providerSlug);
-
-            MotorsportEntitiesResponse tournamentTeamsResponse;
-
-            using (var webResponse = webRequestForTeamIngestIngest.GetResponse())
+            try
             {
-                using (var responseStream = webResponse.GetResponseStream())
+                var requestForTeams = _statsMotorsportWebRequest.GetRequestForTeams(providerSlug);
+
+                MotorsportEntitiesResponse teams;
+
+                using (var webResponse = requestForTeams.GetResponse())
                 {
-                    if (responseStream is null) return null;
+                    using (var responseStream = webResponse.GetResponseStream())
+                    {
+                        if (responseStream is null) return null;
 
-                    var streamReader = new StreamReader(responseStream, Encoding.UTF8);
+                        var streamReader = new StreamReader(responseStream, Encoding.UTF8);
 
-                    tournamentTeamsResponse = JsonConvert.DeserializeObject<MotorsportEntitiesResponse>(streamReader.ReadToEnd());
+                        teams = JsonConvert.DeserializeObject<MotorsportEntitiesResponse>(streamReader.ReadToEnd());
+                    }
                 }
-            }
 
-            return tournamentTeamsResponse;
+                return teams;
+            }
+            catch (WebException exception)
+            {
+                LogProviderErrorResponse(exception);
+
+                return null;
+            }
         }
 
         public MotorsportEntitiesResponse IngestDriverStandings(string providerSlug, int providerSeasonId)
         {
-            var driverStandings = IngestStandings(providerSlug, DriverStandingsTypeId, providerSeasonId);
+            var driverStandings = IngestStandings(providerSlug, MotorsportStatsConstants.DriverStandingsTypeId, providerSeasonId);
 
             return driverStandings;
         }
 
         public MotorsportEntitiesResponse IngestTeamStandings(string providerSlug, int providerSeasonId)
         {
-            var teamStandings = IngestStandings(providerSlug, TeamStandingsTypeId, providerSeasonId);
+            var teamStandings = IngestStandings(providerSlug, MotorsportStatsConstants.TeamStandingsTypeId, providerSeasonId);
 
             return teamStandings;
         }
 
         private MotorsportEntitiesResponse IngestStandings(string providerSlug, string standingsTypeId, int providerSeasonId)
         {
-            var webRequestForStandingsIngest = _statsMotorsportWebRequest.GetRequestForStandings(providerSlug, standingsTypeId, providerSeasonId);
-
-            MotorsportEntitiesResponse standings;
-
-            using (var webResponse = webRequestForStandingsIngest.GetResponse())
+            try
             {
-                using (var responseStream = webResponse.GetResponseStream())
+                var requestForStandings =
+                    _statsMotorsportWebRequest.GetRequestForStandings(providerSlug, standingsTypeId, providerSeasonId);
+
+                MotorsportEntitiesResponse standings;
+
+                using (var webResponse = requestForStandings.GetResponse())
                 {
-                    if (responseStream == null) return null;
+                    using (var responseStream = webResponse.GetResponseStream())
+                    {
+                        if (responseStream == null) return null;
 
-                    var streamReader = new StreamReader(responseStream, Encoding.UTF8);
+                        var streamReader = new StreamReader(responseStream, Encoding.UTF8);
 
-                    standings = JsonConvert.DeserializeObject<MotorsportEntitiesResponse>(streamReader.ReadToEnd());
+                        standings = JsonConvert.DeserializeObject<MotorsportEntitiesResponse>(streamReader.ReadToEnd());
+                    }
                 }
-            }
 
-            return standings;
+                return standings;
+            }
+            catch (WebException exception)
+            {
+                LogProviderErrorResponse(exception);
+
+                return null;
+            }
+        }
+
+        private void LogProviderErrorResponse(WebException exception)
+        {
+            if (!(exception.Response is HttpWebResponse errorResponse) || errorResponse.StatusCode != HttpStatusCode.NotFound) return;
+
+            const string key = "MOTORSPORT-PROVIDER-RESPONSE-ERROR";
+
+            var url = exception.Response.ResponseUri.AbsoluteUri;
+
+            _loggingService.Warn(key, exception, $"{key}{Environment.NewLine}{exception.Message}{Environment.NewLine}{url}");
         }
     }
 }
