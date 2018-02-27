@@ -19,7 +19,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
     {
         private IRecurringJobManager _recurringJobManager;
         private IUnityContainer _childContainer;
-        ILoggingService _logger;
         private static int _maxNumberOfRecentFixturesToConsider;
 
         public PlayerStatisticsManagerJob(
