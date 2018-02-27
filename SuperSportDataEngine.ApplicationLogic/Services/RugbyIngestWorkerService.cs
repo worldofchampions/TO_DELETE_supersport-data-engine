@@ -375,13 +375,10 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 seasonEntry.StartDateTime = newEntry.StartDateTime;
                 seasonEntry.Name = newEntry.Name;
 
-                if (tournament.ProviderTournamentId != RugbyStatsProzoneConstants.ProviderTournamentIdSevensRugby)
+                if (currentRoundNumber != -1 &&
+                    seasonEntry.CurrentRoundNumber <= currentRoundNumber)
                 {
-                    if (currentRoundNumber != -1 &&
-                        seasonEntry.CurrentRoundNumber <= currentRoundNumber)
-                    {
-                        seasonEntry.CurrentRoundNumber = currentRoundNumber;
-                    }
+                    seasonEntry.CurrentRoundNumber = currentRoundNumber;
                 }
 
                 CheckIfAllFixturesForCurrentRoundHasEnded(seasonEntry);
@@ -891,7 +888,10 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                                                  s.RugbyTournament.ProviderTournamentId == tournament.ProviderTournamentId);
 
                 if (season == null) continue;
-                var numberOfRounds = season.CurrentRoundNumber;
+                var numberOfRounds = (int)(
+                        season.CurrentRoundNumberCmsOverride == null ?
+                            season.CurrentRoundNumber :
+                            season.CurrentRoundNumberCmsOverride);
 
                 var logType = season.RugbyLogType;
 
@@ -1350,7 +1350,12 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 if (rugbySeason == null) continue;
                 if (rugbyTeam == null) continue;
 
-                if (ladder.roundNumber != rugbySeason.CurrentRoundNumber)
+                var roundNumber = 
+                    rugbySeason.CurrentRoundNumberCmsOverride == null ? 
+                        rugbySeason.CurrentRoundNumber : 
+                        rugbySeason.CurrentRoundNumberCmsOverride;
+
+                if (ladder.roundNumber != roundNumber)
                     continue;
 
                 try
@@ -2556,7 +2561,11 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             if (!season.Any())
                 return;
 
-            var numberOfRounds = season.First().CurrentRoundNumber;
+            int numberOfRounds = (int)(
+                    season.First().CurrentRoundNumberCmsOverride == null ?
+                        season.First().CurrentRoundNumber : 
+                        season.First().CurrentRoundNumberCmsOverride);
+
             var logType = season.First().RugbyLogType;
 
             if (logType == RugbyLogType.FlatLogs)

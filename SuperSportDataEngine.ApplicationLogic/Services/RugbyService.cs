@@ -261,7 +261,10 @@
 
             fixtures = fixtures.Where(f => 
                         f.RugbySeason != null && 
-                        f.RugbySeason.CurrentRoundNumber == f.RoundNumber);
+                        f.RoundNumber == 
+                            (f.RugbySeason.CurrentRoundNumberCmsOverride == null ? 
+                                f.RugbySeason.CurrentRoundNumber : 
+                                f.RugbySeason.CurrentRoundNumberCmsOverride));
 
             return await Task.FromResult(fixtures.ToList());
         }
@@ -350,9 +353,13 @@
                     s.IsCurrent &&
                     s.RugbyTournament.Id == tournament.Id);
 
-            fixturesInResultsState = fixturesInResultsState.Where(f =>
-                season != null &&
-                season.CurrentRoundNumber == f.RoundNumber);
+            fixturesInResultsState = fixturesInResultsState
+                    .Where(f =>
+                        season != null &&
+                        f.RoundNumber ==
+                            (season.CurrentRoundNumberCmsOverride == null ?
+                                season.CurrentRoundNumber :
+                                season.CurrentRoundNumberCmsOverride));
 
             return fixturesInResultsState;
         }
@@ -415,11 +422,15 @@
             if (tournament != null && tournament.HasLogs)
             {
                 logs = _rugbyGroupedLogsRepository
-                    .Where(t => t.RugbyTournament.IsEnabled &&
-                                t.RugbyTournamentId == tournament.Id &&
-                                t.RugbySeason.IsCurrent &&
-                                t.RoundNumber == t.RugbySeason.CurrentRoundNumber &&
-                                t.RugbyLogGroup.IsCoreGroup)
+                    .Where(t => 
+                        t.RugbyTournament.IsEnabled &&
+                        t.RugbyTournamentId == tournament.Id &&
+                        t.RugbySeason.IsCurrent &&
+                        t.RoundNumber ==
+                            (t.RugbySeason.CurrentRoundNumberCmsOverride == null ?
+                                  t.RugbySeason.CurrentRoundNumber :
+                                  t.RugbySeason.CurrentRoundNumberCmsOverride) &&
+                        t.RugbyLogGroup.IsCoreGroup)
                     .OrderBy(g => g.RugbyLogGroup.Id).ThenBy(t => t.LogPosition);
 
                 return await Task.FromResult(logs.ToList());
@@ -436,11 +447,16 @@
 
             if (tournament != null && tournament.HasLogs)
             {
-                flatLogs = _rugbyFlatLogsRepository.Where(t =>
+                flatLogs = _rugbyFlatLogsRepository
+                    .Where(t =>
                         t.RugbyTournament.IsEnabled &&
                         t.RugbyTournamentId == tournament.Id &&
                         t.RugbySeason.IsCurrent &&
-                        t.RugbySeason.CurrentRoundNumber == t.RoundNumber).OrderBy(t => t.LogPosition);
+                        t.RoundNumber ==
+                            (t.RugbySeason.CurrentRoundNumberCmsOverride == null ?
+                                t.RugbySeason.CurrentRoundNumber :
+                                t.RugbySeason.CurrentRoundNumberCmsOverride))
+                    .OrderBy(t => t.LogPosition);
             }
 
             return await Task.FromResult(flatLogs.ToList());

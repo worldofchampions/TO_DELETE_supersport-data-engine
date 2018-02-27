@@ -252,6 +252,10 @@
     <Compile Include="Migrations\201802191222054_Added_PlayerStats_Model.Designer.cs">
       <DependentUpon>201802191222054_Added_PlayerStats_Model.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201802261121368_Add_CurrentRoundNumberCmsOverride_To_RugbySeasons.cs" />
+    <Compile Include="Migrations\201802261121368_Add_CurrentRoundNumberCmsOverride_To_RugbySeasons.designer.cs">
+      <DependentUpon>201802261121368_Add_CurrentRoundNumberCmsOverride_To_RugbySeasons.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyLogGroupsForLasVegasSevens2018.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyTeamNames.cs" />
@@ -416,6 +420,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201802191222054_Added_PlayerStats_Model.resx">
       <DependentUpon>201802191222054_Added_PlayerStats_Model.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802261121368_Add_CurrentRoundNumberCmsOverride_To_RugbySeasons.resx">
+      <DependentUpon>201802261121368_Add_CurrentRoundNumberCmsOverride_To_RugbySeasons.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
