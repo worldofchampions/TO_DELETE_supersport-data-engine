@@ -17,12 +17,15 @@ namespace SuperSportDataEngine.Application.Service.SchedulerIngestServer
         private readonly UnityContainer _container;
         private BackgroundJobServer _jobServer;
         private ILoggingService _logger;
+        private int _concurrentJobTimeoutInSeconds;
 
         public WindowsService(UnityContainer container)
         {
             _container = container;
 
             _logger = _container.Resolve<ILoggingService>();
+            _concurrentJobTimeoutInSeconds =
+                int.Parse(ConfigurationManager.AppSettings["ConcurrentJobTimeoutInSeconds"]);
         }
 
         public void StartService()
@@ -58,6 +61,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerIngestServer
             // Too much noise.
             //GlobalJobFilters.Filters.Add(new LogExceptionFilterAttribute(_container));
             GlobalJobFilters.Filters.Add(new CustomRetryFilterAttribute(_container, retryPeriodInSeconds));
+            GlobalJobFilters.Filters.Add(new SkipConcurrentExecutionAttribute(_concurrentJobTimeoutInSeconds));
         }
 
         private void RemoveDefaultRetryFilterAttribute()

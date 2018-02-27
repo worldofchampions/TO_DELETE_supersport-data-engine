@@ -37,6 +37,11 @@
         /// </summary>
         public int CurrentRoundNumber { get; set; }
 
+        /// <summary>
+        /// A Cms driven value to indicate the overriden current round number.
+        /// </summary>
+        public int? CurrentRoundNumberCmsOverride { get; set; }
+
         public virtual RugbyTournament RugbyTournament { get; set; }
     }
 }

@@ -74,7 +74,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
                     new Mock<TestEntityFrameworkRepository<RugbyMatchStatistics>>(new List<RugbyMatchStatistics>());
 
             _mockPlayerStatisticsRepository =
-                new Mock<TestEntityFrameworkRepository<RugbyPlayerStatistics>>(new List<RugbyMatchStatistics>());
+                new Mock<TestEntityFrameworkRepository<RugbyPlayerStatistics>>(new List<RugbyPlayerStatistics>());
 
             _mockMatchEventsRepository =
                     new Mock<TestEntityFrameworkRepository<RugbyMatchEvent>>(new List<RugbyMatchEvent>());

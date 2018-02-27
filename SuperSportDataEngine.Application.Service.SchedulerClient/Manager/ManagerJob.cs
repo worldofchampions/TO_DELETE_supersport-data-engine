@@ -8,7 +8,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
     using ScheduledManager;
     using Hangfire;
     using Container;
-    using SuperSportDataEngine.Common.Logging;
     using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using ApplicationLogic.Services;
     using ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
@@ -59,6 +58,11 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
 
             _logsManagerJob =
                 new LogsManagerJob(
+                    _recurringJobManager,
+                    _container);
+            
+            _playerStatisticsManagerJob =
+                new PlayerStatisticsManagerJob(
                     _recurringJobManager,
                     _container);
         }
