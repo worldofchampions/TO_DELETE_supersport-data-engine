@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
@@ -63,6 +64,37 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                     s.IsCurrent && s.MotorsportLeague.Id == leagueId);
 
             return await Task.FromResult(season);
+        }
+
+        public async Task<MotorsportSeason> GetPastSeasonForLeague(Guid leagueId, CancellationToken cancellationToken)
+        {
+            var pastSeasonProviderId = DateTime.UtcNow.Year - 1;
+
+            var league = _publicSportDataUnitOfWork.MotorsportLeagues.FirstOrDefault(l => l.Id == leagueId);
+
+            var pastSeason = _publicSportDataUnitOfWork.MotorsportSeasons.FirstOrDefault(s =>
+                s.ProviderSeasonId == pastSeasonProviderId);
+
+            if (pastSeason != null) return pastSeason;
+            
+            //TODO: Seed past seasons since provider does not expose such data
+            var tempSeason = new MotorsportSeason
+            {
+                DataProvider = DataProvider.Stats,
+                IsActive = false,
+                ProviderSeasonId = pastSeasonProviderId,
+                MotorsportLeague = league,
+                Name = "Seed Season"
+            };
+
+            _publicSportDataUnitOfWork.MotorsportSeasons.Add(tempSeason);
+
+            await _publicSportDataUnitOfWork.SaveChangesAsync();
+
+            pastSeason = _publicSportDataUnitOfWork.MotorsportSeasons.FirstOrDefault(s =>
+                s.ProviderSeasonId == pastSeasonProviderId);
+
+            return pastSeason;
         }
     }
 }
