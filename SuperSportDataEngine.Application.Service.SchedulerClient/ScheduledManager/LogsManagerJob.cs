@@ -20,6 +20,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
         IRecurringJobManager _recurringJobManager;
         IUnityContainer _childContainer;
         private static int _maxNumberOfRecentFixturesToConsider;
+        private static int _maxNumberOfHoursToCheckForResults;
 
         public LogsManagerJob(
             IRecurringJobManager recurringJobManager,
@@ -29,6 +30,9 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
             _childContainer = childContainer;
             _maxNumberOfRecentFixturesToConsider =
                 int.Parse(ConfigurationManager.AppSettings["MaxNumberOfRecentFixturesToConsider"]);
+
+            _maxNumberOfHoursToCheckForResults =
+                int.Parse(ConfigurationManager.AppSettings["MaxNumberOfHoursToCheckForResults"]);
         }
 
         public async Task DoWorkAsync()
@@ -56,11 +60,15 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
         private async Task CreateChildJobsForFetchingLogs()
         {
             var today = DateTime.UtcNow.Date;
-            var now = DateTime.UtcNow;
+            var minTimeToCheckForResults = DateTime.UtcNow - TimeSpan.FromHours(_maxNumberOfHoursToCheckForResults);
 
+            // We only want to poll logs for tournaments that have 
+            // fixtures in result state within the last few hours.
+            // This is configurable.
             var todayTournaments =
                 (await _childContainer.Resolve<IRugbyService>().GetRecentResultsFixtures(_maxNumberOfRecentFixturesToConsider))
                 .Where(f => f.StartDateTime.Date == today)
+                .Where(f => f.StartDateTime > minTimeToCheckForResults)
                 .Select(f => f.RugbyTournament)
                 .ToList();
 
