@@ -146,13 +146,14 @@
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyTeam.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyTournament.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyVenue.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\Motorsport\SchedulerTrackingMotorsportRace.cs" />
     <Compile Include="Constants\Providers\MotorsportStatsConstants.cs" />
     <Compile Include="Constants\Providers\RugbyStatsProzoneConstants.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\UnitOfWork\IPublicSportDataUnitOfWork.cs" />
-    <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\Motor\MotorSeasonStatus.cs" />
-    <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\Motor\SchedulerStateForMotorDriverPolling.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\Motorsport\MotorSeasonStatus.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\Enums\SchedulerStateForMotorsportRacePolling.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\UnitOfWork\ISystemSportDataUnitOfWork.cs" />
-    <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\Motor\SchedulerTrackingMotorSeason.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\Motorsport\SchedulerTrackingMotorsportSeason.cs" />
     <Compile Include="Entities\Legacy\DeprecatedArticlesAndVideosEntity.cs" />
     <Compile Include="Entities\Legacy\LegacyRugbyMatchEventEntity.cs" />
     <Compile Include="Entities\Legacy\LegacyRugbyScorerEntity.cs" />

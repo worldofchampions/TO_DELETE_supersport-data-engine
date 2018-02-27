@@ -96,5 +96,13 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             return pastSeason;
         }
+
+        public async Task<MotorsportRaceCalendar> GetTodayEventForRace(Guid leagueId)
+        {
+            var race = _publicSportDataUnitOfWork.MotorsportRaceCalendars.FirstOrDefault(r =>
+                r.MotorsportRaceId == leagueId);
+
+            return await Task.FromResult(race);
+        }
     }
 }

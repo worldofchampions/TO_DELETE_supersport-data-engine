@@ -29,6 +29,11 @@ namespace SuperSportDataEngine.Tests.Common.Repositories.Test
         }
 
         public IBaseEntityFrameworkRepository<SchedulerTrackingMotorSeason> SchedulerTrackingMotorSeasons { get; }
+        public IBaseEntityFrameworkRepository<SchedulerTrackingMotorsportRace> SchedulerTrackingMotorsportRaces
+        {
+            get;
+            set;
+        }
 
         public TestSystemSportDataUnitOfWork()
         {

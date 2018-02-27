@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces
+﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+
+namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces
 {
     using System.Threading;
     using System.Threading.Tasks;
@@ -21,5 +23,6 @@
         Task IngestHistoricResults(CancellationToken cancellationToken);
         Task IngestHistoricTeamStandings(CancellationToken cancellationToken);
         Task IngestHistoricDriverStandings(CancellationToken cancellationToken);
+        Task IngestLiveRaceData(MotorsportRace race, CancellationToken cancellationToken);
     }
 }

@@ -18,6 +18,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.SystemSportData.UnitOf
         public IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> SchedulerTrackingRugbySeasons { get; private set; }
         public IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> SchedulerTrackingRugbyTournaments { get; private set; }
         public IBaseEntityFrameworkRepository<SchedulerTrackingMotorSeason> SchedulerTrackingMotorSeasons { get; }
+        public IBaseEntityFrameworkRepository<SchedulerTrackingMotorsportRace> SchedulerTrackingMotorsportRaces { get; set; }
 
         public SystemSportDataUnitOfWork(DbContext context)
         {
@@ -28,7 +29,9 @@ namespace SuperSportDataEngine.Repository.EntityFramework.SystemSportData.UnitOf
             SchedulerTrackingRugbyFixtures = new BaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture>(_context);
             SchedulerTrackingRugbySeasons = new BaseEntityFrameworkRepository<SchedulerTrackingRugbySeason>(_context);
             SchedulerTrackingRugbyTournaments = new BaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament>(_context);
-            SchedulerTrackingMotorSeasons = new BaseEntityFrameworkRepository<SchedulerTrackingMotorSeason>(context);
+
+            SchedulerTrackingMotorSeasons = new BaseEntityFrameworkRepository<SchedulerTrackingMotorSeason>(_context);
+            SchedulerTrackingMotorsportRaces = new BaseEntityFrameworkRepository<SchedulerTrackingMotorsportRace>(_context);
         }
 
         public int SaveChanges()

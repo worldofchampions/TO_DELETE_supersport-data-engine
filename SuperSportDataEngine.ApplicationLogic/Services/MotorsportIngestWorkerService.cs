@@ -297,6 +297,12 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             }
         }
 
+        public async Task IngestLiveRaceData(MotorsportRace race, CancellationToken cancellationToken)
+        {
+            //TODO
+            await Task.FromResult(0);
+        }
+
         public async Task IngestHistoricGrids(CancellationToken cancellationToken)
         {
             var activeLeagues = await _motorsportService.GetActiveLeagues();

@@ -1,5 +1,7 @@
-﻿using SuperSportDataEngine.Application.Container.Enums;
-﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
+﻿using System.Configuration;
+using System.Runtime.CompilerServices;
+using SuperSportDataEngine.Application.Container.Enums;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
 {
@@ -9,11 +11,8 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
     using ScheduledManager;
     using Hangfire;
     using Container;
-    using SuperSportDataEngine.Common.Logging;
     using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using ApplicationLogic.Services;
-    using ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
-    using ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
 
     internal class ManagerJob
     {
@@ -27,8 +26,9 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
         private LiveManagerJob _liveManagerJob;
         private LogsManagerJob _logsManagerJob;
         private PlayerStatisticsManagerJob _playerStatisticsManagerJob;
-        private MotorDriversManagerJob _driversManagerJob;
+        private MotorsportLiveManagerJob _motorsportLiveManagerJob;
         private IMotorsportIngestWorkerService _motorIngestWorkerService;
+        private IMotorsportService _motorsportService;
 
         public ManagerJob()
         {
@@ -45,10 +45,20 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
             UnityConfigurationManager.RegisterTypes(_container, ApplicationScope.ServiceSchedulerClient);
 
             _recurringJobManager = _container.Resolve<IRecurringJobManager>();
+            _systemSportDataUnitOfWork = _container.Resolve<ISystemSportDataUnitOfWork>();
+
             _rugbyService = _container.Resolve<IRugbyService>();
             _rugbyIngestWorkerService = _container.Resolve<IRugbyIngestWorkerService>();
+
+            _motorsportService = _container.Resolve<IMotorsportService>();
             _motorIngestWorkerService = _container.Resolve<IMotorsportIngestWorkerService>();
-            _systemSportDataUnitOfWork = _container.Resolve<ISystemSportDataUnitOfWork>();
+
+            _motorsportLiveManagerJob = new MotorsportLiveManagerJob(
+                _recurringJobManager,
+                _container,
+                _motorsportService,
+                _motorIngestWorkerService,
+                _systemSportDataUnitOfWork);
 
             _fixturesManagerJob =
                 new FixturesManagerJob(
@@ -65,11 +75,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
                 new LogsManagerJob(
                     _recurringJobManager,
                     _container);
-
-            _driversManagerJob = 
-                new MotorDriversManagerJob(
-                    _recurringJobManager, 
-                    new UnityContainer());
         }
 
         private void ConfigureTimer()
@@ -89,15 +94,29 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
             var methodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
 
             ConfigureDepenencies();
+
             try
             {
-                await _liveManagerJob.DoWorkAsync();
-                await _fixturesManagerJob.DoWorkAsync();
-                await _logsManagerJob.DoWorkAsync();
-                await _playerStatisticsManagerJob.DoWorkAsync();
+                var rugbyEnabled = bool.Parse(ConfigurationManager.AppSettings["RugbyIngestEnabled"]);
+
+                if (rugbyEnabled)
+                {
+                    await _liveManagerJob.DoWorkAsync();
+                    await _fixturesManagerJob.DoWorkAsync();
+                    await _logsManagerJob.DoWorkAsync();
+                    await _playerStatisticsManagerJob.DoWorkAsync();
+                }
+
+                var motorEnabled = bool.Parse(ConfigurationManager.AppSettings["MotorsportIngestEnabled"]);
+
+                if (motorEnabled)
+                {
+                    await _motorsportLiveManagerJob.DoWorkAsync();
+                }
             }
-            catch (Exception)
+            catch (Exception exception)
             {
+                Console.WriteLine(exception);
                 // ignored
             }
 
