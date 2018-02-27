@@ -1502,14 +1502,11 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                         logs.RugbyGroupedLogs.groupStandings.ladderposition
                             .GroupBy(g => g.groupName)
                             .Select(g => g.First())
-                            .Select(l => new {
-                                TeamId = l.teamId,
-                                Points = l.competitionPoints
-                            }).OrderByDescending(t => t.Points)
+                            .OrderByDescending(t => t.competitionPoints)
                             .ToList();
 
                     // Top 3 teams id's
-                    var topThreeTeams = topThree.Select(t => t.TeamId);
+                    var topThreeTeams = topThree.Select(t => t.teamId);
 
                     // Remaining teams in the overall standings
                     var remainderTeams =
@@ -1522,7 +1519,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                     for (int position = 0; position < topThree.Count(); position++)
                     {
                         logs.RugbyGroupedLogs.overallStandings.ladderposition
-                            .First(l => l.teamId == topThree.ElementAt(position).TeamId).position = position + 1;
+                            .First(l => l.teamId == topThree.ElementAt(position).teamId).position = position + 1;
                     }
 
                     // Set remaining log positions.
