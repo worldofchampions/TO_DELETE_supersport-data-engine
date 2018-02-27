@@ -25,9 +25,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
 
         public RugbyCmsService(
             IBaseEntityFrameworkRepository<RugbyTournament> rugbyTournamentRepository,
+            IBaseEntityFrameworkRepository<RugbyTeam> rugbyTeamRepository,
             IBaseEntityFrameworkRepository<RugbyFixture> rugbyFixtureRepository,
             IBaseEntityFrameworkRepository<RugbySeason> rugbySeasonRepository,
-            IBaseEntityFrameworkRepository<RugbyTeam> rugbyTeamRepository,
             IBaseEntityFrameworkRepository<RugbyPlayer> rugbyPlayerRepository
             )
         {
@@ -41,9 +41,11 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
                 cfg =>
                 {
                     cfg.CreateMap<RugbyTournament, RugbyTournamentEntity>();
-                    cfg.CreateMap<RugbyFixture, RugbyFixtureEntity>();
+                    cfg.CreateMap<RugbyTeam, RugbyTeamEntity>().ReverseMap();
+                    cfg.CreateMap<RugbyFixture, RugbyFixtureEntity>()
+                        .ForMember(dest => dest.TeamA, opt => opt.MapFrom(origin => origin.TeamA))
+                        .ForMember(dest => dest.TeamB, opt => opt.MapFrom(origin => origin.TeamB));
                     cfg.CreateMap<RugbySeason, RugbySeasonEntity>();
-                    cfg.CreateMap<RugbyTeam, RugbyTeamEntity>();
                     cfg.CreateMap<RugbyPlayer, RugbyPlayerEntity>();
                 });
             iMapper = config.CreateMapper();
@@ -361,7 +363,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
         {
             var skipAmount = pageSize * (pageIndex - 1);
 
-            var projection = queryable.Skip(skipAmount).Take(pageSize);
+            var projection = queryable.Skip(skipAmount).Take(pageSize).ToList();
             var totalNumberOfRecords = await Task.FromResult(queryable.Count());
 
             var mod = totalNumberOfRecords % pageSize;

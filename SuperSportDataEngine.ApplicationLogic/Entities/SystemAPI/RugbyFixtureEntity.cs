@@ -18,5 +18,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Entities.SystemAPI
         public bool CmsOverrideModeIsActive { get; set; }
         public int GameTimeInSeconds { get; set; }
         public int RoundNumber { get; set; }
+
+        public RugbyTeamEntity TeamA { get; set; }
+        public RugbyTeamEntity TeamB { get; set; }
     }
 }
