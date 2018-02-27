@@ -809,6 +809,16 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             calendarInRepo.CountryName = providerRaceEvent.venue.country.name;
             calendarInRepo.CountryAbbreviation = providerRaceEvent.venue.country.abbreviation;
 
+            var providerStartDate =
+                providerRaceEvent.startDate.FirstOrDefault(d => d.dateType.ToLowerInvariant().Equals("utc"));
+
+            if (providerStartDate != null)
+            {
+                var startDateUtc = DateTimeOffset.Parse(providerStartDate.full.ToString(CultureInfo.InvariantCulture));
+
+                calendarInRepo.StartDateTimeUtc = startDateUtc;
+            }
+
             _publicSportDataUnitOfWork.MotorsportRaceCalendars.Update(calendarInRepo);
         }
 
@@ -825,6 +835,16 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 MotorsportSeason = season,
                 MotorsportSeasonId = season.Id
             };
+
+            var providerStartDate =
+                providerRaceEvent.startDate.FirstOrDefault(d => d.dateType.ToLowerInvariant().Equals("utc"));
+
+            if (providerStartDate != null)
+            {
+                var startDateUtc = DateTimeOffset.Parse(providerStartDate.full.ToString(CultureInfo.InvariantCulture));
+
+                raceCalendar.StartDateTimeUtc = startDateUtc;
+            }
 
             _publicSportDataUnitOfWork.MotorsportRaceCalendars.Add(raceCalendar);
         }
