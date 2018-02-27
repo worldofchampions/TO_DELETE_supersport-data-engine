@@ -75,7 +75,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
             var todayTournamentIds = todayTournaments.Select(t => t.ProviderTournamentId);
 
             var notTodayTournaments = (await _childContainer.Resolve<IRugbyService>().GetCurrentTournaments())
-                .Where(t => todayTournamentIds.Contains(t.ProviderTournamentId));
+                .Where(t => !todayTournamentIds.Contains(t.ProviderTournamentId));
 
             foreach (var tournament in notTodayTournaments)
             {
