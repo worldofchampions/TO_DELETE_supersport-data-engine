@@ -261,10 +261,7 @@
 
             fixtures = fixtures.Where(f => 
                         f.RugbySeason != null && 
-                        f.RoundNumber == 
-                            (f.RugbySeason.CurrentRoundNumberCmsOverride == null ? 
-                                f.RugbySeason.CurrentRoundNumber : 
-                                f.RugbySeason.CurrentRoundNumberCmsOverride));
+                        f.RoundNumber == (f.RugbySeason.CurrentRoundNumberCmsOverride ?? f.RugbySeason.CurrentRoundNumber));
 
             return await Task.FromResult(fixtures.ToList());
         }
@@ -356,10 +353,7 @@
             fixturesInResultsState = fixturesInResultsState
                     .Where(f =>
                         season != null &&
-                        f.RoundNumber ==
-                            (season.CurrentRoundNumberCmsOverride == null ?
-                                season.CurrentRoundNumber :
-                                season.CurrentRoundNumberCmsOverride));
+                        f.RoundNumber == (season.CurrentRoundNumberCmsOverride ?? season.CurrentRoundNumber));
 
             return fixturesInResultsState;
         }
@@ -426,10 +420,7 @@
                         t.RugbyTournament.IsEnabled &&
                         t.RugbyTournamentId == tournament.Id &&
                         t.RugbySeason.IsCurrent &&
-                        t.RoundNumber ==
-                            (t.RugbySeason.CurrentRoundNumberCmsOverride == null ?
-                                  t.RugbySeason.CurrentRoundNumber :
-                                  t.RugbySeason.CurrentRoundNumberCmsOverride) &&
+                        t.RoundNumber == (t.RugbySeason.CurrentRoundNumberCmsOverride ?? t.RugbySeason.CurrentRoundNumber) &&
                         t.RugbyLogGroup.IsCoreGroup)
                     .OrderBy(g => g.RugbyLogGroup.Id).ThenBy(t => t.LogPosition);
 
@@ -452,10 +443,7 @@
                         t.RugbyTournament.IsEnabled &&
                         t.RugbyTournamentId == tournament.Id &&
                         t.RugbySeason.IsCurrent &&
-                        t.RoundNumber ==
-                            (t.RugbySeason.CurrentRoundNumberCmsOverride == null ?
-                                t.RugbySeason.CurrentRoundNumber :
-                                t.RugbySeason.CurrentRoundNumberCmsOverride))
+                        t.RoundNumber == (t.RugbySeason.CurrentRoundNumberCmsOverride ?? t.RugbySeason.CurrentRoundNumber))
                     .OrderBy(t => t.LogPosition);
             }
 
@@ -465,7 +453,11 @@
         public async Task<List<RugbyFixture>> GetCurrentDayFixturesForActiveTournaments()
         {
             var today = DateTime.UtcNow.Date;
-            var todayFixtures = (await _rugbyFixturesRepository.AllAsync()).Where(f => f.StartDateTime.Date == today && f.RugbyTournament.IsEnabled).OrderBy(f => f.StartDateTime);
+            var todayFixtures = (await _rugbyFixturesRepository.AllAsync())
+                    .Where(f => 
+                        f.StartDateTime.Date == today && 
+                        f.RugbyTournament.IsEnabled)
+                    .OrderBy(f => f.StartDateTime);
 
             return await Task.FromResult(todayFixtures.ToList());
         }
