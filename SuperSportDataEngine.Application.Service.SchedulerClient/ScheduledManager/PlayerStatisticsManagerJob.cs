@@ -19,16 +19,16 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
     {
         private IRecurringJobManager _recurringJobManager;
         private IUnityContainer _childContainer;
-        ILoggingService _logger;
+        private static int _maxNumberOfRecentFixturesToConsider;
 
         public PlayerStatisticsManagerJob(
             IRecurringJobManager recurringJobManager,
-            IUnityContainer childContainer,
-            ILoggingService logger)
+            IUnityContainer childContainer)
         {
             _recurringJobManager = recurringJobManager;
             _childContainer = childContainer;
-            _logger = logger;
+            _maxNumberOfRecentFixturesToConsider =
+                int.Parse(ConfigurationManager.AppSettings["MaxNumberOfRecentFixturesToConsider"]);
         }
 
         public async Task DoWorkAsync()
@@ -36,13 +36,12 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
             CreateContainer();
             ConfigureDependencies();
 
-            await CreateChildJobsForFetchingPlayerStatistics();
+            await CreateAndDeleteChildJobsForFetchingPlayerStatistics();
         }
 
         private void ConfigureDependencies()
         {
             _recurringJobManager = _childContainer.Resolve<IRecurringJobManager>();
-            _logger = _childContainer.Resolve<ILoggingService>();
         }
 
         private void CreateContainer()
@@ -54,10 +53,29 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
             UnityConfigurationManager.RegisterApiGlobalTypes(_childContainer, ApplicationScope.ServiceSchedulerClient);
         }
 
-        private async Task CreateChildJobsForFetchingPlayerStatistics()
+        private async Task CreateAndDeleteChildJobsForFetchingPlayerStatistics()
         {
+            var today = DateTime.UtcNow.Date;
+            var now = DateTime.UtcNow;
+
             var todayTournaments =
-                (await _childContainer.Resolve<IRugbyService>().GetTournamentsForJustEndedFixtures()).ToList();
+                (await _childContainer.Resolve<IRugbyService>().GetRecentResultsFixtures(_maxNumberOfRecentFixturesToConsider))
+                .Where(f => f.StartDateTime.Date == today)
+                .Select(f => f.RugbyTournament)
+                .ToList();
+
+            var todayTournamentIds = todayTournaments.Select(t => t.ProviderTournamentId);
+
+            var notTodayTournaments = (await _childContainer.Resolve<IRugbyService>().GetCurrentTournaments())
+                .Where(t => todayTournamentIds.Contains(t.ProviderTournamentId));
+
+            foreach (var tournament in notTodayTournaments)
+            {
+                var jobId =
+                    ConfigurationManager.AppSettings["ScheduleManagerJob_PlayerStats_CurrentTournaments_JobIdPrefix"] + tournament.Name;
+
+                _recurringJobManager.RemoveIfExists(jobId);
+            }
 
             foreach (var tournament in todayTournaments)
             {
