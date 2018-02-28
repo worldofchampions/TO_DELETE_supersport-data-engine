@@ -1,9 +1,12 @@
 ﻿using SuperSportDataEngine.Application.WebApi.SystemApi.Authentication;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.CmsLogic.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Entities.SystemAPI;
+using SuperSportDataEngine.Common.Logging;
 using System;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
@@ -17,15 +20,18 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
     public class RugbyController : ApiController
     {
         IRugbyCmsService _rugbyService;
+        private readonly ILoggingService _logger;
         public static string path = HttpContext.Current.Request.Url.AbsolutePath;
 
         /// <summary>
         /// Rugby Constructor
         /// </summary>
         /// <param name="rugbyService"></param>
-        public RugbyController(IRugbyCmsService rugbyService)
+        /// <param name="logger"></param>
+        public RugbyController(IRugbyCmsService rugbyService, ILoggingService logger)
         {
             _rugbyService = rugbyService;
+            _logger = logger;
         }
 
         /// <summary>
@@ -46,8 +52,9 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
                 var tournaments = await _rugbyService.GetAllTournaments(pageIndex, pageSize, path, query);
                 return Request.CreateResponse(HttpStatusCode.OK, tournaments);
             }
-            catch(Exception ex)
+            catch(Exception exception)
             {
+                LogException(exception);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while retrieving tournaments !");
             }
         }
@@ -69,8 +76,9 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
                 var fixtures = await _rugbyService.GetAllFixtures(pageIndex, pageSize, path, query);
                 return Request.CreateResponse(HttpStatusCode.OK, fixtures);
             }
-            catch(Exception ex)
+            catch(Exception exception)
             {
+                LogException(exception);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while retrieving fixtures !");
             }
         }
@@ -92,8 +100,9 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
                 var seasons = await _rugbyService.GetAllSeasons(pageIndex, pageSize, path, query);
                 return Request.CreateResponse(HttpStatusCode.OK, seasons);
             }
-            catch(Exception ex)
+            catch(Exception exception)
             {
+                LogException(exception);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while retrieving seasons !");
             }
         }
@@ -115,8 +124,9 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
                 var teams = await _rugbyService.GetAllTeams(pageIndex, pageSize, path, query);
                 return Request.CreateResponse(HttpStatusCode.OK, teams);
             }
-            catch(Exception ex)
+            catch(Exception exception)
             {
+                LogException(exception);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while retrieving teams !");
             }
         }
@@ -138,8 +148,9 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
                 var players = await _rugbyService.GetAllPlayers(pageIndex, pageSize, path, query);
                 return Request.CreateResponse(HttpStatusCode.OK, players);
             }
-            catch(Exception ex)
+            catch(Exception exception)
             {
+                LogException(exception);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while retrieving players !");
             }
         }
@@ -162,8 +173,9 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
                 var tournamentSeasons = await _rugbyService.GetSeasonsForTournament(tournamentId, pageIndex, pageSize, path, query);
                 return Request.CreateResponse(HttpStatusCode.OK, tournamentSeasons);
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
+                LogException(exception);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while retrieving seasons for tournament !");
             }
         }
@@ -186,8 +198,9 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
                 var seasonFixtures = await _rugbyService.GetFixturesForTournamentSeason(seasonId, pageIndex, pageSize, path, query);
                 return Request.CreateResponse(HttpStatusCode.OK, seasonFixtures);
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
+                LogException(exception);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while retrieving fixtures for season !");
             }
         }
@@ -215,8 +228,9 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
                     return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Tournament Not Found");
                 }
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
+                LogException(exception);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while processing tournament !");
             }
 
@@ -245,8 +259,9 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
                     return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Fixture Not Found");
                 }
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
+                LogException(exception);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while processing fixture !");
             }
         }
@@ -274,8 +289,9 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
                     return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Season Not Found");
                 }
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
+                LogException(exception);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while processing season !");
             }
         }
@@ -303,8 +319,9 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
                     return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Team Not Found");
                 }
             }
-            catch(Exception ex)
+            catch(Exception exception)
             {
+                LogException(exception);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while processing team !");
             }
 
@@ -333,8 +350,9 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
                     return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Player Not Found");
                 }
             }
-            catch(Exception ex)
+            catch(Exception exception)
             {
+                LogException(exception);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while processing player !");
             }
         }
@@ -363,8 +381,9 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
                     return Request.CreateErrorResponse(HttpStatusCode.NotAcceptable, "Tournament could not be updated");
                 }
             }
-            catch(Exception ex)
+            catch(Exception exception)
             {
+                LogException(exception);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while updating tournament !");
             }
         }
@@ -393,8 +412,9 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
                     return Request.CreateErrorResponse(HttpStatusCode.NotAcceptable, "Fixture could not be updated");
                 }
             }
-            catch(Exception ex)
+            catch(Exception exception)
             {
+                LogException(exception);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while updating fixtures !");
             }
         }
@@ -423,8 +443,9 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
                     return Request.CreateErrorResponse(HttpStatusCode.NotAcceptable, "Season could not be updated");
                 }
             }
-            catch(Exception ex)
+            catch(Exception exception)
             {
+                LogException(exception);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while updating season !");
             }
         }
@@ -454,8 +475,9 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
                     return Request.CreateErrorResponse(HttpStatusCode.NotAcceptable, "Team could not be updated");
                 }
             }
-            catch(Exception ex)
+            catch(Exception exception)
             {
+                LogException(exception);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while updating team !");
             }
 
@@ -485,10 +507,24 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
                     return Request.CreateErrorResponse(HttpStatusCode.NotAcceptable, "Player could not be updated");
                 }
             }
-            catch(Exception ex)
+            catch(Exception exception)
             {
+                LogException(exception);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while updating player !");
             }
+        }
+
+        protected async void LogException(Exception exception)
+        {
+            StackTrace st = new StackTrace();
+            StackFrame sf = st.GetFrame(0);
+
+            MethodBase currentMethodName = sf.GetMethod();
+
+            await _logger.Error(string.Format("{0}/{1}", currentMethodName.ReflectedType.FullName, HttpContext.Current.Request.Url.PathAndQuery),
+                    "Message: \n" + exception.Message +
+                    "StackTrace: \n" + exception.StackTrace +
+                    "Inner Exception \n" + exception.InnerException);
         }
     }
 }
