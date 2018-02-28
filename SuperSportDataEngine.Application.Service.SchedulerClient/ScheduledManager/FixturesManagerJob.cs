@@ -28,6 +28,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
         private ILoggingService _logger;
         private IBaseEntityFrameworkRepository<RugbySeason> _rugbySeasonsRepository;
         private static int _maxNumberOfHoursToCheckForUpcomingFixtures;
+        private static int _maxNumberOfHoursToCheckForPreviousFixtures;
 
         public FixturesManagerJob(
             IRecurringJobManager recurringJobManager,
@@ -38,6 +39,9 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
 
             _maxNumberOfHoursToCheckForUpcomingFixtures =
                 int.Parse(ConfigurationManager.AppSettings["MaxNumberOfHoursToCheckForUpcomingFixtures"]);
+
+            _maxNumberOfHoursToCheckForPreviousFixtures =
+                int.Parse(ConfigurationManager.AppSettings["MaxNumberOfHoursToCheckForPreviousFixtures"]);
         }
 
         public async Task DoWorkAsync()
@@ -170,12 +174,12 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
                 _childContainer.Resolve<IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament>>();
 
             var maxTimeForCheckingUpcomingFixtures = DateTime.UtcNow + TimeSpan.FromHours(_maxNumberOfHoursToCheckForUpcomingFixtures);
-            var minTimeForCheckingUpcomingFixtures = DateTime.UtcNow;
+            var minTimeForCheckingPreviousFixtures = DateTime.UtcNow - TimeSpan.FromHours(_maxNumberOfHoursToCheckForPreviousFixtures);
 
             var currentTournaments =
                 (await _childContainer.Resolve<IRugbyService>().GetCurrentDayFixturesForActiveTournaments())
                     .Where(f => f.StartDateTime < maxTimeForCheckingUpcomingFixtures && 
-                                f.StartDateTime > minTimeForCheckingUpcomingFixtures)
+                                f.StartDateTime > minTimeForCheckingPreviousFixtures)
                     .Select(f => f.RugbyTournament)
                     .ToList();
 
@@ -194,7 +198,9 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
 
                 var tournamentInDb =
                     (await schedulerTrackingRugbyTournaments.AllAsync())
-                    .FirstOrDefault(t => t.TournamentId == tournament.Id && t.SchedulerStateForManagerJobPolling == SchedulerStateForManagerJobPolling.Running);
+                    .FirstOrDefault(t => 
+                        t.TournamentId == tournament.Id && 
+                        t.SchedulerStateForManagerJobPolling == SchedulerStateForManagerJobPolling.Running);
 
                 if (tournamentInDb == null) continue;
 
