@@ -28,7 +28,7 @@ namespace SuperSportDataEngine.Tests.Common.Repositories.Test
             set;
         }
 
-        public IBaseEntityFrameworkRepository<SchedulerTrackingMotorSeason> SchedulerTrackingMotorSeasons { get; }
+        public IBaseEntityFrameworkRepository<SchedulerTrackingMotorsportSeason> SchedulerTrackingMotorsportSeasons { get; }
         public IBaseEntityFrameworkRepository<SchedulerTrackingMotorsportRace> SchedulerTrackingMotorsportRaces
         {
             get;
@@ -43,7 +43,7 @@ namespace SuperSportDataEngine.Tests.Common.Repositories.Test
             LegacyZoneSites = new TestEntityFrameworkRepository<LegacyZoneSite>(new List<LegacyZoneSite>());
             SchedulerTrackingRugbySeasons = new TestEntityFrameworkRepository<SchedulerTrackingRugbySeason>(new List<SchedulerTrackingRugbySeason>());
             SchedulerTrackingRugbyTournaments = new TestEntityFrameworkRepository<SchedulerTrackingRugbyTournament>(new List<SchedulerTrackingRugbyTournament>());
-            SchedulerTrackingMotorSeasons = new TestEntityFrameworkRepository<SchedulerTrackingMotorSeason>(new List<SchedulerTrackingMotorSeason>());
+            SchedulerTrackingMotorsportSeasons = new TestEntityFrameworkRepository<SchedulerTrackingMotorsportSeason>(new List<SchedulerTrackingMotorsportSeason>());
         }
 
         public int SaveChanges()
@@ -64,7 +64,7 @@ namespace SuperSportDataEngine.Tests.Common.Repositories.Test
             SchedulerTrackingRugbyFixtures?.Dispose();
             SchedulerTrackingRugbySeasons?.Dispose();
             SchedulerTrackingRugbyTournaments?.Dispose();
-            SchedulerTrackingMotorSeasons?.Dispose();
+            SchedulerTrackingMotorsportSeasons?.Dispose();
         }
     }
 }

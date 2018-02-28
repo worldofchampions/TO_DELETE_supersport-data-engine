@@ -135,10 +135,6 @@
     <Compile Include="Migrations\201712131126184_Updates_To_Dashboard_Users.Designer.cs">
       <DependentUpon>201712131126184_Updates_To_Dashboard_Users.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201801050808187_Adding_MotorSeasonTracking_Table.cs" />
-    <Compile Include="Migrations\201801050808187_Adding_MotorSeasonTracking_Table.Designer.cs">
-      <DependentUpon>201801050808187_Adding_MotorSeasonTracking_Table.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Seed\SeedSchedulingDashboardUsers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -197,9 +193,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201712131126184_Updates_To_Dashboard_Users.resx">
       <DependentUpon>201712131126184_Updates_To_Dashboard_Users.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201801050808187_Adding_MotorSeasonTracking_Table.resx">
-      <DependentUpon>201801050808187_Adding_MotorSeasonTracking_Table.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

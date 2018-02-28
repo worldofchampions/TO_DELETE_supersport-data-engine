@@ -4,7 +4,7 @@
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Base;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
 
-    public class SchedulerTrackingMotorSeason: BaseModel
+    public class SchedulerTrackingMotorsportSeason: BaseModel
     {
         public Guid SeasonId { get; set; }
 

@@ -106,6 +106,7 @@
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\Models\RugbyGroupedLogs.cs" />
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\Models\RugbyMatchStats.cs" />
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\Models\RugbyPlayerStats.cs" />
+    <Compile Include="Boundaries\Gateway.Http.StatsProzone\Models\RugbyRoundFixtures.cs" />
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\ResponseModels\RoundFixtureResultsResponse.cs" />
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\Models\RugbySeasons.cs" />
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\ResponseModels\RugbyEventsFlowResponse.cs" />
@@ -114,6 +115,7 @@
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\ResponseModels\RugbyGroupedLogsResponse.cs" />
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\ResponseModels\RugbyMatchStatsResponse.cs" />
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\ResponseModels\RugbyPlayerStatsResponse.cs" />
+    <Compile Include="Boundaries\Gateway.Http.StatsProzone\ResponseModels\RugbyRoundFixturesResponse.cs" />
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\ResponseModels\RugbySeasonResponse.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.Common\Models\Base\BaseModel.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.Common\Models\Enums\DataProvider.cs" />

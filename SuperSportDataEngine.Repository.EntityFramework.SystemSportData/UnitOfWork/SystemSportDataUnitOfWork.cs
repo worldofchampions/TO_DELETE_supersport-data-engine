@@ -17,7 +17,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.SystemSportData.UnitOf
         public IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> SchedulerTrackingRugbyFixtures { get; private set; }
         public IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> SchedulerTrackingRugbySeasons { get; private set; }
         public IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> SchedulerTrackingRugbyTournaments { get; private set; }
-        public IBaseEntityFrameworkRepository<SchedulerTrackingMotorSeason> SchedulerTrackingMotorSeasons { get; }
+        public IBaseEntityFrameworkRepository<SchedulerTrackingMotorsportSeason> SchedulerTrackingMotorsportSeasons { get; }
         public IBaseEntityFrameworkRepository<SchedulerTrackingMotorsportRace> SchedulerTrackingMotorsportRaces { get; set; }
 
         public SystemSportDataUnitOfWork(DbContext context)
@@ -30,7 +30,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.SystemSportData.UnitOf
             SchedulerTrackingRugbySeasons = new BaseEntityFrameworkRepository<SchedulerTrackingRugbySeason>(_context);
             SchedulerTrackingRugbyTournaments = new BaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament>(_context);
 
-            SchedulerTrackingMotorSeasons = new BaseEntityFrameworkRepository<SchedulerTrackingMotorSeason>(_context);
+            SchedulerTrackingMotorsportSeasons = new BaseEntityFrameworkRepository<SchedulerTrackingMotorsportSeason>(_context);
             SchedulerTrackingMotorsportRaces = new BaseEntityFrameworkRepository<SchedulerTrackingMotorsportRace>(_context);
         }
 
@@ -53,7 +53,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.SystemSportData.UnitOf
             SchedulerTrackingRugbyFixtures?.Dispose();
             SchedulerTrackingRugbySeasons?.Dispose();
             SchedulerTrackingRugbyTournaments?.Dispose();
-            SchedulerTrackingMotorSeasons?.Dispose();
+            SchedulerTrackingMotorsportSeasons?.Dispose();
         }
     }
 }

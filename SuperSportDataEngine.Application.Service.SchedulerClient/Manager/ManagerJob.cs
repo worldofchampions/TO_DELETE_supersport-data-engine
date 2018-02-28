@@ -75,6 +75,11 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
                 new LogsManagerJob(
                     _recurringJobManager,
                     _container);
+            
+            _playerStatisticsManagerJob =
+                new PlayerStatisticsManagerJob(
+                    _recurringJobManager,
+                    _container);
         }
 
         private void ConfigureTimer()

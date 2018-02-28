@@ -28,6 +28,8 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
         private IRecurringJobManager _recurringJobManager;
         private ILoggingService _logger;
         private IBaseEntityFrameworkRepository<RugbySeason> _rugbySeasonsRepository;
+        private static int _maxNumberOfHoursToCheckForUpcomingFixtures;
+        private static int _maxNumberOfHoursToCheckForPreviousFixtures;
 
         public FixturesManagerJob(
             IRecurringJobManager recurringJobManager,
@@ -35,6 +37,12 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
         {
             _recurringJobManager = recurringJobManager;
             _childContainer = childContainer.CreateChildContainer();
+
+            _maxNumberOfHoursToCheckForUpcomingFixtures =
+                int.Parse(ConfigurationManager.AppSettings["MaxNumberOfHoursToCheckForUpcomingFixtures"]);
+
+            _maxNumberOfHoursToCheckForPreviousFixtures =
+                int.Parse(ConfigurationManager.AppSettings["MaxNumberOfHoursToCheckForPreviousFixtures"]);
         }
 
         public async Task DoWorkAsync()
@@ -70,20 +78,14 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
                 var activeTournaments =
                     await _childContainer.Resolve<IRugbyService>().GetActiveTournaments();
 
-                var methodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
-
-                foreach (var tournament in activeTournaments)
-                {
-                    await _logger.Debug(methodName, "Tournament " + tournament.Name + " is active.");
-
+            foreach (var tournament in activeTournaments)
+            {
                     var jobId = ConfigurationManager.AppSettings[
                                     "ScheduleManagerJob_Fixtures_ActiveTournaments_JobIdPrefix"] +
                                 tournament.Name;
                     var jobCronExpression =
                         ConfigurationManager.AppSettings[
                             "ScheduleManagerJob_Fixtures_ActiveTournaments_JobCronExpression"];
-
-                    await _logger.Debug(methodName, "Updating recurring job " + jobId);
 
                     _recurringJobManager.AddOrUpdate(
                         jobId,
@@ -106,9 +108,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
 
                     if (tournamentInDb == null) continue;
 
-                    await _logger.Debug(methodName,
-                        "Setting SchedulerStateForManagerJobPolling for tournament " + tournament.Name +
-                        " to running.");
                     tournamentInDb.SchedulerStateForManagerJobPolling =
                         SchedulerStateForManagerJobPolling.Running;
                     unitOfWork.SchedulerTrackingRugbyTournaments.Update(tournamentInDb);
@@ -183,9 +182,15 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
 
         private async Task<int> CreateAndDeleteChildJobsForFetchingFixturesForTournamentSeason()
         {
+            var maxTimeForCheckingUpcomingFixtures = DateTime.UtcNow + TimeSpan.FromHours(_maxNumberOfHoursToCheckForUpcomingFixtures);
+            var minTimeForCheckingPreviousFixtures = DateTime.UtcNow - TimeSpan.FromHours(_maxNumberOfHoursToCheckForPreviousFixtures);
+
             var currentTournaments =
-                (await _childContainer.Resolve<IRugbyService>().GetCurrentDayFixturesForActiveTournaments()).ToList()
-                .Select(f => f.RugbyTournament).ToList();
+                (await _childContainer.Resolve<IRugbyService>().GetCurrentDayFixturesForActiveTournaments())
+                    .Where(f => f.StartDateTime < maxTimeForCheckingUpcomingFixtures && 
+                                f.StartDateTime > minTimeForCheckingPreviousFixtures)
+                    .Select(f => f.RugbyTournament)
+                    .ToList();
 
             var currentTournamentIds = currentTournaments.Select(t => t.ProviderTournamentId);
 
