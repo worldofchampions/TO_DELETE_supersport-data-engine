@@ -256,6 +256,10 @@
     <Compile Include="Migrations\201802261121368_Add_CurrentRoundNumberCmsOverride_To_RugbySeasons.designer.cs">
       <DependentUpon>201802261121368_Add_CurrentRoundNumberCmsOverride_To_RugbySeasons.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201802281023551_Motorsport_Initial_Migration.cs" />
+    <Compile Include="Migrations\201802281023551_Motorsport_Initial_Migration.Designer.cs">
+      <DependentUpon>201802281023551_Motorsport_Initial_Migration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyLogGroupsForLasVegasSevens2018.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyTeamNames.cs" />
@@ -276,6 +280,7 @@
     <Compile Include="Migrations\Seed\SeedRugbyTournamentNames.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyTournamentSlugs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UnitOfWork\PublicSportDataUnitOfWork.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SuperSportDataEngine.ApplicationLogic\SuperSportDataEngine.ApplicationLogic.csproj">
@@ -423,6 +428,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201802261121368_Add_CurrentRoundNumberCmsOverride_To_RugbySeasons.resx">
       <DependentUpon>201802261121368_Add_CurrentRoundNumberCmsOverride_To_RugbySeasons.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201802281023551_Motorsport_Initial_Migration.resx">
+      <DependentUpon>201802281023551_Motorsport_Initial_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
