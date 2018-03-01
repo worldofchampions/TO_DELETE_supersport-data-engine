@@ -62,6 +62,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerIngestServer
             //GlobalJobFilters.Filters.Add(new LogExceptionFilterAttribute(_container));
             GlobalJobFilters.Filters.Add(new CustomRetryFilterAttribute(_container, retryPeriodInSeconds));
             GlobalJobFilters.Filters.Add(new SkipConcurrentExecutionAttribute(_concurrentJobTimeoutInSeconds));
+            GlobalJobFilters.Filters.Add(new SkipWhenPreviousJobIsRunningAttribute());
         }
 
         private void RemoveDefaultRetryFilterAttribute()
