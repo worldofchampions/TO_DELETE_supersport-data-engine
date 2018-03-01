@@ -163,6 +163,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
                             RugbyTournament = tournament,
                             TeamA = new RugbyTeam { Name = "TeamA" },
                             TeamB = new RugbyTeam { Name = "TeamB" },
+                            LegacyFixtureId = 123,
                             RugbyFixtureStatus = RugbyFixtureStatus.FirstHalf
                         }
                     }.AsEnumerable());
@@ -179,7 +180,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
                         Times.Once());
 
             MockRecurringJobManager.Verify(m => m.Trigger(
-                        "LiveManagerJob→LiveMatch→TeamA vs TeamB"),
+                        "LiveManagerJob→LiveMatch→TeamA vs TeamB→123"),
                         Times.Once());             
 
             var f = MockSchedulerTrackingFixtureRepository.Object.All().FirstOrDefault();
@@ -211,6 +212,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
                             RugbyTournament = tournament,
                             TeamA = new RugbyTeam { Name = "TeamA" },
                             TeamB = new RugbyTeam { Name = "TeamB" },
+                            LegacyFixtureId = 123,
                             RugbyFixtureStatus = RugbyFixtureStatus.Result
                         }
                     }.AsEnumerable());
@@ -220,7 +222,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
             await LiveManagerJob.DoWorkAsync();
 
             MockRecurringJobManager.Verify(m => m.AddOrUpdate(
-                        "LiveManagerJob→LiveMatch→TeamA vs TeamB",
+                        "LiveManagerJob→LiveMatch→TeamA vs TeamB→123",
                         It.IsAny<Job>(),
                         "0 */2 * * *",
                         It.IsAny<RecurringJobOptions>()),
