@@ -1,4 +1,5 @@
-﻿using SuperSportDataEngine.Common.Caching;
+﻿using System;
+using SuperSportDataEngine.Common.Caching;
 
 namespace SuperSportDataEngine.Application.Container
 {
@@ -35,6 +36,15 @@ namespace SuperSportDataEngine.Application.Container
         private const string PublicSportDataRepository = "PublicSportDataRepository";
         private const string SystemSportDataRepository = "SystemSportDataRepository";
         private static ILoggingService logger = LoggingService.GetLoggingService();
+
+        private static readonly Lazy<ConnectionMultiplexer> LazyRedisConnection = new Lazy<ConnectionMultiplexer>(() =>
+        {
+            var connectionMultiplexer = ConnectionMultiplexer.Connect(ConfigurationManager.ConnectionStrings["Redis"].ConnectionString);
+            connectionMultiplexer.PreserveAsyncOrder = false;
+            return connectionMultiplexer;
+        });
+
+        private static ConnectionMultiplexer RedisConnection => LazyRedisConnection.Value;
 
         public static void RegisterTypes(IUnityContainer container, ApplicationScope applicationScope)
         {
@@ -81,21 +91,18 @@ namespace SuperSportDataEngine.Application.Container
         {
             try
             {
-                //if (applicationScope == ApplicationScope.WebApiLegacyFeed || applicationScope == ApplicationScope.WebApiPublicApi)
-                {
-                    container.RegisterType<ICache, Cache>(new ContainerControlledLifetimeManager(),
-                        new InjectionFactory((x) => new Cache(ConnectionMultiplexer.Connect(WebConfigurationManager.ConnectionStrings["Redis"].ConnectionString))));
+                container.RegisterType<ICache, Cache>(new ContainerControlledLifetimeManager(),
+                    new InjectionFactory((x) => new Cache(RedisConnection)));
 
-                    logger.Cache = container.Resolve<ICache>();
-                }
+                logger.Cache = container.Resolve<ICache>();
             }
-            catch (System.Exception exception)
+            catch (Exception exception)
             {
                 container.RegisterType<ICache, Cache>(new ContainerControlledLifetimeManager(), new InjectionFactory((x) => null));
 
                 logger.Error("NoCacheInDIContainer", 
-                    "Message: \n" + exception.Message + 
-                    "StackTrace: \n" + exception.StackTrace +
+                    "Message: \n" + exception.Message + "\n" + 
+                    "StackTrace: \n" + exception.StackTrace + "\n" +
                     "Inner Exception \n" + exception.InnerException);
             }
         }
