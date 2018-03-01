@@ -11,5 +11,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Entities.SystemAPI
         public DateTimeOffset StartDateTime { get; set; }
         public DateTimeOffset EndDateTime { get; set; }
         public int CurrentRoundNumber { get; set; }
+        public int? CurrentRoundNumberCmsOverride { get; set; }
     }
 }

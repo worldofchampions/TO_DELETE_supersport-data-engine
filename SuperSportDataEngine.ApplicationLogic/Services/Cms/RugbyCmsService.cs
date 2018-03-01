@@ -360,6 +360,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
                     /** Only accept these values hard coded below **/
                     rugbySeason.IsCurrent = rugbySeasonEntity.IsCurrent;
                     rugbySeason.CurrentRoundNumber = rugbySeasonEntity.CurrentRoundNumber;
+                    rugbySeason.CurrentRoundNumberCmsOverride = rugbySeasonEntity.CurrentRoundNumberCmsOverride;
 
                     _rugbySeasonRepository.Update(rugbySeason);
                     await _rugbySeasonRepository.SaveAsync();
