@@ -10,6 +10,9 @@
         /// <summary> The primary internal record identifier. </summary>
         public Guid Id { get; set; }
 
+        /// <summary> A unique int record identifier for legacy purposes. </summary>
+        public int LegacyRaceEventId { get; set; }
+
         /// <summary> A provider driven value. </summary>
         public int ProviderRaceEventId { get; set; }
 
