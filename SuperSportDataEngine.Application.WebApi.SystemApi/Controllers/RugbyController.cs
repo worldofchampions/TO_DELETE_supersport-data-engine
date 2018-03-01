@@ -38,9 +38,15 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         /// Get paginated list of rugby tournaments
         /// And searching by passing query parameter
         /// </summary>
-        /// <param name="pageIndex"></param>
-        /// <param name="pageSize"></param>
-        /// <param name="query"></param>
+        /// <param name="pageIndex">
+        /// Page number
+        /// </param>
+        /// <param name="pageSize">
+        /// Size of records to be returned
+        /// </param>
+        /// <param name="query">
+        /// Search against tournament name
+        /// </param>
         /// <returns></returns>
 
         [ActionName("tournaments")]
@@ -62,9 +68,15 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         /// <summary>
         /// Get paginated list of rugby fixtures and return a 500 error response if something failed while doing it
         /// </summary>
-        /// <param name="pageIndex"></param>
-        /// <param name="pageSize"></param>
-        /// <param name="query"></param>
+        /// <param name="pageIndex">
+        /// Page number
+        /// </param>
+        /// <param name="pageSize">
+        /// Size of records to be returned
+        /// </param>
+        /// <param name="query">
+        /// Search against team names
+        /// </param>
         /// <returns></returns>
 
         [ActionName("fixtures")]
@@ -86,9 +98,15 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         /// <summary>
         /// Get paginated list of rugby seasons and return a 500 error response if something failed while doing it
         /// </summary>
-        /// <param name="pageIndex"></param>
-        /// <param name="pageSize"></param>
-        /// <param name="query"></param>
+        /// <param name="pageIndex">
+        /// Page number
+        /// </param>
+        /// <param name="pageSize">
+        /// Size of records to be returned
+        /// </param>
+        /// <param name="query">
+        /// Search against season name
+        /// </param>
         /// <returns></returns>
 
         [ActionName("seasons")]
@@ -110,9 +128,15 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         /// <summary>
         /// Get paginated list of rugby teams and return a 500 error response if something failed while doing it
         /// </summary>
-        /// <param name="pageIndex"></param>
-        /// <param name="pageSize"></param>
-        /// <param name="query"></param>
+        /// <param name="pageIndex">
+        /// Page number
+        /// </param>
+        /// <param name="pageSize">
+        /// Size of records to be returned
+        /// </param>
+        /// <param name="query">
+        /// Search against team name and team abbreviation
+        /// </param>
         /// <returns></returns>
 
         [ActionName("teams")]
@@ -134,9 +158,15 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         /// <summary>
         /// Get paginated list of rugby players and return a 500 error response if something failed while doing it
         /// </summary>
-        /// <param name="pageIndex"></param>
-        /// <param name="pageSize"></param>
-        /// <param name="query"></param>
+        /// <param name="pageIndex">
+        /// Page number
+        /// </param>
+        /// <param name="pageSize">
+        /// Size of records to be returned
+        /// </param>
+        /// <param name="query">
+        /// Search against player's name
+        /// </param>
         /// <returns></returns>
 
         [ActionName("players")]
@@ -159,9 +189,15 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         /// Get paginated list of rugby tournament seasons and return a 500 error response if something failed while doing it
         /// </summary>
         /// <param name="tournamentId"></param>
-        /// <param name="pageIndex"></param>
-        /// <param name="pageSize"></param>
-        /// <param name="query"></param>
+        /// <param name="pageIndex">
+        /// Page number
+        /// </param>
+        /// <param name="pageSize">
+        /// Size of records to be returned
+        /// </param>
+        /// <param name="query">
+        /// Search against season name for tournamentId
+        /// </param>
         /// <returns></returns>
 
         [Route("api/Rugby/tournament/{tournamentId:guid}/seasons")]
@@ -184,9 +220,15 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         /// Get paginated list of rugby season fixtures and return a 500 error response if something failed while doing it
         /// </summary>
         /// <param name="seasonId"></param>
-        /// <param name="pageIndex"></param>
-        /// <param name="pageSize"></param>
-        /// <param name="query"></param>
+        /// <param name="pageIndex">
+        /// Page number
+        /// </param>
+        /// <param name="pageSize">
+        /// Size of records to be returned
+        /// </param>
+        /// <param name="query">
+        /// Search against team names for seasonId
+        /// </param>
         /// <returns></returns>
 
         [Route("api/Rugby/season/{seasonId:guid}/fixtures")]
