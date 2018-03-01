@@ -27,14 +27,14 @@ namespace SuperSportDataEngine.Tests.Common.Repositories.Test
         public IBaseEntityFrameworkRepository<MotorsportDriver> MotorsportDrivers { get; set; }
         public IBaseEntityFrameworkRepository<MotorsportLeague> MotorsportLeagues { get; set; }
         public IBaseEntityFrameworkRepository<MotorsportRace> MotorsportRaces { get; set; }
-        public IBaseEntityFrameworkRepository<MotorsportRaceResult> MotorsportRaceResults { get; set; }
+        public IBaseEntityFrameworkRepository<MotorsportRaceEventResult> MotorsportRaceEventResults { get; set; }
         public IBaseEntityFrameworkRepository<MotorsportSeason> MotorsportSeasons { get; set; }
         public IBaseEntityFrameworkRepository<MotorsportDriverStanding> MotorsportDriverStandings { get; set; }
         public IBaseEntityFrameworkRepository<MotorsportTeamStanding> MotorsportTeamStandings { get; set; }
-        public IBaseEntityFrameworkRepository<MotorsportRaceCalendar> MotorsportRaceCalendars { get; set; }
+        public IBaseEntityFrameworkRepository<MotorsportRaceEvent> MotorsportRaceEvents { get; set; }
         public IBaseEntityFrameworkRepository<MotorsportTeam> MotortsportTeams { get; set; }
-        public IBaseEntityFrameworkRepository<MotorsportRaceResult> MotorTeamResults { get; set; }
-        public IBaseEntityFrameworkRepository<MotorsportRaceGrid> MotorsportRaceGrids { get; set; }
+        public IBaseEntityFrameworkRepository<MotorsportRaceEventResult> MotorTeamResults { get; set; }
+        public IBaseEntityFrameworkRepository<MotorsportRaceEventGrid> MotorsportRaceEventGrids { get; set; }
 
         public TestPublicSportDataUnitOfWork()
         {

@@ -1,6 +1,6 @@
 ﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums
 {
-    public enum MotorsportRaceStatus
+    public enum MotorsportRaceEventStatus
     {
         PreRace = 1,
         InProgress = 2,

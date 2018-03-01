@@ -21,17 +21,8 @@
         /// <summary> A provider driven value. </summary>
         public string LastName { get; set; }
 
-        /// <summary> Auto-calculated on ingest. Provider does not serve this value. </summary>
-        public string FullName { get; set; }
-
         /// <summary> A CMS driven value. </summary>
         public string FullNameCmsOverride { get; set; }
-
-        /// <summary> A provider driven value. </summary>
-        public double HeightInCentimeters { get; set; }
-
-        /// <summary> A provider driven value. </summary>
-        public double WeightInKilograms { get; set; }
 
         /// <summary> A provider driven value. </summary>
         public string CountryName { get; set; }

@@ -34,7 +34,10 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<int> GetProviderSeasonIdForLeague(Guid leagueId, CancellationToken cancellationToken)
         {
-            return await Task.FromResult(2017);
+            var season = _publicSportDataUnitOfWork.MotorsportSeasons.FirstOrDefault(s =>
+                s.MotorsportLeague.Id == leagueId);
+
+            return await Task.FromResult(season.ProviderSeasonId);
         }
 
         public async Task<SchedulerStateForManagerJobPolling> GetSchedulerStateForManagerJobPolling(Guid leagueId)
@@ -97,12 +100,20 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             return pastSeason;
         }
 
-        public async Task<MotorsportRaceCalendar> GetTodayEventForRace(Guid leagueId)
+        public async Task<MotorsportRaceEvent> GetTodayEventForRace(Guid raceId)
         {
-            var race = _publicSportDataUnitOfWork.MotorsportRaceCalendars.FirstOrDefault(r =>
-                r.MotorsportRaceId == leagueId);
+            var raceEvent = _publicSportDataUnitOfWork.MotorsportRaceEvents.FirstOrDefault(r =>
+                r.MotorsportRace.Id == raceId);
 
-            return await Task.FromResult(race);
+            return await Task.FromResult(raceEvent);
+        }
+
+        public async Task<IEnumerable<MotorsportRaceEvent>> GetTodayEventsForRace(Guid raceId, Guid seasonId)
+        {
+            var raceEvents = _publicSportDataUnitOfWork.MotorsportRaceEvents.Where(
+                e => e.MotorsportRace.Id == raceId && e.MotorsportSeason.Id == seasonId);
+
+            return await Task.FromResult(raceEvents);
         }
     }
 }

@@ -16,9 +16,11 @@
         public string Name { get; set; }
 
         /// <summary> A provider driven value. </summary>
+        // TODO Convert to UTC since provider value is local
         public DateTimeOffset StartDateTime { get; set; }
 
         /// <summary> A provider driven value. </summary>
+        // TODO Convert to UTC since provider value is local
         public DateTimeOffset EndDateTime { get; set; }
 
         /// <summary> A provider driven value. </summary>
