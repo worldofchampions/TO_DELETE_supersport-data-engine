@@ -133,6 +133,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                 c => new
                     {
                         Id = c.Guid(nullable: false, identity: true),
+                        LegacyRaceEventId = c.Int(nullable: false, identity: true),
                         ProviderRaceEventId = c.Int(nullable: false),
                         StartDateTimeUtc = c.DateTimeOffset(precision: 7),
                         CountryName = c.String(),
