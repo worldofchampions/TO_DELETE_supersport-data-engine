@@ -37,9 +37,9 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.UnitOf
         public IBaseEntityFrameworkRepository<MotorsportTeamStanding> MotorsportTeamStandings { get; set; }
         public IBaseEntityFrameworkRepository<MotorsportSeason> MotorsportSeasons { get; set; }
         public IBaseEntityFrameworkRepository<MotorsportTeam> MotortsportTeams { get; set; }
-        public IBaseEntityFrameworkRepository<MotorsportRaceResult> MotorsportRaceResults { get; set; }
-        public IBaseEntityFrameworkRepository<MotorsportRaceGrid> MotorsportRaceGrids { get; set; }
-        public IBaseEntityFrameworkRepository<MotorsportRaceCalendar> MotorsportRaceCalendars { get; set; }
+        public IBaseEntityFrameworkRepository<MotorsportRaceEventResult> MotorsportRaceEventResults { get; set; }
+        public IBaseEntityFrameworkRepository<MotorsportRaceEventGrid> MotorsportRaceEventGrids { get; set; }
+        public IBaseEntityFrameworkRepository<MotorsportRaceEvent> MotorsportRaceEvents { get; set; }
 
         public PublicSportDataUnitOfWork(
             DbContext context)
@@ -64,11 +64,11 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.UnitOf
 
             MotorsportDrivers = new BaseEntityFrameworkRepository<MotorsportDriver>(_context);
             MotorsportDriverStandings = new BaseEntityFrameworkRepository<MotorsportDriverStanding>(_context);
-            MotorsportRaceCalendars = new BaseEntityFrameworkRepository<MotorsportRaceCalendar>(_context);
-            MotorsportRaceGrids = new BaseEntityFrameworkRepository<MotorsportRaceGrid>(_context);
+            MotorsportRaceEvents = new BaseEntityFrameworkRepository<MotorsportRaceEvent>(_context);
+            MotorsportRaceEventGrids = new BaseEntityFrameworkRepository<MotorsportRaceEventGrid>(_context);
             MotorsportLeagues = new BaseEntityFrameworkRepository<MotorsportLeague>(_context);
             MotorsportRaces = new BaseEntityFrameworkRepository<MotorsportRace>(_context);
-            MotorsportRaceResults = new BaseEntityFrameworkRepository<MotorsportRaceResult>(_context);
+            MotorsportRaceEventResults = new BaseEntityFrameworkRepository<MotorsportRaceEventResult>(_context);
             MotorsportSeasons = new BaseEntityFrameworkRepository<MotorsportSeason>(_context);
             MotortsportTeams = new BaseEntityFrameworkRepository<MotorsportTeam>(_context);
             MotorsportTeamStandings = new BaseEntityFrameworkRepository<MotorsportTeamStanding>(_context);

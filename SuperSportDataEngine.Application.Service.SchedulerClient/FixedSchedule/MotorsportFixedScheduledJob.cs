@@ -88,7 +88,7 @@
         {
             _recurringJobManager.AddOrUpdate(
                 ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_Calendar_JobId"],
-                Job.FromExpression(() => _container.Resolve<IMotorsportIngestWorkerService>().IngestCalendarsForActiveLeagues(CancellationToken.None)),
+                Job.FromExpression(() => _container.Resolve<IMotorsportIngestWorkerService>().IngestRacesEvents(CancellationToken.None)),
                 ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_Calendar_JobCronExpression"],
                 new RecurringJobOptions
                 {
@@ -127,7 +127,7 @@
         {
             _recurringJobManager.AddOrUpdate(
                 ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_ActiveLeaguesGrids_JobId"],
-                Job.FromExpression(() => _container.Resolve<IMotorsportIngestWorkerService>().IngestRaceGridsForActiveLeagues(CancellationToken.None)),
+                Job.FromExpression(() => _container.Resolve<IMotorsportIngestWorkerService>().IngestRacesEventsGrids(CancellationToken.None)),
                 ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_ActiveLeaguesGrids_JobCronExpression"],
                 new RecurringJobOptions
                 {
@@ -179,7 +179,7 @@
         {
             _recurringJobManager.AddOrUpdate(
                 ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_HistoricGrids_JobId"],
-                Job.FromExpression(() => _container.Resolve<IMotorsportIngestWorkerService>().IngestHistoricGrids(CancellationToken.None)),
+                Job.FromExpression(() => _container.Resolve<IMotorsportIngestWorkerService>().IngestHistoricEventsGrids(CancellationToken.None)),
                 ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_HistoricGrids_JobCronExpression"],
                 new RecurringJobOptions
                 {
@@ -192,7 +192,7 @@
         {
             _recurringJobManager.AddOrUpdate(
                 ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_HistoricCalendars_JobId"],
-                Job.FromExpression(() => _container.Resolve<IMotorsportIngestWorkerService>().IngestLeagueCalendarForPastSeasons(CancellationToken.None)),
+                Job.FromExpression(() => _container.Resolve<IMotorsportIngestWorkerService>().IngestHistoricRaceEvents(CancellationToken.None)),
                 ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_HistoricCalendars_JobCronExpression"],
                 new RecurringJobOptions
                 {
@@ -218,7 +218,7 @@
         {
             _recurringJobManager.AddOrUpdate(
                 ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_HistoricResults_JobId"],
-                Job.FromExpression(() => _container.Resolve<IMotorsportIngestWorkerService>().IngestHistoricResults(CancellationToken.None)),
+                Job.FromExpression(() => _container.Resolve<IMotorsportIngestWorkerService>().IngestHistoricEventsResults(CancellationToken.None)),
                 ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_HistoricResults_JobCronExpression"],
                 new RecurringJobOptions
                 {

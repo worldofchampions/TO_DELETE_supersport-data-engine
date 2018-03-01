@@ -1,9 +1,8 @@
-﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-
-namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces
+﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces
 {
     using System.Threading;
     using System.Threading.Tasks;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
 
     public interface IMotorsportIngestWorkerService
     {
@@ -15,14 +14,14 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Inte
         Task IngestTeamStandingsForActiveLeagues(CancellationToken cancellationToken);
         Task IngestRacesForActiveLeagues(CancellationToken cancellationToken);
         Task IngestResultsForActiveLeagues(CancellationToken cancellationToken);
-        Task IngestLeagueCalendarForPastSeasons(CancellationToken cancellationToken);
-        Task IngestCalendarsForActiveLeagues(CancellationToken cancellationToken);
-        Task IngestRaceGridsForActiveLeagues(CancellationToken cancellationToken);
+        Task IngestRacesEvents(CancellationToken cancellationToken);
+        Task IngestRacesEventsGrids(CancellationToken cancellationToken);
+        Task IngestLiveRaceEventData(MotorsportRace race, CancellationToken cancellationToken);
         Task IngestHistoricRaces(CancellationToken cancellationToken);
-        Task IngestHistoricGrids(CancellationToken cancellationToken);
-        Task IngestHistoricResults(CancellationToken cancellationToken);
-        Task IngestHistoricTeamStandings(CancellationToken cancellationToken);
+        Task IngestHistoricRaceEvents(CancellationToken cancellationToken);
+        Task IngestHistoricEventsGrids(CancellationToken cancellationToken);
+        Task IngestHistoricEventsResults(CancellationToken cancellationToken);
         Task IngestHistoricDriverStandings(CancellationToken cancellationToken);
-        Task IngestLiveRaceData(MotorsportRace race, CancellationToken cancellationToken);
+        Task IngestHistoricTeamStandings(CancellationToken cancellationToken);
     }
 }

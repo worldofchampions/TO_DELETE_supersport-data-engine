@@ -14,9 +14,11 @@
         /// <summary> A clustered-key record identifier. </summary>
         public Guid MotorsportTeamId { get; set; }
 
-        public int Points { get; set; }
-
+        /// <summary> A provider driven value. </summary>
         public int Position { get; set; }
+
+        /// <summary> A provider driven value. </summary>
+        public int Points { get; set; }
 
         public virtual MotorsportLeague MotorsportLeague { get; set; }
 

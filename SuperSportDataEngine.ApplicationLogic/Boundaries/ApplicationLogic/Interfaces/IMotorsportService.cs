@@ -16,6 +16,7 @@
         Task<IEnumerable<MotorsportRace>> GetRacesForLeague(Guid leagueId);
         Task<MotorsportSeason> GetCurrentSeasonForLeague(Guid leagueId, CancellationToken cancellationToken);
         Task<MotorsportSeason> GetPastSeasonForLeague(Guid leagueId, CancellationToken cancellationToken);
-        Task<MotorsportRaceCalendar> GetTodayEventForRace(Guid leagueId);
+        Task<MotorsportRaceEvent> GetTodayEventForRace(Guid raceId);
+        Task<IEnumerable<MotorsportRaceEvent>> GetTodayEventsForRace(Guid raceId, Guid seasonId);
     }
 }

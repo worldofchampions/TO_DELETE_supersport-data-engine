@@ -8,7 +8,7 @@
     {
         public Guid MotorsportRaceId { get; set; }
 
-        public MotorsportRaceStatus MotorsportRaceStatus { get; set; }
+        public MotorsportRaceEventStatus MotorsportRaceEventStatus { get; set; }
 
         public SchedulerStateForMotorsportRacePolling SchedulerStateForMotorsportRacePolling { get; set; }
 

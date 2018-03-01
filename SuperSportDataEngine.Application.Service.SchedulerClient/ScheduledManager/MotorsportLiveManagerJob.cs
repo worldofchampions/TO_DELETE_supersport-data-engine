@@ -62,10 +62,10 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
             await _systemSportDataUnitOfWork.SaveChangesAsync();
         }
 
-        private void UpdateJobDefinitionForLiveRaceEvent(MotorsportRaceCalendar raceEvent)
+        private void UpdateJobDefinitionForLiveRaceEvent(MotorsportRaceEvent raceEvent)
         {
             var raceInTrackingRepo =
-                _systemSportDataUnitOfWork.SchedulerTrackingMotorsportRaces.FirstOrDefault(r => r.MotorsportRaceId == raceEvent.MotorsportRaceId);
+                _systemSportDataUnitOfWork.SchedulerTrackingMotorsportRaces.FirstOrDefault(r => r.MotorsportRaceId == raceEvent.MotorsportRace.Id);
 
             if (raceInTrackingRepo is null)
             {
@@ -73,7 +73,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
 
                 var jobCronExpression = ConfigurationManager.AppSettings["Motorsport_LiveRaceJob_JobCronExpression"];
 
-                var jobMethod = _motorsportIngestWorkerService.IngestLiveRaceData(raceEvent.MotorsportRace, CancellationToken.None);
+                var jobMethod = _motorsportIngestWorkerService.IngestLiveRaceEventData(raceEvent.MotorsportRace, CancellationToken.None);
 
                 var jobOptions = new RecurringJobOptions { TimeZone = TimeZoneInfo.Local, QueueName = HangfireQueueConfiguration.HighPriority };
 
@@ -84,8 +84,8 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
                 raceInTrackingRepo = new SchedulerTrackingMotorsportRace
                 {
                     IsJobRunning = true,
-                    MotorsportRaceId = raceEvent.MotorsportRaceId,
-                    MotorsportRaceStatus = raceEvent.MotorsportRace.MotorsportRaceStatus,
+                    //MotorsportRaceId = raceEvent.MotorsportRaceId,
+                    //MotorsportRaceStatus = raceEvent.MotorsportRace.MotorsportRaceStatus,
                     SchedulerStateForMotorsportRacePolling = SchedulerStateForMotorsportRacePolling.RunningAt1MinuteCycle
                 };
 
@@ -93,14 +93,14 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
             }
         }
 
-        private bool ShouldSpawnLiveJobForRaceEvent(MotorsportRaceCalendar raceEvent)
+        private bool ShouldSpawnLiveJobForRaceEvent(MotorsportRaceEvent raceEvent)
         {
-            if (_tempCount != 0)
-            {
-                var currentTime = DateTimeOffset.UtcNow;
+            //if (_tempCount != 0)
+            //{
+            //    var currentTime = DateTimeOffset.UtcNow;
 
-                return currentTime >= raceEvent.StartDateTimeUtc && currentTime <= raceEvent.EndDateTimeUtc;
-            }
+            //    return currentTime >= raceEvent.StartDateTimeUtc && currentTime <= raceEvent.EndDateTimeUtc;
+            //}
 
             return true;
         }
