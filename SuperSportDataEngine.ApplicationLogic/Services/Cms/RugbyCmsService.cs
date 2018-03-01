@@ -125,8 +125,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
                 teams = await CreatePagedResults<RugbyTeam, RugbyTeamEntity>(
                                     _rugbyTeamRepository.Where(q => q.Name.Contains(query)
                                                         || q.NameCmsOverride.Contains(query)
-                                                        || q.Name.Contains(query)
-                                                        || q.NameCmsOverride.Contains(query)), pageIndex, pageSize, abpath);
+                                                        || q.Abbreviation.Contains(query)), pageIndex, pageSize, abpath);
             }
             else
             {
