@@ -753,21 +753,26 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         private void UpdateLeagueInRepo(League leagueFromProvider, MotorsportLeague leagueInRepo)
         {
-            leagueInRepo.ProviderSlug = leagueFromProvider.league.subLeague.abbreviation;
-
-            leagueInRepo.Name = leagueFromProvider.league.subLeague.name;
+            if (leagueFromProvider.league != null)
+            {
+                leagueInRepo.ProviderSlug = leagueFromProvider.league.uriPaths?.FirstOrDefault()?.path;
+                if (leagueFromProvider.league.subLeague != null)
+                    leagueInRepo.Name = leagueFromProvider.league.subLeague.name;
+            }
 
             _publicSportDataUnitOfWork.MotorsportLeagues.Update(leagueInRepo);
         }
 
         private void AddNewLeagueToRepo(League leagueFromProvider)
         {
+            if (leagueFromProvider.league?.uriPaths == null) return;
+
             var league = new MotorsportLeague
             {
                 ProviderSlug = leagueFromProvider.league.uriPaths.FirstOrDefault()?.path,
+                Slug = leagueFromProvider.league.uriPaths.FirstOrDefault()?.path,
                 Name = leagueFromProvider.league.subLeague.name,
                 ProviderLeagueId = leagueFromProvider.league.subLeague.subLeagueId,
-                Slug = leagueFromProvider.league.uriPaths.FirstOrDefault()?.path,
                 DataProvider = DataProvider.Stats
             };
 
