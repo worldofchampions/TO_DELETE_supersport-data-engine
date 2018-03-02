@@ -642,9 +642,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         private void AddNewGridEntryToRepo(Result providerGridEntry, MotorsportRace race)
         {
-            var qualifyingRun = providerGridEntry?.qualifying?.qualifyingRuns?.FirstOrDefault();
-            if (qualifyingRun is null) return;
-
             var driverInRepo = _publicSportDataUnitOfWork.MotorsportDrivers.FirstOrDefault(d => d.ProviderDriverId == providerGridEntry.player.playerId);
             if (driverInRepo is null) return;
 
@@ -655,20 +652,43 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 _publicSportDataUnitOfWork.MotorsportRaceEvents.FirstOrDefault(e => e.MotorsportRace.Id == race.Id);
             if (racecEvent is null) return;
 
-
             var newGridEntry = new MotorsportRaceEventGrid
             {
                 MotorsportDriver = driverInRepo,
                 MotorsportDriverId = driverInRepo.Id,
                 GridPosition = providerGridEntry.carPosition.startingPosition,
-                QualifyingTimeMinutes = qualifyingRun.time.minutes,
-                QualifyingTimeSeconds = qualifyingRun.time.seconds,
-                QualifyingTimeMilliseconds = qualifyingRun.time.milliseconds,
                 MotorsportTeam = teamInRepo,
                 MotorsportTeamId = teamInRepo.Id,
                 MotorsportRaceEventId = race.Id,
                 MotorsportRaceEvent = racecEvent
             };
+
+            var qualifyingRuns = providerGridEntry.qualifying?.qualifyingRuns;
+            if (qualifyingRuns != null)
+            {
+                var bestQualifyingRun = providerGridEntry.qualifying?.qualifyingRuns?.FirstOrDefault();
+                foreach (var run in qualifyingRuns)
+                {
+                    if (bestQualifyingRun == null) continue;
+
+                    var bestRunTime = new TimeSpan(0, 0, bestQualifyingRun.time.minutes, bestQualifyingRun.time.seconds,
+                        bestQualifyingRun.time.milliseconds);
+
+                    var currentRunTime = new TimeSpan(0, 0, run.time.minutes, run.time.seconds, run.time.milliseconds);
+
+                    if (bestRunTime.Subtract(currentRunTime).TotalMilliseconds > 0)
+                    {
+                        bestQualifyingRun = run;
+                    }
+                }
+
+                if (bestQualifyingRun != null)
+                {
+                    newGridEntry.QualifyingTimeMinutes = bestQualifyingRun.time.minutes;
+                    newGridEntry.QualifyingTimeSeconds = bestQualifyingRun.time.seconds;
+                    newGridEntry.QualifyingTimeMilliseconds = bestQualifyingRun.time.milliseconds;
+                }
+            }
 
             _publicSportDataUnitOfWork.MotorsportRaceEventGrids.Add(newGridEntry);
         }
