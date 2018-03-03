@@ -1,13 +1,13 @@
 ﻿using System.Configuration;
 using System.Linq;
 using System.Web.Http;
+using SuperSportDataEngine.Common.Interfaces;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
 {
     using Microsoft.Practices.Unity;
     using Container;
     using Container.Enums;
-    using Common.Interfaces;
     using Helpers.AppSettings;
     using Models.Shared;
     using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;

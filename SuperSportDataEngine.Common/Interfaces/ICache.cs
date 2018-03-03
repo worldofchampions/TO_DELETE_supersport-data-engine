@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace SuperSportDataEngine.Application.WebApi.Common.Interfaces
+namespace SuperSportDataEngine.Common.Interfaces
 {
     public interface ICache
     {
