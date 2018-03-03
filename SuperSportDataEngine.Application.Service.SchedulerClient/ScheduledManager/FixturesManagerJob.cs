@@ -212,34 +212,32 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
 
             foreach (var tournament in currentTournaments)
             {
-                if ((await _childContainer.Resolve<IRugbyService>().GetSchedulerStateForManagerJobPolling(tournament.Id)) == SchedulerStateForManagerJobPolling.NotRunning)
-                {
-                    var jobId = ConfigurationManager.AppSettings["ScheduleManagerJob_Fixtures_CurrentTournaments_JobIdPrefix"] + tournament.Name;
-                    var jobCronExpression = ConfigurationManager.AppSettings["ScheduleManagerJob_Fixtures_CurrentTournaments_JobCronExpression"];
+                var seasonId = await _childContainer.Resolve<IRugbyService>().GetCurrentProviderSeasonIdForTournament(CancellationToken.None, tournament.Id);
 
-                    var seasonId = await _childContainer.Resolve<IRugbyService>().GetCurrentProviderSeasonIdForTournament(CancellationToken.None, tournament.Id);
+                var jobId = ConfigurationManager.AppSettings["ScheduleManagerJob_Fixtures_CurrentTournaments_JobIdPrefix"] + tournament.Name;
+                var jobCronExpression = ConfigurationManager.AppSettings["ScheduleManagerJob_Fixtures_CurrentTournaments_JobCronExpression"];
 
-                    _recurringJobManager.AddOrUpdate(
-                        jobId,
-                        Job.FromExpression(() => _childContainer.Resolve<IRugbyIngestWorkerService>().IngestFixturesForTournamentSeason(CancellationToken.None, tournament.ProviderTournamentId, seasonId)),
-                        jobCronExpression,
-                        new RecurringJobOptions()
-                        {
-                            TimeZone = TimeZoneInfo.Local,
-                            QueueName = HangfireQueueConfiguration.HighPriority
-                        });
-
-                    var season =
-                        (await schedulerTrackingRugbySeasonRepository.AllAsync())
-                            .FirstOrDefault(s => s.RugbySeasonStatus == RugbySeasonStatus.InProgress &&
-                                    s.TournamentId == tournament.Id &&
-                                    s.SchedulerStateForManagerJobPolling == SchedulerStateForManagerJobPolling.NotRunning);
-
-                    if (season != null)
+                _recurringJobManager.AddOrUpdate(
+                    jobId,
+                    Job.FromExpression(() => _childContainer.Resolve<IRugbyIngestWorkerService>().IngestFixturesForTournamentSeason(CancellationToken.None, tournament.ProviderTournamentId, seasonId)),
+                    jobCronExpression,
+                    new RecurringJobOptions()
                     {
-                        season.SchedulerStateForManagerJobPolling = SchedulerStateForManagerJobPolling.Running;
-                        schedulerTrackingRugbySeasonRepository.Update(season);
-                    }
+                        TimeZone = TimeZoneInfo.Local,
+                        QueueName = HangfireQueueConfiguration.HighPriority
+                    });
+
+                var season =
+                    (await schedulerTrackingRugbySeasonRepository.AllAsync())
+                        .FirstOrDefault(s => s.RugbySeasonStatus == RugbySeasonStatus.InProgress &&
+                                s.TournamentId == tournament.Id &&
+                                s.SchedulerStateForManagerJobPolling == SchedulerStateForManagerJobPolling.NotRunning);
+
+                if (season != null &&
+                    season.SchedulerStateForManagerJobPolling != SchedulerStateForManagerJobPolling.Running)
+                {
+                    season.SchedulerStateForManagerJobPolling = SchedulerStateForManagerJobPolling.Running;
+                    schedulerTrackingRugbySeasonRepository.Update(season);
                 }
             }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using SuperSportDataEngine.Common.Caching;
+using SuperSportDataEngine.Common.Interfaces;
 
 namespace SuperSportDataEngine.Application.Container
 {
@@ -10,7 +11,6 @@ namespace SuperSportDataEngine.Application.Container
     using NLog.Slack;
     using StackExchange.Redis;
     using Enums;
-    using WebApi.Common.Interfaces;
     using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using ApplicationLogic.Boundaries.Gateway.Http.DeprecatedFeed.Interfaces;
     using ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
