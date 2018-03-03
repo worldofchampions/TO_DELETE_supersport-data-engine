@@ -210,9 +210,9 @@
 
     public class ScheduledDistance
     {
-        public int laps { get; set; }
-        public double miles { get; set; }
-        public double kilometers { get; set; }
+        public int? laps { get; set; }
+        public double? miles { get; set; }
+        public double? kilometers { get; set; }
     }
 
     public class Driver

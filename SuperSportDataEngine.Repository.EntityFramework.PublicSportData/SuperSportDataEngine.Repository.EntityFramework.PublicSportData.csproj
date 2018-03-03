@@ -264,6 +264,10 @@
     <Compile Include="Migrations\201803022159469_Motorsport_Initial_Migration2.Designer.cs">
       <DependentUpon>201803022159469_Motorsport_Initial_Migration2.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201803031833214_Motorsport_Initial_Migration3.cs" />
+    <Compile Include="Migrations\201803031833214_Motorsport_Initial_Migration3.Designer.cs">
+      <DependentUpon>201803031833214_Motorsport_Initial_Migration3.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyLogGroupsForLasVegasSevens2018.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyTeamNames.cs" />
@@ -438,6 +442,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201803022159469_Motorsport_Initial_Migration2.resx">
       <DependentUpon>201803022159469_Motorsport_Initial_Migration2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803031833214_Motorsport_Initial_Migration3.resx">
+      <DependentUpon>201803031833214_Motorsport_Initial_Migration3.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

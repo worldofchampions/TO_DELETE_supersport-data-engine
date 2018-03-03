@@ -10,10 +10,7 @@
 
         /// <summary> A clustered-key record identifier. </summary>
         public Guid MotorsportDriverId { get; set; }
-
-        /// <summary> A clustered-key record identifier. </summary>
-        public Guid MotorsportTeamId { get; set; }
-
+        
         /// <summary> A provider driven value. </summary>
         public int GridPosition { get; set; }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
@@ -55,9 +56,10 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<IEnumerable<MotorsportRace>> GetRacesForLeague(Guid leagueId)
         {
-            var races = await _publicSportDataUnitOfWork.MotorsportRaces.AllAsync();
+            var races =  _publicSportDataUnitOfWork.MotorsportRaces.Where(r =>
+                r.MotorsportLeague.Id == leagueId).ToList();
 
-            return races;
+            return await Task.FromResult(races);
         }
 
         public async Task<MotorsportSeason> GetCurrentSeasonForLeague(Guid leagueId, CancellationToken cancellationToken)
@@ -69,7 +71,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             return await Task.FromResult(season);
         }
 
-        public async Task<MotorsportSeason> GetPastSeasonForLeague(Guid leagueId, CancellationToken cancellationToken)
+        public async Task<MotorsportSeason> GetPastSeasonsForLeague(Guid leagueId, CancellationToken cancellationToken)
         {
             var pastSeasonProviderId = DateTime.UtcNow.Year - 1;
 
@@ -108,7 +110,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             return await Task.FromResult(raceEvent);
         }
 
-        public async Task<IEnumerable<MotorsportRaceEvent>> GetTodayEventsForRace(Guid raceId, Guid seasonId)
+        public async Task<IEnumerable<MotorsportRaceEvent>> GetEventsForRace(Guid raceId, Guid seasonId)
         {
             var raceEvents = _publicSportDataUnitOfWork.MotorsportRaceEvents.Where(
                 e => e.MotorsportRace.Id == raceId && e.MotorsportSeason.Id == seasonId);

@@ -51,7 +51,7 @@
             }
         }
 
-        public MotorsportEntitiesResponse IngestLeagueSeasons(string providerSlug)
+        public MotorsportEntitiesResponse IngestLeagueSeason(string providerSlug)
         {
             try
             {
