@@ -8,7 +8,7 @@
         WebRequest GetRequestForStandings(string providerSlug, string standingsTypeId, int providerSeasonId);
         WebRequest GetRequestForLeagues();
         WebRequest GetRequestForRaces(string providerSlug, int providerSeasonId);
-        WebRequest GetRequestForCalendar(string providerSlug, int providerSeasonId, int providerRaceId);
+        WebRequest GetRequestForRaceEvents(string providerSlug, int providerSeasonId, int providerRaceId);
         WebRequest GetRequestForOwners(string providerSlug);
         WebRequest GetRequestForRaceResults(string providerSlug, int providerSeasonId, int providerRaceId);
         WebRequest GetRequestForSeasons(string providerSlug);

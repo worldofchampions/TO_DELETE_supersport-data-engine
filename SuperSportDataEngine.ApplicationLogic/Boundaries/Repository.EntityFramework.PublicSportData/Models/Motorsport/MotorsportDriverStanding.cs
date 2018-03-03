@@ -12,7 +12,7 @@
         public Guid MotorsportSeasonId { get; set; }
 
         /// <summary> A clustered-key record identifier. </summary>
-        public Guid MotorsportTeamId { get; set; }
+        //public Guid MotorsportTeamId { get; set; }
 
         /// <summary> A clustered-key record identifier. </summary>
         public Guid MotorsportDriverId { get; set; }

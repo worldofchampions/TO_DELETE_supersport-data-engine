@@ -108,7 +108,7 @@
             return requestForRaces;
         }
 
-        public WebRequest GetRequestForCalendar(string providerSlug, int providerSeasonId, int providerRaceId)
+        public WebRequest GetRequestForRaceEvents(string providerSlug, int providerSeasonId, int providerRaceId)
         {
             var eventsUrl = $"/v1/stats/motor/{providerSlug}/events/";
 

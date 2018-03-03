@@ -28,19 +28,19 @@
             UpdateRecurringJobDefinition_Leagues();
             UpdateRecurringJobDefinition_Seasons();
             UpdateRecurringJobDefinition_Races();
-            UpdateRecurringJobDefinition_Calendars();
+            UpdateRecurringJobDefinition_RaceEvents();
             UpdateRecurringJobDefinition_Drivers();
             UpdateRecurringJobDefinition_Teams();
-            UpdateRecurringJobDefinition_Grids();
-            UpdateRecurringJobDefinition_Results();
+            UpdateRecurringJobDefinition_RaceEventsGrids();
+            UpdateRecurringJobDefinition_RaceEventsResults();
             UpdateRecurringJobDefinition_TeamStandings();
             UpdateRecurringJobDefinition_DriverStandings();
-            UpdateRecurringJobDefinition_Results();
+            UpdateRecurringJobDefinition_RaceEventsResults();
 
-            CreateManualJobDefinition_HistoricGrid();
+            CreateManualJobDefinition_HistoricRaceEventsGrid();
             CreateManualJobDefinition_HistoricRaces();
-            CreateManualJobDefinition_HistoricCalendars();
-            CreateManualJobDefinition_HistoricResults();
+            CreateManualJobDefinition_HistoricRaceEvents();
+            CreateManualJobDefinition_HistoricRaceEventsResults();
             CreateManualJobDefinition_HistoricTeamStandings();
             CreateManualJobDefinition_HistoricDriverStandings();
         }
@@ -84,12 +84,12 @@
                 });
         }
 
-        private void UpdateRecurringJobDefinition_Calendars()
+        private void UpdateRecurringJobDefinition_RaceEvents()
         {
             _recurringJobManager.AddOrUpdate(
-                ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_Calendar_JobId"],
+                ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_RaceEvents_JobId"],
                 Job.FromExpression(() => _container.Resolve<IMotorsportIngestWorkerService>().IngestRacesEvents(CancellationToken.None)),
-                ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_Calendar_JobCronExpression"],
+                ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_RaceEvents_JobCronExpression"],
                 new RecurringJobOptions
                 {
                     TimeZone = TimeZoneInfo.Local,
@@ -123,12 +123,12 @@
                 });
         }
 
-        private void UpdateRecurringJobDefinition_Grids()
+        private void UpdateRecurringJobDefinition_RaceEventsGrids()
         {
             _recurringJobManager.AddOrUpdate(
-                ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_ActiveLeaguesGrids_JobId"],
+                ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_ActiveLeaguesRaceEventsGrids_JobId"],
                 Job.FromExpression(() => _container.Resolve<IMotorsportIngestWorkerService>().IngestRacesEventsGrids(CancellationToken.None)),
-                ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_ActiveLeaguesGrids_JobCronExpression"],
+                ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_ActiveLeaguesRaceEventsGrids_JobCronExpression"],
                 new RecurringJobOptions
                 {
                     TimeZone = TimeZoneInfo.Local,
@@ -136,12 +136,12 @@
                 });
         }
 
-        private void UpdateRecurringJobDefinition_Results()
+        private void UpdateRecurringJobDefinition_RaceEventsResults()
         {
             _recurringJobManager.AddOrUpdate(
-                ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_Results_JobId"],
+                ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_RaceEventsResults_JobId"],
                 Job.FromExpression(() => _container.Resolve<IMotorsportIngestWorkerService>().IngestResultsForActiveLeagues(CancellationToken.None)),
-                ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_Results_JobCronExpression"],
+                ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_RaceEventsResults_JobCronExpression"],
                 new RecurringJobOptions
                 {
                     TimeZone = TimeZoneInfo.Local,
@@ -175,12 +175,12 @@
                 });
         }
 
-        private void CreateManualJobDefinition_HistoricGrid()
+        private void CreateManualJobDefinition_HistoricRaceEventsGrid()
         {
             _recurringJobManager.AddOrUpdate(
-                ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_HistoricGrids_JobId"],
+                ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_HistoricRaceEventsGrids_JobId"],
                 Job.FromExpression(() => _container.Resolve<IMotorsportIngestWorkerService>().IngestHistoricEventsGrids(CancellationToken.None)),
-                ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_HistoricGrids_JobCronExpression"],
+                ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_HistoricRaceEventsGrids_JobCronExpression"],
                 new RecurringJobOptions
                 {
                     TimeZone = TimeZoneInfo.Local,
@@ -188,12 +188,12 @@
                 });
         }
 
-        private void CreateManualJobDefinition_HistoricCalendars()
+        private void CreateManualJobDefinition_HistoricRaceEvents()
         {
             _recurringJobManager.AddOrUpdate(
-                ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_HistoricCalendars_JobId"],
+                ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_HistoricRaceEvents_JobId"],
                 Job.FromExpression(() => _container.Resolve<IMotorsportIngestWorkerService>().IngestHistoricRaceEvents(CancellationToken.None)),
-                ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_HistoricCalendars_JobCronExpression"],
+                ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_HistoricRaceEvents_JobCronExpression"],
                 new RecurringJobOptions
                 {
                     TimeZone = TimeZoneInfo.Local,
@@ -214,12 +214,12 @@
                 });
         }
 
-        private void CreateManualJobDefinition_HistoricResults()
+        private void CreateManualJobDefinition_HistoricRaceEventsResults()
         {
             _recurringJobManager.AddOrUpdate(
-                ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_HistoricResults_JobId"],
+                ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_HistoricRaceEventsResults_JobId"],
                 Job.FromExpression(() => _container.Resolve<IMotorsportIngestWorkerService>().IngestHistoricEventsResults(CancellationToken.None)),
-                ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_HistoricResults_JobCronExpression"],
+                ConfigurationManager.AppSettings["MotorsportFixedScheduledJob_HistoricRaceEventsResults_JobCronExpression"],
                 new RecurringJobOptions
                 {
                     TimeZone = TimeZoneInfo.Local,
