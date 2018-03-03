@@ -1,6 +1,4 @@
-﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport;
-
-namespace SuperSportDataEngine.ApplicationLogic.Services
+﻿namespace SuperSportDataEngine.ApplicationLogic.Services
 {
     using System;
     using System.Collections.Generic;
@@ -11,7 +9,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motor;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RequestModels;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
@@ -164,11 +162,11 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
                     foreach (var race in leagueRaces)
                     {
-                        var calendar =
-                            _statsProzoneMotorIngestService.IngestLeagueCalendar(
+                        var raceEventsForLeague =
+                            _statsProzoneMotorIngestService.IngestRaceEventsForLeague(
                                 league.ProviderSlug, season.ProviderSeasonId, race.ProviderRaceId);
 
-                        await PersistCalendarInRepository(calendar, race, season, cancellationToken);
+                        await PersistRaceEventsInRepository(raceEventsForLeague, race, season, cancellationToken);
                     }
                 }
             }
@@ -190,9 +188,10 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
                     foreach (var race in leagueRaces)
                     {
-                        var calendar = _statsProzoneMotorIngestService.IngestLeagueCalendar(league.ProviderSlug, season.ProviderSeasonId, race.ProviderRaceId);
+                        var raceEventsForLeague = 
+                            _statsProzoneMotorIngestService.IngestRaceEventsForLeague(league.ProviderSlug, season.ProviderSeasonId, race.ProviderRaceId);
 
-                        await PersistCalendarInRepository(calendar, race, season, cancellationToken);
+                        await PersistRaceEventsInRepository(raceEventsForLeague, race, season, cancellationToken);
                     }
                 }
             }
@@ -385,31 +384,31 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             await _publicSportDataUnitOfWork.SaveChangesAsync();
         }
 
-        private async Task PersistCalendarInRepository(
+        private async Task PersistRaceEventsInRepository(
             MotorsportEntitiesResponse providerResponse,
             MotorsportRace race,
             MotorsportSeason season,
             CancellationToken cancellationToken)
         {
-            var calendarFromProviderResponse = ExtractCalendarFromProviderResponse(providerResponse);
+            var raceEventsFromProviderResponse = ExtractRaceEventsFromProviderResponse(providerResponse);
 
-            if (calendarFromProviderResponse is null)
+            if (raceEventsFromProviderResponse is null)
                 return;
 
-            foreach (var raceEvent in calendarFromProviderResponse)
+            foreach (var providerRaceEvent in raceEventsFromProviderResponse)
             {
-                var calendarInRepo =
+                var eventInRepo =
                     _publicSportDataUnitOfWork.MotorsportRaceEvents.FirstOrDefault(r =>
-                    r.MotorsportRace.ProviderRaceId == raceEvent.race.raceId
+                    r.MotorsportRace.ProviderRaceId == providerRaceEvent.race.raceId
                     && r.MotorsportSeason.Id == season.Id);
 
-                if (calendarInRepo is null)
+                if (eventInRepo is null)
                 {
-                    AddNewCalendarEventToRepo(raceEvent, race, season);
+                    AddNewRaceEventToRepo(providerRaceEvent, race, season);
                 }
                 else
                 {
-                    UpdateCalendarEventInRepo(raceEvent, calendarInRepo);
+                    UpdateRaceEventInRepo(providerRaceEvent, eventInRepo);
                 }
             }
 
@@ -454,8 +453,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 foreach (var providerSeason in seasonsFromProviderResponse)
                 {
                     var seasonInRepo =
-                        _publicSportDataUnitOfWork.MotorsportSeasons.FirstOrDefault(l =>
-                            l.ProviderSeasonId == providerSeason.season);
+                        _publicSportDataUnitOfWork.MotorsportSeasons.FirstOrDefault(s =>
+                            s.ProviderSeasonId == providerSeason.season
+                            && s.MotorsportLeague.Id == league.Id);
 
                     if (seasonInRepo is null)
                     {
@@ -731,14 +731,14 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 Position = result.carPosition.position,
                 GridPosition = result.carPosition.startingPosition,
                 Points = int.Parse(result.points.driver.total),
-
-                LapsCompleted = result.laps.completed,
                 MotorsportTeam = team,
                 MotorsportDriver = driver,
                 MotorsportDriverId = driver.Id,
                 MotorsportRaceEventId = race.Id,
                 OutReason = result.carStatus.name
             };
+
+            if (result.laps?.completed != null) motorsportRaceResult.LapsCompleted = (int) result.laps.completed;
 
             if (result.finishingTime != null)
             {
@@ -832,7 +832,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             _publicSportDataUnitOfWork.MotorsportRaces.Add(newRace);
         }
 
-        private void UpdateCalendarEventInRepo(Event providerRaceEvent, MotorsportRaceEvent eventInRepo)
+        private void UpdateRaceEventInRepo(Event providerRaceEvent, MotorsportRaceEvent eventInRepo)
         {
             eventInRepo.CityName = providerRaceEvent.venue.city;
             eventInRepo.CircuitName = providerRaceEvent.venue.name;
@@ -852,9 +852,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             _publicSportDataUnitOfWork.MotorsportRaceEvents.Update(eventInRepo);
         }
 
-        private void AddNewCalendarEventToRepo(Event providerRaceEvent, MotorsportRace race, MotorsportSeason season)
+        private void AddNewRaceEventToRepo(Event providerRaceEvent, MotorsportRace race, MotorsportSeason season)
         {
-            var raceCalendar = new MotorsportRaceEvent
+            var motorsportRaceEvent = new MotorsportRaceEvent
             {
                 CityName = providerRaceEvent.venue.city,
                 CircuitName = providerRaceEvent.venue.name,
@@ -871,10 +871,10 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             {
                 var startDateUtc = DateTimeOffset.Parse(providerStartDate.full.ToString(CultureInfo.InvariantCulture));
 
-                raceCalendar.StartDateTimeUtc = startDateUtc;
+                motorsportRaceEvent.StartDateTimeUtc = startDateUtc;
             }
 
-            _publicSportDataUnitOfWork.MotorsportRaceEvents.Add(raceCalendar);
+            _publicSportDataUnitOfWork.MotorsportRaceEvents.Add(motorsportRaceEvent);
         }
 
         private void UpdateOwnerInRepo(MotorsportTeam ownerInRepo, Owner owner)
@@ -936,9 +936,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             var repoDriver = _publicSportDataUnitOfWork.MotorsportDrivers.FirstOrDefault(d => d.ProviderDriverId == providerStanding.playerId);
 
-            var repoTeam =
-                _publicSportDataUnitOfWork.MotortsportTeams.FirstOrDefault(t => t.ProviderTeamId == providerStanding.owner.ownerId);
-
             if (repoDriver is null)
             {
                 AddNewDriverToRepo(providerStanding);
@@ -949,16 +946,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                     _publicSportDataUnitOfWork.MotorsportDrivers.FirstOrDefault(d => d.ProviderDriverId == providerStanding.playerId);
             }
 
-            if (repoTeam is null)
-            {
-                AddNewOwnerToRepo(providerStanding.owner);
-
-                await _publicSportDataUnitOfWork.SaveChangesAsync();
-
-                repoTeam =
-                    _publicSportDataUnitOfWork.MotortsportTeams.FirstOrDefault(t => t.ProviderTeamId == providerStanding.owner.ownerId);
-            }
-
             var standingEntry = new MotorsportDriverStanding
             {
                 MotorsportLeague = league,
@@ -967,12 +954,28 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 Wins = providerStanding.finishes.first,
                 MotorsportDriverId = repoDriver.Id,
                 MotorsportDriver = repoDriver,
-                MotorsportTeam = repoTeam,
-                MotorsportTeamId = repoTeam.Id,
                 MotorsportSeason = season,
                 MotorsportSeasonId = season.Id,
                 MotorsportLeagueId = league.Id
             };
+
+            if (providerStanding.owner != null)
+            {
+                var repoTeam =
+                    _publicSportDataUnitOfWork.MotortsportTeams.FirstOrDefault(t => t.ProviderTeamId == providerStanding.owner.ownerId);
+
+                if (repoTeam is null)
+                {
+                    AddNewOwnerToRepo(providerStanding.owner);
+
+                    await _publicSportDataUnitOfWork.SaveChangesAsync();
+
+                    repoTeam =
+                        _publicSportDataUnitOfWork.MotortsportTeams.FirstOrDefault(t => t.ProviderTeamId == providerStanding.owner.ownerId);
+                }
+
+                standingEntry.MotorsportTeam = repoTeam;
+            }
 
             _publicSportDataUnitOfWork.MotorsportDriverStandings.Add(standingEntry);
         }
@@ -1098,7 +1101,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             return races;
         }
 
-        private static IEnumerable<Event> ExtractCalendarFromProviderResponse(MotorsportEntitiesResponse response)
+        private static IEnumerable<Event> ExtractRaceEventsFromProviderResponse(MotorsportEntitiesResponse response)
         {
             if (response != null && response.recordCount <= 0)
                 return null;

@@ -452,9 +452,9 @@
 
     public class Laps
     {
-        public int totalLed { get; set; }
-        public int completed { get; set; }
-        public int behind { get; set; }
+        public int? totalLed { get; set; }
+        public int? completed { get; set; }
+        public int? behind { get; set; }
         public bool isFastest { get; set; }
         public List<object> led { get; set; }
     }

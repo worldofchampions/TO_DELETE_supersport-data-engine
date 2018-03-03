@@ -111,16 +111,16 @@
             }
         }
 
-        public MotorsportEntitiesResponse IngestLeagueCalendar(string providerSlug, int providerSeasonId, int providerRaceId)
+        public MotorsportEntitiesResponse IngestRaceEventsForLeague(string providerSlug, int providerSeasonId, int providerRaceId)
         {
             try
             {
-                var requestForCalendar =
-                    _statsMotorsportWebRequest.GetRequestForCalendar(providerSlug, providerSeasonId, providerRaceId);
+                var requestForRaceEvents =
+                    _statsMotorsportWebRequest.GetRequestForRaceEvents(providerSlug, providerSeasonId, providerRaceId);
 
-                MotorsportEntitiesResponse calendar;
+                MotorsportEntitiesResponse raceEventsForLeague;
 
-                using (var webResponse = requestForCalendar.GetResponse())
+                using (var webResponse = requestForRaceEvents.GetResponse())
                 {
                     using (var responseStream = webResponse.GetResponseStream())
                     {
@@ -128,11 +128,11 @@
 
                         var streamReader = new StreamReader(responseStream, Encoding.UTF8);
 
-                        calendar = JsonConvert.DeserializeObject<MotorsportEntitiesResponse>(streamReader.ReadToEnd());
+                        raceEventsForLeague = JsonConvert.DeserializeObject<MotorsportEntitiesResponse>(streamReader.ReadToEnd());
                     }
                 }
 
-                return calendar;
+                return raceEventsForLeague;
             }
             catch (WebException exception)
             {
