@@ -2,8 +2,9 @@
 {
     public enum MotorsportSportType
     {
-        FormulaOne = 1,
-        MotoGp = 2,
-        Superbike = 3
+        MotorsportSportGeneral = 1,
+        FormulaOne = 2,
+        MotoGp = 3,
+        Superbike = 4
     }
 }
