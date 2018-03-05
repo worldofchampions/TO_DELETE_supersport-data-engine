@@ -12,6 +12,7 @@ namespace SuperSportDataEngine.Application.Container
     using StackExchange.Redis;
     using Enums;
     using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+    using ApplicationLogic.Boundaries.CmsLogic.Interfaces;
     using ApplicationLogic.Boundaries.Gateway.Http.DeprecatedFeed.Interfaces;
     using ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
     using ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
@@ -19,6 +20,7 @@ namespace SuperSportDataEngine.Application.Container
     using ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
     using ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
     using ApplicationLogic.Services;
+    using ApplicationLogic.Services.Cms;
     using Common.Logging;
     using Gateway.Http.DeprecatedFeed.Services;
     using Gateway.Http.StatsProzone.Services;
@@ -79,6 +81,11 @@ namespace SuperSportDataEngine.Application.Container
                 applicationScope == ApplicationScope.WebApiSystemApi)
             {
                 container.RegisterType<ILegacyAuthService, LegacyAuthService>(new HierarchicalLifetimeManager());
+            }
+
+            if (applicationScope == ApplicationScope.WebApiSystemApi)
+            {
+                container.RegisterType<IRugbyCmsService, RugbyCmsService>(new HierarchicalLifetimeManager());
             }
 
             if (applicationScope == ApplicationScope.WebApiLegacyFeed)
