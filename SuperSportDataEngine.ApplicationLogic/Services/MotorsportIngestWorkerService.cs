@@ -1164,6 +1164,15 @@
             seasonInRepo.IsActive = providerSeason.isActive;
             seasonInRepo.DataProvider = DataProvider.Stats;
 
+            var providerStartDate =
+                providerSeason.eventType.FirstOrDefault()?.startDate.full;
+
+            if (providerStartDate != null) seasonInRepo.StartDateTime = (DateTimeOffset)providerStartDate;
+
+            var providerEndDate =
+                providerSeason.eventType.FirstOrDefault()?.endDate.full;
+            if (providerEndDate != null) seasonInRepo.EndDateTime = (DateTimeOffset)providerEndDate;
+
             _publicSportDataUnitOfWork.MotorsportSeasons.Update(seasonInRepo);
         }
 
@@ -1179,6 +1188,15 @@
                 MotorsportLeague = league,
                 DataProvider = DataProvider.Stats
             };
+
+            var providerStartDate =
+                season.eventType.FirstOrDefault()?.startDate.full;
+
+            if (providerStartDate != null) motorsportSeason.StartDateTime = (DateTimeOffset) providerStartDate;
+
+            var providerEndDate =
+                season.eventType.FirstOrDefault()?.endDate.full;
+            if (providerEndDate != null) motorsportSeason.EndDateTime = (DateTimeOffset)providerEndDate;
 
             _publicSportDataUnitOfWork.MotorsportSeasons.Add(motorsportSeason);
         }

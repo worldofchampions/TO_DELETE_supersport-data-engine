@@ -76,7 +76,7 @@
         public int year { get; set; }
         public int month { get; set; }
         public int date { get; set; }
-        public string full { get; set; }
+        public DateTime full { get; set; }
         public string dateType { get; set; }
     }
 
