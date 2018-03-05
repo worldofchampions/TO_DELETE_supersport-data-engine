@@ -67,5 +67,8 @@
         public virtual MotorsportDriver MotorsportDriver { get; set; }
 
         public virtual MotorsportTeam MotorsportTeam { get; set; }
+
+        public virtual MotorsportRaceEvent MotorsportRaceEvent { get; set; }
+
     }
 }

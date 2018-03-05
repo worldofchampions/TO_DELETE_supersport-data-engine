@@ -102,10 +102,14 @@
             modelBuilder.Entity<MotorsportRaceEvent>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
             modelBuilder.Entity<MotorsportRaceEvent>().Property(x => x.LegacyRaceEventId).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
             modelBuilder.Entity<MotorsportRaceEvent>().Property(x => x.ProviderRaceEventId).IsRequired();
+            modelBuilder.Entity<MotorsportRaceEvent>().HasRequired(x => x.MotorsportRace);
+            modelBuilder.Entity<MotorsportRaceEvent>().HasRequired(x => x.MotorsportSeason);
 
             modelBuilder.Entity<MotorsportRaceEventGrid>().HasKey(x => new { x.MotorsportRaceEventId, x.MotorsportDriverId });
+            modelBuilder.Entity<MotorsportRaceEventGrid>().HasRequired(x => x.MotorsportRaceEvent);
 
             modelBuilder.Entity<MotorsportRaceEventResult>().HasKey(x => new { x.MotorsportRaceEventId, x.MotorsportDriverId });
+            modelBuilder.Entity<MotorsportRaceEventResult>().HasRequired(x => x.MotorsportRaceEvent);
 
             modelBuilder.Entity<MotorsportSeason>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
             modelBuilder.Entity<MotorsportSeason>().Property(x => x.ProviderSeasonId).HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Seek_ProviderSeasonId")));
