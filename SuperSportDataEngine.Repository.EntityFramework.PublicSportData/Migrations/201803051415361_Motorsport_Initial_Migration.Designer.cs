@@ -7,13 +7,13 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class Motorsport_Initial_Migration4 : IMigrationMetadata
+    public sealed partial class Motorsport_Initial_Migration : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(Motorsport_Initial_Migration4));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(Motorsport_Initial_Migration));
         
         string IMigrationMetadata.Id
         {
-            get { return "201803050410549_Motorsport_Initial_Migration4"; }
+            get { return "201803051415361_Motorsport_Initial_Migration"; }
         }
         
         string IMigrationMetadata.Source
