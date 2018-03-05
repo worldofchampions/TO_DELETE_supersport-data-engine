@@ -383,6 +383,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\SuperSportDataEngine.Application.WebApi.SystemApi.xml</DocumentationFile>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Staging|AnyCPU'">
@@ -392,6 +393,7 @@
     <OutputPath>bin\Staging</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
+    <DocumentationFile>bin\SuperSportDataEngine.Application.WebApi.SystemApi.xml</DocumentationFile>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
@@ -403,6 +405,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\SuperSportDataEngine.Application.WebApi.SystemApi.xml</DocumentationFile>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
@@ -452,6 +455,7 @@
       
       $(PipelineCopyAllFilesToOneFolderForMsdeployDependsOn);
     </PipelineCopyAllFilesToOneFolderForMsdeployDependsOn>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <Target Name="IncludeSecretsConfigForMsdeploy">
     <ItemGroup>
@@ -475,8 +479,8 @@
 
   <Target Name="IncludeSystemApiXMLForMsdeploy">
     <ItemGroup>
-      <FileWrites Include="$(MSBuildProjectDirectory)\bin\SuperSportDataEngine.Application.WebApi.SystemApi.xml" />
-      <_CustomFiles Include="$(MSBuildProjectDirectory)\bin\SuperSportDataEngine.Application.WebApi.SystemApi.xml" />
+      <FileWrites Include="$(MSBuildProjectDirectory)\bin\$(Configuration)\SuperSportDataEngine.Application.WebApi.SystemApi.xml" />
+      <_CustomFiles Include="$(MSBuildProjectDirectory)\bin\$(Configuration)\SuperSportDataEngine.Application.WebApi.SystemApi.xml" />
       <FilesForPackagingFromProject Include="%(_CustomFiles.Identity)">
         <DestinationRelativePath>%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
       </FilesForPackagingFromProject>
