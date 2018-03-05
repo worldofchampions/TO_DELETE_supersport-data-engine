@@ -167,19 +167,24 @@
                 foreach (var league in motorsportLeagues)
                 {
                     var season = await _motorsportService.GetCurrentSeasonForLeague(league.Id, cancellationToken);
-
                     if (season is null) continue;
 
                     var motorsportRaces = await _motorsportService.GetRacesForLeague(league.Id);
-
-                    if (motorsportRaces is null) continue;
+                    if (motorsportRaces == null) continue;
 
                     foreach (var race in motorsportRaces)
                     {
-                        var providerResponse =
-                            _statsMotorsportIngestService.IngestRaceResults(league.Slug, season.ProviderSeasonId, race.ProviderRaceId);
+                        var motorsportRaceEvents = await _motorsportService.GetEventsForRace(race.Id, season.Id);
+                        if (motorsportRaceEvents == null) continue;
 
-                        await PersistResultsInRepository(providerResponse, race, cancellationToken);
+                        foreach (var raceEvent in motorsportRaceEvents)
+                        {
+                            var providerResponse =
+                                _statsMotorsportIngestService.IngestRaceResults(league.Slug, season.ProviderSeasonId,
+                                    race.ProviderRaceId);
+
+                            await PersistResultsInRepository(providerResponse, raceEvent, cancellationToken);
+                        }
                     }
                 }
             }
@@ -251,16 +256,22 @@
                     var season = await _motorsportService.GetCurrentSeasonForLeague(league.Id, cancellationToken);
                     if (season == null) continue;
 
-                    var raceEvents = await _motorsportService.GetEventsForRace(league.Id, season.Id);
-                    if (raceEvents == null) continue;
+                    var motorsportRaces = await _motorsportService.GetRacesForLeague(league.Id);
+                    if(motorsportRaces == null) continue;
 
-                    foreach (var raceEvent in raceEvents)
+                    foreach (var race in motorsportRaces)
                     {
-                        var raceResults =
-                            _statsMotorsportIngestService.IngestRaceGrid(league.Slug, season.ProviderSeasonId,
-                                raceEvent.MotorsportRace.ProviderRaceId);
+                        var raceEvents = await _motorsportService.GetEventsForRace(race.Id, season.Id);
+                        if (raceEvents == null) continue;
 
-                        await PersistGridInRepository(raceResults, raceEvent.MotorsportRace, cancellationToken);
+                        foreach (var raceEvent in raceEvents)
+                        {
+                            var raceResults =
+                                _statsMotorsportIngestService.IngestRaceGrid(league.Slug, season.ProviderSeasonId,
+                                    race.ProviderRaceId);
+
+                            await PersistGridInRepository(raceResults, raceEvent, cancellationToken);
+                        } 
                     }
                 }
             }
@@ -297,15 +308,21 @@
                 if (season == null) continue;
 
                 var motorsportRaces = await _motorsportService.GetRacesForLeague(league.Id);
-                if (motorsportRaces == null) continue;
+                if(motorsportRaces == null) continue;
 
                 foreach (var race in motorsportRaces)
                 {
-                    var providerResponse =
-                        _statsMotorsportIngestService.IngestRaceResults(league.Slug, season.ProviderSeasonId,
-                            race.ProviderRaceId);
+                    var motorsportRaceEvents = await _motorsportService.GetEventsForRace(race.Id, season.Id);
+                    if (motorsportRaceEvents == null) continue;
 
-                    await PersistResultsInRepository(providerResponse, race, cancellationToken);
+                    foreach (var raceEvent in motorsportRaceEvents)
+                    {
+                        var providerResponse =
+                            _statsMotorsportIngestService.IngestRaceResults(league.Slug, season.ProviderSeasonId,
+                                race.ProviderRaceId);
+
+                        await PersistResultsInRepository(providerResponse, raceEvent, cancellationToken);
+                    } 
                 }
             }
         }
@@ -370,15 +387,21 @@
                     if (season == null) continue;
 
                     var motorsportRaces = await _motorsportService.GetRacesForLeague(league.Id);
-                    if (motorsportRaces == null) continue;
+                    if(motorsportRaces == null) continue;
 
                     foreach (var race in motorsportRaces)
                     {
-                        var providerResponse =
-                            _statsMotorsportIngestService.IngestRaceGrid(league.Slug, season.ProviderSeasonId,
-                                race.ProviderRaceId);
+                        var motorsportRaceEvents = await _motorsportService.GetEventsForRace(race.Id, season.Id);
+                        if (motorsportRaceEvents == null) continue;
 
-                        await PersistGridInRepository(providerResponse, race, cancellationToken);
+                        foreach (var raceEvent in motorsportRaceEvents)
+                        {
+                            var providerResponse =
+                                _statsMotorsportIngestService.IngestRaceGrid(league.Slug, season.ProviderSeasonId,
+                                    race.ProviderRaceId);
+
+                            await PersistGridInRepository(providerResponse, raceEvent, cancellationToken);
+                        } 
                     }
                 }
             }
@@ -420,7 +443,8 @@
             foreach (var providerRace in racesFromProvider)
             {
                 var raceInRepo =
-                    _publicSportDataUnitOfWork.MotorsportRaces.FirstOrDefault(r => r.ProviderRaceId == providerRace.raceId);
+                    _publicSportDataUnitOfWork.MotorsportRaces.FirstOrDefault(r => 
+                    r.ProviderRaceId == providerRace.raceId && r.MotorsportLeague.Id == league.Id);
 
                 if (raceInRepo is null)
                 {
@@ -603,7 +627,7 @@
 
         private async Task PersistResultsInRepository(
             MotorsportEntitiesResponse response,
-            MotorsportRace race,
+            MotorsportRaceEvent raceEvent,
             CancellationToken cancellationToken)
         {
             var resultsFromProviderResponse = ExtractResultsFromProviderResponse(response);
@@ -617,11 +641,11 @@
                 var resultInRepo =
                     _publicSportDataUnitOfWork.MotorsportRaceEventResults.FirstOrDefault(
                         r => r.MotorsportDriver.ProviderDriverId == playerId
-                        && r.MotorsportRaceEventId == race.Id);
+                        && r.MotorsportRaceEventId == raceEvent.Id);
 
                 if (resultInRepo is null)
                 {
-                    AddNewResultsToRepo(result, race);
+                    AddNewResultsToRepo(result, raceEvent);
                 }
                 else
                 {
@@ -634,7 +658,7 @@
 
         private async Task PersistGridInRepository(
             MotorsportEntitiesResponse response,
-            MotorsportRace race,
+            MotorsportRaceEvent raceEvent,
             CancellationToken cancellationToken)
         {
             var gridFromProviderResponse = ExtractRaceGridFromProviderResponse(response);
@@ -648,11 +672,11 @@
                 var gridInRepo =
                     _publicSportDataUnitOfWork.MotorsportRaceEventGrids.FirstOrDefault(
                         g => g.MotorsportDriver.ProviderDriverId == playerId
-                        && g.MotorsportRaceEvent.MotorsportRace.Id == race.Id);
+                        && g.MotorsportRaceEvent.Id == raceEvent.Id);
 
                 if (gridInRepo is null)
                 {
-                    AddNewGridEntryToRepo(providerGridEntry, race);
+                    AddNewGridEntryToRepo(providerGridEntry, raceEvent);
                 }
                 else
                 {
@@ -697,14 +721,14 @@
             _publicSportDataUnitOfWork.MotorsportRaceEventGrids.Update(raceEventGridInRepo);
         }
 
-        private void AddNewGridEntryToRepo(Result providerGridEntry, MotorsportRace race)
+        private void AddNewGridEntryToRepo(Result providerGridEntry, MotorsportRaceEvent raceEvent)
         {
             var driverInRepo = 
                 _publicSportDataUnitOfWork.MotorsportDrivers.FirstOrDefault(d => d.ProviderDriverId == providerGridEntry.player.playerId);
             if (driverInRepo is null) return;
 
             var racecEvent =
-                _publicSportDataUnitOfWork.MotorsportRaceEvents.FirstOrDefault(e => e.MotorsportRace.Id == race.Id);
+                _publicSportDataUnitOfWork.MotorsportRaceEvents.FirstOrDefault(e => e.Id == raceEvent.Id);
             if (racecEvent is null) return;
 
             var newGridEntry = new MotorsportRaceEventGrid
@@ -712,7 +736,7 @@
                 MotorsportDriver = driverInRepo,
                 MotorsportDriverId = driverInRepo.Id,
                 GridPosition = providerGridEntry.carPosition.startingPosition,
-                MotorsportRaceEventId = race.Id,
+                MotorsportRaceEventId = racecEvent.Id,
                 MotorsportRaceEvent = racecEvent
             };
 
@@ -776,7 +800,7 @@
             _publicSportDataUnitOfWork.MotorsportRaceEventResults.Update(eventResultInRepo);
         }
 
-        private void AddNewResultsToRepo(Result result, MotorsportRace race)
+        private void AddNewResultsToRepo(Result result, MotorsportRaceEvent raceEvent)
         {
             if(result.player == null) return;
 
@@ -791,7 +815,7 @@
                 Points = int.Parse(result.points.driver.total),
                 MotorsportDriver = driver,
                 MotorsportDriverId = driver.Id,
-                MotorsportRaceEventId = race.Id,
+                MotorsportRaceEventId = raceEvent.Id,
                 OutReason = result.carStatus.name
             };
 
@@ -946,7 +970,8 @@
             var motorsportRaceEvent = new MotorsportRaceEvent
             {
                 MotorsportRace = race,
-                MotorsportSeason = season
+                MotorsportSeason = season,
+                ProviderRaceEventId = providerRaceEvent.eventId
             };
 
             if (providerRaceEvent.venue != null)
@@ -1139,6 +1164,15 @@
             seasonInRepo.IsActive = providerSeason.isActive;
             seasonInRepo.DataProvider = DataProvider.Stats;
 
+            var providerStartDate =
+                providerSeason.eventType.FirstOrDefault()?.startDate.full;
+
+            if (providerStartDate != null) seasonInRepo.StartDateTime = (DateTimeOffset)providerStartDate;
+
+            var providerEndDate =
+                providerSeason.eventType.FirstOrDefault()?.endDate.full;
+            if (providerEndDate != null) seasonInRepo.EndDateTime = (DateTimeOffset)providerEndDate;
+
             _publicSportDataUnitOfWork.MotorsportSeasons.Update(seasonInRepo);
         }
 
@@ -1154,6 +1188,15 @@
                 MotorsportLeague = league,
                 DataProvider = DataProvider.Stats
             };
+
+            var providerStartDate =
+                season.eventType.FirstOrDefault()?.startDate.full;
+
+            if (providerStartDate != null) motorsportSeason.StartDateTime = (DateTimeOffset) providerStartDate;
+
+            var providerEndDate =
+                season.eventType.FirstOrDefault()?.endDate.full;
+            if (providerEndDate != null) motorsportSeason.EndDateTime = (DateTimeOffset)providerEndDate;
 
             _publicSportDataUnitOfWork.MotorsportSeasons.Add(motorsportSeason);
         }

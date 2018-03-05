@@ -78,7 +78,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             var league = _publicSportDataUnitOfWork.MotorsportLeagues.FirstOrDefault(l => l.Id == leagueId);
 
             var pastSeason = _publicSportDataUnitOfWork.MotorsportSeasons.FirstOrDefault(s =>
-                s.ProviderSeasonId == pastSeasonProviderId);
+                s.ProviderSeasonId == pastSeasonProviderId && s.MotorsportLeague.Id == leagueId);
 
             if (pastSeason != null) return pastSeason;
             
@@ -112,8 +112,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<IEnumerable<MotorsportRaceEvent>> GetEventsForRace(Guid raceId, Guid seasonId)
         {
-            var raceEvents = _publicSportDataUnitOfWork.MotorsportRaceEvents.Where(
-                e => e.MotorsportRace.Id == raceId && e.MotorsportSeason.Id == seasonId);
+            var raceEvents = _publicSportDataUnitOfWork.MotorsportRaceEvents.Where(e =>
+                e.MotorsportRace.Id == raceId && e.MotorsportSeason.Id == seasonId).ToList();
 
             return await Task.FromResult(raceEvents);
         }
