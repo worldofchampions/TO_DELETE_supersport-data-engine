@@ -293,10 +293,10 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
                 if (rugbyTournament != null)
                 {
                     /** Only accept these values hard coded below **/
-                    rugbyTournament.NameCmsOverride = rugbyTournamentEntity.NameCmsOverride;
+                    rugbyTournament.NameCmsOverride = !String.IsNullOrEmpty(rugbyTournamentEntity.NameCmsOverride?.Trim()) ? rugbyTournamentEntity.NameCmsOverride : null;
                     rugbyTournament.IsEnabled = rugbyTournamentEntity.IsEnabled;
                     rugbyTournament.IsLiveScored = rugbyTournamentEntity.IsLiveScored;
-                    rugbyTournament.Slug = Regex.Replace(rugbyTournamentEntity.Slug, @"[^A-Za-z0-9_\.~]+", "-");
+                    rugbyTournament.Slug = !String.IsNullOrEmpty(rugbyTournamentEntity.Slug?.Trim()) ? Regex.Replace(rugbyTournamentEntity.Slug, @"[^A-Za-z0-9_\.~]+", "-") : null;
 
                     _rugbyTournamentRepository.Update(rugbyTournament);
                     await _rugbyTournamentRepository.SaveAsync();
@@ -389,7 +389,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
                 if (rugbyTeam != null)
                 {
                     /** Only accept these values hard coded below **/
-                    rugbyTeam.NameCmsOverride = rugbyteamEntity.NameCmsOverride;
+                    rugbyTeam.NameCmsOverride = !String.IsNullOrEmpty(rugbyteamEntity.NameCmsOverride?.Trim()) ? rugbyteamEntity.NameCmsOverride : null;
 
                     _rugbyTeamRepository.Update(rugbyTeam);
                     await _rugbyTeamRepository.SaveAsync();
@@ -418,7 +418,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
                 if (rugbyPlayer != null)
                 {
                     /** Only accept these values hard coded below **/
-                    rugbyPlayer.DisplayNameCmsOverride = rugbyPlayerEntity.DisplayNameCmsOverride;
+                    rugbyPlayer.DisplayNameCmsOverride = !String.IsNullOrEmpty(rugbyPlayerEntity.DisplayNameCmsOverride?.Trim()) ? rugbyPlayerEntity.DisplayNameCmsOverride : null;
 
                     _rugbyPlayerRepository.Update(rugbyPlayer);
                     await _rugbyPlayerRepository.SaveAsync();
