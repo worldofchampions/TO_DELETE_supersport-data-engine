@@ -444,4 +444,42 @@
   </Target>
   <Target Name="AfterBuild">
   </Target> -->
+  <PropertyGroup>
+    <PipelineCopyAllFilesToOneFolderForMsdeployDependsOn>
+      IncludeSecretsConfigForMsdeploy;
+      IncludeCmsConfigForMsdeploy;
+      IncludeSystemApiXMLForMsdeploy;
+      
+      $(PipelineCopyAllFilesToOneFolderForMsdeployDependsOn);
+    </PipelineCopyAllFilesToOneFolderForMsdeployDependsOn>
+  </PropertyGroup>
+  <Target Name="IncludeSecretsConfigForMsdeploy">
+    <ItemGroup>
+      <FileWrites Include="$(MSBuildProjectDirectory)\secrets.config" />
+      <_CustomFiles Include="$(MSBuildProjectDirectory)\secrets.config" />
+      <FilesForPackagingFromProject Include="%(_CustomFiles.Identity)">
+        <DestinationRelativePath>%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
+      </FilesForPackagingFromProject>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="IncludeCmsConfigForMsdeploy">
+    <ItemGroup>
+      <FileWrites Include="$(MSBuildProjectDirectory)\Cms.config" />
+      <_CustomFiles Include="$(MSBuildProjectDirectory)\Cms.config" />
+      <FilesForPackagingFromProject Include="%(_CustomFiles.Identity)">
+        <DestinationRelativePath>%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
+      </FilesForPackagingFromProject>
+    </ItemGroup>
+  </Target>
+
+  <Target Name="IncludeSystemApiXMLForMsdeploy">
+    <ItemGroup>
+      <FileWrites Include="$(MSBuildProjectDirectory)\bin\SuperSportDataEngine.Application.WebApi.SystemApi.xml" />
+      <_CustomFiles Include="$(MSBuildProjectDirectory)\bin\SuperSportDataEngine.Application.WebApi.SystemApi.xml" />
+      <FilesForPackagingFromProject Include="%(_CustomFiles.Identity)">
+        <DestinationRelativePath>%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
+      </FilesForPackagingFromProject>
+    </ItemGroup>
+  </Target>
 </Project>
