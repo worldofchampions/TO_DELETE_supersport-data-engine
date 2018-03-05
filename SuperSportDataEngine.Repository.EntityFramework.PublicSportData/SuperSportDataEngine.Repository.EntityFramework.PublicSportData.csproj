@@ -256,25 +256,9 @@
     <Compile Include="Migrations\201802261121368_Add_CurrentRoundNumberCmsOverride_To_RugbySeasons.designer.cs">
       <DependentUpon>201802261121368_Add_CurrentRoundNumberCmsOverride_To_RugbySeasons.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201803011429274_Motorsport_Initial_Migration.cs" />
-    <Compile Include="Migrations\201803011429274_Motorsport_Initial_Migration.Designer.cs">
-      <DependentUpon>201803011429274_Motorsport_Initial_Migration.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201803022159469_Motorsport_Initial_Migration2.cs" />
-    <Compile Include="Migrations\201803022159469_Motorsport_Initial_Migration2.Designer.cs">
-      <DependentUpon>201803022159469_Motorsport_Initial_Migration2.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201803031833214_Motorsport_Initial_Migration3.cs" />
-    <Compile Include="Migrations\201803031833214_Motorsport_Initial_Migration3.Designer.cs">
-      <DependentUpon>201803031833214_Motorsport_Initial_Migration3.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201803050410549_Motorsport_Initial_Migration4.cs" />
-    <Compile Include="Migrations\201803050410549_Motorsport_Initial_Migration4.Designer.cs">
-      <DependentUpon>201803050410549_Motorsport_Initial_Migration4.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201803050423307_Motorsport_Initial_Migration5.cs" />
-    <Compile Include="Migrations\201803050423307_Motorsport_Initial_Migration5.Designer.cs">
-      <DependentUpon>201803050423307_Motorsport_Initial_Migration5.cs</DependentUpon>
+    <Compile Include="Migrations\201803051415361_Motorsport_Initial_Migration.cs" />
+    <Compile Include="Migrations\201803051415361_Motorsport_Initial_Migration.Designer.cs">
+      <DependentUpon>201803051415361_Motorsport_Initial_Migration.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyLogGroupsForLasVegasSevens2018.cs" />
@@ -445,20 +429,8 @@
     <EmbeddedResource Include="Migrations\201802261121368_Add_CurrentRoundNumberCmsOverride_To_RugbySeasons.resx">
       <DependentUpon>201802261121368_Add_CurrentRoundNumberCmsOverride_To_RugbySeasons.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201803011429274_Motorsport_Initial_Migration.resx">
-      <DependentUpon>201803011429274_Motorsport_Initial_Migration.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201803022159469_Motorsport_Initial_Migration2.resx">
-      <DependentUpon>201803022159469_Motorsport_Initial_Migration2.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201803031833214_Motorsport_Initial_Migration3.resx">
-      <DependentUpon>201803031833214_Motorsport_Initial_Migration3.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201803050410549_Motorsport_Initial_Migration4.resx">
-      <DependentUpon>201803050410549_Motorsport_Initial_Migration4.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201803050423307_Motorsport_Initial_Migration5.resx">
-      <DependentUpon>201803050423307_Motorsport_Initial_Migration5.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201803051415361_Motorsport_Initial_Migration.resx">
+      <DependentUpon>201803051415361_Motorsport_Initial_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

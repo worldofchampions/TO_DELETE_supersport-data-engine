@@ -21,6 +21,8 @@
         /// <summary> A CMS driven value. </summary>
         public string NameCmsOverride { get; set; }
 
+        public MotorsportLeague MotorsportLeague { get; set; }
+
         public DataProvider DataProvider { get; set; }
     }
 }

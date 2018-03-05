@@ -33,6 +33,10 @@
         /// <summary> A provider driven value. </summary>
         public int? CarNumber { get; set; }
 
+        public MotorsportLeague MotorsportLeague { get; set; }
+
+        public MotorsportTeam MotorsportTeam { get; set; }
+
         public DataProvider DataProvider { get; set; }
     }
 }
