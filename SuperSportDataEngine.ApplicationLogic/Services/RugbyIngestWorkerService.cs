@@ -53,6 +53,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         private readonly IBaseEntityFrameworkRepository<RugbyMatchEvent> _rugbyMatchEventsRepository;
         private readonly IBaseEntityFrameworkRepository<RugbyEventTypeProviderMapping> _rugbyEventTypeMappingRepository;
         private readonly IRugbyService _rugbyService;
+        private readonly int _halfTimeMaximumDurationInMinutes;
 
         public RugbyIngestWorkerService(
             ILoggingService logger,
@@ -100,6 +101,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             _rugbyMatchEventsRepository = rugbyMatchEventsRepository;
             _rugbyEventTypeMappingRepository = rugbyEventTypeMappingRepository;
             _rugbyService = rugbyService;
+
+            _halfTimeMaximumDurationInMinutes =
+                int.Parse(ConfigurationManager.AppSettings["HalfTimeMaximumDurationInMinutes"]);
         }
 
         public async Task IngestReferenceData(CancellationToken cancellationToken)
@@ -603,7 +607,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                                     fixtureSchedule.StartDateTime
                                         .AddSeconds(
                                             fixture.gameSeconds)
-                                        .AddMinutes(30); // This is for half-time break.
+                                        .AddMinutes(_halfTimeMaximumDurationInMinutes); // This is for half-time break.
                             }
 
                             _schedulerTrackingRugbyFixtureRepository.Update(fixtureSchedule);
