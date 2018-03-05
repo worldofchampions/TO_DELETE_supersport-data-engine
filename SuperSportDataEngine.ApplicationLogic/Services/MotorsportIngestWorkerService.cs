@@ -420,7 +420,8 @@
             foreach (var providerRace in racesFromProvider)
             {
                 var raceInRepo =
-                    _publicSportDataUnitOfWork.MotorsportRaces.FirstOrDefault(r => r.ProviderRaceId == providerRace.raceId);
+                    _publicSportDataUnitOfWork.MotorsportRaces.FirstOrDefault(r => 
+                    r.ProviderRaceId == providerRace.raceId && r.MotorsportLeague.Id == league.Id);
 
                 if (raceInRepo is null)
                 {
