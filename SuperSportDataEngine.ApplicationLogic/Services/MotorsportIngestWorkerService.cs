@@ -970,7 +970,8 @@
             var motorsportRaceEvent = new MotorsportRaceEvent
             {
                 MotorsportRace = race,
-                MotorsportSeason = season
+                MotorsportSeason = season,
+                ProviderRaceEventId = providerRaceEvent.eventId
             };
 
             if (providerRaceEvent.venue != null)
