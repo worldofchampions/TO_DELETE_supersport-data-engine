@@ -28,6 +28,9 @@
         public DbSet<RugbyTournament> RugbyTournaments { get; set; }
         public DbSet<RugbyVenue> RugbyVenues { get; set; }
 
+        public DbSet<MotorsportLeague> MotorsportLeagues { get; set; }
+
+
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
