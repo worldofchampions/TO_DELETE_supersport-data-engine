@@ -1,11 +1,11 @@
 ﻿using Newtonsoft.Json;
 using StackExchange.Redis;
-using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
 using System;
 using System.CodeDom;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Converters;
 using NLog;
+using SuperSportDataEngine.Common.Interfaces;
 using SuperSportDataEngine.Logging.NLog.Logging;
 
 namespace SuperSportDataEngine.Common.Caching

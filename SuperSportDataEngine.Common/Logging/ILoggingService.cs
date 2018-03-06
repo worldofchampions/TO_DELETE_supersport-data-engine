@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
+using SuperSportDataEngine.Common.Interfaces;
 
 namespace SuperSportDataEngine.Common.Logging
 {
