@@ -1,7 +1,7 @@
-﻿using System;
-
-namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Motorsport
+﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Motorsport
 {
+    using System;
+
     [Serializable]
     public class GridModel : ResultMotorsportModel
     {

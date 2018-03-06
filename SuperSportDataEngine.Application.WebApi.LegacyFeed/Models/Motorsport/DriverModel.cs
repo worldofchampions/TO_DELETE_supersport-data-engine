@@ -1,7 +1,7 @@
 ﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Motorsport
 {
-    using System;
     using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
+    using System;
 
     [Serializable]
     public class DriverModel : TeamModel

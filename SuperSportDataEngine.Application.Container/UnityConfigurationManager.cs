@@ -1,10 +1,4 @@
-﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
-using SuperSportDataEngine.Common.Caching;
-using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.UnitOfWork;
-using SuperSportDataEngine.Repository.EntityFramework.SystemSportData.UnitOfWork;
-
-namespace SuperSportDataEngine.Application.Container
+﻿namespace SuperSportDataEngine.Application.Container
 {
     using Hangfire;
     using Hangfire.SqlServer;
@@ -12,24 +6,27 @@ namespace SuperSportDataEngine.Application.Container
     using MongoDB.Driver;
     using NLog.Slack;
     using StackExchange.Redis;
-    using Enums;
-    using WebApi.Common.Interfaces;
-    using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-    using ApplicationLogic.Boundaries.Gateway.Http.DeprecatedFeed.Interfaces;
-    using ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
-    using ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
-    using ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-    using ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
-    using ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
-    using ApplicationLogic.Services;
-    using Common.Logging;
-    using Gateway.Http.DeprecatedFeed.Services;
-    using Gateway.Http.StatsProzone.Services;
-    using Logging.NLog.Logging;
-    using Repository.EntityFramework.Common.Repositories.Base;
-    using Repository.EntityFramework.PublicSportData.Context;
-    using Repository.EntityFramework.SystemSportData.Context;
-    using Repository.MongoDb.PayloadData.Repositories;
+    using SuperSportDataEngine.Application.Container.Enums;
+    using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces.LegacyFeed;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.DeprecatedFeed.Interfaces;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
+    using SuperSportDataEngine.ApplicationLogic.Services;
+    using SuperSportDataEngine.ApplicationLogic.Services.LegacyFeed;
+    using SuperSportDataEngine.Common.Caching;
+    using SuperSportDataEngine.Common.Logging;
+    using SuperSportDataEngine.Gateway.Http.DeprecatedFeed.Services;
+    using SuperSportDataEngine.Gateway.Http.StatsProzone.Services;
+    using SuperSportDataEngine.Logging.NLog.Logging;
+    using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
+    using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.UnitOfWork;
+    using SuperSportDataEngine.Repository.EntityFramework.SystemSportData.Context;
+    using SuperSportDataEngine.Repository.EntityFramework.SystemSportData.UnitOfWork;
+    using SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories;
     using System.Configuration;
     using System.Data.Entity;
     using System.Web.Configuration;
@@ -70,7 +67,6 @@ namespace SuperSportDataEngine.Application.Container
             container.RegisterType<IRugbyService, RugbyService>(new HierarchicalLifetimeManager());
             container.RegisterType<IMotorsportService, MotorsportService>(new HierarchicalLifetimeManager());
 
-
             if (applicationScope == ApplicationScope.WebApiLegacyFeed ||
                 applicationScope == ApplicationScope.WebApiSystemApi)
             {
@@ -80,6 +76,7 @@ namespace SuperSportDataEngine.Application.Container
             if (applicationScope == ApplicationScope.WebApiLegacyFeed)
             {
                 container.RegisterType<IDeprecatedFeedIntegrationService, DeprecatedFeedIntegrationService>(new HierarchicalLifetimeManager());
+                container.RegisterType<IMotorsportLegacyFeedService, MotorsportLegacyFeedService>(new HierarchicalLifetimeManager());
             }
         }
 
@@ -99,8 +96,8 @@ namespace SuperSportDataEngine.Application.Container
             {
                 container.RegisterType<ICache, Cache>(new ContainerControlledLifetimeManager(), new InjectionFactory((x) => null));
 
-                logger.Error("NoCacheInDIContainer", 
-                    "Message: \n" + exception.Message + 
+                logger.Error("NoCacheInDIContainer",
+                    "Message: \n" + exception.Message +
                     "StackTrace: \n" + exception.StackTrace +
                     "Inner Exception \n" + exception.InnerException);
             }
