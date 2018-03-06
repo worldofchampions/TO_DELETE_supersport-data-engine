@@ -22,7 +22,7 @@
     using System.Web.Http.Description;
 
     /// <summary>
-    /// SuperSport Rugby Endpoints
+    /// LegacyFeed Rugby Endpoints
     /// </summary>
     [LegacyExceptionFilter]
     [RoutePrefix("rugby")]
@@ -33,7 +33,7 @@
         private readonly ICache _cache;
         private readonly ILoggingService _logger;
 
-        private const string CacheKeyNamespacePrefixForFeed = "LegacyFeed:";
+        private const string CacheKeyNamespacePrefixForFeed = "LegacyFeed:Rugby:";
 
         public RugbyController(
             IRugbyService rugbyService,

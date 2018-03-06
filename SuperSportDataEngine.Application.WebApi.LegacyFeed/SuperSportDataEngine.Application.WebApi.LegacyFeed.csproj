@@ -183,6 +183,7 @@
     <Compile Include="App_Start\UnityDependencyResolver.cs" />
     <Compile Include="App_Start\UnityDependencyScope.cs" />
     <Compile Include="Config\LegacyFeedConfig.cs" />
+    <Compile Include="Controllers\MotorsportController.cs" />
     <Compile Include="Filters\LegacyExceptionFilter.cs" />
     <Compile Include="Filters\LogTimeFilter.cs" />
     <Compile Include="Handlers\BufferedNonStreamedContentHandler.cs" />
