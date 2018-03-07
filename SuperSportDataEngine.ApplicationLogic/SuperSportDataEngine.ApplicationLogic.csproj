@@ -82,6 +82,7 @@
     <Compile Include="Boundaries\ApplicationLogic\Interfaces\ILegacyAuthService.cs" />
     <Compile Include="Boundaries\ApplicationLogic\Interfaces\IMotorsportIngestWorkerService.cs" />
     <Compile Include="Boundaries\ApplicationLogic\Interfaces\IMotorsportService.cs" />
+    <Compile Include="Boundaries\ApplicationLogic\Interfaces\IMotorsportStorageService.cs" />
     <Compile Include="Boundaries\ApplicationLogic\Interfaces\IRugbyIngestWorkerService.cs" />
     <Compile Include="Boundaries\ApplicationLogic\Interfaces\ISchedulerClientService.cs" />
     <Compile Include="Boundaries\ApplicationLogic\Interfaces\LegacyFeed\IMotorsportLegacyFeedService.cs" />
@@ -191,6 +192,7 @@
     <Compile Include="Services\MotorsportIngestWorkerService.cs" />
     <Compile Include="Services\LegacyFeed\MotorsportLegacyFeedService.cs" />
     <Compile Include="Services\MotorsportService.cs" />
+    <Compile Include="Services\MotorsportStorageService.cs" />
     <Compile Include="Services\RugbyIngestWorkerService.cs" />
     <Compile Include="Services\RugbyService.cs" />
     <Compile Include="Services\SchedulerClientService.cs" />
