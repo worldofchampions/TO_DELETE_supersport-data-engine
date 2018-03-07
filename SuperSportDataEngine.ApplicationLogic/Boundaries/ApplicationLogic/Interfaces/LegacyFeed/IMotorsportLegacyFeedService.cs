@@ -6,6 +6,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Inte
     // TODO: @motorsport-feed: implement.
     public interface IMotorsportLegacyFeedService
     {
-       // Task<MotorsportScheduleEntity> GetSchedules();
+        Task<MotorsportScheduleEntity> GetSchedules(string category, bool current);
     }
 }

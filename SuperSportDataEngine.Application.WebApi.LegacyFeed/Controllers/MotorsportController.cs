@@ -1,4 +1,5 @@
 ﻿using System;
+using static AutoMapper.Mapper;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 {
@@ -49,13 +50,26 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         [HttpGet, HttpHead]
         [Route("{category}/schedule/{current?}")]
         [ResponseType(typeof(IEnumerable<RacesModel>))]
-        public async Task<IHttpActionResult> GetSchedule(string category, string current = null)
+        public async Task<IEnumerable<RacesModel>> GetSchedule(string category, string current = null)
         {
             // TODO: @motorsport-feed: Convert "current" string to a boolean type, then pass that to service as boolean parameter.
             // TODO: @motorsport-feed: implement.
+            var currentValue = bool.Parse(current ?? "false");
 
-         //   var eventsFromService = _motorsportLegacyFeedService.GetSchedules();
-            return Content(HttpStatusCode.OK, "DEBUG GetSchedule");
+            var key = CacheKeyNamespacePrefixForFeed + "motorsport/{category}/schedule?current=" + currentValue;
+
+            var scheduleFromCache = await GetFromCacheAsync<IEnumerable<RacesModel>>(key);
+            if (scheduleFromCache != null)
+                return scheduleFromCache;
+
+            var scheduleFromService =
+                Map<List<RacesModel>>(
+                    (await _motorsportLegacyFeedService.GetSchedules(category, currentValue))
+                        .MotorsportRaceEvents);
+
+            PersistToCache(key, scheduleFromService);
+
+            return scheduleFromService;
         }
 
         /// <summary>

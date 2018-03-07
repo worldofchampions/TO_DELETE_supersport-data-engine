@@ -17,7 +17,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Moto
                     src => src.LegacyRaceEventId))
 
                 .ForMember(dest => dest.Category, expression => expression.MapFrom(
-                    src => src.MotorsportSeason.MotorsportLeague.Name))
+                    src => src.MotorsportSeason.MotorsportLeague.Slug))
 
                 .ForMember(dest => dest.TournamentId, expression => expression.MapFrom(
                     src => src.MotorsportRace.LegacyRaceId))
@@ -44,7 +44,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Moto
 
                 .ForMember(dest => dest.Date, expression => expression.MapFrom(
                     src => src.StartDateTimeUtc != null
-                        ? ((DateTimeOffset) src.StartDateTimeUtc).ToLocalTime().ToString()
+                        ? ((DateTimeOffset) src.StartDateTimeUtc).ToLocalTime().ToString("s")
                         : ""))
                 .ForAllOtherMembers(m => m.Ignore());
 
