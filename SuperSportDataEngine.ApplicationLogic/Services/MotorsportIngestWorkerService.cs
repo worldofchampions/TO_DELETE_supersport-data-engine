@@ -569,7 +569,8 @@
             {
                 var driverStanding =
                     _publicSportDataUnitOfWork.MotorsportDriverStandings.FirstOrDefault(s =>
-                        s.MotorsportDriver.ProviderDriverId == providerEntry.playerId);
+                        s.MotorsportDriver.ProviderDriverId == providerEntry.playerId
+                        && s.MotorsportSeasonId == season.Id && s.MotorsportLeagueId == league.Id);
 
                 if (driverStanding is null)
                 {
@@ -620,7 +621,8 @@
             {
                 var repoStanding =
                     _publicSportDataUnitOfWork.MotorsportTeamStandings.FirstOrDefault(s =>
-                        s.MotorsportTeam.ProviderTeamId == providerStanding.teamId);
+                        s.MotorsportTeam.ProviderTeamId == providerStanding.teamId
+                        && s.MotorsportSeasonId == season.Id && s.MotorsportLeagueId == league.Id);
 
                 if (repoStanding is null)
                 {
