@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
+﻿using System;
+
+namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 {
     using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
     using SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters;
@@ -139,6 +141,37 @@
         {
             // TODO: @motorsport-feed: implement.
             return Content(HttpStatusCode.OK, "DEBUG GetLive");
+        }
+
+        private void PersistToCache<T>(string cacheKey, T cacheData) where T : class
+        {
+            try
+            {
+                _cache?.Add(CacheKeyNamespacePrefixForFeed + cacheKey, cacheData);
+            }
+            catch (Exception exception)
+            {
+                _logger?.Error("LOGGING:PersistToCache." + cacheKey, "key = " + cacheKey + " " + exception.Message + exception.StackTrace);
+            }
+        }
+
+        private async Task<T> GetFromCacheAsync<T>(string key) where T : class
+        {
+            try
+            {
+                if (_cache != null)
+                {
+                    return await _cache.GetAsync<T>(CacheKeyNamespacePrefixForFeed + key);
+                }
+
+                return null;
+            }
+            catch (Exception exception)
+            {
+                _logger?.Error("LOGGING:GetFromCacheAsync." + key, "key = " + key + " " + exception.Message + exception.StackTrace);
+
+                return null;
+            }
         }
     }
 }
