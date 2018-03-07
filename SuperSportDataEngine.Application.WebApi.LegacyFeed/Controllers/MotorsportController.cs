@@ -53,6 +53,8 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         {
             // TODO: @motorsport-feed: Convert "current" string to a boolean type, then pass that to service as boolean parameter.
             // TODO: @motorsport-feed: implement.
+
+         //   var eventsFromService = _motorsportLegacyFeedService.GetSchedules();
             return Content(HttpStatusCode.OK, "DEBUG GetSchedule");
         }
 

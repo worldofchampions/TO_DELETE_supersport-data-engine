@@ -84,13 +84,10 @@
         {
             try
             {
-                //if (applicationScope == ApplicationScope.WebApiLegacyFeed || applicationScope == ApplicationScope.WebApiPublicApi)
-                {
-                    container.RegisterType<ICache, Cache>(new ContainerControlledLifetimeManager(),
-                        new InjectionFactory((x) => new Cache(ConnectionMultiplexer.Connect(WebConfigurationManager.ConnectionStrings["Redis"].ConnectionString))));
+                container.RegisterType<ICache, Cache>(new ContainerControlledLifetimeManager(),
+                    new InjectionFactory((x) => new Cache(ConnectionMultiplexer.Connect(WebConfigurationManager.ConnectionStrings["Redis"].ConnectionString))));
 
-                    logger.Cache = container.Resolve<ICache>();
-                }
+                logger.Cache = container.Resolve<ICache>();
             }
             catch (System.Exception exception)
             {
