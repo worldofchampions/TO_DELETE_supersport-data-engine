@@ -51,6 +51,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
                 if (siteId != 0)
                 {
+                    // TODO: Temporary auth override until ZoneSite data is seeded.
+                    return true;
+
                     var legacyZone = _systemSportDataUnitOfWork.LegacyZoneSites.Where(c => c.Id == siteId).FirstOrDefault();
                     if (legacyZone == null)
                     {
