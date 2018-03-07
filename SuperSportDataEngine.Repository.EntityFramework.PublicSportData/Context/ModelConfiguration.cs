@@ -118,7 +118,6 @@
             modelBuilder.Entity<MotorsportTeam>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
             modelBuilder.Entity<MotorsportTeam>().Property(x => x.LegacyTeamId).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
             modelBuilder.Entity<MotorsportTeam>().Property(x => x.ProviderTeamId).HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Seek_ProviderTeamId")));
-            modelBuilder.Entity<MotorsportTeam>().HasRequired(x => x.MotorsportLeague);
 
             modelBuilder.Entity<MotorsportTeamStanding>().HasKey(x => new { x.MotorsportLeagueId, x.MotorsportSeasonId, x.MotorsportTeamId });
         }
