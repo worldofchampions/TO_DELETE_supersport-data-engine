@@ -143,6 +143,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             return Content(HttpStatusCode.OK, "DEBUG GetLive");
         }
 
+        // [TODO] Refactor this method out of this class and into a base class that has the cache.
         private void PersistToCache<T>(string cacheKey, T cacheData) where T : class
         {
             try
@@ -155,6 +156,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             }
         }
 
+        // [TODO] Refactor this method out of this class and into a base class that has the cache.
         private async Task<T> GetFromCacheAsync<T>(string key) where T : class
         {
             try
