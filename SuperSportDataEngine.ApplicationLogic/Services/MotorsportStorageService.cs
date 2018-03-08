@@ -578,6 +578,17 @@
             var raceEventStatus = MapProviderRaceEventStatusToInternal(providerRaceEvent.eventStatus.eventStatusId);
             eventInRepo.MotorsportRaceEventStatus = raceEventStatus;
 
+            var winner = providerRaceEvent.champions?.FirstOrDefault(c => c.championType.ToLowerInvariant().Equals("current"));
+
+            if (winner != null)
+            {
+                var winnerDetails =
+                    _publicSportDataUnitOfWork.MotorsportDrivers.FirstOrDefault(d =>
+                        d.ProviderDriverId == winner.playerId && d.MotorsportLeague.Id == eventInRepo.MotorsportRace.MotorsportLeague.Id);
+
+                eventInRepo.EventWinner = winnerDetails;
+            }
+
             _publicSportDataUnitOfWork.MotorsportRaceEvents.Update(eventInRepo);
         }
 
@@ -614,6 +625,17 @@
 
             var raceEventStatus = MapProviderRaceEventStatusToInternal(providerRaceEvent.eventStatus.eventStatusId);
             motorsportRaceEvent.MotorsportRaceEventStatus = raceEventStatus;
+
+            var winner = providerRaceEvent.champions?.FirstOrDefault(c => c.championType.ToLowerInvariant().Equals("current"));
+
+            if (winner != null)
+            {
+                var winnerDetails =
+                    _publicSportDataUnitOfWork.MotorsportDrivers.FirstOrDefault(d =>
+                        d.ProviderDriverId == winner.playerId && d.MotorsportLeague.Id == race.MotorsportLeague.Id);
+
+                motorsportRaceEvent.EventWinner = winnerDetails;
+            }
 
             _publicSportDataUnitOfWork.MotorsportRaceEvents.Add(motorsportRaceEvent);
         }
