@@ -10,10 +10,11 @@
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motor;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Enums;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
 
-    public class MotorsportStorageService: IMotorsportStorageService
+    public class MotorsportStorageService : IMotorsportStorageService
     {
         private readonly IPublicSportDataUnitOfWork _publicSportDataUnitOfWork;
 
@@ -574,6 +575,9 @@
                 eventInRepo.StartDateTimeUtc = startDateUtc;
             }
 
+            var raceEventStatus = MapProviderRaceEventStatusToInternal(providerRaceEvent.eventStatus.eventStatusId);
+            eventInRepo.MotorsportRaceEventStatus = raceEventStatus;
+
             _publicSportDataUnitOfWork.MotorsportRaceEvents.Update(eventInRepo);
         }
 
@@ -590,7 +594,6 @@
             {
                 motorsportRaceEvent.CityName = providerRaceEvent.venue.city;
                 motorsportRaceEvent.CircuitName = providerRaceEvent.venue.name;
-
             }
 
             if (providerRaceEvent.venue?.country != null)
@@ -608,6 +611,9 @@
 
                 motorsportRaceEvent.StartDateTimeUtc = startDateUtc;
             }
+
+            var raceEventStatus = MapProviderRaceEventStatusToInternal(providerRaceEvent.eventStatus.eventStatusId);
+            motorsportRaceEvent.MotorsportRaceEventStatus = raceEventStatus;
 
             _publicSportDataUnitOfWork.MotorsportRaceEvents.Add(motorsportRaceEvent);
         }
@@ -945,6 +951,29 @@
                 .owners;
 
             return results;
+        }
+
+        private static MotorsportRaceEventStatus MapProviderRaceEventStatusToInternal(MotorsportRaceEventStatusProvider providerStatus)
+        {
+            switch (providerStatus)
+            {
+                case MotorsportRaceEventStatusProvider.PreRace:
+                    return MotorsportRaceEventStatus.PreRace;
+                case MotorsportRaceEventStatusProvider.InProgress:
+                    return MotorsportRaceEventStatus.InProgress;
+                case MotorsportRaceEventStatusProvider.Postponed:
+                    return MotorsportRaceEventStatus.Postponed;
+                case MotorsportRaceEventStatusProvider.Suspended:
+                    return MotorsportRaceEventStatus.Suspended;
+                case MotorsportRaceEventStatusProvider.Delayed:
+                    return MotorsportRaceEventStatus.Delayed;
+                case MotorsportRaceEventStatusProvider.Cancelled:
+                    return MotorsportRaceEventStatus.Cancelled;
+                case MotorsportRaceEventStatusProvider.Final:
+                    return MotorsportRaceEventStatus.Result;
+                default:
+                    return MotorsportRaceEventStatus.Unknown;
+            }
         }
     }
 }
