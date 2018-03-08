@@ -1,7 +1,8 @@
-﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
+﻿using SuperSportDataEngine.Common.Interfaces;
+
+namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 {
     using AutoMapper;
-    using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
     using SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters;
     using SuperSportDataEngine.Application.WebApi.LegacyFeed.Helpers.Extensions;
     using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers;

@@ -1,5 +1,5 @@
 ﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
-
+﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
 namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledManager
 {
     using Hangfire;
@@ -83,7 +83,8 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
                 if (fixture.TeamA == null) continue;
                 if (fixture.TeamB == null) continue;
 
-                var matchName = fixture.TeamA.Name + " vs " + fixture.TeamB.Name;
+                var matchName = GetMatchName(fixture);
+
                 var jobId = ConfigurationManager.AppSettings["LiveManagerJob_LiveMatch_JobIdPrefix"] + matchName;
 
                 _recurringJobManager.RemoveIfExists(jobId);
@@ -117,7 +118,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
                     if (fixture.TeamA == null) continue;
                     if (fixture.TeamB == null) continue;
 
-                    var matchName = fixture.TeamA.Name + " vs " + fixture.TeamB.Name;
+                    var matchName = GetMatchName(fixture);
 
                     var jobId = ConfigurationManager.AppSettings["LiveManagerJob_LiveMatch_JobIdPrefix"] + matchName;
                     var jobCronExpression = ConfigurationManager.AppSettings["LiveManagerJob_LiveMatch_JobCronExpression"];
@@ -145,6 +146,14 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
             }
 
             return await _systemSportDataUnitOfWork.SaveChangesAsync();
+        }
+
+        private static string GetMatchName(RugbyFixture fixture)
+        {
+            var teamA = fixture.TeamA.Name;
+            var teamB = fixture.TeamB.Name;
+
+            return teamA + " vs " + teamB + "→" + fixture.LegacyFixtureId;
         }
     }
 }

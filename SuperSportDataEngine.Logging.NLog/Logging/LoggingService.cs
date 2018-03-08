@@ -5,7 +5,7 @@ using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NLog.Internal;
-using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
+using SuperSportDataEngine.Common.Interfaces;
 
 namespace SuperSportDataEngine.Logging.NLog.Logging
 {

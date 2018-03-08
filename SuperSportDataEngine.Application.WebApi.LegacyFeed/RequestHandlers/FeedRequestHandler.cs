@@ -1,13 +1,16 @@
-﻿using System.Configuration;
+﻿using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Web.Http;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
+using SuperSportDataEngine.Common.Interfaces;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
 {
     using Microsoft.Practices.Unity;
     using Container;
     using Container.Enums;
-    using Common.Interfaces;
     using Helpers.AppSettings;
     using Models.Shared;
     using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
@@ -28,7 +31,6 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
         private ILoggingService _loggingService;
         private IUnityContainer _container;
 
-        private readonly int _authKeyCacheExpiryInMinutes;
         private const string CacheKeyPrefix = "LegacyFeed:";
         private const string AuthId = "auth";
 
@@ -36,8 +38,30 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
         {
             ResolveDependencies();
 
-            _authKeyCacheExpiryInMinutes =
-                int.Parse(ConfigurationManager.AppSettings["AuthKeyCacheExpiryInMinutes"]);
+            CacheAuthKeys();
+        }
+
+        private async void CacheAuthKeys()
+        {
+            try
+            {
+                var consumerAuthRepo = _container.Resolve<IBaseEntityFrameworkRepository<LegacyAuthFeedConsumer>>();
+
+                var auths = consumerAuthRepo.All().ToList();
+
+                foreach (var legacyAuthFeedConsumer in auths)
+                {
+                    PersistRequestToCache(0, legacyAuthFeedConsumer.AuthKey, new AuthModel()
+                    {
+                        Authorised = true
+                    });
+                }
+            }
+            catch (Exception)
+            {
+                await _loggingService.Warn("CannotAddAuthKeys", 
+                    "Failed to add the auth keys to the cahce.");
+            }
         }
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
@@ -187,7 +211,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
         {
             try
             {
-                _cache.Add(CacheKeyPrefix + "AUTH:" + $"auth/{siteId}/{auth}", authModel, TimeSpan.FromMinutes(_authKeyCacheExpiryInMinutes));
+                _cache.Add(CacheKeyPrefix + "AUTH:" + $"auth/{siteId}/{auth}", authModel, TimeSpan.MaxValue);
             }
             catch (Exception exception)
             {
