@@ -6,8 +6,11 @@
     using MongoDB.Driver;
     using NLog.Slack;
     using StackExchange.Redis;
+    using ApplicationLogic.Services.Cms;
+    using System;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.CmsLogic.Interfaces;
+    using SuperSportDataEngine.Common.Interfaces;
     using SuperSportDataEngine.Application.Container.Enums;
-    using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces.LegacyFeed;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.DeprecatedFeed.Interfaces;
@@ -29,13 +32,21 @@
     using SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories;
     using System.Configuration;
     using System.Data.Entity;
-    using System.Web.Configuration;
 
     public static class UnityConfigurationManager
     {
         private const string PublicSportDataRepository = "PublicSportDataRepository";
         private const string SystemSportDataRepository = "SystemSportDataRepository";
         private static ILoggingService logger = LoggingService.GetLoggingService();
+
+        private static readonly Lazy<ConnectionMultiplexer> LazyRedisConnection = new Lazy<ConnectionMultiplexer>(() =>
+        {
+            var connectionMultiplexer = ConnectionMultiplexer.Connect(ConfigurationManager.ConnectionStrings["Redis"].ConnectionString);
+            connectionMultiplexer.PreserveAsyncOrder = false;
+            return connectionMultiplexer;
+        });
+
+        private static ConnectionMultiplexer RedisConnection => LazyRedisConnection.Value;
 
         public static void RegisterTypes(IUnityContainer container, ApplicationScope applicationScope)
         {
@@ -73,6 +84,11 @@
                 container.RegisterType<ILegacyAuthService, LegacyAuthService>(new HierarchicalLifetimeManager());
             }
 
+            if (applicationScope == ApplicationScope.WebApiSystemApi)
+            {
+                container.RegisterType<IRugbyCmsService, RugbyCmsService>(new HierarchicalLifetimeManager());
+            }
+
             if (applicationScope == ApplicationScope.WebApiLegacyFeed)
             {
                 container.RegisterType<IDeprecatedFeedIntegrationService, DeprecatedFeedIntegrationService>(new HierarchicalLifetimeManager());
@@ -84,21 +100,18 @@
         {
             try
             {
-                //if (applicationScope == ApplicationScope.WebApiLegacyFeed || applicationScope == ApplicationScope.WebApiPublicApi)
-                {
-                    container.RegisterType<ICache, Cache>(new ContainerControlledLifetimeManager(),
-                        new InjectionFactory((x) => new Cache(ConnectionMultiplexer.Connect(WebConfigurationManager.ConnectionStrings["Redis"].ConnectionString))));
+                container.RegisterType<ICache, Cache>(new ContainerControlledLifetimeManager(),
+                    new InjectionFactory((x) => new Cache(RedisConnection)));
 
-                    logger.Cache = container.Resolve<ICache>();
-                }
+                logger.Cache = container.Resolve<ICache>();
             }
-            catch (System.Exception exception)
+            catch (Exception exception)
             {
                 container.RegisterType<ICache, Cache>(new ContainerControlledLifetimeManager(), new InjectionFactory((x) => null));
 
-                logger.Error("NoCacheInDIContainer",
-                    "Message: \n" + exception.Message +
-                    "StackTrace: \n" + exception.StackTrace +
+                logger.Error("NoCacheInDIContainer", 
+                    "Message: \n" + exception.Message + "\n" + 
+                    "StackTrace: \n" + exception.StackTrace + "\n" +
                     "Inner Exception \n" + exception.InnerException);
             }
         }

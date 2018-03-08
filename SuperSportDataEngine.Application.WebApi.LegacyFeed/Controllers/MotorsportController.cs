@@ -2,7 +2,7 @@
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 {
-    using SuperSportDataEngine.Application.WebApi.Common.Interfaces;
+    using SuperSportDataEngine.Common.Interfaces;
     using SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters;
     using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Motorsport;
     using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
