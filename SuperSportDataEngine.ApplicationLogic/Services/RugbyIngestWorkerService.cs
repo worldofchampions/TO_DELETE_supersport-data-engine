@@ -1505,39 +1505,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                     // Should this structure change in the future, apply further explicit checks for relevant seasons:
                     // e.g. "if (seasonId == RugbyStatsProzoneConstants.ProviderTournamentSeasonId2018)" etc.
 
-                    // Get the top 3 teams 
-                    // (top 1 from each group)
-                    var topThree =
-                        logs.RugbyGroupedLogs.groupStandings.ladderposition
-                            .GroupBy(g => g.groupName)
-                            .Select(g => g.First())
-                            .OrderByDescending(t => t.competitionPoints)
-                            .ToList();
-
-                    // Top 3 teams id's
-                    var topThreeTeams = topThree.Select(t => t.teamId);
-
-                    // Remaining teams in the overall standings
-                    var remainderTeams =
-                        logs.RugbyGroupedLogs.overallStandings.ladderposition
-                            .Where(l => !topThreeTeams.Contains(l.teamId))
-                            .OrderByDescending(l => l.competitionPoints)
-                            .ToList();
-
-                    // Set top 3 log positions.
-                    for (int position = 0; position < topThree.Count(); position++)
-                    {
-                        logs.RugbyGroupedLogs.overallStandings.ladderposition
-                            .First(l => l.teamId == topThree.ElementAt(position).teamId).position = position + 1;
-                    }
-
-                    // Set remaining log positions.
-                    for (int position = 0; position < remainderTeams.Count(); position++)
-                    {
-                        logs.RugbyGroupedLogs.overallStandings.ladderposition
-                            .First(l => l.teamId == remainderTeams.ElementAt(position).teamId).position = position + 4;
-                    }
-
                     // "OverallStandings" are GroupHierarchyLevel: 0.
                     if (logs.RugbyGroupedLogs.overallStandings != null)
                         await IngestStandingsForSuperRugby(cancellationToken, 0, logs, logs.RugbyGroupedLogs.overallStandings.ladderposition);
