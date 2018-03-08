@@ -55,6 +55,10 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Moto
                     src.RaceEventWinner != null && src.RaceEventWinner.FullNameCmsOverride != null ? src.RaceEventWinner.FullNameCmsOverride :
                     GetFullName(src.RaceEventWinner != null ? src.RaceEventWinner.FirstName : null,
                                 src.RaceEventWinner != null ? src.RaceEventWinner.LastName : null)) )
+
+                .ForMember(dest => dest.Videos, expression => expression.UseValue(new List<MatchVideoModel>()))
+                .ForMember(dest => dest.LiveVideos, expression => expression.UseValue(new List<MatchLiveVideoModel>()))
+
                 .ForAllOtherMembers(m => m.Ignore());
         }
 
