@@ -31,7 +31,6 @@
         /// <summary> A provider driven value. </summary>
         public string CircuitName { get; set; }
 
-        /// <summary> A provider driven value. </summary>
         public MotorsportRaceEventStatus MotorsportRaceEventStatus { get; set; }
 
         /// <summary> A CMS driven value to set whether the race event is current. </summary>
@@ -43,5 +42,7 @@
         public virtual MotorsportRace MotorsportRace { get; set; }
 
         public virtual MotorsportSeason MotorsportSeason { get; set; }
+
+        public virtual MotorsportDriver RaceEventWinner { get; set; }
     }
 }
