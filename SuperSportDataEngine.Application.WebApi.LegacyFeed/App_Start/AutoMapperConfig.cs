@@ -3,7 +3,7 @@ using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Motorsport;
 using SuperSportDataEngine.ApplicationLogic.Entities.Legacy.Mappers;
 
-namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.App_Start
+namespace SuperSportDataEngine.Application.WebApi.LegacyFeed
 {
     public class AutoMapperConfig
     {

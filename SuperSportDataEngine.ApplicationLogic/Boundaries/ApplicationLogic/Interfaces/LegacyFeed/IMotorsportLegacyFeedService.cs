@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
 using SuperSportDataEngine.ApplicationLogic.Entities.Legacy.Motorsport;
 
 namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces.LegacyFeed

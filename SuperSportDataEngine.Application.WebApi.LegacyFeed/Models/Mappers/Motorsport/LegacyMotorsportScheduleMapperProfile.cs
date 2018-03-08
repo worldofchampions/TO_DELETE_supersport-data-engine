@@ -50,9 +50,8 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Moto
                 // [TODO] This value is set to the minimum date time because we do not get it from the provider.
                 .ForMember(dest => dest.EndDate, expression => expression.UseValue(DateTime.MinValue.ToString("s")))
 
+                //.ForMember(dest => dest.winner, expression => expression.UseValue()) )
                 .ForAllOtherMembers(m => m.Ignore());
-
-                
         }
     }
 }
