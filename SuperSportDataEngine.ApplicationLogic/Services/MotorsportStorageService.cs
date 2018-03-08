@@ -586,7 +586,7 @@
                     _publicSportDataUnitOfWork.MotorsportDrivers.FirstOrDefault(d =>
                         d.ProviderDriverId == winner.playerId && d.MotorsportLeague.Id == eventInRepo.MotorsportRace.MotorsportLeague.Id);
 
-                eventInRepo.EventWinner = winnerDetails;
+                eventInRepo.RaceEventWinner = winnerDetails;
             }
 
             _publicSportDataUnitOfWork.MotorsportRaceEvents.Update(eventInRepo);
@@ -634,7 +634,7 @@
                     _publicSportDataUnitOfWork.MotorsportDrivers.FirstOrDefault(d =>
                         d.ProviderDriverId == winner.playerId && d.MotorsportLeague.Id == race.MotorsportLeague.Id);
 
-                motorsportRaceEvent.EventWinner = winnerDetails;
+                motorsportRaceEvent.RaceEventWinner = winnerDetails;
             }
 
             _publicSportDataUnitOfWork.MotorsportRaceEvents.Add(motorsportRaceEvent);

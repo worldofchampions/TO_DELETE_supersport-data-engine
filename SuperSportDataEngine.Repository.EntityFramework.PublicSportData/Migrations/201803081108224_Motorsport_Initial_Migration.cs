@@ -154,12 +154,15 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                         TimestampUpdated = c.DateTimeOffset(nullable: false, precision: 7),
                         MotorsportRace_Id = c.Guid(nullable: false),
                         MotorsportSeason_Id = c.Guid(nullable: false),
+                        RaceEventWinner_Id = c.Guid(),
                     })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.MotorsportRaces", t => t.MotorsportRace_Id, cascadeDelete: true)
                 .ForeignKey("dbo.MotorsportSeasons", t => t.MotorsportSeason_Id, cascadeDelete: true)
+                .ForeignKey("dbo.MotorsportDrivers", t => t.RaceEventWinner_Id)
                 .Index(t => t.MotorsportRace_Id)
-                .Index(t => t.MotorsportSeason_Id);
+                .Index(t => t.MotorsportSeason_Id)
+                .Index(t => t.RaceEventWinner_Id);
             
             CreateTable(
                 "dbo.MotorsportRaceEventGrids",
@@ -252,6 +255,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
             DropForeignKey("dbo.MotorsportRaceEventGrids", "MotorsportTeam_Id", "dbo.MotorsportTeams");
             DropForeignKey("dbo.MotorsportRaceEventGrids", "MotorsportRaceEventId", "dbo.MotorsportRaceEvents");
             DropForeignKey("dbo.MotorsportRaceEventGrids", "MotorsportDriverId", "dbo.MotorsportDrivers");
+            DropForeignKey("dbo.MotorsportRaceEvents", "RaceEventWinner_Id", "dbo.MotorsportDrivers");
             DropForeignKey("dbo.MotorsportRaceEvents", "MotorsportSeason_Id", "dbo.MotorsportSeasons");
             DropForeignKey("dbo.MotorsportRaceEvents", "MotorsportRace_Id", "dbo.MotorsportRaces");
             DropForeignKey("dbo.MotorsportRaces", "MotorsportLeague_Id", "dbo.MotorsportLeagues");
@@ -270,6 +274,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
             DropIndex("dbo.MotorsportRaceEventGrids", new[] { "MotorsportTeam_Id" });
             DropIndex("dbo.MotorsportRaceEventGrids", new[] { "MotorsportDriverId" });
             DropIndex("dbo.MotorsportRaceEventGrids", new[] { "MotorsportRaceEventId" });
+            DropIndex("dbo.MotorsportRaceEvents", new[] { "RaceEventWinner_Id" });
             DropIndex("dbo.MotorsportRaceEvents", new[] { "MotorsportSeason_Id" });
             DropIndex("dbo.MotorsportRaceEvents", new[] { "MotorsportRace_Id" });
             DropIndex("dbo.MotorsportRaces", new[] { "MotorsportLeague_Id" });

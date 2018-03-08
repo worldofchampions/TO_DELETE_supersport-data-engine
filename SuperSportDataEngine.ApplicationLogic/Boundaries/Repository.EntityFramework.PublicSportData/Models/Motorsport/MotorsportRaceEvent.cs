@@ -43,6 +43,6 @@
 
         public virtual MotorsportSeason MotorsportSeason { get; set; }
 
-        public virtual MotorsportDriver EventWinner { get; set; }
+        public virtual MotorsportDriver RaceEventWinner { get; set; }
     }
 }
