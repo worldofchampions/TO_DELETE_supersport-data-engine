@@ -31,7 +31,6 @@
         /// <summary> A provider driven value. </summary>
         public string CircuitName { get; set; }
 
-        /// <summary> A provider driven value. </summary>
         public MotorsportRaceEventStatus MotorsportRaceEventStatus { get; set; }
 
         /// <summary> A CSM driven value to set whether the race event is current. </summary>

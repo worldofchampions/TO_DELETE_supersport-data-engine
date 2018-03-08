@@ -2,7 +2,8 @@
 {
     using System;
     using System.Collections.Generic;
-
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Enums;
+    
     public class ApiResult
     {
         public int sportId { get; set; }
@@ -266,7 +267,7 @@
 
     public class EventStatus
     {
-        public int eventStatusId { get; set; }
+        public MotorsportRaceEventStatusProvider eventStatusId { get; set; }
         public bool isUnderCaution { get; set; }
         public string reason { get; set; }
         public string name { get; set; }
