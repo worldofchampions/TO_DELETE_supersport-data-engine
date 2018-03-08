@@ -175,6 +175,8 @@
 
                 container.RegisterType<IRugbyIngestWorkerService, RugbyIngestWorkerService>(new HierarchicalLifetimeManager());
 
+                container.RegisterType<IMotorsportStorageService, MotorsportStorageService>(new HierarchicalLifetimeManager());
+
                 container.RegisterType<IMotorsportIngestWorkerService, MotorsportIngestWorkerService>(new HierarchicalLifetimeManager());
 
                 container.RegisterType<ITemporaryExampleMongoDbRepository, TemporaryExampleMongoDbRepository>();

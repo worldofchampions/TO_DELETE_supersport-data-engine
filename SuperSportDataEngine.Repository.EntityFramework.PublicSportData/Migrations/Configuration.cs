@@ -22,6 +22,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
         {
             SeedMotorsportLeagueSlugs.Seed(context);
             SeedMotorsportEnabledLeagues.Seed(context);
+            SeedMotorsportHistoricSeasons.Seed(context);
         }
 
         private static void SeedRugbyData(PublicSportDataContext context)
