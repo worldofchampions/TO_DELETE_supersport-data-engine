@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.WebPages;
 using AutoMapper;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
@@ -50,8 +51,20 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Moto
                 // [TODO] This value is set to the minimum date time because we do not get it from the provider.
                 .ForMember(dest => dest.EndDate, expression => expression.UseValue(DateTime.MinValue.ToString("s")))
 
-                //.ForMember(dest => dest.winner, expression => expression.UseValue()) )
+                .ForMember(dest => dest.winner, expression => expression.MapFrom(src =>
+                    src.RaceEventWinner != null && src.RaceEventWinner.FullNameCmsOverride != null ? src.RaceEventWinner.FullNameCmsOverride :
+                    GetFullName(src.RaceEventWinner != null ? src.RaceEventWinner.FirstName : null,
+                                src.RaceEventWinner != null ? src.RaceEventWinner.LastName : null)) )
                 .ForAllOtherMembers(m => m.Ignore());
+        }
+
+        private static string GetFullName(string firstName, string lastName)
+        {
+            var name = firstName ?? "";
+            var surname = lastName ?? "";
+
+            var fullName = (name + " " + surname).Trim();
+            return fullName.IsEmpty() ? null : fullName;
         }
     }
 }
