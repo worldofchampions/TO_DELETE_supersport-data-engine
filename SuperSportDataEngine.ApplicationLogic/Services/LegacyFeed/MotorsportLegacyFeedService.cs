@@ -34,10 +34,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.LegacyFeed
 
             var today = DateTime.UtcNow;
 
-            // [TODO] This needs to be removed before we deploy.
-            // [TODO] Since we are not getting data for 2018, show 2017 data if the 2017 season is current.
-            today = new DateTime(currentSeason.ProviderSeasonId, today.Month, today.Day);
-
             var raceEvents =
                 _publicSportDataUnitOfWork.MotorsportRaceEvents.Where(e =>
                     e.MotorsportSeason.ProviderSeasonId == currentSeason.ProviderSeasonId).ToList();

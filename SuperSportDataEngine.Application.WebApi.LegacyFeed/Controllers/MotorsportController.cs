@@ -52,8 +52,6 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         [ResponseType(typeof(IEnumerable<RacesModel>))]
         public async Task<IEnumerable<RacesModel>> GetSchedule(string category, string current = null)
         {
-            // TODO: @motorsport-feed: Convert "current" string to a boolean type, then pass that to service as boolean parameter.
-            // TODO: @motorsport-feed: implement.
             var currentValue = bool.Parse(current ?? "false");
 
             var key = CacheKeyNamespacePrefixForFeed + "motorsport/{category}/schedule?current=" + currentValue;
