@@ -457,6 +457,9 @@
                 leagueInRepo.Name = leagueFromProvider.league.subLeague.name;
             }
 
+            var sportType = GetSportTypeForLeague(leagueInRepo.ProviderSlug);
+            leagueInRepo.MotorsportSportType = sportType;
+
             _publicSportDataUnitOfWork.MotorsportLeagues.Update(leagueInRepo);
         }
 
@@ -475,7 +478,23 @@
                 DataProvider = DataProvider.Stats
             };
 
+            var sportType = GetSportTypeForLeague(league.ProviderSlug);
+            league.MotorsportSportType = sportType;
+
             _publicSportDataUnitOfWork.MotorsportLeagues.Add(league);
+        }
+
+        private static MotorsportSportType GetSportTypeForLeague(string providerSlug)
+        {
+            if (string.IsNullOrEmpty(providerSlug)) return MotorsportSportType.MotorsportSportGeneral;
+
+            if (providerSlug.Equals("f1")) return MotorsportSportType.FormulaOne;
+
+            if (providerSlug.Equals("superbike")) return MotorsportSportType.Superbike;
+
+            if (providerSlug.Equals("motogp")) return MotorsportSportType.MotoGp;
+
+            return MotorsportSportType.MotorsportSportGeneral;
         }
 
         private void UpdateDriverInRepo(Player providerDriver, MotorsportDriver driverInRepo, MotorsportLeague league)

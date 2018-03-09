@@ -154,7 +154,7 @@
     <Compile Include="Constants\Providers\MotorsportStatsConstants.cs" />
     <Compile Include="Constants\Providers\RugbyStatsProzoneConstants.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\UnitOfWork\IPublicSportDataUnitOfWork.cs" />
-    <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\Motorsport\MotorSeasonStatus.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\Motorsport\Enums\MotorsportSeasonStatus.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\Enums\SchedulerStateForMotorsportRacePolling.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\UnitOfWork\ISystemSportDataUnitOfWork.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\Motorsport\SchedulerTrackingMotorsportSeason.cs" />
