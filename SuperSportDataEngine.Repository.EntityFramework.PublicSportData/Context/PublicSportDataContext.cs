@@ -28,8 +28,16 @@
         public DbSet<RugbyTournament> RugbyTournaments { get; set; }
         public DbSet<RugbyVenue> RugbyVenues { get; set; }
 
+        public DbSet<MotorsportDriver> MotorsportDrivers { get; set; }
         public DbSet<MotorsportLeague> MotorsportLeagues { get; set; }
+        public DbSet<MotorsportRace> MotorsportRaces { get; set; }
+        public DbSet<MotorsportDriverStanding> MotorsportDriverStandings { get; set; }
+        public DbSet<MotorsportTeamStanding> MotorsportTeamStandings { get; set; }
         public DbSet<MotorsportSeason> MotorsportSeasons { get; set; }
+        public DbSet<MotorsportTeam> MotortsportTeams { get; set; }
+        public DbSet<MotorsportRaceEventResult> MotorsportRaceEventResults { get; set; }
+        public DbSet<MotorsportRaceEventGrid> MotorsportRaceEventGrids { get; set; }
+        public DbSet<MotorsportRaceEvent> MotorsportRaceEvents { get; set; }
 
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
