@@ -51,5 +51,16 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.LegacyFeed
 
             return await Task.FromResult(schedule);
         }
+
+        public Task<MotorsportRaceEventGridEntity> GetGrids(string category)
+        {
+            var grid = new MotorsportRaceEventGridEntity()
+            {
+                MotorsportRaceEventGrids = 
+                    _publicSportDataUnitOfWork.MotorsportRaceEventGrids.All().ToList()
+            };
+
+            return Task.FromResult(grid);
+        }
     }
 }

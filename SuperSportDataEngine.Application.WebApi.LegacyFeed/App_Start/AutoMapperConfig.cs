@@ -28,6 +28,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed
                 cfg.AddProfile<LegacyPointScorerMapperProfile>();
 
                 cfg.AddProfile<LegacyMotorsportScheduleMapperProfile>();
+                cfg.AddProfile<LegacyMotorsportGridMapperProfile>();
             });
 #if DEBUG
             Mapper.AssertConfigurationIsValid();

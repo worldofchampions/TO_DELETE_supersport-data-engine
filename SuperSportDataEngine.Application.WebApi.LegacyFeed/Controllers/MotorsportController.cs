@@ -76,11 +76,23 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         [HttpGet, HttpHead]
         [Route("{category}/grid")]
         // TODO: @motorsport-feed: Can't find existing model in project source. Create a new model that contains a collection of <GridModel> for this one with the additional required fields?
-        //[ResponseType(typeof(IEnumerable<GridModel>))]
-        public async Task<IHttpActionResult> GetGrid(string category)
+        [ResponseType(typeof(IEnumerable<GridModel>))]
+        public async Task<IEnumerable<GridModel>> GetGrid(string category)
         {
-            // TODO: @motorsport-feed: implement.
-            return Content(HttpStatusCode.OK, "DEBUG GetGrid");
+            var key = CacheKeyNamespacePrefixForFeed + "motorsport/{category}/grid";
+
+            var gridFromCache = await GetFromCacheAsync<IEnumerable<GridModel>>(key);
+            if (gridFromCache != null)
+                return gridFromCache;
+
+            var gridFromService =
+                Map<List<GridModel>>(
+                    (await _motorsportLegacyFeedService.GetGrids(category))
+                    .MotorsportRaceEventGrids);
+
+            PersistToCache(key, gridFromService);
+
+            return gridFromService;
         }
 
         /// <summary>
