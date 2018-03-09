@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
+﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
+
+namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 {
     using System;
     using System.Collections.Generic;
@@ -7,22 +9,27 @@
     using System.Security.Cryptography;
     using System.Text;
 
-    public class StatsProzoneMotorWebRequest : IProviderWebRequest
+    public class StatsMotorsportMotorsportWebRequest : IStatsMotorsportWebRequest
     {
         private readonly string _statsApiSharedSecret;// = "JDgQnhPVZQ";
         private readonly string _statsApiKey;// = "ta3dprpc4sn79ecm2wg7tqbg";
         private readonly string _statsApiBaseUrl; //= "http://api.stats.com";
 
-        public StatsProzoneMotorWebRequest(string statsApiBaseUrl, string statsApiKey, string statsApiSharedSecret)
+        public StatsMotorsportMotorsportWebRequest(string statsApiBaseUrl, string statsApiKey, string statsApiSharedSecret)
         {
             _statsApiSharedSecret = statsApiSharedSecret;
             _statsApiKey = statsApiKey;
             _statsApiBaseUrl = statsApiBaseUrl;
         }
 
-        public WebRequest GetRequestForDrivers(string providerSlug, int? seasonId = null)
+        public WebRequest GetRequestForDrivers(string providerSlug, int? providerPlayerId)
         {
             var driversUrl = $"/v1/stats/motor/{providerSlug}/participants/";
+
+            if (providerPlayerId != null)
+            {
+                driversUrl = driversUrl + providerPlayerId;
+            }
 
             var requestSignature = GetRequestSignature();
 

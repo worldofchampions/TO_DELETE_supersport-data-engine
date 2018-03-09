@@ -94,7 +94,8 @@
     <Compile Include="Boundaries\Gateway.Http.DeprecatedFeed\ResponseModels\MatchDayBlogResponse.cs" />
     <Compile Include="Boundaries\Gateway.Http.DeprecatedFeed\ResponseModels\MatchPreviewResponse.cs" />
     <Compile Include="Boundaries\Gateway.Http.DeprecatedFeed\ResponseModels\MatchReportResponse.cs" />
-    <Compile Include="Boundaries\Gateway.Http.StatsProzone\Interfaces\IStatsProzoneMotorIngestService.cs" />
+    <Compile Include="Boundaries\Gateway.Http.StatsProzone\Interfaces\IStatsMotorsportIngestService.cs" />
+    <Compile Include="Boundaries\Gateway.Http.StatsProzone\Interfaces\IStatsMotorsportWebRequest.cs" />
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\Models\Motorsport\ApiResult.cs" />
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\Models\Motorsport\Enums\MotorsportRaceEventStatusProvider.cs" />
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\Models\Motorsport\MotorsportEntitiesResponse.cs" />

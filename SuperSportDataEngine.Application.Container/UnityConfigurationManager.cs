@@ -134,8 +134,8 @@
 
                 //container.RegisterType<ILoggingService>(new InjectionFactory(l => logger));
 
-                var temp = new StatsProzoneMotorWebRequest("http://api.stats.com", "ta3dprpc4sn79ecm2wg7tqbg", "JDgQnhPVZQ");
-                container.RegisterType<IStatsProzoneMotorIngestService, StatsProzoneMotorIngestService>(
+                var temp = new StatsMotorsportMotorsportWebRequest("http://api.stats.com", "ta3dprpc4sn79ecm2wg7tqbg", "JDgQnhPVZQ");
+                container.RegisterType<IStatsMotorsportIngestService, StatsMotorsportIngestService>(
                     new HierarchicalLifetimeManager(),
                     new InjectionConstructor(temp, logger));
             }

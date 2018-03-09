@@ -10,13 +10,13 @@
 
     public class MotorsportIngestWorkerService : IMotorsportIngestWorkerService
     {
-        private readonly IStatsProzoneMotorIngestService _statsMotorsportIngestService;
+        private readonly IStatsMotorsportIngestService _statsMotorsportIngestService;
         private readonly IMotorsportService _motorsportService;
         private readonly ILoggingService _loggingService;
         private readonly IMotorsportStorageService _motorsportStorageService;
 
         public MotorsportIngestWorkerService(
-            IStatsProzoneMotorIngestService statsMotorsportIngestService,
+            IStatsMotorsportIngestService statsMotorsportIngestService,
             ILoggingService loggingService,
             IMotorsportService motorsportService, 
             IMotorsportStorageService motorsportStorageService)
@@ -57,11 +57,8 @@
             {
                 foreach (var league in motorsportLeagues)
                 {
-                    var providerSeasonId =
-                        await _motorsportService.GetProviderSeasonIdForLeague(league.Id, cancellationToken);
-
                     var providerResponse =
-                        _statsMotorsportIngestService.IngestDriversForLeague(league.ProviderSlug, providerSeasonId);
+                        _statsMotorsportIngestService.IngestDriversForLeague(league.ProviderSlug);
 
                     await _motorsportStorageService.PersistLeagueDriversInRepository(providerResponse, league);
                 }
