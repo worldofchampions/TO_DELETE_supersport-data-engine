@@ -6,7 +6,7 @@
     {
         WebRequest GetRequestForLeagues();
         WebRequest GetRequestForSeasons(string providerSlug);
-        WebRequest GetRequestForDrivers(string providerSlug, int? seasonId = null);
+        WebRequest GetRequestForDrivers(string providerSlug, int? providerDriverId = null);
         WebRequest GetRequestForTeams(string providerSlug);
         WebRequest GetRequestForOwners(string providerSlug);
         WebRequest GetRequestForRaces(string providerSlug, int providerSeasonId);
