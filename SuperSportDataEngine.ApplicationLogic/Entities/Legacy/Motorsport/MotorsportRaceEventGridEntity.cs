@@ -6,5 +6,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Entities.Legacy.Motorsport
     public class MotorsportRaceEventGridEntity
     {
         public List<MotorsportRaceEventGrid> MotorsportRaceEventGrids { get; set; }
+        public MotorsportRaceEvent MotorsportRaceEvent { get; set; }
     }
 }

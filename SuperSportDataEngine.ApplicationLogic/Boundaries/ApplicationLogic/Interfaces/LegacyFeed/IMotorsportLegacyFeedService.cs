@@ -8,6 +8,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Inte
     public interface IMotorsportLegacyFeedService
     {
         Task<MotorsportScheduleEntity> GetSchedules(string category, bool current);
-        Task<MotorsportRaceEventGridEntity> GetGrids(string category, int eventId);
+        Task<MotorsportRaceEventGridEntity> GetGridForRaceEventId(string category, int eventId);
+        Task<MotorsportRaceEventGridEntity> GetLatestGrid(string category);
     }
 }

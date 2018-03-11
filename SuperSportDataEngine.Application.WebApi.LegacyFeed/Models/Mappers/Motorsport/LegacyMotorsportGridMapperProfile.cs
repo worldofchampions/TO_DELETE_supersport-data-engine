@@ -34,15 +34,17 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Moto
                 
                 .ForMember(dest => dest.LastName, expression => expression.MapFrom(
                     src => src.MotorsportDriver.LastName))
-                
-                .ForMember(dest => dest.Initials, expression => expression.UseValue(""))
-                
+
+                .ForMember(dest => dest.Initials, expression => expression.MapFrom(
+                    src => src.MotorsportDriver.FirstName.Substring(0, 1)))
+
                 .ForMember(dest => dest.Abbreviation, expression => expression.UseValue(""))
 
                 .ForMember(dest => dest.FullName, expression => expression.MapFrom(
                     src => src.MotorsportDriver.FullNameCmsOverride ?? src.MotorsportDriver.FirstName + " " + src.MotorsportDriver.LastName))
 
-                .ForMember(dest => dest.CarNumber, src => src.UseValue(""))
+                .ForMember(dest => dest.CarNumber, expression => expression.MapFrom(
+                    src => src.MotorsportDriver.CarNumber))
 
                 .ForMember(dest => dest.Country, expression => expression.MapFrom(
                     src => src.MotorsportDriver.CountryName))

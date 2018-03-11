@@ -52,11 +52,18 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.LegacyFeed
             return await Task.FromResult(schedule);
         }
 
-        public async Task<MotorsportRaceEventGridEntity> GetGrids(string category, int eventId)
+        
+        public async Task<MotorsportRaceEventGridEntity> GetGridForRaceEventId(string category, int eventId)
         {
+            var raceEvent = _publicSportDataUnitOfWork.MotorsportRaceEvents
+                .FirstOrDefault(r =>
+                    r.LegacyRaceEventId == eventId &&
+                    r.MotorsportSeason.MotorsportLeague.Slug.Equals(category));
+
             var grid = new MotorsportRaceEventGridEntity()
             {
-                MotorsportRaceEventGrids = new List<MotorsportRaceEventGrid>()
+                MotorsportRaceEventGrids = new List<MotorsportRaceEventGrid>(),
+                MotorsportRaceEvent = raceEvent
             };
 
             var group =
@@ -70,6 +77,35 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.LegacyFeed
                 grid.MotorsportRaceEventGrids = 
                     group.ToList().OrderBy(g => g.GridPosition).ToList();
             
+            return await Task.FromResult(grid);
+        }
+
+        public async Task<MotorsportRaceEventGridEntity> GetLatestGrid(string category)
+        {
+            var raceEvent = _publicSportDataUnitOfWork.MotorsportRaceEvents
+                .FirstOrDefault(r =>
+                    r.IsCurrent &&
+                    r.MotorsportSeason.MotorsportLeague.Slug.Equals(category));
+
+            var grid = new MotorsportRaceEventGridEntity()
+            {
+                MotorsportRaceEventGrids = new List<MotorsportRaceEventGrid>(),
+                MotorsportRaceEvent = raceEvent
+            };
+
+            var group =
+                _publicSportDataUnitOfWork.MotorsportRaceEventGrids
+                    .Where(g => g.MotorsportRaceEvent.LegacyRaceEventId == raceEvent.LegacyRaceEventId)
+                    .OrderByDescending(g => g.MotorsportRaceEvent.StartDateTimeUtc)
+                    .GroupBy(g => g.MotorsportRaceEvent.Id)
+                    .FirstOrDefault();
+
+            if (group != null)
+                grid.MotorsportRaceEventGrids =
+                    group.ToList()
+                        .OrderBy(g => g.GridPosition)
+                        .ToList();
+
             return await Task.FromResult(grid);
         }
     }
