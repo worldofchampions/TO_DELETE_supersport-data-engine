@@ -401,7 +401,7 @@
             eventResultInRepo.Position = result.carPosition.position;
             eventResultInRepo.GridPosition = result.carPosition.startingPosition;
             eventResultInRepo.OutReason = result.carStatus.name;
-            eventResultInRepo.CompletedRace = !result.carStatus.carStatusId.Equals(0);
+            eventResultInRepo.CompletedRace = result.carStatus.carStatusId.Equals(0);
 
             _publicSportDataUnitOfWork.MotorsportRaceEventResults.Update(eventResultInRepo);
         }
@@ -421,7 +421,7 @@
                 MotorsportDriver = driver,
                 MotorsportDriverId = driver.Id,
                 MotorsportRaceEventId = raceEvent.Id,
-                CompletedRace = !result.carStatus.carStatusId.Equals(0),
+                CompletedRace = result.carStatus.carStatusId.Equals(0),
                 OutReason = result.carStatus.name
             };
 
