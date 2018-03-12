@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
+﻿using System.Linq;
 using System.Web.Http;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
 using SuperSportDataEngine.Common.Interfaces;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
@@ -15,7 +14,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
     using Models.Shared;
     using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using Config;
-    using SuperSportDataEngine.Common.Logging;
+    using Common.Logging;
     using System;
     using System.Net;
     using System.Net.Http;
@@ -30,6 +29,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
         private ICache _cache;
         private ILoggingService _loggingService;
         private IUnityContainer _container;
+        private ISystemSportDataUnitOfWork _systemSportDataUnitOfWork;
 
         private const string CacheKeyPrefix = "LegacyFeed:";
         private const string AuthId = "auth";
@@ -45,9 +45,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
         {
             try
             {
-                var consumerAuthRepo = _container.Resolve<IBaseEntityFrameworkRepository<LegacyAuthFeedConsumer>>();
-
-                var auths = consumerAuthRepo.All().ToList();
+                var auths = _systemSportDataUnitOfWork.LegacyAuthFeedConsumers.All().ToList();
 
                 foreach (var legacyAuthFeedConsumer in auths)
                 {
@@ -57,10 +55,10 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
                     });
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 await _loggingService.Warn("CannotAddAuthKeys", 
-                    "Failed to add the auth keys to the cahce.");
+                    "Failed to add the auth keys to the cache.");
             }
         }
 
@@ -109,6 +107,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
             _legacyAuthService = _container.Resolve<ILegacyAuthService>();
 
             _cache = _container.Resolve<ICache>();
+            _systemSportDataUnitOfWork = _container.Resolve<ISystemSportDataUnitOfWork>();
         }
 
         private static bool IsRequestRedirectorEnabled()

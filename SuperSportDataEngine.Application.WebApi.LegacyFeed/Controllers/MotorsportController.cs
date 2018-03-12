@@ -3,13 +3,13 @@ using static AutoMapper.Mapper;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 {
-    using SuperSportDataEngine.Common.Interfaces;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Motorsport;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces.LegacyFeed;
-    using SuperSportDataEngine.Common.Logging;
+    using Common.Interfaces;
+    using Filters;
+    using Models.Motorsport;
+    using Models.Shared;
+    using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+    using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces.LegacyFeed;
+    using Common.Logging;
     using System.Collections.Generic;
     using System.Net;
     using System.Threading.Tasks;
