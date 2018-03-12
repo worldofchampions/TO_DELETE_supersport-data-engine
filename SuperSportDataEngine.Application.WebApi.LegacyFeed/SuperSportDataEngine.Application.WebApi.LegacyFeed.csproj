@@ -238,6 +238,8 @@
     <Compile Include="Models\Mappers\LegacyPointScorerMapperProfile.cs" />
     <Compile Include="Models\Mappers\LegacyScorerModelMapperProfile.cs" />
     <Compile Include="Models\Mappers\LegacyTeamsheetMapperProfile.cs" />
+    <Compile Include="Models\Mappers\Motorsport\LegacyMotorsportResultMapperProfile.cs" />
+    <Compile Include="Models\Mappers\Motorsport\LegacyMotorsportResultEventMapperProfile.cs" />
     <Compile Include="Models\Mappers\Motorsport\LegacyMotorsportGridEventMapperProfile.cs" />
     <Compile Include="Models\Mappers\Motorsport\LegacyMotorsportGridMapperProfile.cs" />
     <Compile Include="Models\Mappers\Motorsport\LegacyMotorsportScheduleMapperProfile.cs" />

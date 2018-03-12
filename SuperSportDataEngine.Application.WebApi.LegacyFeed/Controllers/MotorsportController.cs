@@ -137,10 +137,22 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         [HttpGet, HttpHead]
         [Route("{category}/results/{eventId:int}")]
         [ResponseType(typeof(IEnumerable<ResultMotorsportModel>))]
-        public async Task<IHttpActionResult> GetResults(string category, int eventId)
+        public async Task<IEnumerable<ResultMotorsportModel>> GetResults(string category, int eventId)
         {
-            // TODO: @motorsport-feed: implement.
-            return Content(HttpStatusCode.OK, "DEBUG GetResults + eventId");
+            const string key = CacheKeyNamespacePrefixForFeed + "motorsport/{category}/results/{eventId}";
+
+            var gridFromCache = await GetFromCacheAsync<IEnumerable<ResultMotorsportModel>>(key);
+            if (gridFromCache != null)
+                return gridFromCache;
+
+            var gridFromService =
+                Map<List<ResultMotorsportModel>>(
+                    (await _motorsportLegacyFeedService.GetResultsForRaceEventId(category, eventId))
+                    .MotorsportRaceEventResults);
+
+            PersistToCache(key, gridFromService);
+
+            return gridFromService;
         }
 
         /// <summary>
