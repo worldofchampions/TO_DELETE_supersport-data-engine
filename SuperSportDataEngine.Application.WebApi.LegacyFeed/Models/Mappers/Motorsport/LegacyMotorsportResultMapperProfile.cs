@@ -9,6 +9,7 @@ using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramewor
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Motorsport
 {
+    // This class is used by Reflection.
     public class LegacyMotorsportResultMapperProfile : Profile
     {
         public LegacyMotorsportResultMapperProfile()

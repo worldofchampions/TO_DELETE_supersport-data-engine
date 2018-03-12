@@ -116,7 +116,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.LegacyFeed
                     r.LegacyRaceEventId == eventId &&
                     r.MotorsportSeason.MotorsportLeague.Slug.Equals(category));
 
-            var grid = new MotorsportRaceEventResultsEntity()
+            var results = new MotorsportRaceEventResultsEntity()
             {
                 MotorsportRaceEventResults = new List<MotorsportRaceEventResult>(),
                 MotorsportRaceEvent = raceEvent
@@ -130,10 +130,39 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.LegacyFeed
                     .FirstOrDefault();
 
             if (group != null)
-                grid.MotorsportRaceEventResults =
+                results.MotorsportRaceEventResults =
                     group.ToList().OrderBy(g => g.GridPosition).ToList();
 
-            return await Task.FromResult(grid);
+            return await Task.FromResult(results);
+        }
+
+        public async Task<MotorsportRaceEventResultsEntity> GetLatestResult(string category)
+        {
+            var raceEvent = _publicSportDataUnitOfWork.MotorsportRaceEvents
+                .FirstOrDefault(r =>
+                    r.IsCurrent &&
+                    r.MotorsportSeason.MotorsportLeague.Slug.Equals(category));
+
+            var results = new MotorsportRaceEventResultsEntity()
+            {
+                MotorsportRaceEventResults = new List<MotorsportRaceEventResult>(),
+                MotorsportRaceEvent = raceEvent
+            };
+
+            var group =
+                _publicSportDataUnitOfWork.MotorsportRaceEventResults
+                    .Where(g => g.MotorsportRaceEvent.LegacyRaceEventId == raceEvent.LegacyRaceEventId)
+                    .OrderByDescending(g => g.MotorsportRaceEvent.StartDateTimeUtc)
+                    .GroupBy(g => g.MotorsportRaceEvent.Id)
+                    .FirstOrDefault();
+
+            if (group != null)
+                results.MotorsportRaceEventResults =
+                    group.ToList()
+                        .OrderBy(g => g.GridPosition)
+                        .ToList();
+
+            return await Task.FromResult(results);
         }
     }
 }

@@ -54,7 +54,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         {
             var currentValue = bool.Parse(current ?? "false");
 
-            var key = CacheKeyNamespacePrefixForFeed + "motorsport/{category}/schedule?current=" + currentValue;
+            var key = CacheKeyNamespacePrefixForFeed + $"motorsport/{category}/schedule?current=" + currentValue;
 
             var scheduleFromCache = await GetFromCacheAsync<IEnumerable<RacesModel>>(key);
             if (scheduleFromCache != null)
@@ -75,11 +75,10 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         /// </summary>
         [HttpGet, HttpHead]
         [Route("{category}/grid")]
-        // TODO: @motorsport-feed: Can't find existing model in project source. Create a new model that contains a collection of <GridModel> for this one with the additional required fields?
         [ResponseType(typeof(GridEventModel))]
         public async Task<GridEventModel> GetGrid(string category)
         {
-            const string key = CacheKeyNamespacePrefixForFeed + "motorsport/{category}/grid";
+            var key = CacheKeyNamespacePrefixForFeed + $"motorsport/{category}/grid";
 
             var gridFromCache = await GetFromCacheAsync<GridEventModel>(key);
             if (gridFromCache != null)
@@ -102,7 +101,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         [ResponseType(typeof(IEnumerable<GridModel>))]
         public async Task<IEnumerable<GridModel>> GetGrid(string category, int eventId)
         {
-            const string key = CacheKeyNamespacePrefixForFeed + "motorsport/{category}/grid/{eventId}";
+            var key = CacheKeyNamespacePrefixForFeed + $"motorsport/{category}/grid/{eventId}";
 
             var gridFromCache = await GetFromCacheAsync<IEnumerable<GridModel>>(key);
             if (gridFromCache != null)
@@ -123,12 +122,22 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         /// </summary>
         [HttpGet, HttpHead]
         [Route("{category}/results")]
-        // TODO: @motorsport-feed: Can't find existing model in project source. Create a new model that contains a collection of <ResultMotorsportModel> for this one with the additional required fields?
-        //[ResponseType(typeof(IEnumerable<ResultMotorsportModel>))]
-        public async Task<IHttpActionResult> GetResults(string category)
+        [ResponseType(typeof(ResultEventMotorsportModel))]
+        public async Task<ResultEventMotorsportModel> GetResults(string category)
         {
-            // TODO: @motorsport-feed: implement.
-            return Content(HttpStatusCode.OK, "DEBUG GetResults");
+            var key = CacheKeyNamespacePrefixForFeed + $"motorsport/{category}/results";
+
+            var resultsFromCache = await GetFromCacheAsync<ResultEventMotorsportModel>(key);
+            if (resultsFromCache != null)
+                return resultsFromCache;
+
+            var resultsFromService =
+                Map<ResultEventMotorsportModel>(
+                    (await _motorsportLegacyFeedService.GetLatestResult(category)));
+
+            PersistToCache(key, resultsFromService);
+
+            return await Task.FromResult(resultsFromService);
         }
 
         /// <summary>
@@ -139,20 +148,20 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         [ResponseType(typeof(IEnumerable<ResultMotorsportModel>))]
         public async Task<IEnumerable<ResultMotorsportModel>> GetResults(string category, int eventId)
         {
-            const string key = CacheKeyNamespacePrefixForFeed + "motorsport/{category}/results/{eventId}";
+            var key = CacheKeyNamespacePrefixForFeed + $"motorsport/{category}/results/{eventId}";
 
-            var gridFromCache = await GetFromCacheAsync<IEnumerable<ResultMotorsportModel>>(key);
-            if (gridFromCache != null)
-                return gridFromCache;
+            var resultsFromCache = await GetFromCacheAsync<IEnumerable<ResultMotorsportModel>>(key);
+            if (resultsFromCache != null)
+                return resultsFromCache;
 
-            var gridFromService =
+            var resultsFromService =
                 Map<List<ResultMotorsportModel>>(
                     (await _motorsportLegacyFeedService.GetResultsForRaceEventId(category, eventId))
                     .MotorsportRaceEventResults);
 
-            PersistToCache(key, gridFromService);
+            PersistToCache(key, resultsFromService);
 
-            return gridFromService;
+            return resultsFromService;
         }
 
         /// <summary>
@@ -197,7 +206,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         {
             try
             {
-                _cache?.Add(CacheKeyNamespacePrefixForFeed + cacheKey, cacheData);
+                _cache?.Add(cacheKey, cacheData);
             }
             catch (Exception exception)
             {
@@ -212,7 +221,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             {
                 if (_cache != null)
                 {
-                    return await _cache.GetAsync<T>(CacheKeyNamespacePrefixForFeed + key);
+                    return await _cache.GetAsync<T>(key);
                 }
 
                 return null;

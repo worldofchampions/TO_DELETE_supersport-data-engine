@@ -243,6 +243,7 @@
     <Compile Include="Models\Mappers\Motorsport\LegacyMotorsportGridEventMapperProfile.cs" />
     <Compile Include="Models\Mappers\Motorsport\LegacyMotorsportGridMapperProfile.cs" />
     <Compile Include="Models\Mappers\Motorsport\LegacyMotorsportScheduleMapperProfile.cs" />
+    <Compile Include="Models\Motorsport\ResultEventMotorsportModel.cs" />
     <Compile Include="Models\Motorsport\GridEventModel.cs" />
     <Compile Include="Models\Rugby\GeneralResponse.cs" />
     <Compile Include="Models\Shared\AlternateCommentsModel.cs" />

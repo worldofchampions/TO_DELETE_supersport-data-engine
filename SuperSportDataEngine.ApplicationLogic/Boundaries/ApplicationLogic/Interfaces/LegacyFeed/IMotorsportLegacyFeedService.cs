@@ -11,5 +11,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Inte
         Task<MotorsportRaceEventGridEntity> GetGridForRaceEventId(string category, int eventId);
         Task<MotorsportRaceEventGridEntity> GetLatestGrid(string category);
         Task<MotorsportRaceEventResultsEntity> GetResultsForRaceEventId(string category, int eventId);
+        Task<MotorsportRaceEventResultsEntity> GetLatestResult(string category);
     }
 }

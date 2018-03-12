@@ -4,6 +4,7 @@
     using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
     using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
 
+    // This class is used by Reflection.
     public class LegacyScorerModelMapperProfile : Profile
     {
         public LegacyScorerModelMapperProfile()
