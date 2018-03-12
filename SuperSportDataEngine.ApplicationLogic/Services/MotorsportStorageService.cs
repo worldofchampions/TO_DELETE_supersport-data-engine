@@ -31,7 +31,8 @@
             {
                 foreach (var providerDriver in driversFromProvider)
                 {
-                    var driverInRepo = _publicSportDataUnitOfWork.MotorsportDrivers.FirstOrDefault(d => d.ProviderDriverId == providerDriver.playerId);
+                    var driverInRepo = _publicSportDataUnitOfWork.MotorsportDrivers.FirstOrDefault(d => 
+                    d.ProviderDriverId == providerDriver.playerId && d.MotorsportLeague.Id == league.Id);
 
                     if (driverInRepo is null)
                     {

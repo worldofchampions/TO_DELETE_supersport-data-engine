@@ -22,13 +22,13 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
             _statsApiBaseUrl = statsApiBaseUrl;
         }
 
-        public WebRequest GetRequestForDrivers(string providerSlug, int? providerPlayerId)
+        public WebRequest GetRequestForDrivers(string providerSlug, int? providerDriverId)
         {
             var driversUrl = $"/v1/stats/motor/{providerSlug}/participants/";
 
-            if (providerPlayerId != null)
+            if (providerDriverId != null)
             {
-                driversUrl = driversUrl + providerPlayerId;
+                driversUrl = driversUrl + providerDriverId;
             }
 
             var requestSignature = GetRequestSignature();

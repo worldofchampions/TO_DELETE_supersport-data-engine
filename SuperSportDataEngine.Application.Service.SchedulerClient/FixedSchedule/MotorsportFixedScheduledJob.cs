@@ -27,21 +27,21 @@
         {
             UpdateRecurringJobDefinition_Leagues();
             UpdateRecurringJobDefinition_Seasons();
-            UpdateRecurringJobDefinition_Drivers();
             UpdateRecurringJobDefinition_Teams();
+            UpdateRecurringJobDefinition_Drivers();
             UpdateRecurringJobDefinition_Races();
             UpdateRecurringJobDefinition_RaceEvents();
             UpdateRecurringJobDefinition_RaceEventsGrids();
             UpdateRecurringJobDefinition_RaceEventsResults();
-            UpdateRecurringJobDefinition_DriverStandings();
             UpdateRecurringJobDefinition_TeamStandings();
+            UpdateRecurringJobDefinition_DriverStandings();
 
             CreateManualJobDefinition_HistoricRaces();
             CreateManualJobDefinition_HistoricRaceEvents();
             CreateManualJobDefinition_HistoricRaceEventsGrid();
             CreateManualJobDefinition_HistoricRaceEventsResults();
-            CreateManualJobDefinition_HistoricDriverStandings();
             CreateManualJobDefinition_HistoricTeamStandings();
+            CreateManualJobDefinition_HistoricDriverStandings();
         }
 
         private void UpdateRecurringJobDefinition_Leagues()

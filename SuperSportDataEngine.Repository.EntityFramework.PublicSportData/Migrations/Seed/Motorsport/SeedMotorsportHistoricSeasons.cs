@@ -1,12 +1,11 @@
-﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
-
-namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Motorsport
+﻿namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Motorsport
 {
     using System;
     using System.Linq;
     using System.Collections.Generic;
     using System.Data.Entity.Migrations;
     using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
 
     public static class SeedMotorsportHistoricSeasons
