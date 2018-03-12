@@ -20,6 +20,8 @@
         /// <summary> A provider driven value. </summary>
         public int Points { get; set; }
 
+        public virtual MotorsportLeague MotorsportLeague { get; set; }
+
         public virtual MotorsportSeason MotorsportSeason { get; set; }
 
         public virtual MotorsportTeam MotorsportTeam { get; set; }
