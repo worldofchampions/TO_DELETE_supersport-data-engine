@@ -31,7 +31,7 @@
             {
                 foreach (var providerDriver in driversFromProvider)
                 {
-                    var driverInRepo = _publicSportDataUnitOfWork.MotorsportDrivers.FirstOrDefault(d => 
+                    var driverInRepo = _publicSportDataUnitOfWork.MotorsportDrivers.FirstOrDefault(d =>
                     d.ProviderDriverId == providerDriver.playerId && d.MotorsportLeague.Id == league.Id);
 
                     if (driverInRepo is null)
@@ -421,6 +421,7 @@
                 MotorsportDriver = driver,
                 MotorsportDriverId = driver.Id,
                 MotorsportRaceEventId = raceEvent.Id,
+                CompletedRace = !result.carStatus.carStatusId.Equals(0),
                 OutReason = result.carStatus.name
             };
 
@@ -590,9 +591,9 @@
 
             if (providerStartDate != null)
             {
-                var startDateUtc = DateTimeOffset.Parse(providerStartDate.full.ToString(CultureInfo.InvariantCulture));
+                var dateTimeOffset = DateTimeOffset.Parse(providerStartDate.full.ToString(CultureInfo.InvariantCulture));
 
-                eventInRepo.StartDateTimeUtc = startDateUtc;
+                eventInRepo.StartDateTimeUtc = dateTimeOffset.UtcDateTime;
             }
 
             var raceEventStatus = MapProviderRaceEventStatusToInternal(providerRaceEvent.eventStatus.eventStatusId);
@@ -638,9 +639,9 @@
 
             if (providerStartDate != null)
             {
-                var startDateUtc = DateTimeOffset.Parse(providerStartDate.full.ToString(CultureInfo.InvariantCulture));
+                var dateTimeOffset = DateTimeOffset.Parse(providerStartDate.full.ToString(CultureInfo.InvariantCulture));
 
-                motorsportRaceEvent.StartDateTimeUtc = startDateUtc;
+                motorsportRaceEvent.StartDateTimeUtc = dateTimeOffset.UtcDateTime;
             }
 
             var raceEventStatus = MapProviderRaceEventStatusToInternal(providerRaceEvent.eventStatus.eventStatusId);
