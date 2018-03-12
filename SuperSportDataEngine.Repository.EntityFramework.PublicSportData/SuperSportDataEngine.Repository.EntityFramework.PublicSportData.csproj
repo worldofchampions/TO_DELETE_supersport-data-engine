@@ -260,6 +260,10 @@
     <Compile Include="Migrations\201803081108224_Motorsport_Initial_Migration.Designer.cs">
       <DependentUpon>201803081108224_Motorsport_Initial_Migration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201803121109015_Motorsport_remove_ProviderRaceEventId_In_Results.cs" />
+    <Compile Include="Migrations\201803121109015_Motorsport_remove_ProviderRaceEventId_In_Results.Designer.cs">
+      <DependentUpon>201803121109015_Motorsport_remove_ProviderRaceEventId_In_Results.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Seed\Motorsport\SeedMotorsportCurrentSeasons.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyLogGroupsForVancouverSevens2018.cs" />
@@ -436,6 +440,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201803081108224_Motorsport_Initial_Migration.resx">
       <DependentUpon>201803081108224_Motorsport_Initial_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803121109015_Motorsport_remove_ProviderRaceEventId_In_Results.resx">
+      <DependentUpon>201803121109015_Motorsport_remove_ProviderRaceEventId_In_Results.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
