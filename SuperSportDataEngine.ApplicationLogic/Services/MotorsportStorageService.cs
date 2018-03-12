@@ -506,6 +506,32 @@
             driverInRepo.DataProvider = DataProvider.Stats;
             driverInRepo.MotorsportLeague = league;
 
+            if (providerDriver.car != null)
+            {
+                if (providerDriver.car.make != null)
+                {
+                    driverInRepo.ProviderCarId = providerDriver.car.make.makeId;
+                }
+
+                if (providerDriver.car.carNumber != null)
+                {
+                    driverInRepo.CarNumber = providerDriver.car.carNumber;
+                }
+            }
+
+            if (providerDriver.birth?.country != null)
+            {
+                driverInRepo.CountryName = providerDriver.birth.country.name;
+            }
+
+            if (providerDriver.owner != null)
+            {
+                var playerTeam = _publicSportDataUnitOfWork.MotortsportTeams.FirstOrDefault(t =>
+                    t.ProviderTeamId == providerDriver.owner.ownerId && t.MotorsportLeague.Id == league.Id);
+
+                driverInRepo.MotorsportTeam = playerTeam;
+            }
+
             _publicSportDataUnitOfWork.MotorsportDrivers.Update(driverInRepo);
         }
 
@@ -538,7 +564,7 @@
                 newMotorsportDriver.CountryName = providerDriver.birth.country.name;
             }
 
-            if (providerDriver.team != null)
+            if (providerDriver.owner != null)
             {
                 var playerTeam = _publicSportDataUnitOfWork.MotortsportTeams.FirstOrDefault(t =>
                     t.ProviderTeamId == providerDriver.owner.ownerId && t.MotorsportLeague.Id == league.Id);
