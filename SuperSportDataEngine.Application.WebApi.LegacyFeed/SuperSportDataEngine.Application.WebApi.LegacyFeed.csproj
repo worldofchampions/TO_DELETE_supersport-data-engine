@@ -243,8 +243,10 @@
     <Compile Include="Models\Mappers\Motorsport\LegacyMotorsportGridEventMapperProfile.cs" />
     <Compile Include="Models\Mappers\Motorsport\LegacyMotorsportGridMapperProfile.cs" />
     <Compile Include="Models\Mappers\Motorsport\LegacyMotorsportScheduleMapperProfile.cs" />
+    <Compile Include="Models\Mappers\Motorsport\LegacyMotorsportTeamStandingsMapperProfile.cs" />
     <Compile Include="Models\Motorsport\ResultEventMotorsportModel.cs" />
     <Compile Include="Models\Motorsport\GridEventModel.cs" />
+    <Compile Include="Models\Motorsport\Team.cs" />
     <Compile Include="Models\Rugby\GeneralResponse.cs" />
     <Compile Include="Models\Shared\AlternateCommentsModel.cs" />
     <Compile Include="Models\Shared\AuthModel.cs" />
@@ -318,7 +320,7 @@
     <Compile Include="Models\Shared\SquadItemModel.cs" />
     <Compile Include="Models\Shared\SubstituteModel.cs" />
     <Compile Include="Models\Shared\TeamModel.cs" />
-    <Compile Include="Models\Shared\TeamStandingsModel.cs" />
+    <Compile Include="Models\Motorsport\TeamStandings.cs" />
     <Compile Include="Models\Tennis\TennisMatchModel.cs" />
     <Compile Include="Models\Tennis\TennisPlayerModel.cs" />
     <Compile Include="Models\Tennis\TennisRankingsModel.cs" />

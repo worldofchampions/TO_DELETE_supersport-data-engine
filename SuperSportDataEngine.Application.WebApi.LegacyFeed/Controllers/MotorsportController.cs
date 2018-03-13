@@ -1,20 +1,19 @@
-﻿using System;
-using static AutoMapper.Mapper;
-
-namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
+﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 {
-    using Common.Interfaces;
-    using Filters;
-    using Models.Motorsport;
-    using Models.Shared;
-    using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-    using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces.LegacyFeed;
-    using Common.Logging;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Motorsport;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces.LegacyFeed;
+    using SuperSportDataEngine.Common.Interfaces;
+    using SuperSportDataEngine.Common.Logging;
+    using System;
     using System.Collections.Generic;
     using System.Net;
     using System.Threading.Tasks;
     using System.Web.Http;
     using System.Web.Http.Description;
+    using static AutoMapper.Mapper;
 
     /// <summary>
     /// LegacyFeed Motorsport Endpoints
@@ -176,16 +175,25 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             return Content(HttpStatusCode.OK, "DEBUG GetDriverStandings");
         }
 
+        // TODO: [Davide] Add "LeagueName" + "LeagueURLName" to response. Waiting for upstream schema changes to be merged in before finalizing querying etc.
         /// <summary>
         /// Endpoint 5.1 http://{host}/motorsport/{category}/teamstandings
         /// </summary>
         [HttpGet, HttpHead]
         [Route("{category}/teamstandings")]
-        [ResponseType(typeof(IEnumerable<TeamStandingsModel>))]
+        [ResponseType(typeof(IEnumerable<TeamStandings>))]
         public async Task<IHttpActionResult> GetTeamStandings(string category)
         {
-            // TODO: @motorsport-feed: implement.
-            return Content(HttpStatusCode.OK, "DEBUG GetTeamStandings");
+            var cacheKey = CacheKeyNamespacePrefixForFeed + $"motorsport/{category}/teamstandings";
+            var resultFromCache = await GetFromCacheAsync<ResultEventMotorsportModel>(cacheKey);
+            if (resultFromCache != null)
+                return Ok(resultFromCache);
+
+            var motorsportTeamStandingsEntity = await _motorsportLegacyFeedService.GetTeamStandings(category);
+            var resultFromService = Map<List<TeamStandings>>(motorsportTeamStandingsEntity.MotorsportTeamStandings);
+
+            PersistToCache(cacheKey, resultFromService);
+            return Ok(resultFromService);
         }
 
         /// <summary>

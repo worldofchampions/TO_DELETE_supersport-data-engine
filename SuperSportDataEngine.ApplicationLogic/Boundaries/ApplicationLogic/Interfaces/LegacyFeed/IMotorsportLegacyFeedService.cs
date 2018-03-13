@@ -1,16 +1,20 @@
-﻿using System.Threading.Tasks;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-using SuperSportDataEngine.ApplicationLogic.Entities.Legacy.Motorsport;
-
-namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces.LegacyFeed
+﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces.LegacyFeed
 {
-    // TODO: @motorsport-feed: implement.
+    using SuperSportDataEngine.ApplicationLogic.Entities.Legacy.Motorsport;
+    using System.Threading.Tasks;
+
     public interface IMotorsportLegacyFeedService
     {
         Task<MotorsportScheduleEntity> GetSchedules(string category, bool current);
+
         Task<MotorsportRaceEventGridEntity> GetGridForRaceEventId(string category, int eventId);
+
         Task<MotorsportRaceEventGridEntity> GetLatestGrid(string category);
+
         Task<MotorsportRaceEventResultsEntity> GetResultsForRaceEventId(string category, int eventId);
+
         Task<MotorsportRaceEventResultsEntity> GetLatestResult(string category);
+
+        Task<MotorsportTeamStandingsEntity> GetTeamStandings(string category);
     }
 }
