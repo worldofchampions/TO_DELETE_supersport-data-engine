@@ -85,8 +85,6 @@
             modelBuilder.Entity<MotorsportDriver>().HasRequired(x => x.MotorsportLeague);
 
             modelBuilder.Entity<MotorsportDriverStanding>().HasKey(x => new {x.MotorsportLeagueId, x.MotorsportSeasonId, x.MotorsportDriverId });
-            modelBuilder.Entity<MotorsportDriverStanding>().HasRequired(x => x.MotorsportLeague).WithRequiredDependent().WillCascadeOnDelete(false);
-            modelBuilder.Entity<MotorsportDriverStanding>().HasRequired(x => x.MotorsportSeason);
             modelBuilder.Entity<MotorsportDriverStanding>().HasOptional(x => x.MotorsportTeam);
 
             modelBuilder.Entity<MotorsportLeague>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
@@ -123,10 +121,6 @@
             modelBuilder.Entity<MotorsportTeam>().Property(x => x.ProviderTeamId).HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Seek_ProviderTeamId")));
 
             modelBuilder.Entity<MotorsportTeamStanding>().HasKey(x => new { x.MotorsportLeagueId, x.MotorsportSeasonId, x.MotorsportTeamId });
-            modelBuilder.Entity<MotorsportTeamStanding>().HasRequired(x => x.MotorsportLeague).WithRequiredDependent().WillCascadeOnDelete(false);
-            modelBuilder.Entity<MotorsportTeamStanding>().HasRequired(x => x.MotorsportSeason);
-            modelBuilder.Entity<MotorsportTeamStanding>().HasRequired(x => x.MotorsportTeam);
-
         }
     }
 }
