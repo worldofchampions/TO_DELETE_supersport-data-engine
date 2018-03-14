@@ -40,7 +40,9 @@
         {
             return new List<MotorsportLeague>
             {
-                new MotorsportLeague {ProviderLeagueId = 1, IsEnabled = true},
+                new MotorsportLeague {ProviderLeagueId = 1, IsEnabled = true ,Name = "f1"},
+                new MotorsportLeague {ProviderLeagueId = 11, IsEnabled = true, Name = "motogp"},
+                new MotorsportLeague {ProviderLeagueId = 8, IsEnabled = true ,Name = "Superbike"}
             };
         }
     }

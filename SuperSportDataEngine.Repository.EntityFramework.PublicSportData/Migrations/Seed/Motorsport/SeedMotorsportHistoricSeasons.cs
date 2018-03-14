@@ -14,24 +14,17 @@
         {
             try
             {
-                var f1League = dataContext.MotorsportLeagues.FirstOrDefault(l => l.ProviderLeagueId == 1);
+                var seededSeasons = GetSeededSeasons(dataContext);
 
-                if (f1League != null)
+                foreach (var season in seededSeasons)
                 {
-                    var seededSeasons = GetSeededSeasons();
+                    var seasonInRepo =
+                        dataContext.MotorsportSeasons.FirstOrDefault(s =>
+                            s.ProviderSeasonId == season.ProviderSeasonId && s.MotorsportLeague.ProviderLeagueId == season.MotorsportLeague.ProviderLeagueId);
 
-                    foreach (var season in seededSeasons)
-                    {
-                        var seasonInRepo =
-                            dataContext.MotorsportSeasons.FirstOrDefault(s =>
-                                s.ProviderSeasonId == season.ProviderSeasonId && s.MotorsportLeague.Id == f1League.Id);
+                    if (seasonInRepo != null) continue;
 
-                        if (seasonInRepo != null) continue;
-
-                        season.MotorsportLeague = f1League;
-
-                        dataContext.MotorsportSeasons.AddOrUpdate(season);
-                    }
+                    dataContext.MotorsportSeasons.AddOrUpdate(season);
                 }
 
                 dataContext.SaveChanges();
@@ -43,13 +36,32 @@
             }
         }
 
-        private static IEnumerable<MotorsportSeason> GetSeededSeasons()
+        private static IEnumerable<MotorsportSeason> GetSeededSeasons(PublicSportDataContext dataContext)
         {
-            return new List<MotorsportSeason>
+            var seasons = new List<MotorsportSeason>();
+
+            var f1League = dataContext.MotorsportLeagues.FirstOrDefault(l => l.ProviderLeagueId == 1);
+            if (f1League != null)
             {
-                new MotorsportSeason {ProviderSeasonId = 2016, IsActive = false, IsCurrent = false, Name = "2016 Seeded season", DataProvider = DataProvider.Stats},
-                new MotorsportSeason {ProviderSeasonId = 2017, IsActive = false, IsCurrent = false, Name = "2017 Seeded season", DataProvider = DataProvider.Stats}
-            };
+                seasons.Add(new MotorsportSeason { Name = "2016 f1 seeded season", ProviderSeasonId = 2016, MotorsportLeague = f1League });
+                seasons.Add(new MotorsportSeason { Name = "2017 f1 seeded season", ProviderSeasonId = 2017, MotorsportLeague = f1League });
+            }
+
+            var motogpLeague = dataContext.MotorsportLeagues.FirstOrDefault(l => l.ProviderLeagueId == 11);
+            if (motogpLeague != null)
+            {
+                seasons.Add(new MotorsportSeason { Name = "2016 motogp seeded season", ProviderSeasonId = 2016, MotorsportLeague = motogpLeague });
+                seasons.Add(new MotorsportSeason { Name = "2017 mtotgp seeded season", ProviderSeasonId = 2017, MotorsportLeague = motogpLeague });
+            }
+
+            var superBikeLeague = dataContext.MotorsportLeagues.FirstOrDefault(l => l.ProviderLeagueId == 8);
+            if (superBikeLeague != null)
+            {
+                seasons.Add(new MotorsportSeason { Name = "2016 superbike seeded season", ProviderSeasonId = 2016, MotorsportLeague = superBikeLeague });
+                seasons.Add(new MotorsportSeason { Name = "2017 superbike seeded season", ProviderSeasonId = 2017, MotorsportLeague = superBikeLeague });
+            }
+
+            return seasons;
         }
     }
 }

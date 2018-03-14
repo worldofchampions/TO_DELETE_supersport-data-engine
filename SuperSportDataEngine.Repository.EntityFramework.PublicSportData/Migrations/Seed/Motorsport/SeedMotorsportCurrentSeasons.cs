@@ -15,12 +15,12 @@
             try
             {
                 var seededSeasons = GetSeededSeasons();
-                const int f1ProviderLeagueId = 1;
+
                 foreach (var season in seededSeasons)
                 {
                     var seasonInRepo =
                         dataContext.MotorsportSeasons.FirstOrDefault(s =>
-                            s.ProviderSeasonId == season.ProviderSeasonId && s.MotorsportLeague.ProviderLeagueId == f1ProviderLeagueId);
+                            s.ProviderSeasonId == season.ProviderSeasonId && s.MotorsportLeague.ProviderLeagueId == season.MotorsportLeague.ProviderLeagueId);
 
                     if (seasonInRepo == null) continue;
 
@@ -42,7 +42,9 @@
         {
             return new List<MotorsportSeason>
             {
-                new MotorsportSeason {ProviderSeasonId = 2018, IsCurrent = true}
+                new MotorsportSeason {ProviderSeasonId = 2018, IsCurrent = true, MotorsportLeague = new MotorsportLeague { ProviderLeagueId = 1, Name = "f1"}},
+                new MotorsportSeason {ProviderSeasonId = 2018, IsCurrent = true, MotorsportLeague = new MotorsportLeague { ProviderLeagueId = 11, Name = "motogp"}},
+                new MotorsportSeason {ProviderSeasonId = 2018, IsCurrent = true, MotorsportLeague = new MotorsportLeague { ProviderLeagueId = 8, Name = "Superbike"}}
             };
         }
     }
