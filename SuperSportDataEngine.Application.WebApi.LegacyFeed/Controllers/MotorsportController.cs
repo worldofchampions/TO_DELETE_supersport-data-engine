@@ -175,7 +175,6 @@
             return Content(HttpStatusCode.OK, "DEBUG GetDriverStandings");
         }
 
-        // TODO: [Davide] Add "LeagueName" + "LeagueURLName" to response. Waiting for upstream schema changes to be merged in before finalizing querying etc.
         /// <summary>
         /// Endpoint 5.1 http://{host}/motorsport/{category}/teamstandings
         /// </summary>
@@ -190,7 +189,7 @@
                 return Ok(resultFromCache);
 
             var motorsportTeamStandingsEntity = await _motorsportLegacyFeedService.GetTeamStandings(category);
-            var resultFromService = Map<List<TeamStandings>>(motorsportTeamStandingsEntity.MotorsportTeamStandings);
+            var resultFromService = Map<List<TeamStandings>>(motorsportTeamStandingsEntity);
 
             PersistToCache(cacheKey, resultFromService);
             return Ok(resultFromService);
