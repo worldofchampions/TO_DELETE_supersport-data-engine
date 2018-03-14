@@ -85,6 +85,7 @@
             modelBuilder.Entity<MotorsportDriver>().HasRequired(x => x.MotorsportLeague);
 
             modelBuilder.Entity<MotorsportDriverStanding>().HasKey(x => new {x.MotorsportLeagueId, x.MotorsportSeasonId, x.MotorsportDriverId });
+            modelBuilder.Entity<MotorsportDriverStanding>().HasOptional(x => x.MotorsportTeam);
 
             modelBuilder.Entity<MotorsportLeague>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
             modelBuilder.Entity<MotorsportLeague>().Property(x => x.LegacyLeagueId).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);

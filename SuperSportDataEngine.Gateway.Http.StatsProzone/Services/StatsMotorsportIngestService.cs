@@ -10,14 +10,14 @@
     using SuperSportDataEngine.Common.Logging;
     using SuperSportDataEngine.ApplicationLogic.Constants.Providers;
 
-    public class StatsProzoneMotorIngestService : IStatsProzoneMotorIngestService
+    public class StatsMotorsportIngestService : IStatsMotorsportIngestService
     {
-        private readonly IProviderWebRequest _statsMotorsportWebRequest;
+        private readonly IStatsMotorsportWebRequest _statsMotorsportMotorsportWebRequest;
         private readonly ILoggingService _loggingService;
 
-        public StatsProzoneMotorIngestService(IProviderWebRequest statsMotorsportWebRequest, ILoggingService loggingService)
+        public StatsMotorsportIngestService(IStatsMotorsportWebRequest statsMotorsportMotorsportWebRequest, ILoggingService loggingService)
         {
-            _statsMotorsportWebRequest = statsMotorsportWebRequest;
+            _statsMotorsportMotorsportWebRequest = statsMotorsportMotorsportWebRequest;
             _loggingService = loggingService;
         }
 
@@ -25,7 +25,7 @@
         {
             try
             {
-                var requestForLeagues = _statsMotorsportWebRequest.GetRequestForLeagues();
+                var requestForLeagues = _statsMotorsportMotorsportWebRequest.GetRequestForLeagues();
 
                 MotorsportEntitiesResponse leagues;
 
@@ -55,7 +55,7 @@
         {
             try
             {
-                var requestForSeasons = _statsMotorsportWebRequest.GetRequestForSeasons(providerSlug);
+                var requestForSeasons = _statsMotorsportMotorsportWebRequest.GetRequestForSeasons(providerSlug);
 
                 MotorsportEntitiesResponse seasons;
 
@@ -85,7 +85,7 @@
         {
             try
             {
-                var requestForRaces = _statsMotorsportWebRequest.GetRequestForRaces(providerSlug, providerSeasonId);
+                var requestForRaces = _statsMotorsportMotorsportWebRequest.GetRequestForRaces(providerSlug, providerSeasonId);
 
                 MotorsportEntitiesResponse races;
 
@@ -116,7 +116,7 @@
             try
             {
                 var requestForRaceEvents =
-                    _statsMotorsportWebRequest.GetRequestForRaceEvents(providerSlug, providerSeasonId, providerRaceId);
+                    _statsMotorsportMotorsportWebRequest.GetRequestForRaceEvents(providerSlug, providerSeasonId, providerRaceId);
 
                 MotorsportEntitiesResponse raceEventsForLeague;
 
@@ -147,7 +147,7 @@
             try
             {
                 var raceResultsRequest =
-                        _statsMotorsportWebRequest.GetRequestForRaceResults(providerSlug, providerSeasonId, providerRaceId);
+                        _statsMotorsportMotorsportWebRequest.GetRequestForRaceResults(providerSlug, providerSeasonId, providerRaceId);
 
                 MotorsportEntitiesResponse raceResults;
 
@@ -179,7 +179,7 @@
             try
             {
                 var requestForRaceGrid =
-                        _statsMotorsportWebRequest.GetRequestForRaceGrid(providerSlug, providerSeasonId, providerRaceId);
+                        _statsMotorsportMotorsportWebRequest.GetRequestForRaceGrid(providerSlug, providerSeasonId, providerRaceId);
 
                 MotorsportEntitiesResponse raceGrid;
 
@@ -206,12 +206,12 @@
             }
         }
 
-        public MotorsportEntitiesResponse IngestDriversForLeague(string providerSlug, int providerSeasonId)
+        public MotorsportEntitiesResponse IngestDriversForLeague(string providerSlug, int? providerDriverId)
         {
             try
             {
                 var requestForDrivers =
-                    _statsMotorsportWebRequest.GetRequestForDrivers(providerSlug, providerSeasonId);
+                    _statsMotorsportMotorsportWebRequest.GetRequestForDrivers(providerSlug, providerDriverId);
 
                 MotorsportEntitiesResponse drivers;
 
@@ -241,7 +241,7 @@
         {
             try
             {
-                var requestForTeams = _statsMotorsportWebRequest.GetRequestForTeams(providerSlug);
+                var requestForTeams = _statsMotorsportMotorsportWebRequest.GetRequestForTeams(providerSlug);
 
                 MotorsportEntitiesResponse teams;
 
@@ -286,7 +286,7 @@
             try
             {
                 var requestForStandings =
-                    _statsMotorsportWebRequest.GetRequestForStandings(providerSlug, standingsTypeId, providerSeasonId);
+                    _statsMotorsportMotorsportWebRequest.GetRequestForStandings(providerSlug, standingsTypeId, providerSeasonId);
 
                 MotorsportEntitiesResponse standings;
 

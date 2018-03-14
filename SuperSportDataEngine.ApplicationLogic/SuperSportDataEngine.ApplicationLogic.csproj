@@ -94,7 +94,8 @@
     <Compile Include="Boundaries\Gateway.Http.DeprecatedFeed\ResponseModels\MatchDayBlogResponse.cs" />
     <Compile Include="Boundaries\Gateway.Http.DeprecatedFeed\ResponseModels\MatchPreviewResponse.cs" />
     <Compile Include="Boundaries\Gateway.Http.DeprecatedFeed\ResponseModels\MatchReportResponse.cs" />
-    <Compile Include="Boundaries\Gateway.Http.StatsProzone\Interfaces\IStatsProzoneMotorIngestService.cs" />
+    <Compile Include="Boundaries\Gateway.Http.StatsProzone\Interfaces\IStatsMotorsportIngestService.cs" />
+    <Compile Include="Boundaries\Gateway.Http.StatsProzone\Interfaces\IStatsMotorsportWebRequest.cs" />
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\Models\Motorsport\ApiResult.cs" />
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\Models\Motorsport\Enums\MotorsportRaceEventStatusProvider.cs" />
     <Compile Include="Boundaries\Gateway.Http.StatsProzone\Models\Motorsport\MotorsportEntitiesResponse.cs" />
@@ -154,7 +155,7 @@
     <Compile Include="Constants\Providers\MotorsportStatsConstants.cs" />
     <Compile Include="Constants\Providers\RugbyStatsProzoneConstants.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\UnitOfWork\IPublicSportDataUnitOfWork.cs" />
-    <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\Motorsport\MotorSeasonStatus.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\Motorsport\Enums\MotorsportSeasonStatus.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\Enums\SchedulerStateForMotorsportRacePolling.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\UnitOfWork\ISystemSportDataUnitOfWork.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\Motorsport\SchedulerTrackingMotorsportSeason.cs" />

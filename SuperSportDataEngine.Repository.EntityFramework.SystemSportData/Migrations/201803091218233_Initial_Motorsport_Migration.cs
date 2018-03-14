@@ -3,7 +3,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.SystemSportData.Migrat
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class Motorsport_SysDataTemp_Migration : DbMigration
+    public partial class Initial_Motorsport_Migration : DbMigration
     {
         public override void Up()
         {
@@ -13,7 +13,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.SystemSportData.Migrat
                     {
                         SeasonId = c.Guid(nullable: false),
                         LeagueId = c.Guid(nullable: false),
-                        MotorSeasonStatus = c.Int(nullable: false),
+                        MotorsportSeasonStatus = c.Int(nullable: false),
                         SchedulerStateForManagerJobPolling = c.Int(nullable: false),
                         TimestampCreated = c.DateTimeOffset(nullable: false, precision: 7),
                         TimestampUpdated = c.DateTimeOffset(nullable: false, precision: 7),
