@@ -11,8 +11,6 @@
         /// <summary> A clustered-key record identifier. </summary>
         public Guid MotorsportDriverId { get; set; }
 
-        public int ProviderRaceEventId { get; set; }
-
         public int GridPosition { get; set; }
 
         /// <summary> 

@@ -48,7 +48,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 {
                     return false;
                 }
-
+                
                 if (siteId != 0)
                 {
                     // TODO: Temporary auth override until ZoneSite data is seeded.

@@ -75,9 +75,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\IProviderWebRequest.cs" />
-    <Compile Include="Services\StatsProzoneMotorIngestService.cs" />
-    <Compile Include="Services\StatsProzoneMotorWebRequest.cs" />
+    <Compile Include="Services\StatsMotorsportIngestService.cs" />
+    <Compile Include="Services\StatsMotorsportWebRequest.cs" />
     <Compile Include="Services\StatsProzoneRugbyIngestService.cs" />
   </ItemGroup>
   <ItemGroup>

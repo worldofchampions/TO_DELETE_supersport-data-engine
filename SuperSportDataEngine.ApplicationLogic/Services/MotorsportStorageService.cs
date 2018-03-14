@@ -31,7 +31,8 @@
             {
                 foreach (var providerDriver in driversFromProvider)
                 {
-                    var driverInRepo = _publicSportDataUnitOfWork.MotorsportDrivers.FirstOrDefault(d => d.ProviderDriverId == providerDriver.playerId);
+                    var driverInRepo = _publicSportDataUnitOfWork.MotorsportDrivers.FirstOrDefault(d =>
+                    d.ProviderDriverId == providerDriver.playerId && d.MotorsportLeague.Id == league.Id);
 
                     if (driverInRepo is null)
                     {
@@ -400,7 +401,7 @@
             eventResultInRepo.Position = result.carPosition.position;
             eventResultInRepo.GridPosition = result.carPosition.startingPosition;
             eventResultInRepo.OutReason = result.carStatus.name;
-            eventResultInRepo.CompletedRace = !result.carStatus.carStatusId.Equals(0);
+            eventResultInRepo.CompletedRace = result.carStatus.carStatusId.Equals(0);
 
             _publicSportDataUnitOfWork.MotorsportRaceEventResults.Update(eventResultInRepo);
         }
@@ -420,6 +421,7 @@
                 MotorsportDriver = driver,
                 MotorsportDriverId = driver.Id,
                 MotorsportRaceEventId = raceEvent.Id,
+                CompletedRace = result.carStatus.carStatusId.Equals(0),
                 OutReason = result.carStatus.name
             };
 
@@ -457,6 +459,9 @@
                 leagueInRepo.Name = leagueFromProvider.league.subLeague.name;
             }
 
+            var sportType = GetSportTypeForLeague(leagueInRepo.ProviderSlug);
+            leagueInRepo.MotorsportSportType = sportType;
+
             _publicSportDataUnitOfWork.MotorsportLeagues.Update(leagueInRepo);
         }
 
@@ -475,7 +480,23 @@
                 DataProvider = DataProvider.Stats
             };
 
+            var sportType = GetSportTypeForLeague(league.ProviderSlug);
+            league.MotorsportSportType = sportType;
+
             _publicSportDataUnitOfWork.MotorsportLeagues.Add(league);
+        }
+
+        private static MotorsportSportType GetSportTypeForLeague(string providerSlug)
+        {
+            if (string.IsNullOrEmpty(providerSlug)) return MotorsportSportType.MotorsportSportGeneral;
+
+            if (providerSlug.Equals("f1")) return MotorsportSportType.FormulaOne;
+
+            if (providerSlug.Equals("superbike")) return MotorsportSportType.Superbike;
+
+            if (providerSlug.Equals("motogp")) return MotorsportSportType.MotoGp;
+
+            return MotorsportSportType.MotorsportSportGeneral;
         }
 
         private void UpdateDriverInRepo(Player providerDriver, MotorsportDriver driverInRepo, MotorsportLeague league)
@@ -484,6 +505,32 @@
             driverInRepo.LastName = providerDriver.lastName;
             driverInRepo.DataProvider = DataProvider.Stats;
             driverInRepo.MotorsportLeague = league;
+
+            if (providerDriver.car != null)
+            {
+                if (providerDriver.car.make != null)
+                {
+                    driverInRepo.ProviderCarId = providerDriver.car.make.makeId;
+                }
+
+                if (providerDriver.car.carNumber != null)
+                {
+                    driverInRepo.CarNumber = providerDriver.car.carNumber;
+                }
+            }
+
+            if (providerDriver.birth?.country != null)
+            {
+                driverInRepo.CountryName = providerDriver.birth.country.name;
+            }
+
+            if (providerDriver.owner != null)
+            {
+                var playerTeam = _publicSportDataUnitOfWork.MotortsportTeams.FirstOrDefault(t =>
+                    t.ProviderTeamId == providerDriver.owner.ownerId && t.MotorsportLeague.Id == league.Id);
+
+                driverInRepo.MotorsportTeam = playerTeam;
+            }
 
             _publicSportDataUnitOfWork.MotorsportDrivers.Update(driverInRepo);
         }
@@ -517,7 +564,7 @@
                 newMotorsportDriver.CountryName = providerDriver.birth.country.name;
             }
 
-            if (providerDriver.team != null)
+            if (providerDriver.owner != null)
             {
                 var playerTeam = _publicSportDataUnitOfWork.MotortsportTeams.FirstOrDefault(t =>
                     t.ProviderTeamId == providerDriver.owner.ownerId && t.MotorsportLeague.Id == league.Id);
@@ -570,9 +617,9 @@
 
             if (providerStartDate != null)
             {
-                var startDateUtc = DateTimeOffset.Parse(providerStartDate.full.ToString(CultureInfo.InvariantCulture));
+                var dateTimeOffset = DateTimeOffset.Parse(providerStartDate.full.ToString(CultureInfo.InvariantCulture));
 
-                eventInRepo.StartDateTimeUtc = startDateUtc;
+                eventInRepo.StartDateTimeUtc = dateTimeOffset.UtcDateTime;
             }
 
             var raceEventStatus = MapProviderRaceEventStatusToInternal(providerRaceEvent.eventStatus.eventStatusId);
@@ -618,9 +665,9 @@
 
             if (providerStartDate != null)
             {
-                var startDateUtc = DateTimeOffset.Parse(providerStartDate.full.ToString(CultureInfo.InvariantCulture));
+                var dateTimeOffset = DateTimeOffset.Parse(providerStartDate.full.ToString(CultureInfo.InvariantCulture));
 
-                motorsportRaceEvent.StartDateTimeUtc = startDateUtc;
+                motorsportRaceEvent.StartDateTimeUtc = dateTimeOffset.UtcDateTime;
             }
 
             var raceEventStatus = MapProviderRaceEventStatusToInternal(providerRaceEvent.eventStatus.eventStatusId);

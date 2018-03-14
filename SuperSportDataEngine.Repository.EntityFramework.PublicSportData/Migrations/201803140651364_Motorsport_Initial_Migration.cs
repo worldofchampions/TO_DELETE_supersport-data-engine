@@ -193,7 +193,6 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                     {
                         MotorsportRaceEventId = c.Guid(nullable: false),
                         MotorsportDriverId = c.Guid(nullable: false),
-                        ProviderRaceEventId = c.Int(nullable: false),
                         GridPosition = c.Int(nullable: false),
                         Position = c.Int(nullable: false),
                         Points = c.Int(nullable: false),

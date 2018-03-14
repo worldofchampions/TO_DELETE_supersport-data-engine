@@ -1,11 +1,11 @@
 ﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces
 {
     using Models.Motor;
-    public interface IStatsProzoneMotorIngestService
+    public interface IStatsMotorsportIngestService
     {
         MotorsportEntitiesResponse IngestLeagues();
         MotorsportEntitiesResponse IngestLeagueSeason(string providerSlug);
-        MotorsportEntitiesResponse IngestDriversForLeague(string providerSlug, int providerSeasonId);
+        MotorsportEntitiesResponse IngestDriversForLeague(string providerSlug, int? providerDriverId = null);
         MotorsportEntitiesResponse IngestTeamsForLeague(string providerSlug);
         MotorsportEntitiesResponse IngestDriverStandings(string providerSlug, int providerSeasonId);
         MotorsportEntitiesResponse IngestTeamStandings(string providerSlug, int providerSeasonId);

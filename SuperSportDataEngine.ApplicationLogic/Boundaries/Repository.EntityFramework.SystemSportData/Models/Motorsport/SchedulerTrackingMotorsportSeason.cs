@@ -10,7 +10,7 @@
 
         public Guid LeagueId { get; set; }
 
-        public MotorSeasonStatus MotorSeasonStatus { get; set; }
+        public MotorsportSeasonStatus MotorsportSeasonStatus { get; set; }
 
         public SchedulerStateForManagerJobPolling SchedulerStateForManagerJobPolling { get; set; }
     }
