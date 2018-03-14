@@ -3,6 +3,7 @@ using SuperSportDataEngine.Repository.MongoDb.PayloadData.Models.RugbyFixtures;
 
 namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.MappingProfiles
 {
+    // This class is used by Reflection.
     public class RugbyFixturesMappingProfile : Profile
     {
         public RugbyFixturesMappingProfile()

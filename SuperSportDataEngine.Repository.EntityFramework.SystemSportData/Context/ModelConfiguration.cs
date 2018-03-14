@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.Repository.EntityFramework.SystemSportData.Context
+﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+
+namespace SuperSportDataEngine.Repository.EntityFramework.SystemSportData.Context
 {
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
     using System.ComponentModel.DataAnnotations.Schema;
@@ -23,6 +25,13 @@
             modelBuilder.Entity<SchedulerTrackingRugbyTournament>().HasKey(x => new { x.TournamentId, x.SeasonId });
 
             modelBuilder.Entity<SchedulerDashboardUser>().HasKey(x => new { x.Username });
+
+            ApplyMotorSportConfigurations(modelBuilder);
+        }
+
+        private static void ApplyMotorSportConfigurations(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<SchedulerTrackingMotorsportSeason>().HasKey(x => new { x.SeasonId, x.LeagueId });
         }
     }
 }
