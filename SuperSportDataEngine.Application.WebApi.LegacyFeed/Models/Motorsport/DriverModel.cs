@@ -4,7 +4,7 @@
     using System;
 
     [Serializable]
-    public class DriverModel : TeamModel
+    public class DriverModel : Team
     {
         public int Id { get; set; }
         public string FirstName { get; set; }

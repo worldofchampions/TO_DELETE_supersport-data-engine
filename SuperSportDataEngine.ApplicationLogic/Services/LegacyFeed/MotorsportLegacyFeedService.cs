@@ -1,16 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
-using SuperSportDataEngine.ApplicationLogic.Entities.Legacy.Motorsport;
-
-namespace SuperSportDataEngine.ApplicationLogic.Services.LegacyFeed
+﻿namespace SuperSportDataEngine.ApplicationLogic.Services.LegacyFeed
 {
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces.LegacyFeed;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
+    using SuperSportDataEngine.ApplicationLogic.Entities.Legacy.Motorsport;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
 
-    // TODO: @motorsport-feed: implement.
     public class MotorsportLegacyFeedService : IMotorsportLegacyFeedService
     {
         private readonly IPublicSportDataUnitOfWork _publicSportDataUnitOfWork;
@@ -22,10 +20,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.LegacyFeed
 
         public async Task<MotorsportScheduleEntity> GetSchedules(string category, bool current)
         {
-            var currentSeason =
-                _publicSportDataUnitOfWork.MotorsportSeasons.FirstOrDefault(s =>
-                    s.MotorsportLeague.Slug.Equals(category) &&
-                    s.IsCurrent);
+            var currentSeason = await GetCurrentSeasonForCategory(category);
 
             var schedule = new MotorsportScheduleEntity();
 
@@ -42,8 +37,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.LegacyFeed
 
             if (current)
             {
-                raceEvents = 
-                    raceEvents.Where(e => 
+                raceEvents =
+                    raceEvents.Where(e =>
                         e.StartDateTimeUtc > today).ToList();
             }
 
@@ -52,7 +47,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.LegacyFeed
             return await Task.FromResult(schedule);
         }
 
-        
         public async Task<MotorsportRaceEventGridEntity> GetGridForRaceEventId(string category, int eventId)
         {
             var raceEvent = _publicSportDataUnitOfWork.MotorsportRaceEvents
@@ -74,9 +68,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.LegacyFeed
                     .FirstOrDefault();
 
             if (group != null)
-                grid.MotorsportRaceEventGrids = 
+                grid.MotorsportRaceEventGrids =
                     group.ToList().OrderBy(g => g.GridPosition).ToList();
-            
+
             return await Task.FromResult(grid);
         }
 
@@ -169,6 +163,32 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.LegacyFeed
                         .ToList();
 
             return await Task.FromResult(results);
+        }
+
+        public async Task<MotorsportTeamStandingsEntity> GetTeamStandings(string category)
+        {
+            var motorsportSeason = await GetCurrentSeasonForCategory(category);
+            var motorsportLeague = motorsportSeason.MotorsportLeague;
+
+            var motorsportTeamStandings = (await _publicSportDataUnitOfWork.MotorsportTeamStandings.WhereAsync(x =>
+                x.MotorsportLeagueId.Equals(motorsportLeague.Id) &&
+                x.MotorsportSeasonId.Equals(motorsportSeason.Id)
+                )).OrderBy(x => x.Position);
+
+            var result = new MotorsportTeamStandingsEntity
+            {
+                MotorsportLeague = motorsportLeague,
+                MotorsportTeamStandings = motorsportTeamStandings.ToList()
+            };
+
+            return result;
+        }
+
+        private async Task<MotorsportSeason> GetCurrentSeasonForCategory(string category)
+        {
+            return await Task.FromResult(_publicSportDataUnitOfWork.MotorsportSeasons.FirstOrDefault(s =>
+               s.MotorsportLeague.Slug.Equals(category) &&
+               s.IsCurrent));
         }
     }
 }
