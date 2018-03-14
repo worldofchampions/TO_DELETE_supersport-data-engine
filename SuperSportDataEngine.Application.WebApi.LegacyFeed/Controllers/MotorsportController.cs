@@ -1,4 +1,5 @@
 ﻿using System;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
 using static AutoMapper.Mapper;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
@@ -63,7 +64,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             var scheduleFromService =
                 Map<List<RacesModel>>(
                     (await _motorsportLegacyFeedService.GetSchedules(category, currentValue))
-                        .MotorsportRaceEvents);
+                        .MotorsportRaceEvents ?? new List<MotorsportRaceEvent>());
 
             PersistToCache(key, scheduleFromService);
 
@@ -157,7 +158,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             var resultsFromService =
                 Map<List<ResultMotorsportModel>>(
                     (await _motorsportLegacyFeedService.GetResultsForRaceEventId(category, eventId))
-                    .MotorsportRaceEventResults);
+                    .MotorsportRaceEventResults ?? new List<MotorsportRaceEventResult>());
 
             PersistToCache(key, resultsFromService);
 

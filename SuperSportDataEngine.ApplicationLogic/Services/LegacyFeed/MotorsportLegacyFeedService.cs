@@ -93,6 +93,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.LegacyFeed
                 MotorsportRaceEvent = raceEvent
             };
 
+            if (raceEvent == null)
+                return grid;
+
             var group =
                 _publicSportDataUnitOfWork.MotorsportRaceEventGrids
                     .Where(g => g.MotorsportRaceEvent.LegacyRaceEventId == raceEvent.LegacyRaceEventId)
@@ -148,6 +151,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.LegacyFeed
                 MotorsportRaceEventResults = new List<MotorsportRaceEventResult>(),
                 MotorsportRaceEvent = raceEvent
             };
+
+            if (raceEvent == null)
+                return results;
 
             var group =
                 _publicSportDataUnitOfWork.MotorsportRaceEventResults
