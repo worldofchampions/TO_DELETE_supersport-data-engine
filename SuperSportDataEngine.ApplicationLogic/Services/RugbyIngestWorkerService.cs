@@ -54,7 +54,7 @@
             _rugbyService = rugbyService;
 
             _halfTimeMaximumDurationInMinutes =
-                int.Parse(ConfigurationManager.AppSettings["HalfTimeMaximumDurationInMinutes"]);
+                int.Parse(ConfigurationManager.AppSettings["HalfTimeMaximumDurationInMinutes"] ?? "10");
         }
 
         public async Task IngestReferenceData(CancellationToken cancellationToken)
