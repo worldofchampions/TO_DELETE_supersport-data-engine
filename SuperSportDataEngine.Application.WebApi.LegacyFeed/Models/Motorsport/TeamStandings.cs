@@ -1,9 +1,9 @@
-﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared
+﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Motorsport
 {
     using System;
 
     [Serializable]
-    public class TeamStandingsModel : TeamModel
+    public class TeamStandings : Team
     {
         public int Position { get; set; }
         public string Points { get; set; }

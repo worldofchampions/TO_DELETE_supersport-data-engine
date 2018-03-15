@@ -5,6 +5,8 @@
     using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
 
+    
+    // This class is used by Reflection.
     public class LegacyCommentaryAsEventMapperProfile : Profile
     {
         public LegacyCommentaryAsEventMapperProfile()

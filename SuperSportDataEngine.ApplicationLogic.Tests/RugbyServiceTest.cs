@@ -9,103 +9,34 @@ using System.Threading.Tasks;
 using System;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
-using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
 using SuperSportDataEngine.Common.Logging;
 using System.Threading;
 using System.Linq;
 
 namespace SuperSportDataEngine.ApplicationLogic.Tests
 {
+    [Category("RugbyServiceTest")]
     public class RugbyServiceTest
     {
         RugbyService _rugbyService;
-        Mock<TestEntityFrameworkRepository<SchedulerTrackingRugbyFixture>> _mockSchedulerTrackingFixtureRepository;
-        Mock<TestEntityFrameworkRepository<SchedulerTrackingRugbySeason>> _mockSchedulerTrackingSeasonRepository;
-        Mock<TestEntityFrameworkRepository<SchedulerTrackingRugbyTournament>> _mockSchedulerTrackingTournamentsRepository;
-        Mock<TestEntityFrameworkRepository<RugbyFixture>> _mockFixtureRepository;
-        Mock<TestEntityFrameworkRepository<RugbySeason>> _mockSeasonRepository;
-        Mock<TestEntityFrameworkRepository<RugbyTournament>> _mockTournamentRepository;
-        Mock<TestEntityFrameworkRepository<RugbyFlatLog>> _mockFlatLogRepository;
-        Mock<TestEntityFrameworkRepository<RugbyGroupedLog>> _mockGroupedLogRepository;
-        Mock<TestEntityFrameworkRepository<RugbyCommentary>> _mockCommentaryRepository;
-        Mock<TestEntityFrameworkRepository<RugbyPlayerLineup>> _mockLineupRepository;
-        Mock<TestEntityFrameworkRepository<RugbyMatchStatistics>> _mockMatchStatisticsRepository;
-        Mock<TestEntityFrameworkRepository<RugbyPlayerStatistics>> _mockPlayerStatisticsRepository;
-        Mock<TestEntityFrameworkRepository<RugbyMatchEvent>> _mockMatchEventsRepository;
-        Mock<TestEntityFrameworkRepository<RugbyPlayer>> _mockPlayerRepository;
-        Mock<ILoggingService> _mockLogger;
+        TestPublicSportDataUnitOfWork _publicSportDataUnitOfWork;
+        TestSystemSportDataUnitOfWork _systemSportDataUnitOfWork;
 
         [SetUp]
         public void SetUp()
         {
-            _mockSchedulerTrackingFixtureRepository =
-                    new Mock<TestEntityFrameworkRepository<SchedulerTrackingRugbyFixture>>(new List<SchedulerTrackingRugbyFixture>());
-
-            _mockSchedulerTrackingSeasonRepository =
-                    new Mock<TestEntityFrameworkRepository<SchedulerTrackingRugbySeason>>(new List<SchedulerTrackingRugbySeason>());
-
-            _mockSchedulerTrackingTournamentsRepository =
-                    new Mock<TestEntityFrameworkRepository<SchedulerTrackingRugbyTournament>>(new List<SchedulerTrackingRugbyTournament>());
-
-            _mockFixtureRepository =
-                    new Mock<TestEntityFrameworkRepository<RugbyFixture>>(new List<RugbyFixture>());
-
-            _mockTournamentRepository =
-                    new Mock<TestEntityFrameworkRepository<RugbyTournament>>(new List<RugbyTournament>());
-
-            _mockSeasonRepository =
-                    new Mock<TestEntityFrameworkRepository<RugbySeason>>(new List<RugbySeason>());
-
-            _mockFlatLogRepository =
-                    new Mock<TestEntityFrameworkRepository<RugbyFlatLog>>(new List<RugbyFlatLog>());
-
-            _mockGroupedLogRepository =
-                    new Mock<TestEntityFrameworkRepository<RugbyGroupedLog>>(new List<RugbyGroupedLog>());
-
-            new Mock<TestEntityFrameworkRepository<RugbyMatchDetailsEntity>>(new List<RugbyMatchDetailsEntity>());
-
-            _mockCommentaryRepository =
-                     new Mock<TestEntityFrameworkRepository<RugbyCommentary>>(new List<RugbyCommentary>());
-
-            _mockLineupRepository =
-                    new Mock<TestEntityFrameworkRepository<RugbyPlayerLineup>>(new List<RugbyPlayerLineup>());
-
-            _mockMatchStatisticsRepository =
-                    new Mock<TestEntityFrameworkRepository<RugbyMatchStatistics>>(new List<RugbyMatchStatistics>());
-
-            _mockPlayerStatisticsRepository =
-                new Mock<TestEntityFrameworkRepository<RugbyPlayerStatistics>>(new List<RugbyPlayerStatistics>());
-
-            _mockMatchEventsRepository =
-                    new Mock<TestEntityFrameworkRepository<RugbyMatchEvent>>(new List<RugbyMatchEvent>());
-
-            _mockLogger =
-                    new Mock<ILoggingService>();
-
-            _mockPlayerRepository =
-                new Mock<TestEntityFrameworkRepository<RugbyPlayer>>(new List<RugbyPlayer>());
+            _publicSportDataUnitOfWork = new TestPublicSportDataUnitOfWork();
+            _systemSportDataUnitOfWork = new TestSystemSportDataUnitOfWork();
 
             _rugbyService = new RugbyService(
-                _mockMatchEventsRepository.Object,
-                _mockMatchStatisticsRepository.Object,
-                _mockLineupRepository.Object,
-                _mockCommentaryRepository.Object,
-                _mockGroupedLogRepository.Object,
-                _mockFlatLogRepository.Object,
-                _mockTournamentRepository.Object,
-                _mockSeasonRepository.Object,
-                _mockSchedulerTrackingSeasonRepository.Object,
-                _mockFixtureRepository.Object,
-                _mockPlayerStatisticsRepository.Object,
-                _mockSchedulerTrackingTournamentsRepository.Object,
-                _mockSchedulerTrackingFixtureRepository.Object,
-                _mockLogger.Object);
+                _publicSportDataUnitOfWork,
+                _systemSportDataUnitOfWork);
         }
 
         [Test]
         public async Task CleanupFixturesTable_OneFixtureTrackedToday_NotDeleted()
         {
-            _mockSchedulerTrackingFixtureRepository.Object.Add(new SchedulerTrackingRugbyFixture() {
+            _systemSportDataUnitOfWork.SchedulerTrackingRugbyFixtures.Add(new SchedulerTrackingRugbyFixture() {
                     FixtureId = Guid.NewGuid(),
                     StartDateTime = DateTimeOffset.UtcNow,
                     RugbyFixtureStatus = RugbyFixtureStatus.PreMatch
@@ -113,47 +44,43 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
             
             await _rugbyService.CleanupSchedulerTrackingRugbyFixturesTable();
 
-            Assert.AreEqual(1, await _mockSchedulerTrackingFixtureRepository.Object.CountAsync());
+            Assert.AreEqual(1, await _systemSportDataUnitOfWork.SchedulerTrackingRugbyFixtures.CountAsync());
         }
 
         [Test]
         public async Task CleanupFixturesTable_OneFixtureTracked6MonthsAgo_Deleted()
         {
-            _mockSchedulerTrackingFixtureRepository.Object.Add(new SchedulerTrackingRugbyFixture()
+            _systemSportDataUnitOfWork.SchedulerTrackingRugbyFixtures.Add(new SchedulerTrackingRugbyFixture()
             {
                 FixtureId = Guid.NewGuid(),
                 StartDateTime = DateTimeOffset.UtcNow - TimeSpan.FromDays(181),
                 RugbyFixtureStatus = RugbyFixtureStatus.Result
             });
-
-            await _mockSchedulerTrackingFixtureRepository.Object.SaveAsync();
-
+            
             await _rugbyService.CleanupSchedulerTrackingRugbyFixturesTable();
 
-            Assert.AreEqual(0, await _mockSchedulerTrackingFixtureRepository.Object.CountAsync());
+            Assert.AreEqual(0, await _systemSportDataUnitOfWork.SchedulerTrackingRugbyFixtures.CountAsync());
         }
 
         [Test]
         public async Task CleanupFixturesTable_OneFixtureTrackedLessThan6MonthsAgo_NotDeleted()
         {
-            _mockSchedulerTrackingFixtureRepository.Object.Add(new SchedulerTrackingRugbyFixture()
+            _systemSportDataUnitOfWork.SchedulerTrackingRugbyFixtures.Add(new SchedulerTrackingRugbyFixture()
             {
                 FixtureId = Guid.NewGuid(),
                 StartDateTime = DateTimeOffset.UtcNow - TimeSpan.FromDays(179),
                 RugbyFixtureStatus = RugbyFixtureStatus.Result
             });
 
-            await _mockSchedulerTrackingFixtureRepository.Object.SaveAsync();
-
             await _rugbyService.CleanupSchedulerTrackingRugbyFixturesTable();
 
-            Assert.AreEqual(1, await _mockSchedulerTrackingFixtureRepository.Object.CountAsync());
+            Assert.AreEqual(1, await _systemSportDataUnitOfWork.SchedulerTrackingRugbyFixtures.CountAsync());
         }
 
         [Test]
         public async Task CleanupSeasonsTable_SeasonIsCurrent_NotDeleted()
         {
-            _mockSchedulerTrackingSeasonRepository.Object.Add(new SchedulerTrackingRugbySeason()
+            _systemSportDataUnitOfWork.SchedulerTrackingRugbySeasons.Add(new SchedulerTrackingRugbySeason()
             {
                 SeasonId = Guid.NewGuid(),
                 RugbySeasonStatus = RugbySeasonStatus.InProgress
@@ -161,23 +88,21 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
 
             await _rugbyService.CleanupSchedulerTrackingRugbySeasonsTable();
 
-            Assert.AreEqual(1, await _mockSchedulerTrackingSeasonRepository.Object.CountAsync());
+            Assert.AreEqual(1, await _systemSportDataUnitOfWork.SchedulerTrackingRugbySeasons.CountAsync());
         }
 
         [Test]
         public async Task CleanupSeasonsTable_SeasonIsEnded_IsDeleted()
         {
-            _mockSchedulerTrackingSeasonRepository.Object.Add(new SchedulerTrackingRugbySeason()
+            _systemSportDataUnitOfWork.SchedulerTrackingRugbySeasons.Add(new SchedulerTrackingRugbySeason()
             {
                 SeasonId = Guid.NewGuid(),
                 RugbySeasonStatus = RugbySeasonStatus.Ended
             });
-
-            await _mockSchedulerTrackingSeasonRepository.Object.SaveAsync();
-
+            
             await _rugbyService.CleanupSchedulerTrackingRugbySeasonsTable();
 
-            Assert.AreEqual(0, await _mockSchedulerTrackingSeasonRepository.Object.CountAsync());
+            Assert.AreEqual(0, await _systemSportDataUnitOfWork.SchedulerTrackingRugbySeasons.CountAsync());
         }
 
         [Test]
@@ -185,24 +110,20 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
         {
             var tournamentId = Guid.NewGuid();
 
-            _mockTournamentRepository.Object.Add(new RugbyTournament()
+            _publicSportDataUnitOfWork.RugbyTournaments.Add(new RugbyTournament()
             {
                 Id = tournamentId,
                 IsEnabled = true
             });
 
-            await _mockTournamentRepository.Object.SaveAsync();
-
-            _mockSchedulerTrackingTournamentsRepository.Object.Add(new SchedulerTrackingRugbyTournament()
+            _systemSportDataUnitOfWork.SchedulerTrackingRugbyTournaments.Add(new SchedulerTrackingRugbyTournament()
             {
                 TournamentId = tournamentId
             });
-
-            await _mockSchedulerTrackingSeasonRepository.Object.SaveAsync();
-
+            
             await _rugbyService.CleanupSchedulerTrackingRugbySeasonsTable();
 
-            Assert.AreEqual(1, await _mockSchedulerTrackingTournamentsRepository.Object.CountAsync());
+            Assert.AreEqual(1, await _systemSportDataUnitOfWork.SchedulerTrackingRugbyTournaments.CountAsync());
         }
 
         [Test]
@@ -210,24 +131,20 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
         {
             var tournamentId = Guid.NewGuid();
 
-            _mockTournamentRepository.Object.Add(new RugbyTournament()
+            _publicSportDataUnitOfWork.RugbyTournaments.Add(new RugbyTournament()
             {
                 Id = tournamentId,
                 IsEnabled = false
             });
 
-            await _mockTournamentRepository.Object.SaveAsync();
-
-            _mockSchedulerTrackingTournamentsRepository.Object.Add(new SchedulerTrackingRugbyTournament()
+            _systemSportDataUnitOfWork.SchedulerTrackingRugbyTournaments.Add(new SchedulerTrackingRugbyTournament()
             {
                 TournamentId = tournamentId
             });
 
-            await _mockSchedulerTrackingSeasonRepository.Object.SaveAsync();
-
             await _rugbyService.CleanupSchedulerTrackingRugbyTournamentsTable();
 
-            Assert.AreEqual(0, await _mockSchedulerTrackingTournamentsRepository.Object.CountAsync());
+            Assert.AreEqual(0, await _systemSportDataUnitOfWork.SchedulerTrackingRugbyTournaments.CountAsync());
         }
 
         [Test]
@@ -236,7 +153,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
             Guid fixtureGuid = Guid.NewGuid();
             DateTime fixtureStartDate = DateTime.UtcNow - TimeSpan.FromMinutes(1);
 
-            _mockFixtureRepository.Object.Add(
+            _publicSportDataUnitOfWork.RugbyFixtures.Add(
                 new RugbyFixture()
                 {
                     Id = fixtureGuid,
@@ -244,7 +161,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
                     StartDateTime = fixtureStartDate,
                 });
 
-            _mockSchedulerTrackingFixtureRepository.Object.Add(
+            _systemSportDataUnitOfWork.SchedulerTrackingRugbyFixtures.Add(
                 new SchedulerTrackingRugbyFixture()
                 {
                     FixtureId = fixtureGuid,
@@ -261,7 +178,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
             Guid fixtureGuid = Guid.NewGuid();
             DateTime fixtureStartDate = DateTime.UtcNow - TimeSpan.FromMinutes(1);
 
-            _mockFixtureRepository.Object.Add(
+            _publicSportDataUnitOfWork.RugbyFixtures.Add(
                 new RugbyFixture()
                 {
                     Id = fixtureGuid,
@@ -270,7 +187,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
                     IsDisabledInbound = true
                 });
 
-            _mockSchedulerTrackingFixtureRepository.Object.Add(
+            _systemSportDataUnitOfWork.SchedulerTrackingRugbyFixtures.Add(
                 new SchedulerTrackingRugbyFixture()
                 {
                     FixtureId = fixtureGuid,
@@ -293,13 +210,13 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
                 IsEnabled = true
             };
 
-            _mockTournamentRepository.Object.Add(
+            _publicSportDataUnitOfWork.RugbyTournaments.Add(
                 testTournament);
 
             Guid fixtureGuid = Guid.NewGuid();
             DateTime fixtureStartDate = DateTime.UtcNow - TimeSpan.FromMinutes(1);
 
-            _mockFixtureRepository.Object.Add(
+            _publicSportDataUnitOfWork.RugbyFixtures.Add(
                 new RugbyFixture()
                 {
                     Id = fixtureGuid,
@@ -308,7 +225,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
                     StartDateTime = fixtureStartDate,
                 });
 
-            _mockSchedulerTrackingFixtureRepository.Object.Add(
+            _systemSportDataUnitOfWork.SchedulerTrackingRugbyFixtures.Add(
                 new SchedulerTrackingRugbyFixture()
                 {
                     FixtureId = fixtureGuid,
@@ -334,13 +251,13 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
                 IsEnabled = true
             };
 
-            _mockTournamentRepository.Object.Add(
+            _publicSportDataUnitOfWork.RugbyTournaments.Add(
                 testTournament);
 
             Guid fixtureGuid = Guid.NewGuid();
             DateTime fixtureStartDate = DateTime.UtcNow - TimeSpan.FromMinutes(1);
 
-            _mockFixtureRepository.Object.Add(
+            _publicSportDataUnitOfWork.RugbyFixtures.Add(
                 new RugbyFixture()
                 {
                     Id = fixtureGuid,
@@ -350,7 +267,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
                     IsDisabledInbound = true
                 });
 
-            _mockSchedulerTrackingFixtureRepository.Object.Add(
+            _systemSportDataUnitOfWork.SchedulerTrackingRugbyFixtures.Add(
                 new SchedulerTrackingRugbyFixture()
                 {
                     FixtureId = fixtureGuid,
@@ -376,13 +293,13 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
                 IsEnabled = true
             };
 
-            _mockTournamentRepository.Object.Add(
+            _publicSportDataUnitOfWork.RugbyTournaments.Add(
                 testTournament);
 
             Guid fixtureGuid = Guid.NewGuid();
             DateTime fixtureStartDate = DateTime.UtcNow - TimeSpan.FromMinutes(1);
 
-            _mockFixtureRepository.Object.Add(
+            _publicSportDataUnitOfWork.RugbyFixtures.Add(
                 new RugbyFixture()
                 {
                     Id = fixtureGuid,
@@ -391,7 +308,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
                     StartDateTime = fixtureStartDate,
                 });
 
-            _mockSchedulerTrackingFixtureRepository.Object.Add(
+            _systemSportDataUnitOfWork.SchedulerTrackingRugbyFixtures.Add(
                 new SchedulerTrackingRugbyFixture()
                 {
                     FixtureId = fixtureGuid,
@@ -417,13 +334,13 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
                 IsEnabled = true
             };
 
-            _mockTournamentRepository.Object.Add(
+            _publicSportDataUnitOfWork.RugbyTournaments.Add(
                 testTournament);
 
             Guid fixtureGuid = Guid.NewGuid();
             DateTime fixtureStartDate = DateTime.UtcNow + TimeSpan.FromMinutes(20);
 
-            _mockFixtureRepository.Object.Add(
+            _publicSportDataUnitOfWork.RugbyFixtures.Add(
                 new RugbyFixture()
                 {
                     Id = fixtureGuid,
@@ -432,7 +349,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
                     StartDateTime = fixtureStartDate,
                 });
 
-            _mockSchedulerTrackingFixtureRepository.Object.Add(
+            _systemSportDataUnitOfWork.SchedulerTrackingRugbyFixtures.Add(
                 new SchedulerTrackingRugbyFixture()
                 {
                     FixtureId = fixtureGuid,
@@ -458,13 +375,13 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
                 IsEnabled = true
             };
 
-            _mockTournamentRepository.Object.Add(
+            _publicSportDataUnitOfWork.RugbyTournaments.Add(
                 testTournament);
 
             Guid fixtureGuid = Guid.NewGuid();
             DateTime fixtureStartDate = DateTime.UtcNow + TimeSpan.FromMinutes(14);
 
-            _mockFixtureRepository.Object.Add(
+            _publicSportDataUnitOfWork.RugbyFixtures.Add(
                 new RugbyFixture()
                 {
                     Id = fixtureGuid,
@@ -473,7 +390,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
                     StartDateTime = fixtureStartDate,
                 });
 
-            _mockSchedulerTrackingFixtureRepository.Object.Add(
+            _systemSportDataUnitOfWork.SchedulerTrackingRugbyFixtures.Add(
                 new SchedulerTrackingRugbyFixture()
                 {
                     FixtureId = fixtureGuid,
@@ -499,13 +416,13 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
                 IsEnabled = true
             };
 
-            _mockTournamentRepository.Object.Add(
+            _publicSportDataUnitOfWork.RugbyTournaments.Add(
                 testTournament);
 
             Guid fixtureGuid = Guid.NewGuid();
             DateTime fixtureStartDate = DateTime.UtcNow + TimeSpan.FromMinutes(20);
 
-            _mockFixtureRepository.Object.Add(
+            _publicSportDataUnitOfWork.RugbyFixtures.Add(
                 new RugbyFixture()
                 {
                     Id = fixtureGuid,
@@ -514,7 +431,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
                     StartDateTime = fixtureStartDate,
                 });
 
-            _mockSchedulerTrackingFixtureRepository.Object.Add(
+            _systemSportDataUnitOfWork.SchedulerTrackingRugbyFixtures.Add(
                 new SchedulerTrackingRugbyFixture()
                 {
                     FixtureId = fixtureGuid,
@@ -540,13 +457,13 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
                 IsEnabled = true
             };
 
-            _mockTournamentRepository.Object.Add(
+            _publicSportDataUnitOfWork.RugbyTournaments.Add(
                 testTournament);
 
             Guid fixtureGuid = Guid.NewGuid();
             DateTime fixtureStartDate = DateTime.UtcNow + TimeSpan.FromMinutes(20);
 
-            _mockFixtureRepository.Object.Add(
+            _publicSportDataUnitOfWork.RugbyFixtures.Add(
                 new RugbyFixture()
                 {
                     Id = fixtureGuid,
@@ -555,7 +472,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
                     StartDateTime = fixtureStartDate,
                 });
 
-            _mockSchedulerTrackingFixtureRepository.Object.Add(
+            _systemSportDataUnitOfWork.SchedulerTrackingRugbyFixtures.Add(
                 new SchedulerTrackingRugbyFixture()
                 {
                     FixtureId = fixtureGuid,
@@ -581,13 +498,13 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
                 IsEnabled = true
             };
 
-            _mockTournamentRepository.Object.Add(
+            _publicSportDataUnitOfWork.RugbyTournaments.Add(
                 testTournament);
 
             Guid fixtureGuid = Guid.NewGuid();
             DateTime fixtureStartDate = DateTime.UtcNow - TimeSpan.FromHours(2);
 
-            _mockFixtureRepository.Object.Add(
+            _publicSportDataUnitOfWork.RugbyFixtures.Add(
                 new RugbyFixture()
                 {
                     Id = fixtureGuid,
@@ -596,7 +513,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
                     StartDateTime = fixtureStartDate,
                 });
 
-            _mockSchedulerTrackingFixtureRepository.Object.Add(
+            _systemSportDataUnitOfWork.SchedulerTrackingRugbyFixtures.Add(
                 new SchedulerTrackingRugbyFixture()
                 {
                     FixtureId = fixtureGuid,
@@ -622,13 +539,13 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
                 IsEnabled = true
             };
 
-            _mockTournamentRepository.Object.Add(
+            _publicSportDataUnitOfWork.RugbyTournaments.Add(
                 testTournament);
 
             Guid fixtureGuid = Guid.NewGuid();
             DateTime fixtureStartDate = DateTime.UtcNow - TimeSpan.FromHours(4);
 
-            _mockFixtureRepository.Object.Add(
+            _publicSportDataUnitOfWork.RugbyFixtures.Add(
                 new RugbyFixture()
                 {
                     Id = fixtureGuid,
@@ -637,7 +554,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
                     StartDateTime = fixtureStartDate,
                 });
 
-            _mockSchedulerTrackingFixtureRepository.Object.Add(
+            _systemSportDataUnitOfWork.SchedulerTrackingRugbyFixtures.Add(
                 new SchedulerTrackingRugbyFixture()
                 {
                     FixtureId = fixtureGuid,
@@ -660,7 +577,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
         [Test]
         public async Task GetPastDaysFixtures_Return_1()
         {
-            _mockFixtureRepository.Object.Add(
+            _publicSportDataUnitOfWork.RugbyFixtures.Add(
                 new RugbyFixture()
                 {
                     Id = Guid.NewGuid(),
@@ -672,7 +589,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
         [Test]
         public async Task GetPastDaysFixtures_Return_1_With_1_Fixture_TooFarInThePast()
         {
-            _mockFixtureRepository.Object.AddRange(
+            _publicSportDataUnitOfWork.RugbyFixtures.AddRange(
                 new List<RugbyFixture>()
                 {
                     new RugbyFixture()
@@ -693,7 +610,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
         [Test]
         public async Task GetPastDaysFixtures_Return_2_With_0_Fixture_TooFarInThePast()
         {
-            _mockFixtureRepository.Object.AddRange(
+            _publicSportDataUnitOfWork.RugbyFixtures.AddRange(
                 new List<RugbyFixture>()
                 {
                     new RugbyFixture()
@@ -714,7 +631,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
         [Test]
         public async Task GetPastDaysFixtures_Return_0_With_2_Fixture_TooFarInThePast()
         {
-            _mockFixtureRepository.Object.AddRange(
+            _publicSportDataUnitOfWork.RugbyFixtures.AddRange(
                 new List<RugbyFixture>()
                 {
                     new RugbyFixture()
