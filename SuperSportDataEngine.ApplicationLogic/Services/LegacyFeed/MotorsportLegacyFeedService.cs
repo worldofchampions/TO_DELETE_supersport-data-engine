@@ -33,7 +33,8 @@
 
             var raceEvents =
                 _publicSportDataUnitOfWork.MotorsportRaceEvents.Where(e =>
-                    e.MotorsportSeason.ProviderSeasonId == currentSeason.ProviderSeasonId).ToList();
+                    e.MotorsportSeason.ProviderSeasonId == currentSeason.ProviderSeasonId &&
+                    e.MotorsportSeason.MotorsportLeague.Slug.Equals(category)).ToList();
 
             if (current)
             {
