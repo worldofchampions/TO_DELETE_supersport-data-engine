@@ -166,6 +166,25 @@
             return await Task.FromResult(results);
         }
 
+        public async Task<MotorsportDriverStandingsEntity> GetDriverStandings(string category)
+        {
+            var motorsportSeason = await GetCurrentSeasonForCategory(category);
+            var motorsportLeague = motorsportSeason.MotorsportLeague;
+
+            var motorsportDriverStandings = (await _publicSportDataUnitOfWork.MotorsportDriverStandings.WhereAsync(x =>
+                x.MotorsportLeagueId.Equals(motorsportLeague.Id) &&
+                x.MotorsportSeasonId.Equals(motorsportSeason.Id)
+            )).OrderBy(x => x.Position);
+
+            var result = new MotorsportDriverStandingsEntity
+            {
+                MotorsportLeague = motorsportLeague,
+                MotorsportDriverStandings = motorsportDriverStandings.ToList()
+            };
+
+            return result;
+        }
+
         public async Task<MotorsportTeamStandingsEntity> GetTeamStandings(string category)
         {
             var motorsportSeason = await GetCurrentSeasonForCategory(category);

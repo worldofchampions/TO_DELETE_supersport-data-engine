@@ -1,12 +1,11 @@
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-
-﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
+namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 {
     using SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters;
     using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Motorsport;
     using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces.LegacyFeed;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
     using SuperSportDataEngine.Common.Interfaces;
     using SuperSportDataEngine.Common.Logging;
     using System;
@@ -170,11 +169,19 @@ using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramewor
         /// </summary>
         [HttpGet, HttpHead]
         [Route("{category}/driverstandings")]
-        [ResponseType(typeof(IEnumerable<DriverStandingsModel>))]
+        [ResponseType(typeof(IEnumerable<DriverStandings>))]
         public async Task<IHttpActionResult> GetDriverStandings(string category)
         {
-            // TODO: @motorsport-feed: implement.
-            return Content(HttpStatusCode.OK, "DEBUG GetDriverStandings");
+            var cacheKey = CacheKeyNamespacePrefixForFeed + $"motorsport/{category}/driverstandings";
+            var resultFromCache = await GetFromCacheAsync<DriverStandings>(cacheKey);
+            if (resultFromCache != null)
+                return Ok(resultFromCache);
+
+            var motorsportDriverStandingsEntity = await _motorsportLegacyFeedService.GetDriverStandings(category);
+            var resultFromService = Map<List<DriverStandings>>(motorsportDriverStandingsEntity);
+
+            PersistToCache(cacheKey, resultFromService);
+            return Ok(resultFromService);
         }
 
         /// <summary>
@@ -186,7 +193,7 @@ using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramewor
         public async Task<IHttpActionResult> GetTeamStandings(string category)
         {
             var cacheKey = CacheKeyNamespacePrefixForFeed + $"motorsport/{category}/teamstandings";
-            var resultFromCache = await GetFromCacheAsync<ResultEventMotorsportModel>(cacheKey);
+            var resultFromCache = await GetFromCacheAsync<TeamStandings>(cacheKey);
             if (resultFromCache != null)
                 return Ok(resultFromCache);
 
