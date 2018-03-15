@@ -238,6 +238,7 @@
     <Compile Include="Models\Mappers\LegacyPointScorerMapperProfile.cs" />
     <Compile Include="Models\Mappers\LegacyScorerModelMapperProfile.cs" />
     <Compile Include="Models\Mappers\LegacyTeamsheetMapperProfile.cs" />
+    <Compile Include="Models\Mappers\Motorsport\LegacyMotorsportDriverStandingsMapperProfile.cs" />
     <Compile Include="Models\Mappers\Motorsport\LegacyMotorsportResultMapperProfile.cs" />
     <Compile Include="Models\Mappers\Motorsport\LegacyMotorsportResultEventMapperProfile.cs" />
     <Compile Include="Models\Mappers\Motorsport\LegacyMotorsportGridEventMapperProfile.cs" />
@@ -290,9 +291,9 @@
     <Compile Include="Models\Shared\MatchStatisticsModel.cs" />
     <Compile Include="Models\Shared\MatchVideoModel.cs" />
     <Compile Include="Models\Shared\MedalStandingModel.cs" />
-    <Compile Include="Models\Motorsport\DriverModel.cs" />
-    <Compile Include="Models\Motorsport\DriversListModel.cs" />
-    <Compile Include="Models\Motorsport\DriverStandingsModel.cs" />
+    <Compile Include="Models\Motorsport\Driver.cs" />
+    <Compile Include="Models\Motorsport\DriversList.cs" />
+    <Compile Include="Models\Motorsport\DriverStandings.cs" />
     <Compile Include="Models\Motorsport\GridModel.cs" />
     <Compile Include="Models\Motorsport\LiveModel.cs" />
     <Compile Include="Models\Motorsport\LiveMotorsportModel.cs" />

@@ -15,6 +15,8 @@
 
         Task<MotorsportRaceEventResultsEntity> GetLatestResult(string category);
 
+        Task<MotorsportDriverStandingsEntity> GetDriverStandings(string category);
+
         Task<MotorsportTeamStandingsEntity> GetTeamStandings(string category);
     }
 }

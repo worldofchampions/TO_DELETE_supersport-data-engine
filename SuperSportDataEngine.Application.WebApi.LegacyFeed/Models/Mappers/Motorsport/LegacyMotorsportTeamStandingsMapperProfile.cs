@@ -13,7 +13,7 @@
         {
             CreateMap<MotorsportTeamStandingsEntity, List<TeamStandings>>()
 
-                .ConstructUsing(x => x.MotorsportTeamStandings.Select(y => CreateFeedObject(y, x.MotorsportLeague)).ToList())
+                .ConstructUsing(x => x.MotorsportTeamStandings.Select(y => CreateDestinationObject(x.MotorsportLeague, y)).ToList())
 
                 .ForAllOtherMembers(dest => dest.Ignore());
 
@@ -37,7 +37,7 @@
                 .ForAllOtherMembers(dest => dest.Ignore());
         }
 
-        private static TeamStandings CreateFeedObject(MotorsportTeamStanding motorsportTeamStanding, MotorsportLeague motorsportLeague)
+        private static TeamStandings CreateDestinationObject(MotorsportLeague motorsportLeague, MotorsportTeamStanding motorsportTeamStanding)
         {
             var destination = Mapper.Map<MotorsportTeamStanding, TeamStandings>(motorsportTeamStanding);
 
