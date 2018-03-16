@@ -18,12 +18,23 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Moto
                 .ForMember(dest => dest.Position, expression => expression.MapFrom(
                     src => src.GridPosition))
 
+                .ForMember(dest => dest.GridPosition, expression => expression.MapFrom(
+                    src => src.GridPosition))
+
                 .ForMember(dest => dest.PositionText, expression => expression.UseValue((string) null))
+
+                .ForMember(dest => dest.GapToCarInFront, expression => expression.UseValue(string.Empty))
+
+                .ForMember(dest => dest.GapToLeader, expression => expression.UseValue(string.Empty))
+
+                .ForMember(dest => dest.IncompleteReason, expression => expression.MapFrom(
+                    src => string.IsNullOrEmpty(src.OutReason) ? "" : src.OutReason))
 
                 .ForMember(dest => dest.Time, expression => expression.MapFrom(
                     src => GetTime(src)))
 
-                .ForMember(dest => dest.Points, expression => expression.UseValue((string) null))
+                .ForMember(dest => dest.Points, expression => expression.MapFrom(
+                    src => src.Points))
 
                 .ForMember(dest => dest.Id, expression => expression.MapFrom(
                     src => src.MotorsportDriver.LegacyDriverId))
@@ -66,9 +77,9 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Moto
 
         private static string GetTime(MotorsportRaceEventResult grid)
         {
-            var hours = grid.FinishingTimeHours == 0 ? "" : grid.FinishingTimeHours + ":";
-            var minutes = grid.FinishingTimeMinutes == 0 ? "" : grid.FinishingTimeMinutes + ":";
-            var seconds = grid.FinishingTimeSeconds == 0 ? "" : grid.FinishingTimeSeconds + ".";
+            var hours = grid.FinishingTimeHours == 0 ? "" : grid.FinishingTimeHours.ToString().PadLeft(2, '0') + ":";
+            var minutes = grid.FinishingTimeMinutes == 0 ? "" : grid.FinishingTimeMinutes.ToString().PadLeft(2, '0') + ":";
+            var seconds = grid.FinishingTimeSeconds == 0 ? "" : grid.FinishingTimeSeconds.ToString().PadLeft(2, '0') + ".";
             var milliseconds = grid.FinishingTimeMilliseconds == 0 ? "" : grid.FinishingTimeMilliseconds.ToString();
 
             return hours + minutes + seconds + milliseconds;

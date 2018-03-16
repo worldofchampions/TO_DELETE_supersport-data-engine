@@ -26,7 +26,8 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Moto
 
                 .ForMember(dest => dest.ResultId, expression => expression.UseValue(0))
 
-                .ForMember(dest => dest.EventId, expression => expression.UseValue(0))
+                .ForMember(dest => dest.EventId, expression => expression.MapFrom(
+                    src => src.LegacyRaceEventId))
 
                 .ForMember(dest => dest.Name, expression => expression.MapFrom(
                     src => src.MotorsportRace.RaceNameCmsOverride ?? src.MotorsportRace.RaceName))
