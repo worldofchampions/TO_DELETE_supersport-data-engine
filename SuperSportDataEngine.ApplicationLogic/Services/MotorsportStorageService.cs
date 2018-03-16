@@ -193,7 +193,8 @@
 
             foreach (var owner in ownersFromProvider)
             {
-                var ownerInRepo = _publicSportDataUnitOfWork.MotortsportTeams.FirstOrDefault(t => t.ProviderTeamId == owner.ownerId);
+                var ownerInRepo = 
+                    _publicSportDataUnitOfWork.MotortsportTeams.FirstOrDefault(t => t.ProviderTeamId == owner.ownerId && t.MotorsportLeague.Id == league.Id);
 
                 if (ownerInRepo is null)
                 {
