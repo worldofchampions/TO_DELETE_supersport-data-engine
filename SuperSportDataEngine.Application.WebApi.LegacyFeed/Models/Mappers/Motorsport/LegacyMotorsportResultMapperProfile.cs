@@ -27,6 +27,9 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Moto
 
                 .ForMember(dest => dest.GapToLeader, expression => expression.UseValue(string.Empty))
 
+                .ForMember(dest => dest.Incomplete, expression => expression.MapFrom(
+                    src => !src.CompletedRace))
+
                 .ForMember(dest => dest.IncompleteReason, expression => expression.MapFrom(
                     src => string.IsNullOrEmpty(src.OutReason) ? "" : src.OutReason))
 
