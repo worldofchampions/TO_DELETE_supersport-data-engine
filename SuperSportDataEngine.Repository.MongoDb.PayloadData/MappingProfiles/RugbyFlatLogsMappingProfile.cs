@@ -3,6 +3,7 @@ using SuperSportDataEngine.Repository.MongoDb.PayloadData.Models.RugbyLogsFlat;
 
 namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.MappingProfiles
 {
+    // This class is used by Reflection.
     public class RugbyFlatLogsMappingProfile : Profile
     {
         public RugbyFlatLogsMappingProfile()

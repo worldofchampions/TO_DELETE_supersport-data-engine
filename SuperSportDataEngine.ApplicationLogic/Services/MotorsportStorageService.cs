@@ -845,6 +845,10 @@
                     t.ProviderTeamId == providerTeam.teamId && t.MotorsportLeague.Id == league.Id);
             }
 
+            if (teamFromRepo is null) return;
+            if (league is null) return;
+            if (season is null) return;
+
             var teamStanding = new MotorsportTeamStanding
             {
                 MotorsportTeamId = teamFromRepo.Id,

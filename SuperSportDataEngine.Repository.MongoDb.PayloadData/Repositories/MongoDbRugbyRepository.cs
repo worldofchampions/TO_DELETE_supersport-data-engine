@@ -10,6 +10,8 @@ using SuperSportDataEngine.Repository.MongoDb.PayloadData.Models.RugbyLogsGroupe
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyMatchStats;
 using SuperSportDataEngine.Repository.MongoDb.PayloadData.Models.MongoRugbyMatchStats;
 using System.Configuration;
+using System.Linq;
+using System.Reflection;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyEventsFlow;
 using SuperSportDataEngine.Repository.MongoDb.PayloadData.Models.MongoRugbyEventsFlow;
 using MongoDB.Bson;
@@ -17,7 +19,6 @@ using SuperSportDataEngine.Common.Logging;
 
 namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 {
-
     public class MongoDbRugbyRepository : IMongoDbRugbyRepository
     {
         private IMongoClient _mongoClient;
@@ -32,12 +33,29 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
             _mongoClient = mongoClient;
             _logger = logger;
             _mongoDatabaseName = ConfigurationManager.AppSettings["MongoDbName"];
+
+            InitialiseMappings();
+        }
+
+        private void InitialiseMappings()
+        {
+            // Get all the mapping profiles from the current assembly.
+            var types = Assembly.GetExecutingAssembly()
+                .GetTypes()
+                .Where(t =>
+                    t.BaseType == typeof(Profile));
+
+            // Add all the mapping 
+            // profiles to Automapper.
+            Mapper.Initialize(cfg =>
+            {
+                foreach (var type in types)
+                    cfg.AddProfile(type);
+            });
         }
 
         public void SaveEntities(RugbyEntitiesResponse entitiesResponse)
         {
-            Mapper.Initialize(c => c.AddProfile<RugbyEntitiesMappingProfile>());
-
             // Map the provider data to a type mongo understands.
             var mongoEntities = 
                 Mapper.Map<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyEntities.RugbyEntities, MongoRugbyEntities>(
@@ -77,8 +95,6 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 
         public void Save(RugbyFixturesResponse fixturesResponse)
         {
-            Mapper.Initialize(c => c.AddProfile<RugbyFixturesMappingProfile>());
-
             // Map the provider data to a type mongo understands.
             var mongoFixtures = 
                 Mapper.Map<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyFixtures.RugbyFixtures, MongoRugbyFixtures>(
@@ -120,8 +136,6 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 
         public void Save(RugbyFlatLogsResponse logsResponse)
         {
-            Mapper.Initialize(c => c.AddProfile<RugbyFlatLogsMappingProfile>());
-
             // Map the provider data to a type mongo understands.
             var mongoLogs =
                 Mapper.Map<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyFlatLogs.RugbyFlatLogs, MongoRugbyFlatLogs>(
@@ -163,8 +177,6 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 
         public void Save(RugbyGroupedLogsResponse logsResponse)
         {
-            Mapper.Initialize(c => c.AddProfile<RugbyGroupedLogsMappingProfile>());
-
             // Map the provider data to a type mongo understands.
             var mongoLogsGrouped =
                 Mapper.Map<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyGroupedLogs.RugbyGroupedLogs, MongoRugbyGroupedLogs>(
@@ -206,8 +218,6 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 
         public void Save(RugbyMatchStatsResponse matchStatsResponse)
         {
-            Mapper.Initialize(c => c.AddProfile<RugbyMatchStatsMappingProfile>());
-
             // Map the provider data to a type mongo understands.
             var matchStats =
                 Mapper.Map<RugbyMatchStats, MongoRugbyMatchStats>(
@@ -249,8 +259,6 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 
         public void Save(RugbyEventsFlowResponse eventsFlowResponse)
         {
-            Mapper.Initialize(c => c.AddProfile<RugbyEventsFlowMappingProfile>());
-
             // Map the provider data to a type mongo understands.
             var eventsFlow =
                 Mapper.Map<RugbyEventsFlow, MongoRugbyEventsFlow>(

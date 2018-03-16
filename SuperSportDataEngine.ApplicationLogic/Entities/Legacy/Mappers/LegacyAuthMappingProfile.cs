@@ -3,6 +3,7 @@ using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramewor
 
 namespace SuperSportDataEngine.ApplicationLogic.Entities.Legacy.Mappers
 {
+    // This class is used by Reflection.
     public class LegacyAuthMappingProfile : Profile
     {
         public LegacyAuthMappingProfile()

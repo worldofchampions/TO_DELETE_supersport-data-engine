@@ -163,6 +163,11 @@
     <Compile Include="Entities\Legacy\LegacyRugbyMatchEventEntity.cs" />
     <Compile Include="Entities\Legacy\LegacyRugbyScorerEntity.cs" />
     <Compile Include="Entities\Legacy\LegacyRugbyScoringEventsConstants.cs" />
+    <Compile Include="Entities\Legacy\Motorsport\MotorsportDriverStandingsEntity.cs" />
+    <Compile Include="Entities\Legacy\Motorsport\MotorsportRaceEventGridEntity.cs" />
+    <Compile Include="Entities\Legacy\Motorsport\MotorsportRaceEventResultsEntity.cs" />
+    <Compile Include="Entities\Legacy\Motorsport\MotorsportScheduleEntity.cs" />
+    <Compile Include="Entities\Legacy\Motorsport\MotorsportTeamStandingsEntity.cs" />
     <Compile Include="Entities\Legacy\RugbyMatchDetailsEntity.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\Enums\RugbySeasonStatus.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.Common\Models\Enums\RugbyFixtureStatus.cs" />

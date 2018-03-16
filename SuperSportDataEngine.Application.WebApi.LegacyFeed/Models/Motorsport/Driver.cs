@@ -1,10 +1,9 @@
 ﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Motorsport
 {
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
     using System;
 
     [Serializable]
-    public class DriverModel : TeamModel
+    public class Driver : Team
     {
         public int Id { get; set; }
         public string FirstName { get; set; }
