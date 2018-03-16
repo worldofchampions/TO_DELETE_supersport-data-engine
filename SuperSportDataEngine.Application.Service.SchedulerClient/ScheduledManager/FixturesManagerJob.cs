@@ -27,7 +27,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
         private IUnityContainer _childContainer;
         private IRecurringJobManager _recurringJobManager;
         private ILoggingService _logger;
-        private IBaseEntityFrameworkRepository<RugbySeason> _rugbySeasonsRepository;
         private static int _maxNumberOfHoursToCheckForUpcomingFixtures;
         private static int _maxNumberOfHoursToCheckForPreviousFixtures;
 
@@ -59,7 +58,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
         {
             _logger = _childContainer.Resolve<ILoggingService>();
             _recurringJobManager = _childContainer.Resolve<IRecurringJobManager>();
-            _rugbySeasonsRepository = _childContainer.Resolve<IBaseEntityFrameworkRepository<RugbySeason>>();
         }
 
         private void CreateNewContainer()
