@@ -248,12 +248,9 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
                     var season =
                         (await _systemSportDataUnitOfWork.SchedulerTrackingRugbySeasons.AllAsync())
                         .FirstOrDefault(s => s.RugbySeasonStatus == RugbySeasonStatus.InProgress &&
-                                             s.TournamentId == tournament.Id &&
-                                             s.SchedulerStateForManagerJobPolling ==
-                                             SchedulerStateForManagerJobPolling.NotRunning);
+                                             s.TournamentId == tournament.Id);
 
-                    if (season != null &&
-                        season.SchedulerStateForManagerJobPolling != SchedulerStateForManagerJobPolling.Running)
+                    if (season != null)
                     {
                         season.SchedulerStateForManagerJobPolling = SchedulerStateForManagerJobPolling.Running;
                         _systemSportDataUnitOfWork.SchedulerTrackingRugbySeasons.Update(season);
