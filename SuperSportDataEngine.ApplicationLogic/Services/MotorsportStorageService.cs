@@ -328,6 +328,11 @@
                 raceEventGridInRepo.QualifyingTimeMilliseconds = bestQualifyingRun.time.milliseconds;
             }
 
+            if (providerGridEntry.carPosition != null)
+            {
+                raceEventGridInRepo.GridPosition = providerGridEntry.carPosition.startingPosition;
+            }
+
             _publicSportDataUnitOfWork.MotorsportRaceEventGrids.Update(raceEventGridInRepo);
         }
 
