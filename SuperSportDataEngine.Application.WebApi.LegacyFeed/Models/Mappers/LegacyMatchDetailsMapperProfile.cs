@@ -5,6 +5,7 @@
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
     using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
 
+    // This class is used by Reflection.
     public class LegacyMatchDetailsMapperProfile : Profile
     {
         public LegacyMatchDetailsMapperProfile()

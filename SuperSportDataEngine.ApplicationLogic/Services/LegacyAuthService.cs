@@ -12,29 +12,26 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using SuperSportDataEngine.Common.Logging;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
 
 namespace SuperSportDataEngine.ApplicationLogic.Services
 {
     public class LegacyAuthService : ILegacyAuthService
     {
         private readonly ILoggingService _loggingService;
-        private readonly IBaseEntityFrameworkRepository<LegacyZoneSite> _legacyZoneSiteRepository;
-        private readonly IBaseEntityFrameworkRepository<LegacyAuthFeedConsumer> _legacyAuthFeedConsumerRepository;
+        private readonly ISystemSportDataUnitOfWork _systemSportDataUnitOfWork;
 
         public LegacyAuthService(
             ILoggingService loggingService,
-            IBaseEntityFrameworkRepository<LegacyZoneSite> legacyZoneSiteRepository,
-            IBaseEntityFrameworkRepository<LegacyAuthFeedConsumer> legacyAuthFeedConsumerRepository)
+            ISystemSportDataUnitOfWork systemSportDataUnitOfWork)
         {
             _loggingService = loggingService;
-            _legacyZoneSiteRepository = legacyZoneSiteRepository;
-            _legacyAuthFeedConsumerRepository = legacyAuthFeedConsumerRepository;
+            _systemSportDataUnitOfWork = systemSportDataUnitOfWork;
         }
 
         public async Task<bool> IsAuthorised(string authKey, int siteId = 0)
         {
             int authoriseAttempts = 0;
-
             BeginAuthorise:
 
             authoriseAttempts++;
@@ -42,26 +39,27 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             {
                 // Get the Auth key from the DB.
                 var legacyAuthFeed =
-                    (await _legacyAuthFeedConsumerRepository.AllAsync()).FirstOrDefault(c =>
+                    (await _systemSportDataUnitOfWork.LegacyAuthFeedConsumers.AllAsync()).FirstOrDefault(c =>
                         c.AuthKey == authKey && c.Active);
 
                 // Auth key doesnt exist.
+
                 if (legacyAuthFeed == null)
                 {
                     return false;
                 }
-
+                
                 if (siteId != 0)
                 {
                     // TODO: Temporary auth override until ZoneSite data is seeded.
                     return true;
 
-                    //var legacyZone = _legacyZoneSiteRepository.Where(c => c.Id == siteId).FirstOrDefault();
-                    //if (legacyZone == null)
-                    //{
-                    //    return false;
-                    //}
-                    //return legacyZone.Feed == legacyAuthFeed.Name.Replace("  ", string.Empty).ToLowerInvariant();
+                    var legacyZone = _systemSportDataUnitOfWork.LegacyZoneSites.Where(c => c.Id == siteId).FirstOrDefault();
+                    if (legacyZone == null)
+                    {
+                        return false;
+                    }
+                    return legacyZone.Feed == legacyAuthFeed.Name.Replace("  ", string.Empty).ToLowerInvariant();
                 }
 
                 // Is authorised.
@@ -86,8 +84,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         public async Task<bool> ImportZoneSiteRecords(IEnumerable<LegacyZoneSiteEntity> models)
         {
             var legacyModels = models.Select(entity => Mapper.Map<LegacyZoneSite>(entity));
-            _legacyZoneSiteRepository.AddRange(new HashSet<LegacyZoneSite>(legacyModels));
-            await _legacyZoneSiteRepository.SaveAsync();
+            _systemSportDataUnitOfWork.LegacyZoneSites.AddRange(new HashSet<LegacyZoneSite>(legacyModels));
+            await _systemSportDataUnitOfWork.SaveChangesAsync();
 
             return true;
         }
@@ -95,8 +93,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         public async Task<bool> ImportAuthFeedRecords(IEnumerable<LegacyAuthFeedConsumerEntity> models)
         {
             var legacyModels = models.Select(entity => LegacyAuthFeedConsumerMapper.MapToModel(entity));
-            _legacyAuthFeedConsumerRepository.AddRange(new HashSet<LegacyAuthFeedConsumer>(legacyModels));
-            await _legacyAuthFeedConsumerRepository.SaveAsync();
+            _systemSportDataUnitOfWork.LegacyAuthFeedConsumers.AddRange(new HashSet<LegacyAuthFeedConsumer>(legacyModels));
+            await _systemSportDataUnitOfWork.SaveChangesAsync();
 
             return true;
         }

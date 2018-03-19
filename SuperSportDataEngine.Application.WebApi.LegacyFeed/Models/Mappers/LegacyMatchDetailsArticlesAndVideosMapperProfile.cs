@@ -6,6 +6,7 @@
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.DeprecatedFeed.ResponseModels;
     using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
 
+    // This class is used by Reflection.
     public class LegacyMatchDetailsArticlesAndVideosMapperProfile : Profile
     {
         public LegacyMatchDetailsArticlesAndVideosMapperProfile()

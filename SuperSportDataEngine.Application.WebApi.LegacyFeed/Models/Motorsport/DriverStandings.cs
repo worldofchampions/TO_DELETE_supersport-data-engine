@@ -1,9 +1,9 @@
-﻿using System;
-
-namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Motorsport 
+﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Motorsport
 {
+    using System;
+
     [Serializable]
-    public class DriverStandingsModel : DriverModel
+    public class DriverStandings : Driver
     {
         public int Position { get; set; }
         public string Points { get; set; }

@@ -4,6 +4,7 @@ using SuperSportDataEngine.Repository.MongoDb.PayloadData.Models.MongoRugbyEvent
 
 namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.MappingProfiles
 {
+    // This class is used by Reflection.
     public class RugbyEventsFlowMappingProfile : Profile
     {
         public RugbyEventsFlowMappingProfile()
