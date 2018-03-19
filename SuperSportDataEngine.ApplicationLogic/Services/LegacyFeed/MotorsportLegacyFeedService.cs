@@ -160,7 +160,7 @@
             if (group != null)
                 results.MotorsportRaceEventResults =
                     group.ToList()
-                        .OrderBy(g => g.GridPosition)
+                        .OrderBy(g => g.Position)
                         .ToList();
 
             return await Task.FromResult(results);
