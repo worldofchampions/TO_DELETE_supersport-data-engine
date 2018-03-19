@@ -57,8 +57,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
                 _recurringJobManager,
                 _container,
                 _motorsportService,
-                _motorIngestWorkerService,
-                _systemSportDataUnitOfWork);
+                _motorIngestWorkerService);
 
             _fixturesManagerJob =
                 new FixturesManagerJob(
@@ -87,7 +86,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
             _timer = new Timer
             {
                 AutoReset = false,
-                Interval = TimeSpan.FromMinutes(1).TotalMilliseconds
+                Interval = TimeSpan.FromSeconds(20).TotalMilliseconds
             };
 
             _timer.Elapsed += UpdateManagerJobs;

@@ -6,6 +6,7 @@ using Hangfire;
 using Hangfire.Common;
 using Microsoft.Practices.Unity;
 using SuperSportDataEngine.Application.Container;
+using SuperSportDataEngine.Application.Container.Enums;
 using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
@@ -20,9 +21,9 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
     {
         private IRecurringJobManager _recurringJobManager;
         private IUnityContainer _childContainer;
-        private readonly IMotorsportService _motorsportService;
-        private readonly IMotorsportIngestWorkerService _motorsportIngestWorkerService;
-        private readonly ISystemSportDataUnitOfWork _systemSportDataUnitOfWork;
+        private IMotorsportService _motorsportService;
+        private IMotorsportIngestWorkerService _motorsportIngestWorkerService;
+        private ISystemSportDataUnitOfWork _systemSportDataUnitOfWork;
 
         private int _tempCount = 0;
 
@@ -30,19 +31,33 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
             IRecurringJobManager recurringJobManager,
             IUnityContainer childContainer,
             IMotorsportService motorsportService,
-            IMotorsportIngestWorkerService motorsportIngestWorkerService,
-            ISystemSportDataUnitOfWork systemSportDataUnitOfWork)
+            IMotorsportIngestWorkerService motorsportIngestWorkerService)
         {
-            _childContainer = childContainer;
-            _motorsportService = motorsportService;
-            _motorsportIngestWorkerService = motorsportIngestWorkerService;
-            _systemSportDataUnitOfWork = systemSportDataUnitOfWork;
-            _recurringJobManager = recurringJobManager;
+            _childContainer = childContainer.CreateChildContainer();
         }
 
         public async Task DoWorkAsync()
         {
+            CreateNewContainer();
+            ConfigureDependencies();
+
             await CreateChildJobsForFetchingLiveRaceData();
+        }
+
+        private void ConfigureDependencies()
+        {
+            _motorsportService = _childContainer.Resolve<IMotorsportService>();
+            _motorsportIngestWorkerService = _childContainer.Resolve<IMotorsportIngestWorkerService>();
+            _systemSportDataUnitOfWork = _childContainer.Resolve<ISystemSportDataUnitOfWork>();
+            _recurringJobManager = _childContainer.Resolve<IRecurringJobManager>();
+        }
+
+        private void CreateNewContainer()
+        {
+            _childContainer?.Dispose();
+
+            _childContainer = new UnityContainer();
+            UnityConfigurationManager.RegisterTypes(_childContainer, ApplicationScope.ServiceSchedulerClient);
         }
 
         private async Task CreateChildJobsForFetchingLiveRaceData()
