@@ -8,6 +8,7 @@
     public enum DataProvider
     {
         CmsDataCapture = 1,
-        StatsProzone = 2
+        StatsProzone = 2,
+        Stats = 3
     }
 }

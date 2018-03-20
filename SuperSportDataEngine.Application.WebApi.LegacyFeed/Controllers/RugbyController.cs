@@ -23,7 +23,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
     using System.Web.Http.Description;
 
     /// <summary>
-    /// SuperSport Rugby Endpoints
+    /// LegacyFeed Rugby Endpoints
     /// </summary>
     [LegacyExceptionFilter]
     [RoutePrefix("rugby")]
@@ -34,7 +34,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         private readonly ICache _cache;
         private readonly ILoggingService _logger;
 
-        private const string CacheKeyNamespacePrefixForFeed = "LegacyFeed:";
+        private const string CacheKeyNamespacePrefixForFeed = "LegacyFeed:Rugby:";
 
         public RugbyController(
             IRugbyService rugbyService,
@@ -531,6 +531,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             return Ok(groupedLogsCache);
         }
 
+        // [TODO] Refactor this method out of this class and into a base class that has the cache.
         private void PersistToCache<T>(string cacheKey, T cacheData) where T : class
         {
             try
@@ -543,6 +544,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             }
         }
 
+        // [TODO] Refactor this method out of this class and into a base class that has the cache.
         private async Task<T> GetFromCacheAsync<T>(string key) where T : class
         {
             try

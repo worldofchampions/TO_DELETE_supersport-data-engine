@@ -4,6 +4,7 @@ using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramewor
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
 {
+    // This class is used by Reflection.
     public class LegacyMatchStatsMapperProfile: Profile
     {
         public LegacyMatchStatsMapperProfile()
