@@ -104,15 +104,15 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
 
             try
             {
-                //var rugbyEnabled = bool.Parse(ConfigurationManager.AppSettings["RugbyIngestEnabled"]);
+                var rugbyEnabled = bool.Parse(ConfigurationManager.AppSettings["RugbyIngestEnabled"]);
 
-                //if (rugbyEnabled)
-                //{
-                //    await _liveManagerJob.DoWorkAsync();
-                //    await _fixturesManagerJob.DoWorkAsync();
-                //    await _logsManagerJob.DoWorkAsync();
-                //    await _playerStatisticsManagerJob.DoWorkAsync();
-                //}
+                if (rugbyEnabled)
+                {
+                    await _liveManagerJob.DoWorkAsync();
+                    await _fixturesManagerJob.DoWorkAsync();
+                    await _logsManagerJob.DoWorkAsync();
+                    await _playerStatisticsManagerJob.DoWorkAsync();
+                }
 
                 var motorEnabled = bool.Parse(ConfigurationManager.AppSettings["MotorsportIngestEnabled"]);
 
