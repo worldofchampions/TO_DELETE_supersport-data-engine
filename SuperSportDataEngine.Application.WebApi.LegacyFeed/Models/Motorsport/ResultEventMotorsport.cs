@@ -7,7 +7,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Motorsport
 {
     public class ResultEvent
     {
-        public List<Result> RaceResult { get; set; }
+        public List<ResultMotorsport> RaceResult { get; set; }
         public int Id { get; set; }
         public string Date { get; set; }
         public string StartTime { get; set; }
