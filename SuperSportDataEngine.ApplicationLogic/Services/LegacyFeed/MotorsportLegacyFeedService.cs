@@ -34,7 +34,9 @@
             var raceEvents =
                 _publicSportDataUnitOfWork.MotorsportRaceEvents.Where(e =>
                     e.MotorsportSeason.ProviderSeasonId == currentSeason.ProviderSeasonId &&
-                    e.MotorsportSeason.MotorsportLeague.Slug.Equals(category)).ToList();
+                    e.MotorsportSeason.MotorsportLeague.Slug.Equals(category))
+                  .OrderBy(e => e.StartDateTimeUtc)
+                  .ToList();
 
             if (current)
             {
@@ -43,7 +45,8 @@
                         e.StartDateTimeUtc > today).ToList();
             }
 
-            schedule.MotorsportRaceEvents = raceEvents;
+            schedule.MotorsportRaceEvents = 
+                raceEvents;
 
             return await Task.FromResult(schedule);
         }

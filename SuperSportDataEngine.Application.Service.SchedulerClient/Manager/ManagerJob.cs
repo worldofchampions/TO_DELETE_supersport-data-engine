@@ -29,9 +29,14 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
         private MotorsportLiveManagerJob _motorsportLiveManagerJob;
         private IMotorsportIngestWorkerService _motorIngestWorkerService;
         private IMotorsportService _motorsportService;
+        private static int _managerLoopTimeInSeconds;
 
         public ManagerJob()
         {
+            _managerLoopTimeInSeconds = 
+                int.Parse(
+                    ConfigurationManager.AppSettings["ManagerLoopTimeInSeconds"]);
+
             ConfigureTimer();
             ConfigureDepenencies();
         }
@@ -86,7 +91,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
             _timer = new Timer
             {
                 AutoReset = false,
-                Interval = TimeSpan.FromSeconds(20).TotalMilliseconds
+                Interval = TimeSpan.FromSeconds(_managerLoopTimeInSeconds).TotalMilliseconds
             };
 
             _timer.Elapsed += UpdateManagerJobs;
@@ -95,8 +100,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
 
         private async void UpdateManagerJobs(object sender, ElapsedEventArgs e)
         {
-            var methodName = System.Reflection.MethodBase.GetCurrentMethod().Name;
-
             ConfigureDepenencies();
 
             try
