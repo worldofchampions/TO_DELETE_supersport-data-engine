@@ -245,8 +245,8 @@
     <Compile Include="Models\Mappers\Motorsport\LegacyMotorsportGridMapperProfile.cs" />
     <Compile Include="Models\Mappers\Motorsport\LegacyMotorsportScheduleMapperProfile.cs" />
     <Compile Include="Models\Mappers\Motorsport\LegacyMotorsportTeamStandingsMapperProfile.cs" />
-    <Compile Include="Models\Motorsport\ResultEventMotorsportModel.cs" />
-    <Compile Include="Models\Motorsport\GridEventModel.cs" />
+    <Compile Include="Models\Motorsport\ResultEvent.cs" />
+    <Compile Include="Models\Motorsport\GridEvent.cs" />
     <Compile Include="Models\Motorsport\Team.cs" />
     <Compile Include="Models\Rugby\GeneralResponse.cs" />
     <Compile Include="Models\Shared\AlternateCommentsModel.cs" />
@@ -294,11 +294,11 @@
     <Compile Include="Models\Motorsport\Driver.cs" />
     <Compile Include="Models\Motorsport\DriversList.cs" />
     <Compile Include="Models\Motorsport\DriverStandings.cs" />
-    <Compile Include="Models\Motorsport\GridModel.cs" />
-    <Compile Include="Models\Motorsport\LiveModel.cs" />
+    <Compile Include="Models\Motorsport\Grid.cs" />
+    <Compile Include="Models\Motorsport\Live.cs" />
     <Compile Include="Models\Motorsport\LiveMotorsportModel.cs" />
     <Compile Include="Models\Motorsport\RaceModel.cs" />
-    <Compile Include="Models\Motorsport\ResultMotorsportModel.cs" />
+    <Compile Include="Models\Motorsport\Result.cs" />
     <Compile Include="Models\Motorsport\StageModel.cs" />
     <Compile Include="Models\News\NewsModel.cs" />
     <Compile Include="Models\Shared\OfficialModel.cs" />
@@ -308,7 +308,7 @@
     <Compile Include="Models\Shared\PlayerProfileModel.cs" />
     <Compile Include="Models\Shared\PlayerStaticticModel.cs" />
     <Compile Include="Models\Shared\QualifyingCriteriaModel.cs" />
-    <Compile Include="Models\Shared\RacesModel.cs" />
+    <Compile Include="Models\Shared\Races.cs" />
     <Compile Include="Models\Shared\RankingModel.cs" />
     <Compile Include="Models\Shared\ResultModel.cs" />
     <Compile Include="Models\Rugby\RugbyMatchDetailsModel.cs" />

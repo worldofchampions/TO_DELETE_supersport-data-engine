@@ -4,7 +4,7 @@
     using System.Collections.Generic;
 
     [Serializable]
-    public class RacesModel
+    public class Races
     {
         public int Id { get; set; }
         public string Category { get; set; }
