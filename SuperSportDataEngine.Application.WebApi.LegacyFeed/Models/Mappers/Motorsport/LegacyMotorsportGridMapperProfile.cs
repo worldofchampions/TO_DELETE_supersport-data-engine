@@ -14,7 +14,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Moto
     {
         public LegacyMotorsportGridMapperProfile()
         {
-            CreateMap<MotorsportRaceEventGrid, GridModel>()
+            CreateMap<MotorsportRaceEventGrid, Grid>()
                 .ForMember(dest => dest.StartInPit, expression => expression.UseValue(false))
 
                 .ForMember(dest => dest.Position, expression => expression.MapFrom(
