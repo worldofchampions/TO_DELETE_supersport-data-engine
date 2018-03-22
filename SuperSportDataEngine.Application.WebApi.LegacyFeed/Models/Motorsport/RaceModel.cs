@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Motorsport
 {
-    [Serializable]
+    //[Serializable]
     public class RaceModel
     {
         public enum MotorSportType
