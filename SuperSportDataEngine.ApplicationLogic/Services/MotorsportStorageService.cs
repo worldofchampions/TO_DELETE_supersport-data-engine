@@ -640,9 +640,9 @@
 
             if (providerStartDate != null)
             {
-                var dateTimeOffset = DateTimeOffset.Parse(providerStartDate.full.ToString(CultureInfo.InvariantCulture));
+                var dateTimeOffset = DateTimeOffset.Parse(providerStartDate.full.ToString(CultureInfo.InvariantCulture) + "Z");
 
-                eventInRepo.StartDateTimeUtc = dateTimeOffset.UtcDateTime;
+                eventInRepo.StartDateTimeUtc = dateTimeOffset;
             }
 
             var raceEventStatus = MapProviderRaceEventStatusToInternal(providerRaceEvent.eventStatus.eventStatusId);
@@ -688,9 +688,9 @@
 
             if (providerStartDate != null)
             {
-                var dateTimeOffset = DateTimeOffset.Parse(providerStartDate.full.ToString(CultureInfo.InvariantCulture));
+                var dateTimeOffset = DateTimeOffset.Parse(providerStartDate.full.ToString(CultureInfo.InvariantCulture) + "Z");
 
-                motorsportRaceEvent.StartDateTimeUtc = dateTimeOffset.UtcDateTime;
+                motorsportRaceEvent.StartDateTimeUtc = dateTimeOffset;
             }
 
             var raceEventStatus = MapProviderRaceEventStatusToInternal(providerRaceEvent.eventStatus.eventStatusId);
