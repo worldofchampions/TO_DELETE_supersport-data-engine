@@ -14,7 +14,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Moto
     {
         public LegacyMotorsportResultEventMapperProfile()
         {
-            CreateMap<MotorsportRaceEventResultsEntity, ResultEventMotorsport>()
+            CreateMap<MotorsportRaceEventResultsEntity, MotorsportResult>()
                 .ForMember(dest => dest.RaceResult, expression => expression.MapFrom(
                     src => src.MotorsportRaceEventResults))
 
