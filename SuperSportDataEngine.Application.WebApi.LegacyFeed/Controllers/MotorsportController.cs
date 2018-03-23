@@ -75,17 +75,17 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         /// </summary>
         [HttpGet, HttpHead]
         [Route("{category}/grid")]
-        [ResponseType(typeof(GridEvent))]
-        public async Task<GridEvent> GetGrid(string category)
+        [ResponseType(typeof(MotorsportGrid))]
+        public async Task<MotorsportGrid> GetGrid(string category)
         {
             var key = CacheKeyNamespacePrefixForFeed + $"motorsport/{category}/grid";
 
-            var gridFromCache = await GetFromCacheAsync<GridEvent>(key);
+            var gridFromCache = await GetFromCacheAsync<MotorsportGrid>(key);
             if (gridFromCache != null)
                 return gridFromCache;
 
             var gridFromService =
-                Map<GridEvent>(
+                Map<MotorsportGrid>(
                     (await _motorsportLegacyFeedService.GetLatestGrid(category)));
 
             PersistToCache(key, gridFromService);
@@ -122,17 +122,17 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         /// </summary>
         [HttpGet, HttpHead]
         [Route("{category}/results")]
-        [ResponseType(typeof(ResultEventMotorsport))]
-        public async Task<ResultEventMotorsport> GetResults(string category)
+        [ResponseType(typeof(MotorsportResult))]
+        public async Task<MotorsportResult> GetResults(string category)
         {
             var key = CacheKeyNamespacePrefixForFeed + $"motorsport/{category}/results";
 
-            var resultsFromCache = await GetFromCacheAsync<ResultEventMotorsport>(key);
+            var resultsFromCache = await GetFromCacheAsync<MotorsportResult>(key);
             if (resultsFromCache != null)
                 return resultsFromCache;
 
             var resultsFromService =
-                Map<ResultEventMotorsport>(
+                Map<MotorsportResult>(
                     (await _motorsportLegacyFeedService.GetLatestResult(category)));
 
             PersistToCache(key, resultsFromService);

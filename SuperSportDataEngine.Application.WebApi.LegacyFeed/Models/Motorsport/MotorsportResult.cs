@@ -5,7 +5,7 @@ using System.Web;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Motorsport
 {
-    public class ResultEventMotorsport
+    public class MotorsportResult
     {
         public List<ResultMotorsport> RaceResult { get; set; }
         public int Id { get; set; }
