@@ -21,7 +21,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
     {
         IRugbyCmsService _rugbyService;
         private readonly ILoggingService _logger;
-        public static string path = HttpContext.Current.Request.Url.AbsolutePath;
+        private string path = HttpContext.Current.Request.Url.AbsolutePath;
 
         /// <summary>
         /// Rugby Constructor
