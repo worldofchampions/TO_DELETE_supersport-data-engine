@@ -134,6 +134,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
                 players = await CreatePagedResults<RugbyPlayer, RugbyPlayerEntity>(
                                     _publicSportDataUnitOfWork.RugbyPlayers.Where(q => q.FirstName.Contains(query)
                                                            || q.LastName.Contains(query)
+                                                           || q.FullName.Contains(query)
                                                            || q.DisplayNameCmsOverride.Contains(query)), pageIndex, pageSize, abpath);
             }
             else
