@@ -245,6 +245,8 @@
                     continue;
 
                 await IngestSeason(cancellationToken, tournament, currentSeason.ProviderSeasonId);
+                // Also try ingesting the following season if possible.
+                await IngestSeason(cancellationToken, tournament, currentSeason.ProviderSeasonId + 1);
             }
         }
 
