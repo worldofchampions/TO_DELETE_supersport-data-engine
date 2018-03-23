@@ -49,19 +49,19 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         /// </summary>
         [HttpGet, HttpHead]
         [Route("{category}/schedule/{current?}")]
-        [ResponseType(typeof(IEnumerable<RacesModel>))]
-        public async Task<IEnumerable<RacesModel>> GetSchedule(string category, string current = null)
+        [ResponseType(typeof(IEnumerable<Races>))]
+        public async Task<IEnumerable<Races>> GetSchedule(string category, string current = null)
         {
             var currentValue = bool.Parse(current ?? "false");
 
             var key = CacheKeyNamespacePrefixForFeed + $"motorsport/{category}/schedule?current=" + currentValue;
 
-            var scheduleFromCache = await GetFromCacheAsync<IEnumerable<RacesModel>>(key);
+            var scheduleFromCache = await GetFromCacheAsync<IEnumerable<Races>>(key);
             if (scheduleFromCache != null)
                 return scheduleFromCache;
 
             var scheduleFromService =
-                Map<List<RacesModel>>(
+                Map<List<Races>>(
                     (await _motorsportLegacyFeedService.GetSchedules(category, currentValue))
                         .MotorsportRaceEvents ?? new List<MotorsportRaceEvent>());
 
@@ -75,17 +75,17 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         /// </summary>
         [HttpGet, HttpHead]
         [Route("{category}/grid")]
-        [ResponseType(typeof(GridEventModel))]
-        public async Task<GridEventModel> GetGrid(string category)
+        [ResponseType(typeof(GridEvent))]
+        public async Task<GridEvent> GetGrid(string category)
         {
             var key = CacheKeyNamespacePrefixForFeed + $"motorsport/{category}/grid";
 
-            var gridFromCache = await GetFromCacheAsync<GridEventModel>(key);
+            var gridFromCache = await GetFromCacheAsync<GridEvent>(key);
             if (gridFromCache != null)
                 return gridFromCache;
 
             var gridFromService =
-                Map<GridEventModel>(
+                Map<GridEvent>(
                     (await _motorsportLegacyFeedService.GetLatestGrid(category)));
 
             PersistToCache(key, gridFromService);
@@ -98,17 +98,17 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         /// </summary>
         [HttpGet, HttpHead]
         [Route("{category}/grid/{eventId:int}")]
-        [ResponseType(typeof(IEnumerable<GridModel>))]
-        public async Task<IEnumerable<GridModel>> GetGrid(string category, int eventId)
+        [ResponseType(typeof(IEnumerable<Grid>))]
+        public async Task<IEnumerable<Grid>> GetGrid(string category, int eventId)
         {
             var key = CacheKeyNamespacePrefixForFeed + $"motorsport/{category}/grid/{eventId}";
 
-            var gridFromCache = await GetFromCacheAsync<IEnumerable<GridModel>>(key);
+            var gridFromCache = await GetFromCacheAsync<IEnumerable<Grid>>(key);
             if (gridFromCache != null)
                 return gridFromCache;
 
             var gridFromService =
-                Map<List<GridModel>>(
+                Map<List<Grid>>(
                     (await _motorsportLegacyFeedService.GetGridForRaceEventId(category, eventId))
                     .MotorsportRaceEventGrids);
 
@@ -122,17 +122,17 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         /// </summary>
         [HttpGet, HttpHead]
         [Route("{category}/results")]
-        [ResponseType(typeof(ResultEventMotorsportModel))]
-        public async Task<ResultEventMotorsportModel> GetResults(string category)
+        [ResponseType(typeof(ResultEventMotorsport))]
+        public async Task<ResultEventMotorsport> GetResults(string category)
         {
             var key = CacheKeyNamespacePrefixForFeed + $"motorsport/{category}/results";
 
-            var resultsFromCache = await GetFromCacheAsync<ResultEventMotorsportModel>(key);
+            var resultsFromCache = await GetFromCacheAsync<ResultEventMotorsport>(key);
             if (resultsFromCache != null)
                 return resultsFromCache;
 
             var resultsFromService =
-                Map<ResultEventMotorsportModel>(
+                Map<ResultEventMotorsport>(
                     (await _motorsportLegacyFeedService.GetLatestResult(category)));
 
             PersistToCache(key, resultsFromService);
@@ -145,17 +145,17 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         /// </summary>
         [HttpGet, HttpHead]
         [Route("{category}/results/{eventId:int}")]
-        [ResponseType(typeof(IEnumerable<ResultMotorsportModel>))]
-        public async Task<IEnumerable<ResultMotorsportModel>> GetResults(string category, int eventId)
+        [ResponseType(typeof(IEnumerable<Models.Motorsport.ResultMotorsport>))]
+        public async Task<IEnumerable<Models.Motorsport.ResultMotorsport>> GetResults(string category, int eventId)
         {
             var key = CacheKeyNamespacePrefixForFeed + $"motorsport/{category}/results/{eventId}";
 
-            var resultsFromCache = await GetFromCacheAsync<IEnumerable<ResultMotorsportModel>>(key);
+            var resultsFromCache = await GetFromCacheAsync<IEnumerable<Models.Motorsport.ResultMotorsport>>(key);
             if (resultsFromCache != null)
                 return resultsFromCache;
 
             var resultsFromService =
-                Map<List<ResultMotorsportModel>>(
+                Map<List<Models.Motorsport.ResultMotorsport>>(
                     (await _motorsportLegacyFeedService.GetResultsForRaceEventId(category, eventId))
                     .MotorsportRaceEventResults ?? new List<MotorsportRaceEventResult>());
 

@@ -5,9 +5,9 @@ using System.Web;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Motorsport
 {
-    public class GridEventModel
+    public class ResultEventMotorsport
     {
-        public List<GridModel> RaceGrid { get; set; }
+        public List<ResultMotorsport> RaceResult { get; set; }
         public int Id { get; set; }
         public string Date { get; set; }
         public string StartTime { get; set; }

@@ -3,7 +3,7 @@
     using System;
 
     [Serializable]
-    public class ResultMotorsportModel : Driver
+    public class ResultMotorsport : Driver
     {
         public int Position { get; set; }
         public string PositionText { get; set; }
