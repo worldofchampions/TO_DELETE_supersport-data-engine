@@ -3,7 +3,7 @@
     using System;
 
     [Serializable]
-    public class Grid : Result
+    public class Grid : ResultMotorsport
     {
         public bool StartInPit { get; set; }
     }

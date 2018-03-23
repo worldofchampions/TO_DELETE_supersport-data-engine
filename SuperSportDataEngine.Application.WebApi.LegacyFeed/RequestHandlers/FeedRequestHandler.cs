@@ -123,7 +123,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
 
             if (IsAuthTokenValid(auth))
             {
-                return GetUnauthorizedResponse();
+                return GetUnauthorizedResponse(request);
             }
 
             AuthModel authModel = await GetAuthModelFromCache(siteId, auth);
@@ -140,7 +140,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
                 return await base.SendAsync(request, cancellationToken);
             }
 
-            return GetUnauthorizedResponse();
+            return GetUnauthorizedResponse(request);
         }
 
         private async Task<AuthModel> GetAuthModelFromService(int siteId, string authToken)
@@ -180,11 +180,25 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
             return auth;
         }
 
-        private static HttpResponseMessage GetUnauthorizedResponse()
+        private HttpResponseMessage GetUnauthorizedResponse(HttpRequestMessage request)
         {
             var msg = new HttpResponseMessage(HttpStatusCode.Unauthorized);
 
+            var uri = GetBaseUri(request);
+            var userAgent = request.Headers.UserAgent;
+
+            _loggingService.Error("RequestUnauthorised." + request.RequestUri,
+                "Request failed authorisation accessing Uri " + uri + "\n" +
+                "User Agent = " + userAgent);
+
             throw new HttpResponseException(msg);
+        }
+
+        private static string GetBaseUri(HttpRequestMessage request)
+        {
+            var requestUriString = request.RequestUri.ToString();
+            var indexOf = requestUriString.IndexOf("?", StringComparison.Ordinal);
+            return requestUriString.Substring(0, indexOf == -1 ? requestUriString.Length : indexOf);
         }
 
         private async Task<AuthModel> GetAuthModelFromCache(int siteId, string auth)

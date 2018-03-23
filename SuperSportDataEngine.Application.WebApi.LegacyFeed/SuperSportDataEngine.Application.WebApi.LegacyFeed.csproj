@@ -245,7 +245,7 @@
     <Compile Include="Models\Mappers\Motorsport\LegacyMotorsportGridMapperProfile.cs" />
     <Compile Include="Models\Mappers\Motorsport\LegacyMotorsportScheduleMapperProfile.cs" />
     <Compile Include="Models\Mappers\Motorsport\LegacyMotorsportTeamStandingsMapperProfile.cs" />
-    <Compile Include="Models\Motorsport\ResultEvent.cs" />
+    <Compile Include="Models\Motorsport\ResultEventMotorsport.cs" />
     <Compile Include="Models\Motorsport\GridEvent.cs" />
     <Compile Include="Models\Motorsport\Team.cs" />
     <Compile Include="Models\Rugby\GeneralResponse.cs" />
@@ -298,7 +298,7 @@
     <Compile Include="Models\Motorsport\Live.cs" />
     <Compile Include="Models\Motorsport\LiveMotorsportModel.cs" />
     <Compile Include="Models\Motorsport\RaceModel.cs" />
-    <Compile Include="Models\Motorsport\Result.cs" />
+    <Compile Include="Models\Motorsport\ResultMotorsport.cs" />
     <Compile Include="Models\Motorsport\StageModel.cs" />
     <Compile Include="Models\News\NewsModel.cs" />
     <Compile Include="Models\Shared\OfficialModel.cs" />

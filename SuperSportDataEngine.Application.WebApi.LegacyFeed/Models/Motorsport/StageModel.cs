@@ -38,7 +38,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Motorsport
         public string EndTime { get; set; }
         public StageName Name { get; set; }
         public StageStatus Status { get; set; }
-        public List<Result> StageResult { get; set; }
+        public List<ResultMotorsport> StageResult { get; set; }
         public List<Grid> StageGrid { get; set; }
         public List<DriversList> StageDriversList { get; set; }
         public List<Live> StageLive { get; set; }
