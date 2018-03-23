@@ -122,17 +122,17 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         /// </summary>
         [HttpGet, HttpHead]
         [Route("{category}/results")]
-        [ResponseType(typeof(ResultEvent))]
-        public async Task<ResultEvent> GetResults(string category)
+        [ResponseType(typeof(ResultEventMotorsport))]
+        public async Task<ResultEventMotorsport> GetResults(string category)
         {
             var key = CacheKeyNamespacePrefixForFeed + $"motorsport/{category}/results";
 
-            var resultsFromCache = await GetFromCacheAsync<ResultEvent>(key);
+            var resultsFromCache = await GetFromCacheAsync<ResultEventMotorsport>(key);
             if (resultsFromCache != null)
                 return resultsFromCache;
 
             var resultsFromService =
-                Map<ResultEvent>(
+                Map<ResultEventMotorsport>(
                     (await _motorsportLegacyFeedService.GetLatestResult(category)));
 
             PersistToCache(key, resultsFromService);
@@ -145,17 +145,17 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         /// </summary>
         [HttpGet, HttpHead]
         [Route("{category}/results/{eventId:int}")]
-        [ResponseType(typeof(IEnumerable<Models.Motorsport.Result>))]
-        public async Task<IEnumerable<Models.Motorsport.Result>> GetResults(string category, int eventId)
+        [ResponseType(typeof(IEnumerable<Models.Motorsport.ResultMotorsport>))]
+        public async Task<IEnumerable<Models.Motorsport.ResultMotorsport>> GetResults(string category, int eventId)
         {
             var key = CacheKeyNamespacePrefixForFeed + $"motorsport/{category}/results/{eventId}";
 
-            var resultsFromCache = await GetFromCacheAsync<IEnumerable<Models.Motorsport.Result>>(key);
+            var resultsFromCache = await GetFromCacheAsync<IEnumerable<Models.Motorsport.ResultMotorsport>>(key);
             if (resultsFromCache != null)
                 return resultsFromCache;
 
             var resultsFromService =
-                Map<List<Models.Motorsport.Result>>(
+                Map<List<Models.Motorsport.ResultMotorsport>>(
                     (await _motorsportLegacyFeedService.GetResultsForRaceEventId(category, eventId))
                     .MotorsportRaceEventResults ?? new List<MotorsportRaceEventResult>());
 

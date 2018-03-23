@@ -3,7 +3,7 @@
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Motorsport
 {
     [Serializable]
-    public class Live : Result
+    public class Live : ResultMotorsport
     {
     }
 }

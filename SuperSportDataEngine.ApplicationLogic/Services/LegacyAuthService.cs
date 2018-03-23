@@ -20,6 +20,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
     {
         private readonly ILoggingService _loggingService;
         private readonly ISystemSportDataUnitOfWork _systemSportDataUnitOfWork;
+        private readonly List<LegacyAuthFeedConsumer> _consumers;
 
         public LegacyAuthService(
             ILoggingService loggingService,
@@ -27,6 +28,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         {
             _loggingService = loggingService;
             _systemSportDataUnitOfWork = systemSportDataUnitOfWork;
+            _consumers = _systemSportDataUnitOfWork.LegacyAuthFeedConsumers.All().ToList();
         }
 
         public async Task<bool> IsAuthorised(string authKey, int siteId = 0)
@@ -38,9 +40,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             try
             {
                 // Get the Auth key from the DB.
-                var legacyAuthFeed =
-                    (await _systemSportDataUnitOfWork.LegacyAuthFeedConsumers.AllAsync()).FirstOrDefault(c =>
-                        c.AuthKey == authKey && c.Active);
+                var legacyAuthFeed = _consumers.FirstOrDefault(c => c.AuthKey == authKey && c.Active);
 
                 // Auth key doesnt exist.
 
@@ -68,11 +68,11 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             catch (Exception)
             {
                 var maxAttempts = int.Parse(ConfigurationManager.AppSettings["MaximumAuthorisationAttempts"]);
-                var time = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture);
+                //var time = DateTime.UtcNow.ToString(CultureInfo.InvariantCulture);
                 if (authoriseAttempts > maxAttempts)
                 {
-                    await _loggingService.Error("AuthoriseAttemptFailure." + time,
-                    "Request has failed authorisation. " + maxAttempts + " attempts exceeeded.");
+                    //await _loggingService.Error("AuthoriseAttemptFailure." + time,
+                    //"Request has failed authorisation. " + maxAttempts + " attempts exceeeded.");
 
                     return false;
                 }

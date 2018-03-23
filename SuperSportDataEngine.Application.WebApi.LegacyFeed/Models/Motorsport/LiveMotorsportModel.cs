@@ -22,7 +22,7 @@
         public int SessionMinutes { get; set; }
         public string SessionStatus { get; set; }
         public string SessionComments { get; set; }
-        public List<Result> Leaderboard { get; set; }
+        public List<ResultMotorsport> Leaderboard { get; set; }
         public List<CommentModel> Commentary { get; set; }
     }
 }
