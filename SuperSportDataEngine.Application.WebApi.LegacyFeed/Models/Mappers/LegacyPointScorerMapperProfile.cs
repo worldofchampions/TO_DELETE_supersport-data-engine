@@ -5,6 +5,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
     using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
 
+    // This class is used by Reflection.
     public class LegacyPointScorerMapperProfile : Profile
     {
         public LegacyPointScorerMapperProfile()

@@ -153,6 +153,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FixedSchedule\FixedScheduledJob.cs" />
+    <Compile Include="FixedSchedule\MotorsportFixedScheduledJob.cs" />
     <Compile Include="HangfireDashboardConfiguration.cs" />
     <Compile Include="Manager\ManagerJob.cs" />
     <Compile Include="Program.cs" />
@@ -162,6 +163,7 @@
     <Compile Include="ScheduledManager\LogsCleanupManager.cs" />
     <Compile Include="ScheduledManager\LogsManagerJob.cs" />
     <Compile Include="ScheduledManager\PlayerStatisticsManagerJob.cs" />
+    <Compile Include="ScheduledManager\MotorsportLiveManagerJob.cs" />
     <Compile Include="StartUp.cs" />
     <Compile Include="WindowsService.cs" />
   </ItemGroup>
@@ -189,6 +191,7 @@
     <None Include="App.Staging.config">
       <DependentUpon>App.config</DependentUpon>
       <IsTransformFile>True</IsTransformFile>
+      <SubType>Designer</SubType>
     </None>
     <None Include="packages.config" />
     <None Include="Properties\app.manifest" />

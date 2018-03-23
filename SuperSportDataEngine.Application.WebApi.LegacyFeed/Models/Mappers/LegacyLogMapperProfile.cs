@@ -4,6 +4,7 @@
     using AutoMapper;
     using Shared;
 
+    // This class is used by Reflection.
     public class LegacyLogMapperProfile : Profile
     {
         public LegacyLogMapperProfile()

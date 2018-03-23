@@ -3,6 +3,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
     using Context;
     using Seed;
     using System.Data.Entity.Migrations;
+    using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Motorsport;
 
     internal sealed class Configuration : DbMigrationsConfiguration<PublicSportDataContext>
     {
@@ -12,6 +13,20 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
         }
 
         protected override void Seed(PublicSportDataContext context)
+        {
+            SeedRugbyData(context);
+            SeedMotorsportData(context);
+        }
+
+        private static void SeedMotorsportData(PublicSportDataContext context)
+        {
+            SeedMotorsportLeagueSlugs.Seed(context);
+            SeedMotorsportEnabledLeagues.Seed(context);
+            SeedMotorsportHistoricSeasons.Seed(context);
+            SeedMotorsportCurrentSeasons.Seed(context);
+        }
+
+        private static void SeedRugbyData(PublicSportDataContext context)
         {
             SeedRugbyTournamentSlugs.Seed(context);
             SeedRugbyTournamentNames.Seed(context);

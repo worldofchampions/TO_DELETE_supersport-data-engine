@@ -4,6 +4,7 @@ using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone
 
 namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.MappingProfiles
 {
+    // This class is used by Reflection.
     public class RugbyMatchStatsMappingProfile : Profile
     {
         public RugbyMatchStatsMappingProfile()

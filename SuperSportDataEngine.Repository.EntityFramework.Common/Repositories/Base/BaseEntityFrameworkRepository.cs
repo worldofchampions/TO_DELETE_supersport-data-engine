@@ -97,11 +97,6 @@
             }
         }
 
-        public async Task<int> SaveAsync()
-        {
-            return await _dbContext.SaveChangesAsync();
-        }
-
         public void Update(T item)
         {
             var entry = item as DbEntityEntry<T>;

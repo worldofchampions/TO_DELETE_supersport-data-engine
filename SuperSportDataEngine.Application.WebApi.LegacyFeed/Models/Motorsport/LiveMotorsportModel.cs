@@ -1,8 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Motorsport
+﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Motorsport
 {
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
+    using System;
+    using System.Collections.Generic;
+
     [Serializable]
     public class LiveMotorsportModel
     {
@@ -21,7 +22,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Motorsport
         public int SessionMinutes { get; set; }
         public string SessionStatus { get; set; }
         public string SessionComments { get; set; }
-        public List<ResultMotorsportModel> Leaderboard { get; set; }
+        public List<ResultMotorsport> Leaderboard { get; set; }
         public List<CommentModel> Commentary { get; set; }
     }
 }

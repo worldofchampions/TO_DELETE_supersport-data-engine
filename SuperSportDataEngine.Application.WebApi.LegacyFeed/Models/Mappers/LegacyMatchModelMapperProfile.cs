@@ -5,6 +5,7 @@
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
     using System;
 
+    // This class is used by Reflection.
     public class LegacyMatchModelMapperProfile : Profile
     {
         public LegacyMatchModelMapperProfile()
