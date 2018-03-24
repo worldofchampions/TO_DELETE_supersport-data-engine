@@ -25,8 +25,8 @@
     using System.Configuration;
     using System.Diagnostics;
     using System.Text.RegularExpressions;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
+    using Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
+    using Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
 
     public class RugbyIngestWorkerService : IRugbyIngestWorkerService
     {
@@ -73,6 +73,7 @@
             await PersistTournamentsInRepository(cancellationToken, entitiesResponse);
             await PersistPlayerDataInRepository(cancellationToken, entitiesResponse);
             await PersistTournamentSeasonsInRepository(cancellationToken);
+            await PersistTournamentCurrentAndUpcomingSeasonsInRepository(cancellationToken);
 
             _mongoDbRepository.SaveEntities(entitiesResponse);
         }
@@ -245,8 +246,20 @@
                     continue;
 
                 await IngestSeason(cancellationToken, tournament, currentSeason.ProviderSeasonId);
-                // Also try ingesting the following season if possible.
-                await IngestSeason(cancellationToken, tournament, currentSeason.ProviderSeasonId + 1);
+            }
+        }
+
+        private async Task PersistTournamentCurrentAndUpcomingSeasonsInRepository(CancellationToken cancellationToken)
+        {
+            var activeTournaments = await _rugbyService.GetActiveTournaments();
+            foreach (var tournament in activeTournaments)
+            {
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
+                var yearNow = DateTime.UtcNow.Year;
+                await IngestSeason(cancellationToken, tournament, yearNow);
+                await IngestSeason(cancellationToken, tournament, yearNow + 1);
             }
         }
 
