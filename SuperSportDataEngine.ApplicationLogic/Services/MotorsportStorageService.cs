@@ -265,6 +265,53 @@
             }
 
             await _publicSportDataUnitOfWork.SaveChangesAsync();
+
+            await UpdateGapToLeaderTimesForEvent(raceEvent);
+        }
+
+        private async Task UpdateGapToLeaderTimesForEvent(MotorsportRaceEvent motorsportRaceEvent)
+        {
+            var leaderResults = 
+                _publicSportDataUnitOfWork.MotorsportRaceEventResults.FirstOrDefault(r =>
+                r.Position == 1 && r.MotorsportRaceEventId == motorsportRaceEvent.Id);
+            
+            if(leaderResults == null) return;
+
+            var leaderTimeCombinedInMilliseconds = 
+                leaderResults.FinishingTimeHours * 3600000 +
+                leaderResults.FinishingTimeMinutes * 60000 +
+                leaderResults.FinishingTimeSeconds * 1000 +
+                leaderResults.FinishingTimeMilliseconds;
+
+            var followersRaceEventResults =
+                _publicSportDataUnitOfWork.MotorsportRaceEventResults.Where(r =>
+                    r.Position != 1 && r.MotorsportRaceEventId == motorsportRaceEvent.Id).ToList();
+
+            foreach (var result in followersRaceEventResults)
+            {
+                var resultTimeCombinedInMilliseconds =
+                    result.FinishingTimeHours * 3600000 +
+                    result.FinishingTimeMinutes * 60000 +
+                    result.FinishingTimeSeconds * 1000 +
+                    result.FinishingTimeMilliseconds;
+
+                resultTimeCombinedInMilliseconds = resultTimeCombinedInMilliseconds - leaderTimeCombinedInMilliseconds;
+
+                result.GapToLeaderTimeHours = resultTimeCombinedInMilliseconds / 3600000;
+                resultTimeCombinedInMilliseconds = resultTimeCombinedInMilliseconds % 3600000;
+
+                result.GapToLeaderTimeMinutes = resultTimeCombinedInMilliseconds / 60000;
+                resultTimeCombinedInMilliseconds = resultTimeCombinedInMilliseconds % 60000;
+
+                result.GapToLeaderTimeSeconds = resultTimeCombinedInMilliseconds / 1000;
+                resultTimeCombinedInMilliseconds = resultTimeCombinedInMilliseconds % 1000;
+
+                result.GapToLeaderTimeMilliseconds = resultTimeCombinedInMilliseconds;
+
+                _publicSportDataUnitOfWork.MotorsportRaceEventResults.Update(result);
+            }
+
+            await _publicSportDataUnitOfWork.SaveChangesAsync();
         }
 
         public async Task PersistGridInRepository(
