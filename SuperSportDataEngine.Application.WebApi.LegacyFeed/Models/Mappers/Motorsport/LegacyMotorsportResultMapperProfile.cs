@@ -34,7 +34,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Moto
                     src => string.IsNullOrEmpty(src.OutReason) ? "" : src.OutReason))
 
                 .ForMember(dest => dest.Time, expression => expression.MapFrom(
-                    src => GetTime(src)))
+                    src => !src.CompletedRace ? "" : GetTime(src)))
 
                 .ForMember(dest => dest.Points, expression => expression.MapFrom(
                     src => src.Points))
@@ -80,10 +80,10 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Moto
 
         private static string GetTime(MotorsportRaceEventResult grid)
         {
-            var hours = grid.FinishingTimeHours.ToString().PadLeft(2, '0') + ":";
+            var hours = grid.FinishingTimeHours.ToString().PadLeft(1, '0') + ":";
             var minutes = grid.FinishingTimeMinutes.ToString().PadLeft(2, '0') + ":";
             var seconds = grid.FinishingTimeSeconds.ToString().PadLeft(2, '0') + ".";
-            var milliseconds = grid.FinishingTimeMilliseconds.ToString();
+            var milliseconds = grid.FinishingTimeMilliseconds.ToString().PadLeft(3, '0');
 
             return hours + minutes + seconds + milliseconds;
         }
