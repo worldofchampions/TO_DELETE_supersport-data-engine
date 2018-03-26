@@ -34,7 +34,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Moto
                     src => string.IsNullOrEmpty(src.OutReason) ? "" : src.OutReason))
 
                 .ForMember(dest => dest.Time, expression => expression.MapFrom(
-                    src => GetTime(src)))
+                    src => !src.CompletedRace ? "" : GetTime(src)))
 
                 .ForMember(dest => dest.Points, expression => expression.MapFrom(
                     src => src.Points))
