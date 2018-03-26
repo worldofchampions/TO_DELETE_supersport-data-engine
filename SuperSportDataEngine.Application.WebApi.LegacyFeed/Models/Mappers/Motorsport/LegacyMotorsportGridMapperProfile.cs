@@ -71,7 +71,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Moto
             var hours = grid.QualifyingTimeHours.ToString().PadLeft(1, '0') + ":";
             var minutes = grid.QualifyingTimeMinutes.ToString().PadLeft(2, '0') + ":";
             var seconds = grid.QualifyingTimeSeconds.ToString().PadLeft(2, '0') + ".";
-            var milliseconds = grid.QualifyingTimeMilliseconds.ToString();
+            var milliseconds = grid.QualifyingTimeMilliseconds.ToString().PadLeft(3, '0');
 
             return hours + minutes + seconds + milliseconds;
         }
