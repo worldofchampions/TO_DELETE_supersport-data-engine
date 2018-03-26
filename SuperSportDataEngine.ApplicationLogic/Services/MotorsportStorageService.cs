@@ -402,6 +402,7 @@
                 eventResultInRepo.FinishingTimeHours = result.finishingTime.hours;
                 eventResultInRepo.FinishingTimeMinutes = result.finishingTime.minutes;
                 eventResultInRepo.FinishingTimeSeconds = result.finishingTime.seconds;
+                eventResultInRepo.FinishingTimeMilliseconds = result.finishingTime.milliseconds;
             }
 
             eventResultInRepo.Position = result.carPosition.position;
