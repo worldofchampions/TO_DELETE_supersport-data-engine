@@ -68,10 +68,10 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Moto
 
         private static string GetTime(MotorsportRaceEventGrid grid)
         {
-            var hours = grid.QualifyingTimeHours == 0 ? "" : grid.QualifyingTimeHours + ":";
-            var minutes = grid.QualifyingTimeMinutes == 0 ? "" : grid.QualifyingTimeMinutes + ":";
-            var seconds = grid.QualifyingTimeSeconds == 0 ? "" : grid.QualifyingTimeSeconds + ".";
-            var milliseconds = grid.QualifyingTimeMilliseconds == 0 ? "" : grid.QualifyingTimeMilliseconds.ToString();
+            var hours = grid.QualifyingTimeHours.ToString().PadLeft(1, '0') + ":";
+            var minutes = grid.QualifyingTimeMinutes.ToString().PadLeft(2, '0') + ":";
+            var seconds = grid.QualifyingTimeSeconds.ToString().PadLeft(2, '0') + ".";
+            var milliseconds = grid.QualifyingTimeMilliseconds.ToString();
 
             return hours + minutes + seconds + milliseconds;
         }

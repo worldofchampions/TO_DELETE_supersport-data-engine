@@ -80,7 +80,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Moto
 
         private static string GetTime(MotorsportRaceEventResult grid)
         {
-            var hours = grid.FinishingTimeHours.ToString().PadLeft(2, '0') + ":";
+            var hours = grid.FinishingTimeHours.ToString().PadLeft(1, '0') + ":";
             var minutes = grid.FinishingTimeMinutes.ToString().PadLeft(2, '0') + ":";
             var seconds = grid.FinishingTimeSeconds.ToString().PadLeft(2, '0') + ".";
             var milliseconds = grid.FinishingTimeMilliseconds.ToString();
