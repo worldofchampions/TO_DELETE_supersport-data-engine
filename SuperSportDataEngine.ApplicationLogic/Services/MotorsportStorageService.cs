@@ -297,12 +297,6 @@
 
                 resultTimeCombinedInMilliseconds = resultTimeCombinedInMilliseconds - leaderTimeCombinedInMilliseconds;
 
-                result.GapToLeaderTimeHours = resultTimeCombinedInMilliseconds / 3600000;
-                resultTimeCombinedInMilliseconds = resultTimeCombinedInMilliseconds % 3600000;
-
-                result.GapToLeaderTimeMinutes = resultTimeCombinedInMilliseconds / 60000;
-                resultTimeCombinedInMilliseconds = resultTimeCombinedInMilliseconds % 60000;
-
                 result.GapToLeaderTimeSeconds = resultTimeCombinedInMilliseconds / 1000;
                 resultTimeCombinedInMilliseconds = resultTimeCombinedInMilliseconds % 1000;
 
