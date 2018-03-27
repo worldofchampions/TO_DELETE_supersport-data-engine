@@ -12,11 +12,11 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Models
         [BsonElement("name")]
         public string name { get; set; }
         [BsonElement("league")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.League league { get; set; }
+        public League league { get; set; }
         [BsonElement("uri_paths")]
-        public List<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.UriPath> uriPaths { get; set; }
+        public List<UriPath> uriPaths { get; set; }
         [BsonElement("leagues")]
-        public List<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.League> leagues { get; set; }
+        public List<League> leagues { get; set; }
     }
 
     public class UriPath
@@ -38,13 +38,13 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Models
         [BsonElement("display_name")]
         public string displayName { get; set; }
         [BsonElement("sub_league")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.SubLeague subLeague { get; set; }
+        public SubLeague subLeague { get; set; }
         [BsonElement("season")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Season season { get; set; }
+        public Season season { get; set; }
         [BsonElement("races")]
-        public List<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Race> races { get; set; }
+        public List<Race> races { get; set; }
         [BsonElement("uri_paths")]
-        public List<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.UriPath2> uriPaths { get; set; }
+        public List<UriPath2> uriPaths { get; set; }
     }
 
     public class UriPath2
@@ -66,24 +66,24 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Models
         [BsonElement("display_name")]
         public string displayName { get; set; }
         [BsonElement("sub_league")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.SubLeague subLeague { get; set; }
+        public SubLeague subLeague { get; set; }
         [BsonElement("season")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Season season { get; set; }
+        public Season season { get; set; }
         [BsonElement("races")]
-        public List<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Race> races { get; set; }
+        public List<Race> races { get; set; }
         [BsonElement("uri_paths")]
-        public List<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.UriPath2> uriPaths { get; set; }
+        public List<UriPath2> uriPaths { get; set; }
         [BsonElement("league")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.League2 league { get; set; }
+        public League2 league { get; set; }
         [BsonElement("seasons")]
-        public List<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Season> seasons { get; set; }
+        public List<Season> seasons { get; set; }
     }
 
 
     public class Season
     {
         [BsonElement("owners")]
-        public List<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Owner> owners { get; set; }
+        public List<Owner> owners { get; set; }
         [BsonElement("season")]
         public int season { get; set; }
         [BsonElement("name")]
@@ -91,9 +91,9 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Models
         [BsonElement("is_active")]
         public bool isActive { get; set; }
         [BsonElement("event_type")]
-        public List<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.EventType> eventType { get; set; }
+        public List<EventType> eventType { get; set; }
         [BsonElement("standings")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Standings standings { get; set; }
+        public Standings standings { get; set; }
     }
 
     public class EventType
@@ -103,11 +103,11 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Models
         [BsonElement("name")]
         public string name { get; set; }
         [BsonElement("start_date")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.StartDate startDate { get; set; }
+        public StartDate startDate { get; set; }
         [BsonElement("end_date")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.EndDate endDate { get; set; }
+        public EndDate endDate { get; set; }
         [BsonElement("events")]
-        public List<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Event> events { get; set; }
+        public List<Event> events { get; set; }
     }
 
     public class EndDate
@@ -129,37 +129,37 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Models
         [BsonElement("event_id")]
         public int eventId { get; set; }
         [BsonElement("event_round")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.EventRound eventRound { get; set; }
+        public EventRound eventRound { get; set; }
         [BsonElement("start_date")]
-        public List<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.StartDate> startDate { get; set; }
+        public List<StartDate> startDate { get; set; }
         [BsonElement("is_tba")]
         public bool isTba { get; set; }
         [BsonElement("is_data_confirmed")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.IsDataConfirmed isDataConfirmed { get; set; }
+        public IsDataConfirmed isDataConfirmed { get; set; }
         [BsonElement("event_status")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.EventStatus eventStatus { get; set; }
+        public EventStatus eventStatus { get; set; }
         [BsonElement("race")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Race race { get; set; }
+        public Race race { get; set; }
         [BsonElement("venue")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Venue venue { get; set; }
+        public Venue venue { get; set; }
         [BsonElement("tv_stations")]
-        public List<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.TvStation> tvStations { get; set; }
+        public List<TvStation> tvStations { get; set; }
         [BsonElement("champions")]
-        public List<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Champion> champions { get; set; }
+        public List<Champion> champions { get; set; }
         [BsonElement("scheduled_distance")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.ScheduledDistance scheduledDistance { get; set; }
+        public ScheduledDistance scheduledDistance { get; set; }
         [BsonElement("points")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Points points { get; set; }
+        public Points points { get; set; }
         [BsonElement("car_details")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.CarDetails carDetails { get; set; }
+        public CarDetails carDetails { get; set; }
         [BsonElement("qualifying_events")]
-        public List<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.QualifyingEvent> qualifyingEvents { get; set; }
+        public List<QualifyingEvent> qualifyingEvents { get; set; }
         [BsonElement("practice_events")]
-        public List<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.PracticeEvent> practiceEvents { get; set; }
+        public List<PracticeEvent> practiceEvents { get; set; }
         [BsonElement("coverage_level")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.CoverageLevel coverageLevel { get; set; }
+        public CoverageLevel coverageLevel { get; set; }
         [BsonElement("boxscores")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Boxscore boxscore { get; set; }
+        public Boxscore boxscore { get; set; }
     }
 
     public class Venue
@@ -169,11 +169,11 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Models
         [BsonElement("name")]
         public string name { get; set; }
         [BsonElement("state")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.State state { get; set; }
+        public State state { get; set; }
         [BsonElement("city")]
         public string city { get; set; }
         [BsonElement("country")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Country country { get; set; }
+        public Country country { get; set; }
     }
 
     public class TvStation
@@ -185,9 +185,9 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Models
         [BsonElement("call_letters")]
         public string callLetters { get; set; }
         [BsonElement("network_type")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.NetworkType networkType { get; set; }
+        public NetworkType networkType { get; set; }
         [BsonElement("country")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Country country { get; set; }
+        public Country country { get; set; }
     }
 
     public class NetworkType
@@ -237,7 +237,7 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Models
         [BsonElement("sequence")]
         public int sequence { get; set; }
         [BsonElement("start_date")]
-        public List<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.StartDate> startDate { get; set; }
+        public List<StartDate> startDate { get; set; }
         [BsonElement("is_tba")]
         public bool isTba { get; set; }
     }
@@ -267,35 +267,35 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Models
     public class Result
     {
         [BsonElement("player")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Player player { get; set; }
+        public Player player { get; set; }
         [BsonElement("qualifying")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Qualifying qualifying { get; set; }
+        public Qualifying qualifying { get; set; }
         [BsonElement("car")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Car car { get; set; }
+        public Car car { get; set; }
         [BsonElement("owner")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Owner owner { get; set; }
+        public Owner owner { get; set; }
         [BsonElement("car_status")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.CarStatus carStatus { get; set; }
+        public CarStatus carStatus { get; set; }
         [BsonElement("average_speed")]
         public List<object> averageSpeed { get; set; }
         [BsonElement("car_position")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.CarPosition carPosition { get; set; }
+        public CarPosition carPosition { get; set; }
         [BsonElement("laps")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Laps laps { get; set; }
+        public Laps laps { get; set; }
         [BsonElement("money_won")]
         public List<object> moneyWon { get; set; }
         [BsonElement("finishing_time")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.FinishingTime finishingTime { get; set; }
+        public FinishingTime finishingTime { get; set; }
         [BsonElement("points")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Points points { get; set; }
+        public Points points { get; set; }
     }
 
     public class Points
     {
         [BsonElement("driver")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Driver driver { get; set; }
+        public Driver driver { get; set; }
         [BsonElement("owner")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Owner owner { get; set; }
+        public Owner owner { get; set; }
         [BsonElement("are_points_available")]
         public bool arePointsAvailable { get; set; }
     }
@@ -311,9 +311,9 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Models
         [BsonElement("last_name")]
         public string lastName { get; set; }
         [BsonElement("owner")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Owner owner { get; set; }
+        public Owner owner { get; set; }
         [BsonElement("car")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Car car { get; set; }
+        public Car car { get; set; }
     }
 
     public class ScheduledDistance
@@ -351,27 +351,27 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Models
     public class Boxscore
     {
         [BsonElement("time_of_race")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.TimeOfRace timeOfRace { get; set; }
+        public TimeOfRace timeOfRace { get; set; }
         [BsonElement("victory_margin")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.VictoryMargin victoryMargin { get; set; }
+        public VictoryMargin victoryMargin { get; set; }
         [BsonElement("average_speed")]
         public List<object> averageSpeed { get; set; }
         [BsonElement("fastest_speed")]
-        public List<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.FastestSpeed> fastestSpeed { get; set; }
+        public List<FastestSpeed> fastestSpeed { get; set; }
         [BsonElement("fastest_time")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.FastestTime fastestTime { get; set; }
+        public FastestTime fastestTime { get; set; }
         [BsonElement("pole_speed")]
         public List<object> poleSpeed { get; set; }
         [BsonElement("pole_times")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.PoleTime poleTime { get; set; }
+        public PoleTime poleTime { get; set; }
         [BsonElement("cautions")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Cautions cautions { get; set; }
+        public Cautions cautions { get; set; }
         [BsonElement("completed_distance")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.CompletedDistance completedDistance { get; set; }
+        public CompletedDistance completedDistance { get; set; }
         [BsonElement("lead_changes")]
-        public List<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.LeadChange> leadChanges { get; set; }
+        public List<LeadChange> leadChanges { get; set; }
         [BsonElement("results")]
-        public List<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Result> results { get; set; }
+        public List<Result> results { get; set; }
     }
 
     public class EventRound
@@ -416,7 +416,7 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Models
     public class SubLeague
     {
         [BsonElement("owners")]
-        public List<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Owner> owners;
+        public List<Owner> owners;
         [BsonElement("sub_league_id")]
         public int subLeagueId { get; set; }
         [BsonElement("name")]
@@ -426,9 +426,9 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Models
         [BsonElement("display_name")]
         public string displayName { get; set; }
         [BsonElement("season")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Season season { get; set; }
+        public Season season { get; set; }
         [BsonElement("players")]
-        public List<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Player> players { get; set; }
+        public List<Player> players { get; set; }
     }
 
     public class Player
@@ -441,9 +441,9 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Models
         [BsonElement("last_name")]
         public string lastName { get; set; }
         [BsonElement("team")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Team team { get; set; }
+        public Team team { get; set; }
         [BsonElement("owner")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Owner owner { get; set; }
+        public Owner owner { get; set; }
         [BsonElement("rank")]
         public int rank { get; set; }
         [BsonElement("points")]
@@ -451,45 +451,45 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Models
         [BsonElement("chase_points")]
         public object chasePoints { get; set; }
         [BsonElement("finishes")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Finishes finishes { get; set; }
+        public Finishes finishes { get; set; }
         [BsonElement("earnings")]
         public object earnings { get; set; }
         [BsonElement("laps")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Laps laps { get; set; }
+        public Laps laps { get; set; }
         [BsonElement("starts")]
         public int starts { get; set; }
         [BsonElement("poles")]
         public int poles { get; set; }
         [BsonElement("car")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Car car { get; set; }
+        public Car car { get; set; }
         [BsonElement("chassis")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Chassis chassis { get; set; }
+        public Chassis chassis { get; set; }
         [BsonElement("engine")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Engine engine { get; set; }
+        public Engine engine { get; set; }
         [BsonElement("tire")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Tire tire { get; set; }
+        public Tire tire { get; set; }
         [BsonElement("sponsor")]
         public string sponsor { get; set; }
         [BsonElement("points_eligible")]
         public string pointsEligible { get; set; }
         [BsonElement("height")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Height height { get; set; }
+        public Height height { get; set; }
         [BsonElement("weight")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Weight weight { get; set; }
+        public Weight weight { get; set; }
         [BsonElement("birth")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Birth birth { get; set; }
+        public Birth birth { get; set; }
     }
 
     public class Birth
     {
         [BsonElement("birth_date")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.BirthDate birthDate { get; set; }
+        public BirthDate birthDate { get; set; }
         [BsonElement("city")]
         public string city { get; set; }
         [BsonElement("country")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Country country { get; set; }
+        public Country country { get; set; }
         [BsonElement("state")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.State state { get; set; }
+        public State state { get; set; }
     }
 
     public class BirthDate
@@ -567,13 +567,13 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Models
     public class Qualifying
     {
         [BsonElement("exemption")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Exemption exemption { get; set; }
+        public Exemption exemption { get; set; }
         [BsonElement("is_wild_card")]
         public bool isWildCard { get; set; }
         [BsonElement("is_qualified")]
         public bool isQualified { get; set; }
         [BsonElement("qualifying_runs")]
-        public List<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.QualifyingRun> qualifyingRuns { get; set; }
+        public List<QualifyingRun> qualifyingRuns { get; set; }
     }
 
     public class QualifyingEvent
@@ -581,7 +581,7 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Models
         [BsonElement("sequence")]
         public int sequence { get; set; }
         [BsonElement("start_date")]
-        public List<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.StartDate> startDate { get; set; }
+        public List<StartDate> startDate { get; set; }
         [BsonElement("is_tba")]
         public bool isTba { get; set; }
     }
@@ -591,11 +591,11 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Models
         [BsonElement("sequence")]
         public int sequence { get; set; }
         [BsonElement("start_date")]
-        public List<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.StartDate> startDate { get; set; }
+        public List<StartDate> startDate { get; set; }
         [BsonElement("average_speed")]
-        public List<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.AverageSpeed> averageSpeed { get; set; }
+        public List<AverageSpeed> averageSpeed { get; set; }
         [BsonElement("time")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Time time { get; set; }
+        public Time time { get; set; }
     }
 
     public class CarDetails
@@ -631,15 +631,15 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Models
         [BsonElement("sequence")]
         public int sequence { get; set; }
         [BsonElement("player")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Player player { get; set; }
+        public Player player { get; set; }
         [BsonElement("start_lap")]
         public int startLap { get; set; }
         [BsonElement("end_lap")]
         public int endLap { get; set; }
         [BsonElement("owner")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Owner owner { get; set; }
+        public Owner owner { get; set; }
         [BsonElement("car")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Car car { get; set; }
+        public Car car { get; set; }
     }
 
     public class AverageSpeed
@@ -667,7 +667,7 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Models
     public class Car
     {
         [BsonElement("make")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Make make { get; set; }
+        public Make make { get; set; }
         [BsonElement("car_number")]
         public int? carNumber { get; set; }
         [BsonElement("car_display_number")]
@@ -765,7 +765,7 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Models
         [BsonElement("event_id")]
         public int eventId { get; set; }
         [BsonElement("race")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Race race { get; set; }
+        public Race race { get; set; }
     }
 
     public class Team
@@ -779,7 +779,7 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Models
         [BsonElement("points")]
         public int points { get; set; }
         [BsonElement("finishes")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Finishes finishes { get; set; }
+        public Finishes finishes { get; set; }
         [BsonElement("earnings")]
         public object earnings { get; set; }
         [BsonElement("starts")]
@@ -793,12 +793,12 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Models
         [BsonElement("week_through")]
         public int weekThrough { get; set; }
         [BsonElement("date_through")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.DateThrough dateThrough { get; set; }
+        public DateThrough dateThrough { get; set; }
         [BsonElement("last_event")]
-        public ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.LastEvent lastEvent { get; set; }
+        public LastEvent lastEvent { get; set; }
         [BsonElement("teams")]
-        public List<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Team> teams { get; set; }
+        public List<Team> teams { get; set; }
         [BsonElement("players")]
-        public List<ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Player> players { get; set; }
+        public List<Player> players { get; set; }
     }
 }
