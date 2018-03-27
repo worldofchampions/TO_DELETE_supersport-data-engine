@@ -11,6 +11,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
     public static class SeedRugbyLogGroupsForHongKongSevens2018
     {
         private const string SlugHierachyLevel1HongKongSevens2018 = "Sevens-2018-HL1-HongKongSevens";
+        private const string SlugHierarchyLevel2HongKongNonCoreGroup = "Sevens-2018-HL2-HongKongSevensNonCoreGroup";
         private const string SlugHierachyLevel2HongKongSevens2018PoolA = "Sevens-2018-HL2-HongKongSevensPoolA";
         private const string SlugHierachyLevel2HongKongSevens2018PoolB = "Sevens-2018-HL2-HongKongSevensPoolB";
         private const string SlugHierachyLevel2HongKongSevens2018PoolC = "Sevens-2018-HL2-HongKongSevensPoolC";
@@ -36,10 +37,11 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                     new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = true, IsCoreGroup = true, Slug = SlugHierachyLevel1HongKongSevens2018, ProviderLogGroupId = null, ProviderGroupName = "Hong Kong 2018", GroupName = "Hong Kong 2018", GroupShortName = "Hong Kong 2018" },
 
                     // LogGroups for "groupStandings" GroupHierachyLevel: 2
-                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 2, IsConference = false, IsCoreGroup = false, Slug = SlugHierachyLevel2HongKongSevens2018PoolA, ProviderLogGroupId = 1, ProviderGroupName = "Hong Kong 2018 Group A", GroupName = "Pool A", GroupShortName = "Pool A" },
-                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 2, IsConference = false, IsCoreGroup = false, Slug = SlugHierachyLevel2HongKongSevens2018PoolB, ProviderLogGroupId = 2, ProviderGroupName = "Hong Kong 2018 Group B", GroupName = "Pool B", GroupShortName = "Pool B" },
-                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 2, IsConference = false, IsCoreGroup = false, Slug = SlugHierachyLevel2HongKongSevens2018PoolC, ProviderLogGroupId = 3, ProviderGroupName = "Hong Kong 2018 Group C", GroupName = "Pool C", GroupShortName = "Pool C" },
-                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 2, IsConference = false, IsCoreGroup = false, Slug = SlugHierachyLevel2HongKongSevens2018PoolD, ProviderLogGroupId = 4, ProviderGroupName = "Hong Kong 2018 Group D", GroupName = "Pool D", GroupShortName = "Pool D" }
+                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 2, IsConference = false, Slug = SlugHierarchyLevel2HongKongNonCoreGroup, ProviderLogGroupId = 0, ProviderGroupName = null, GroupName = "Non-Core Group", GroupShortName = "Non-Core Group", IsCoreGroup = false },
+                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 2, IsConference = false, IsCoreGroup = true, Slug = SlugHierachyLevel2HongKongSevens2018PoolA, ProviderLogGroupId = 1, ProviderGroupName = "Hong Kong 2018 Group A", GroupName = "Pool A", GroupShortName = "Pool A" },
+                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 2, IsConference = false, IsCoreGroup = true, Slug = SlugHierachyLevel2HongKongSevens2018PoolB, ProviderLogGroupId = 2, ProviderGroupName = "Hong Kong 2018 Group B", GroupName = "Pool B", GroupShortName = "Pool B" },
+                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 2, IsConference = false, IsCoreGroup = true, Slug = SlugHierachyLevel2HongKongSevens2018PoolC, ProviderLogGroupId = 3, ProviderGroupName = "Hong Kong 2018 Group C", GroupName = "Pool C", GroupShortName = "Pool C" },
+                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 2, IsConference = false, IsCoreGroup = true, Slug = SlugHierachyLevel2HongKongSevens2018PoolD, ProviderLogGroupId = 4, ProviderGroupName = "Hong Kong 2018 Group D", GroupName = "Pool D", GroupShortName = "Pool D" }
                 );
 
                 context.SaveChanges();
