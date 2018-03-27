@@ -118,8 +118,11 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Models.RugbyLogsGr
         public OverallStandings overallStandings { get; set; }
         [BsonElement("group_standings")]
         public GroupStandings groupStandings { get; set; }
-        [BsonElement("secondary_standings")]
+        [BsonElement("secondary_group_standings")]
         public SecondaryGroupStandings secondaryGroupStandings { get; set; }
+        [BsonElement("ladder_positions")]
+        public List<Ladderposition> ladderposition { get; set; }
+
         [BsonElement("season_id")]
         public int seasonId { get; set; }
     }

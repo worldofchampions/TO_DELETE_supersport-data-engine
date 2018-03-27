@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.ApplicationLogic.Services
+﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
+
+namespace SuperSportDataEngine.ApplicationLogic.Services
 {
     using System.Linq;
     using System.Threading;
@@ -14,17 +16,20 @@
         private readonly IMotorsportService _motorsportService;
         private readonly ILoggingService _loggingService;
         private readonly IMotorsportStorageService _motorsportStorageService;
+        private readonly IMongoDbMotorsportRepository _mongoDbMotorsportRepository;
 
         public MotorsportIngestWorkerService(
             IStatsMotorsportIngestService statsMotorsportIngestService,
             ILoggingService loggingService,
             IMotorsportService motorsportService, 
-            IMotorsportStorageService motorsportStorageService)
+            IMotorsportStorageService motorsportStorageService, 
+            IMongoDbMotorsportRepository mongoDbMotorsportRepository)
         {
             _statsMotorsportIngestService = statsMotorsportIngestService;
             _loggingService = loggingService;
             _motorsportService = motorsportService;
             _motorsportStorageService = motorsportStorageService;
+            _mongoDbMotorsportRepository = mongoDbMotorsportRepository;
         }
         
         public async Task IngestLeagues(CancellationToken cancellationToken)
@@ -32,6 +37,8 @@
             var leagues = _statsMotorsportIngestService.IngestLeagues();
 
             await _motorsportStorageService.PersistLeaguesInRepository(leagues, cancellationToken);
+
+            await _mongoDbMotorsportRepository.Save(leagues);
         }
 
         public async Task IngestSeasons(CancellationToken cancellationToken)
@@ -45,6 +52,9 @@
                     var providerResponse = _statsMotorsportIngestService.IngestLeagueSeason(league.ProviderSlug);
 
                     await _motorsportStorageService.PersistSeasonsInRepository(providerResponse, league, cancellationToken);
+
+                    await _mongoDbMotorsportRepository.Save(providerResponse);
+
                 }
             }
         }
@@ -61,6 +71,7 @@
                         _statsMotorsportIngestService.IngestDriversForLeague(league.ProviderSlug);
 
                     await _motorsportStorageService.PersistLeagueDriversInRepository(providerResponse, league);
+                    await _mongoDbMotorsportRepository.Save(providerResponse);
                 }
             }
         }
@@ -78,6 +89,7 @@
                     var providerResponse = _statsMotorsportIngestService.IngestTeamsForLeague(league.ProviderSlug);
 
                     await _motorsportStorageService.PersistTeamsInRepository(providerResponse, league);
+                    await _mongoDbMotorsportRepository.Save(providerResponse);
                 }
             }
         }
@@ -100,6 +112,7 @@
                         _statsMotorsportIngestService.IngestDriverStandings(league.ProviderSlug, season.ProviderSeasonId);
 
                     await _motorsportStorageService.PersistDriverStandingsInRepository(providerResponse, league, season, cancellationToken);
+                    await _mongoDbMotorsportRepository.Save(providerResponse);
                 }
             }
         }
@@ -122,6 +135,7 @@
                         _statsMotorsportIngestService.IngestTeamStandings(league.ProviderSlug, season.ProviderSeasonId);
 
                     await _motorsportStorageService.PersistTeamStandingsInRepository(providerResponse, league, season, cancellationToken);
+                    await _mongoDbMotorsportRepository.Save(providerResponse);
                 }
             }
         }
@@ -144,6 +158,7 @@
                         _statsMotorsportIngestService.IngestLeagueRaces(league.ProviderSlug, season.ProviderSeasonId);
 
                     await _motorsportStorageService.PersistRacesInRepository(providerResponse, league, cancellationToken);
+                    await _mongoDbMotorsportRepository.Save(providerResponse);
                 }
             }
         }
@@ -174,6 +189,7 @@
                                     race.ProviderRaceId);
 
                             await _motorsportStorageService.PersistResultsInRepository(providerResponse, raceEvent, cancellationToken);
+                            await _mongoDbMotorsportRepository.Save(providerResponse);
                         }
                     }
                 }
@@ -202,6 +218,7 @@
                                     league.ProviderSlug, season.ProviderSeasonId, race.ProviderRaceId);
 
                             await _motorsportStorageService.PersistRaceEventsInRepository(providerResponse, race, season, cancellationToken);
+                            await _mongoDbMotorsportRepository.Save(providerResponse);
                         }
                     }
                 }
@@ -230,6 +247,7 @@
                             _statsMotorsportIngestService.IngestRaceEventsForLeague(league.ProviderSlug, season.ProviderSeasonId, race.ProviderRaceId);
 
                         await _motorsportStorageService.PersistRaceEventsInRepository(providerResponse, race, season, cancellationToken);
+                        await _mongoDbMotorsportRepository.Save(providerResponse);
                     }
                 }
             }
@@ -261,6 +279,7 @@
                                     race.ProviderRaceId);
 
                             await _motorsportStorageService.PersistGridInRepository(raceResults, raceEvent, cancellationToken);
+                            await _mongoDbMotorsportRepository.Save(raceResults);
                         }
                     }
                 }
@@ -285,6 +304,7 @@
                             _statsMotorsportIngestService.IngestLeagueRaces(league.ProviderSlug, season.ProviderSeasonId);
 
                         await _motorsportStorageService.PersistRacesInRepository(providerResponse, league, cancellationToken);
+                        await _mongoDbMotorsportRepository.Save(providerResponse);
                     }
                 }
             }
@@ -314,6 +334,7 @@
                                     race.ProviderRaceId);
 
                             await _motorsportStorageService.PersistResultsInRepository(providerResponse, raceEvent, cancellationToken);
+                            await _mongoDbMotorsportRepository.Save(providerResponse);
                         }
                     } 
                 }
@@ -339,6 +360,7 @@
                             _statsMotorsportIngestService.IngestTeamStandings(league.ProviderSlug, season.ProviderSeasonId);
 
                         await _motorsportStorageService.PersistTeamStandingsInRepository(providerResponse, league, season, cancellationToken); 
+                        await _mongoDbMotorsportRepository.Save(providerResponse);
                     }
                 }
             }
@@ -362,6 +384,7 @@
                             _statsMotorsportIngestService.IngestDriverStandings(league.ProviderSlug, season.ProviderSeasonId);
 
                         await _motorsportStorageService.PersistDriverStandingsInRepository(providerResponse, league, season, cancellationToken); 
+                        await _mongoDbMotorsportRepository.Save(providerResponse);
                     }
                 }
             }
@@ -400,6 +423,7 @@
                                         race.ProviderRaceId);
 
                                 await _motorsportStorageService.PersistGridInRepository(providerResponse, raceEvent, cancellationToken);
+                                await _mongoDbMotorsportRepository.Save(providerResponse);
                             }
                         } 
                     }
