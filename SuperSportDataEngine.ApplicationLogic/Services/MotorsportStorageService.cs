@@ -7,7 +7,6 @@
     using System.Threading;
     using System.Threading.Tasks;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motor;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Enums;
@@ -265,6 +264,47 @@
             }
 
             await _publicSportDataUnitOfWork.SaveChangesAsync();
+
+            await UpdateGapToLeaderTimesForEvent(raceEvent);
+        }
+
+        private async Task UpdateGapToLeaderTimesForEvent(MotorsportRaceEvent motorsportRaceEvent)
+        {
+            var leaderResults = 
+                _publicSportDataUnitOfWork.MotorsportRaceEventResults.FirstOrDefault(r =>
+                r.Position == 1 && r.MotorsportRaceEventId == motorsportRaceEvent.Id);
+            
+            if(leaderResults == null) return;
+
+            var leaderTimeCombinedInMilliseconds = 
+                leaderResults.FinishingTimeHours * 3600000 +
+                leaderResults.FinishingTimeMinutes * 60000 +
+                leaderResults.FinishingTimeSeconds * 1000 +
+                leaderResults.FinishingTimeMilliseconds;
+
+            var followersRaceEventResults =
+                _publicSportDataUnitOfWork.MotorsportRaceEventResults.Where(r =>
+                    r.Position != 1 && r.MotorsportRaceEventId == motorsportRaceEvent.Id).ToList();
+
+            foreach (var result in followersRaceEventResults)
+            {
+                var resultTimeCombinedInMilliseconds =
+                    result.FinishingTimeHours * 3600000 +
+                    result.FinishingTimeMinutes * 60000 +
+                    result.FinishingTimeSeconds * 1000 +
+                    result.FinishingTimeMilliseconds;
+
+                resultTimeCombinedInMilliseconds = resultTimeCombinedInMilliseconds - leaderTimeCombinedInMilliseconds;
+
+                result.GapToLeaderTimeSeconds = resultTimeCombinedInMilliseconds / 1000;
+                resultTimeCombinedInMilliseconds = resultTimeCombinedInMilliseconds % 1000;
+
+                result.GapToLeaderTimeMilliseconds = resultTimeCombinedInMilliseconds;
+
+                _publicSportDataUnitOfWork.MotorsportRaceEventResults.Update(result);
+            }
+
+            await _publicSportDataUnitOfWork.SaveChangesAsync();
         }
 
         public async Task PersistGridInRepository(
@@ -297,9 +337,7 @@
             await _publicSportDataUnitOfWork.SaveChangesAsync();
         }
 
-        private void UpdateGridEntryInRepo(
-            MotorsportRaceEventGrid raceEventGridInRepo,
-            Result providerGridEntry)
+        private void UpdateGridEntryInRepo(MotorsportRaceEventGrid raceEventGridInRepo, Result providerGridEntry)
         {
             var qualifyingRuns = providerGridEntry.qualifying?.qualifyingRuns;
             if (qualifyingRuns == null) return;
@@ -338,10 +376,12 @@
 
         private void AddNewGridEntryToRepo(Result providerGridEntry, MotorsportRaceEvent raceEvent)
         {
-            var driverInRepo = _publicSportDataUnitOfWork.MotorsportDrivers.FirstOrDefault(d => d.ProviderDriverId == providerGridEntry.player.playerId);
+            var driverInRepo = 
+                _publicSportDataUnitOfWork.MotorsportDrivers.FirstOrDefault(d => d.ProviderDriverId == providerGridEntry.player.playerId);
             if (driverInRepo is null) return;
 
-            var racecEvent = _publicSportDataUnitOfWork.MotorsportRaceEvents.FirstOrDefault(e => e.Id == raceEvent.Id);
+            var racecEvent = 
+                _publicSportDataUnitOfWork.MotorsportRaceEvents.FirstOrDefault(e => e.Id == raceEvent.Id);
             if (racecEvent is null) return;
 
             var newGridEntry = new MotorsportRaceEventGrid
@@ -355,7 +395,8 @@
 
             if (providerGridEntry.owner != null)
             {
-                var teamInRepo = _publicSportDataUnitOfWork.MotortsportTeams.FirstOrDefault(d => d.ProviderTeamId == providerGridEntry.owner.ownerId);
+                var teamInRepo = 
+                    _publicSportDataUnitOfWork.MotortsportTeams.FirstOrDefault(d => d.ProviderTeamId == providerGridEntry.owner.ownerId);
 
                 newGridEntry.MotorsportTeam = teamInRepo;
             }
@@ -418,8 +459,7 @@
             if (result.player == null) return;
 
             var driver =
-                _publicSportDataUnitOfWork.MotorsportDrivers.FirstOrDefault(d =>
-                    d.ProviderDriverId == result.player.playerId);
+                _publicSportDataUnitOfWork.MotorsportDrivers.FirstOrDefault(d => d.ProviderDriverId == result.player.playerId);
             if (driver is null) return;
 
             var motorsportRaceResult = new MotorsportRaceEventResult

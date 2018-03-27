@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport;
 
-namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motor
+namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport
 {
     public class MotorsportEntitiesResponse
     {
