@@ -51,6 +51,9 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                 context.SaveChanges();
 
                 context.RugbyLogGroups.Single(x => x.Slug == SlugHierachyLevel1SydneySevens2018).ParentRugbyLogGroup = context.RugbyLogGroups.Single(x => x.Slug == SlugHierachyLevel0Sevens2018);
+                context.RugbyLogGroups.Single(x => x.Slug == SlugHierarchyLevel2SydneyNonCoreGroup).ParentRugbyLogGroup =
+                    context.RugbyLogGroups.Single(x => x.Slug == SlugHierachyLevel1SydneySevens2018);
+
                 context.RugbyLogGroups.Single(x => x.Slug == SlugHierachyLevel2SydneySevens2018PoolA).ParentRugbyLogGroup = context.RugbyLogGroups.Single(x => x.Slug == SlugHierachyLevel1SydneySevens2018);
                 context.RugbyLogGroups.Single(x => x.Slug == SlugHierachyLevel2SydneySevens2018PoolB).ParentRugbyLogGroup = context.RugbyLogGroups.Single(x => x.Slug == SlugHierachyLevel1SydneySevens2018);
                 context.RugbyLogGroups.Single(x => x.Slug == SlugHierachyLevel2SydneySevens2018PoolC).ParentRugbyLogGroup = context.RugbyLogGroups.Single(x => x.Slug == SlugHierachyLevel1SydneySevens2018);
