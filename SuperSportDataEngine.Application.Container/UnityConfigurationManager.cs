@@ -5,6 +5,7 @@
     using Microsoft.Practices.Unity;
     using MongoDB.Driver;
     using NLog.Slack;
+    using NLog.MSFTTeams;
     using StackExchange.Redis;
     using ApplicationLogic.Services.Cms;
     using System;
@@ -52,6 +53,7 @@
         {
             // Hack sort of. To get the NLog.Slack.dll to be copied.
             new SlackClient();
+            new ConnectorCard();
 
             ApplyRegistrationsForLogging(container);
             ApplyRegistrationsForApplicationLogic(container, applicationScope);

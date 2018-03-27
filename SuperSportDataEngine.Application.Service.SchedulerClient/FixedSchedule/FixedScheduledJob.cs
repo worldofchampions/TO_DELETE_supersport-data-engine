@@ -15,16 +15,21 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
     {
         private readonly IRecurringJobManager _recurringJobManager;
         private readonly IUnityContainer _container;
+        private readonly ILoggingService _logger;
 
         public FixedScheduledJob(IUnityContainer container)
         {
             _container = container;
 
             _recurringJobManager = _container.Resolve<IRecurringJobManager>();
+            _logger = _container.Resolve<ILoggingService>();
         }
 
         public void UpdateRecurringJobDefinitions()
         {
+            _logger.Error("ErrorMSTeams", "This error should get logged to MSTeams.");
+            _logger.Warn("WarningMSTeams", "This warning should get logged to MSTeams.");
+
             UpdateRecurringJobDefinition_ReferenceData();
             UpdateRecurringJobDefinition_Fixtures();
             UpdateRecurringJobDefinition_LogsForActiveTournaments();
