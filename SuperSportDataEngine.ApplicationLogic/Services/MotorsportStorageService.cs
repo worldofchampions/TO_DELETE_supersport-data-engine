@@ -338,9 +338,7 @@
             await _publicSportDataUnitOfWork.SaveChangesAsync();
         }
 
-        private void UpdateGridEntryInRepo(
-            MotorsportRaceEventGrid raceEventGridInRepo,
-            Result providerGridEntry)
+        private void UpdateGridEntryInRepo(MotorsportRaceEventGrid raceEventGridInRepo, Result providerGridEntry)
         {
             var qualifyingRuns = providerGridEntry.qualifying?.qualifyingRuns;
             if (qualifyingRuns == null) return;
@@ -379,10 +377,12 @@
 
         private void AddNewGridEntryToRepo(Result providerGridEntry, MotorsportRaceEvent raceEvent)
         {
-            var driverInRepo = _publicSportDataUnitOfWork.MotorsportDrivers.FirstOrDefault(d => d.ProviderDriverId == providerGridEntry.player.playerId);
+            var driverInRepo = 
+                _publicSportDataUnitOfWork.MotorsportDrivers.FirstOrDefault(d => d.ProviderDriverId == providerGridEntry.player.playerId);
             if (driverInRepo is null) return;
 
-            var racecEvent = _publicSportDataUnitOfWork.MotorsportRaceEvents.FirstOrDefault(e => e.Id == raceEvent.Id);
+            var racecEvent = 
+                _publicSportDataUnitOfWork.MotorsportRaceEvents.FirstOrDefault(e => e.Id == raceEvent.Id);
             if (racecEvent is null) return;
 
             var newGridEntry = new MotorsportRaceEventGrid
@@ -396,7 +396,8 @@
 
             if (providerGridEntry.owner != null)
             {
-                var teamInRepo = _publicSportDataUnitOfWork.MotortsportTeams.FirstOrDefault(d => d.ProviderTeamId == providerGridEntry.owner.ownerId);
+                var teamInRepo = 
+                    _publicSportDataUnitOfWork.MotortsportTeams.FirstOrDefault(d => d.ProviderTeamId == providerGridEntry.owner.ownerId);
 
                 newGridEntry.MotorsportTeam = teamInRepo;
             }
@@ -459,8 +460,7 @@
             if (result.player == null) return;
 
             var driver =
-                _publicSportDataUnitOfWork.MotorsportDrivers.FirstOrDefault(d =>
-                    d.ProviderDriverId == result.player.playerId);
+                _publicSportDataUnitOfWork.MotorsportDrivers.FirstOrDefault(d => d.ProviderDriverId == result.player.playerId);
             if (driver is null) return;
 
             var motorsportRaceResult = new MotorsportRaceEventResult
