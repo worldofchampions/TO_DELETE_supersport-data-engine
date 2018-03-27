@@ -27,9 +27,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
 
         public void UpdateRecurringJobDefinitions()
         {
-            _logger.Error("ErrorMSTeams", "This error should get logged to MSTeams.");
-            _logger.Warn("WarningMSTeams", "This warning should get logged to MSTeams.");
-
             UpdateRecurringJobDefinition_ReferenceData();
             UpdateRecurringJobDefinition_Fixtures();
             UpdateRecurringJobDefinition_LogsForActiveTournaments();
