@@ -2,7 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Enums;
+    using Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Enums;
     
     public class ApiResult
     {

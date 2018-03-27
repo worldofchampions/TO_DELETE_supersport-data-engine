@@ -1,6 +1,7 @@
-﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces
+﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport;
+
+namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces
 {
-    using Models.Motor;
     public interface IStatsMotorsportIngestService
     {
         MotorsportEntitiesResponse IngestLeagues();
