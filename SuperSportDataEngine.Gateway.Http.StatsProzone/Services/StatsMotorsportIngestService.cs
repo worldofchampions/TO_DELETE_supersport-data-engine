@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
+﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport;
+
+namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 {
     using System;
     using System.Net;
@@ -6,7 +8,6 @@
     using System.Text;
     using Newtonsoft.Json;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motor;
     using SuperSportDataEngine.Common.Logging;
     using SuperSportDataEngine.ApplicationLogic.Constants.Providers;
 

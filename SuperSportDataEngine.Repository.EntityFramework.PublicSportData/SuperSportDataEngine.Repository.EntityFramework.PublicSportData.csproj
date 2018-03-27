@@ -262,6 +262,7 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Seed\Motorsport\SeedMotorsportCurrentSeasons.cs" />
+    <Compile Include="Migrations\Seed\SeedRugbyLogGroupsForHongKongSevens2018.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyLogGroupsForVancouverSevens2018.cs" />
     <Compile Include="Migrations\Seed\Motorsport\SeedMotorsportEnabledLeagues.cs" />
     <Compile Include="Migrations\Seed\Motorsport\SeedMotorsportHistoricSeasons.cs" />

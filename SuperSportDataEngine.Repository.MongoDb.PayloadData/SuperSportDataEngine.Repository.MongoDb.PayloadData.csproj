@@ -90,11 +90,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MappingProfiles\MotorsportEntitiesMappingProfile.cs" />
     <Compile Include="MappingProfiles\RugbyFixturesMappingProfile.cs" />
     <Compile Include="MappingProfiles\RugbyEventsFlowMappingProfile.cs" />
     <Compile Include="MappingProfiles\RugbyMatchStatsMappingProfile.cs" />
     <Compile Include="MappingProfiles\RugbyGroupedLogsMappingProfile.cs" />
     <Compile Include="MappingProfiles\RugbyFlatLogsMappingProfile.cs" />
+    <Compile Include="Models\MongoMotorsportApiResult.cs" />
+    <Compile Include="Models\MongoMotorsportEntitiesResponse.cs" />
     <Compile Include="Models\MongoRugbyEntities.cs" />
     <Compile Include="Models\MongoRugbyEventsFlow.cs" />
     <Compile Include="Models\MongoRugbyFixtures.cs" />
@@ -102,6 +105,7 @@
     <Compile Include="Models\MongoRugbyGroupedLogs.cs" />
     <Compile Include="Models\MongoRugbyMatchStats.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repositories\MongoDbMotorsportRepository.cs" />
     <Compile Include="Repositories\MongoDbRugbyRepository.cs" />
     <Compile Include="MappingProfiles\RugbyEntitiesMappingProfile.cs" />
     <Compile Include="Repositories\TemporaryExampleMongoDbRepository.cs" />
