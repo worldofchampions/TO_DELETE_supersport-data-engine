@@ -185,6 +185,7 @@
                         ConfigurationManager.ConnectionStrings["MongoDB"].ConnectionString)));
 
                 container.RegisterType<IMongoDbRugbyRepository, MongoDbRugbyRepository>();
+                container.RegisterType<IMongoDbMotorsportRepository, MongoDbMotorsportRepository>();
 
                 container.RegisterType<IRugbyIngestWorkerService, RugbyIngestWorkerService>(new HierarchicalLifetimeManager());
 

@@ -34,7 +34,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Moto
                     src => string.IsNullOrEmpty(src.OutReason) ? "" : src.OutReason))
 
                 .ForMember(dest => dest.Time, expression => expression.MapFrom(
-                    src => GetTime(src)))
+                    src => !src.CompletedRace ? "" : GetTime(src)))
 
                 .ForMember(dest => dest.Points, expression => expression.MapFrom(
                     src => src.Points))
@@ -78,14 +78,24 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Moto
                 .ForAllOtherMembers(m => m.Ignore());
         }
 
-        private static string GetTime(MotorsportRaceEventResult grid)
+        private static string GetTime(MotorsportRaceEventResult result)
         {
-            var hours = grid.FinishingTimeHours.ToString().PadLeft(2, '0') + ":";
-            var minutes = grid.FinishingTimeMinutes.ToString().PadLeft(2, '0') + ":";
-            var seconds = grid.FinishingTimeSeconds.ToString().PadLeft(2, '0') + ".";
-            var milliseconds = grid.FinishingTimeMilliseconds.ToString();
+            if (result.Position == 1)
+            {
+                var hours = result.FinishingTimeHours.ToString().PadLeft(1, '0') + ":";
+                var minutes = result.FinishingTimeMinutes.ToString().PadLeft(2, '0') + ":";
+                var seconds = result.FinishingTimeSeconds.ToString().PadLeft(2, '0') + ".";
+                var milliseconds = result.FinishingTimeMilliseconds.ToString().PadLeft(3, '0');
 
-            return hours + minutes + seconds + milliseconds;
+                return hours + minutes + seconds + milliseconds;
+            }
+            else
+            {
+                var seconds = result.GapToLeaderTimeSeconds.ToString().PadLeft(2, '0');
+                var milliseconds = result.GapToLeaderTimeMilliseconds.ToString().PadLeft(3, '0');
+
+                return $"+{seconds}.{milliseconds}";
+            }
         }
     }
 }

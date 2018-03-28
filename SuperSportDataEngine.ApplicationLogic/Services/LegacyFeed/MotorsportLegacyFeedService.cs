@@ -172,6 +172,9 @@
         public async Task<MotorsportDriverStandingsEntity> GetDriverStandings(string category)
         {
             var motorsportSeason = await GetCurrentSeasonForCategory(category);
+            if (motorsportSeason == null)
+                return null;
+
             var motorsportLeague = motorsportSeason.MotorsportLeague;
 
             var motorsportDriverStandings = (await _publicSportDataUnitOfWork.MotorsportDriverStandings.WhereAsync(x =>
@@ -191,6 +194,9 @@
         public async Task<MotorsportTeamStandingsEntity> GetTeamStandings(string category)
         {
             var motorsportSeason = await GetCurrentSeasonForCategory(category);
+            if (motorsportSeason == null)
+                return null;
+
             var motorsportLeague = motorsportSeason.MotorsportLeague;
 
             var motorsportTeamStandings = (await _publicSportDataUnitOfWork.MotorsportTeamStandings.WhereAsync(x =>
