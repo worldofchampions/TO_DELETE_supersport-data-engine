@@ -197,6 +197,39 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             return null;
         }
 
+        public async Task<PagedResultsEntity<RugbyFixtureEntity>> GetTournamentFixtures(Guid tournamentId, int pageIndex, int pageSize, string abpath, string query = null)
+        {
+            var tournamentFixtures = (PagedResultsEntity<RugbyFixtureEntity>)null;
+
+            if (!String.IsNullOrEmpty(query))
+            {
+                tournamentFixtures = await CreatePagedResults<RugbyFixture, RugbyFixtureEntity>(
+                            _publicSportDataUnitOfWork.RugbyFixtures.Where(t =>
+                                    t.RugbyTournament.Id == tournamentId &&
+                                    t.RugbySeason != null &&
+                                    t.RugbySeason.IsCurrent).OrderByDescending(f => f.StartDateTime)
+                                    .Where(q => q.TeamA.Name.Contains(query)
+                                                        || q.TeamA.NameCmsOverride.Contains(query)
+                                                        || q.TeamB.Name.Contains(query)
+                                                        || q.TeamB.NameCmsOverride.Contains(query)), pageIndex, pageSize, abpath);
+            }
+            else
+            {
+                tournamentFixtures = await CreatePagedResults<RugbyFixture, RugbyFixtureEntity>(
+                            _publicSportDataUnitOfWork.RugbyFixtures.Where(t =>
+                                    t.RugbyTournament.Id == tournamentId &&
+                                    t.RugbySeason != null &&
+                                    t.RugbySeason.IsCurrent).OrderByDescending(f => f.StartDateTime), pageIndex, pageSize, abpath);
+            }
+
+
+            if (tournamentFixtures.Results.Any())
+            {
+                return tournamentFixtures;
+            }
+            return null;
+        }
+
         public async Task<RugbyTournamentEntity> GetTournamentById(Guid id)
         {
             var rugbyTournament = await Task.FromResult(_publicSportDataUnitOfWork.RugbyTournaments.FirstOrDefault(
@@ -433,7 +466,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             {
                 Results = results,
                 PageNumber = pageIndex,
-                PageSize = projection.Count(),
+                PageSize = pageSize,
                 TotalNumberOfPages = totalPageCount,
                 TotalNumberOfRecords = totalNumberOfRecords,
                 NextPageUrl = nextPageUrl

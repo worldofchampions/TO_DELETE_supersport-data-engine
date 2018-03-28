@@ -248,6 +248,37 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         }
 
         /// <summary>
+        /// Get paginated list of rugby tournament fixtures and return a 500 error response if something failed while doing it
+        /// </summary>
+        /// <param name="tournamentId"></param>
+        /// <param name="pageIndex">
+        /// Page number
+        /// </param>
+        /// <param name="pageSize">
+        /// Size of records to be returned
+        /// </param>
+        /// <param name="query">
+        /// Search against fixtures team names
+        /// </param>
+        /// <returns></returns>
+
+        [Route("api/Rugby/tournament/{tournamentId:guid}/fixtures")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> GetAllFixturesForTournament(Guid tournamentId, int pageIndex, int pageSize, string query = null)
+        {
+            try
+            {
+                var tournamentFixtures = await _rugbyService.GetTournamentFixtures(tournamentId, pageIndex, pageSize, path, query);
+                return Request.CreateResponse(HttpStatusCode.OK, tournamentFixtures);
+            }
+            catch (Exception exception)
+            {
+                LogException(exception);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while retrieving tournament fixtures !");
+            }
+        }
+
+        /// <summary>
         /// Get single tournament by tournament Id
         /// Return 404 if not found and a 500 error response if something failed while doing it
         /// </summary>
