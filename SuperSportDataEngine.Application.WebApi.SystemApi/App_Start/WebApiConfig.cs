@@ -15,7 +15,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi
             _httpConfig = config;
 
             var cors = new EnableCorsAttribute("*", "*", "*");
-            _httpConfig.EnableCors(cors);
+            config.EnableCors(cors);
 
             config.Filters.Add(new BasicAuthenticationAttribute());
             ConfigureDependencyContainer();
