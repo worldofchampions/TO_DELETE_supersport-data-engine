@@ -476,7 +476,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
                 PageSize = pageSize,
                 TotalNumberOfPages = totalPageCount,
                 TotalNumberOfRecords = totalNumberOfRecords,
-                NextPageUrl = nextPageUrl.Trim()
+                NextPageUrl = nextPageUrl
             };
         }
     }
