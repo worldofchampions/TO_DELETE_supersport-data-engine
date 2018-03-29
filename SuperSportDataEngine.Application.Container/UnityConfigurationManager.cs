@@ -51,8 +51,9 @@
 
         public static void RegisterTypes(IUnityContainer container, ApplicationScope applicationScope)
         {
-            // Hack sort of. To get the NLog.Slack.dll to be copied.
+            // Hack. To get the NLog.Slack.dll to be copied.
             new SlackClient();
+            // Hack. To get the NLog.MSFTTeams.dll to be copied.
             new ConnectorCard();
 
             ApplyRegistrationsForLogging(container);
