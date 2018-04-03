@@ -456,6 +456,11 @@
                 eventResultInRepo.LapsCompleted = result.laps.completed.Value;
             }
 
+            if (result.laps?.behind != null)
+            {
+                eventResultInRepo.LapsBehind = result.laps.behind.Value;
+            }
+
             _publicSportDataUnitOfWork.MotorsportRaceEventResults.Update(eventResultInRepo);
         }
 
@@ -517,6 +522,11 @@
             if (result.laps?.completed != null)
             {
                 motorsportRaceResult.LapsCompleted = result.laps.completed.Value;
+            }
+
+            if (result.laps?.behind != null)
+            {
+                motorsportRaceResult.LapsBehind = result.laps.behind.Value;
             }
 
             _publicSportDataUnitOfWork.MotorsportRaceEventResults.Add(motorsportRaceResult);
