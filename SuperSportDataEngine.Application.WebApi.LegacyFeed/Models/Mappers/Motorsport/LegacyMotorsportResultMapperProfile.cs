@@ -23,6 +23,9 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Moto
 
                 .ForMember(dest => dest.PositionText, expression => expression.UseValue((string) null))
 
+                .ForMember(dest => dest.Laps, expression => expression.MapFrom(
+                    src => src.LapsCompleted))
+
                 .ForMember(dest => dest.GapToCarInFront, expression => expression.UseValue(string.Empty))
 
                 .ForMember(dest => dest.GapToLeader, expression => expression.UseValue(string.Empty))
