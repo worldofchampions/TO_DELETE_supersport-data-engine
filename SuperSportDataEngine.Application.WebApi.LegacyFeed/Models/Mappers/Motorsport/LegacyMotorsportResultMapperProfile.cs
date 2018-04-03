@@ -21,7 +21,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Moto
                 .ForMember(dest => dest.GridPosition, expression => expression.MapFrom(
                     src => src.GridPosition))
 
-                .ForMember(dest => dest.PositionText, expression => expression.UseValue((string) null))
+                .ForMember(dest => dest.PositionText, expression => expression.UseValue((string)null))
 
                 .ForMember(dest => dest.Laps, expression => expression.MapFrom(
                     src => src.LapsCompleted))
@@ -47,7 +47,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Moto
 
                 .ForMember(dest => dest.FirstName, expression => expression.MapFrom(
                     src => src.MotorsportDriver.FirstName))
-                
+
                 .ForMember(dest => dest.LastName, expression => expression.MapFrom(
                     src => src.MotorsportDriver.LastName))
 
@@ -74,7 +74,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Moto
                 .ForMember(dest => dest.TeamShortName, expression => expression.MapFrom(
                     src => src.MotorsportTeam.NameCmsOverride ?? src.MotorsportTeam.Name))
 
-                .ForMember(dest => dest.TeamCompetition, expression => expression.UseValue((string) null))
+                .ForMember(dest => dest.TeamCompetition, expression => expression.UseValue((string)null))
 
                 .ForMember(dest => dest.TeamCompetitionId, expression => expression.UseValue(0))
 
@@ -92,7 +92,10 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Moto
 
                 return hours + minutes + seconds + milliseconds;
             }
-            else
+            if (result.LapsBehind != 0)
+            {
+                return result.LapsBehind > 1 ? $"+{result.LapsBehind} laps" : $"+{result.LapsBehind} lap";
+            }
             {
                 var seconds = result.GapToLeaderTimeSeconds.ToString().PadLeft(2, '0');
                 var milliseconds = result.GapToLeaderTimeMilliseconds.ToString().PadLeft(3, '0');

@@ -24,6 +24,8 @@
 
         public int LapsCompleted { get; set; }
 
+        public int LapsBehind { get; set; }
+        
         public bool CompletedRace { get; set; }
 
         public string OutReason { get; set; }
