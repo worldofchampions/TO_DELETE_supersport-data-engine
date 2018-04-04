@@ -1,27 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
+﻿using System.Configuration;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
-using AutoMapper;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
 using SuperSportDataEngine.Common.Logging;
-using SuperSportDataEngine.Repository.MongoDb.PayloadData.Models;
-using SuperSportDataEngine.Repository.MongoDb.PayloadData.Models.RugbyEntities;
 
 namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 {
     public class MongoDbMotorsportRepository : IMongoDbMotorsportRepository
     {
-        private IMongoClient _mongoClient;
-        private ILoggingService _logger;
+        private readonly IMongoClient _mongoClient;
+        private readonly ILoggingService _logger;
 
-        private string _mongoDatabaseName;
+        private readonly string _mongoDatabaseName;
 
         public MongoDbMotorsportRepository(
             IMongoClient mongoClient, 
@@ -30,35 +24,13 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
             _mongoClient = mongoClient;
             _logger = logger;
             _mongoDatabaseName = ConfigurationManager.AppSettings["MongoDbName"];
-
-            InitialiseMappings();
         }
 
-        private void InitialiseMappings()
+        private async Task Save<T>(T data)
+            where T : MotorsportEntitiesResponse
         {
-            // Get all the mapping profiles from the current assembly.
-            var types = Assembly.GetExecutingAssembly()
-                .GetTypes()
-                .Where(t =>
-                    t.BaseType == typeof(Profile));
-
-            // Add all the mapping 
-            // profiles to Automapper.
-            Mapper.Initialize(cfg =>
-            {
-                foreach (var type in types)
-                    cfg.AddProfile(type);
-            });
-        }
-
-        public async Task Save(MotorsportEntitiesResponse leagues)
-        {
-            if (leagues == null)
+            if (data == null)
                 return;
-
-            // Map the provider data to a type mongo understands.
-            var mongoEntities =
-                Mapper.Map<ApiResult, MongoMotorsportApiResult>(leagues.apiResults[0]);
 
             // Get the Mongo DB.
             var db = _mongoClient.GetDatabase(_mongoDatabaseName);
@@ -85,8 +57,10 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
             }
 
             // Add to the collection.
-            var collection = db.GetCollection<MongoMotorsportApiResult>("motorsport_entities");
-            await collection.InsertOneAsync(mongoEntities);
+            var collection = db.GetCollection<ApiResult>("motorsport_entities");
+            await collection.InsertOneAsync(data.apiResults[0]);
         }
+
+        public async Task Save(MotorsportEntitiesResponse leagues) => await Save(data: leagues);
     }
 }
