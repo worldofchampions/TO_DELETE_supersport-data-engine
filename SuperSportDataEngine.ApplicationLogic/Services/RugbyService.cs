@@ -1,4 +1,5 @@
-﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
+﻿using System.Configuration;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
 
 namespace SuperSportDataEngine.ApplicationLogic.Services
@@ -22,12 +23,17 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         private readonly IPublicSportDataUnitOfWork _publicSportDataUnitOfWork;
         private readonly ISystemSportDataUnitOfWork _systemSportDataUnitOfWork;
 
+        private int _numberOfMinutesToCheckForInProgressFixtures;
+
         public RugbyService(
             IPublicSportDataUnitOfWork publicSportDataUnitOfWork,
             ISystemSportDataUnitOfWork systemSportDataUnitOfWork)
         {
             _publicSportDataUnitOfWork = publicSportDataUnitOfWork;
             _systemSportDataUnitOfWork = systemSportDataUnitOfWork;
+
+            _numberOfMinutesToCheckForInProgressFixtures =
+                int.Parse(ConfigurationManager.AppSettings["NumberOfMinutesToCheckForInProgressFixtures"] ?? "120");
         }
 
         public async Task<IEnumerable<RugbyTournament>> GetActiveTournaments()
@@ -192,7 +198,16 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<IEnumerable<RugbyFixture>> GetTournamentFixtures(Guid tournamentId, RugbyFixtureStatus fixtureStatus)
         {
-            var today = DateTime.UtcNow;
+            // The logic is now corrected.
+            // We are serving out on the fixtures endpoint all fixtures that are 
+            // upcoming and In Progress(this is based on a time period, 
+            // only check fixtures that started two hours ago. This is configurable.)
+            // The issue Darren was having was:
+            // Fixture started at 1:45am SAST and ended just after 2:00am SAST
+            // Due to UTC Dates, the fixtures endpoint at 2:01am SAST would not 
+            // show the fixture In Progress since the days would have changed.
+
+            var today = DateTime.UtcNow - TimeSpan.FromMinutes(120);
 
             var fixtures = await Task.FromResult(_publicSportDataUnitOfWork.RugbyFixtures.Where(t => 
                         t.IsDisabledInbound == false && 
@@ -219,8 +234,16 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             var fixtures = Enumerable.Empty<RugbyFixture>();
 
             if (tournament == null) return fixtures;
+            // The logic is now corrected.
+            // We are serving out on the fixtures endpoint all fixtures that are 
+            // upcoming and In Progress(this is based on a time period, 
+            // only check fixtures that started two hours ago. This is configurable.)
+            // The issue Darren was having was:
+            // Fixture started at 1:45am SAST and ended just after 2:00am SAST
+            // Due to UTC Dates, the fixtures endpoint at 2:01am SAST would not 
+            // show the fixture In Progress since the days would have changed.
 
-            var today = DateTime.UtcNow;
+            var today = DateTime.UtcNow - TimeSpan.FromMinutes(120);
 
             fixtures = _publicSportDataUnitOfWork.RugbyFixtures.Where(t =>
                     t.IsDisabledInbound == false &&
@@ -424,11 +447,13 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<List<RugbyFixture>> GetCurrentDayFixturesForActiveTournaments()
         {
-            var today = DateTime.UtcNow.Date;
-            var todayFixtures = (await _publicSportDataUnitOfWork.RugbyFixtures.AllAsync()).Where(f => 
-                                    f.StartDateTime.Date == today && 
-                                    f.RugbyTournament.IsEnabled)
-                                 .OrderBy(f => f.StartDateTime);
+            var minDateTime = DateTime.UtcNow.Date - TimeSpan.FromMinutes(_numberOfMinutesToCheckForInProgressFixtures);
+
+            var todayFixtures = (await _publicSportDataUnitOfWork.RugbyFixtures.AllAsync())
+                .Where(f => 
+                    f.StartDateTime.Date > minDateTime && 
+                    f.RugbyTournament.IsEnabled)
+                .OrderBy(f => f.StartDateTime);
 
             return await Task.FromResult(todayFixtures.ToList());
         }
@@ -439,12 +464,13 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             if (tournament is null) return Enumerable.Empty<RugbyFixture>();
 
-            var today = DateTime.UtcNow.Date;
+            var minDateTime = DateTime.UtcNow.Date - TimeSpan.FromMinutes(_numberOfMinutesToCheckForInProgressFixtures);
 
             var todayFixtures = (await _publicSportDataUnitOfWork.RugbyFixtures.AllAsync())
-                .Where(f => f.StartDateTime.Date == today &&
-                f.RugbyTournament.IsEnabled &&
-                f.RugbyTournament.Id == tournament.Id)
+                .Where(f => 
+                    f.StartDateTime.Date > minDateTime &&
+                    f.RugbyTournament.IsEnabled &&
+                    f.RugbyTournament.Id == tournament.Id)
                 .OrderBy(f => f.StartDateTime);
 
             return await Task.FromResult(todayFixtures.ToList());

@@ -213,7 +213,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
                             _publicSportDataUnitOfWork.RugbyFixtures.Where(t =>
                                     t.RugbyTournament.Id == tournamentId &&
                                     t.RugbySeason != null &&
-                                    t.RugbySeason.IsCurrent).OrderByDescending(f => f.StartDateTime)
+                                    t.RugbySeason.IsCurrent).OrderBy(f => f.StartDateTime)
                                     .Where(q => q.TeamA.Name.Contains(query)
                                                         || q.TeamA.NameCmsOverride.Contains(query)
                                                         || q.TeamB.Name.Contains(query)
@@ -225,7 +225,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
                             _publicSportDataUnitOfWork.RugbyFixtures.Where(t =>
                                     t.RugbyTournament.Id == tournamentId &&
                                     t.RugbySeason != null &&
-                                    t.RugbySeason.IsCurrent).OrderByDescending(f => f.StartDateTime), pageIndex, pageSize, abpath, query);
+                                    t.RugbySeason.IsCurrent).OrderBy(f => f.StartDateTime), pageIndex, pageSize, abpath, query);
             }
 
 
@@ -476,7 +476,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
                 PageSize = pageSize,
                 TotalNumberOfPages = totalPageCount,
                 TotalNumberOfRecords = totalNumberOfRecords,
-                NextPageUrl = nextPageUrl.Trim()
+                NextPageUrl = nextPageUrl
             };
         }
     }
