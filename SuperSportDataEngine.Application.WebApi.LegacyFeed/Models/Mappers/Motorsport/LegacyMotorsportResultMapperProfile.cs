@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.WebPages;
-using AutoMapper;
-using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Motorsport;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-
-namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Motorsport
+﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Motorsport
 {
+    using AutoMapper;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Motorsport;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+
     // This class is used by Reflection.
     public class LegacyMotorsportResultMapperProfile : Profile
     {
