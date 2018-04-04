@@ -451,6 +451,16 @@
             eventResultInRepo.OutReason = result.carStatus.name;
             eventResultInRepo.CompletedRace = result.carStatus.carStatusId.Equals(0);
 
+            if (result.laps?.completed != null)
+            {
+                eventResultInRepo.LapsCompleted = result.laps.completed.Value;
+            }
+
+            if (result.laps?.behind != null)
+            {
+                eventResultInRepo.LapsBehind = result.laps.behind.Value;
+            }
+
             _publicSportDataUnitOfWork.MotorsportRaceEventResults.Update(eventResultInRepo);
         }
 
@@ -507,6 +517,16 @@
                 motorsportRaceResult.FinishingTimeMinutes = result.finishingTime.minutes;
                 motorsportRaceResult.FinishingTimeSeconds = result.finishingTime.seconds;
                 motorsportRaceResult.FinishingTimeMilliseconds = result.finishingTime.milliseconds;
+            }
+
+            if (result.laps?.completed != null)
+            {
+                motorsportRaceResult.LapsCompleted = result.laps.completed.Value;
+            }
+
+            if (result.laps?.behind != null)
+            {
+                motorsportRaceResult.LapsBehind = result.laps.behind.Value;
             }
 
             _publicSportDataUnitOfWork.MotorsportRaceEventResults.Add(motorsportRaceResult);
