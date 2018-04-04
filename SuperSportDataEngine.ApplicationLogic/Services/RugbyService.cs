@@ -447,11 +447,13 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<List<RugbyFixture>> GetCurrentDayFixturesForActiveTournaments()
         {
-            var today = DateTime.UtcNow.Date;
-            var todayFixtures = (await _publicSportDataUnitOfWork.RugbyFixtures.AllAsync()).Where(f => 
-                                    f.StartDateTime.Date == today && 
-                                    f.RugbyTournament.IsEnabled)
-                                 .OrderBy(f => f.StartDateTime);
+            var minDateTime = DateTime.UtcNow - TimeSpan.FromMinutes(_numberOfMinutesToCheckForInProgressFixtures);
+
+            var todayFixtures = (await _publicSportDataUnitOfWork.RugbyFixtures.AllAsync())
+                .Where(f => 
+                    f.StartDateTime.Date > minDateTime && 
+                    f.RugbyTournament.IsEnabled)
+                .OrderBy(f => f.StartDateTime);
 
             return await Task.FromResult(todayFixtures.ToList());
         }
@@ -462,12 +464,13 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             if (tournament is null) return Enumerable.Empty<RugbyFixture>();
 
-            var today = DateTime.UtcNow.Date;
+            var minDateTime = DateTime.UtcNow - TimeSpan.FromMinutes(_numberOfMinutesToCheckForInProgressFixtures);
 
             var todayFixtures = (await _publicSportDataUnitOfWork.RugbyFixtures.AllAsync())
-                .Where(f => f.StartDateTime.Date == today &&
-                f.RugbyTournament.IsEnabled &&
-                f.RugbyTournament.Id == tournament.Id)
+                .Where(f => 
+                    f.StartDateTime.Date > minDateTime &&
+                    f.RugbyTournament.IsEnabled &&
+                    f.RugbyTournament.Id == tournament.Id)
                 .OrderBy(f => f.StartDateTime);
 
             return await Task.FromResult(todayFixtures.ToList());
