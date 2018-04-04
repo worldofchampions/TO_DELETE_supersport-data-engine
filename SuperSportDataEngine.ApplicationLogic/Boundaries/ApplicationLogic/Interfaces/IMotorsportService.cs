@@ -12,11 +12,11 @@
         Task<IEnumerable<MotorsportLeague>> GetActiveLeagues();
         Task<int> GetProviderSeasonIdForLeague(Guid leagueId, CancellationToken cancellationToken);
         Task<SchedulerStateForManagerJobPolling> GetSchedulerStateForManagerJobPolling(Guid leagueId);
-        Task<IEnumerable<MotorsportRace>> GetLeagueRacesByProviderSeasonId(Guid leagueId, int providerSeasonId);
         Task<IEnumerable<MotorsportRace>> GetRacesForLeague(Guid leagueId);
         Task<MotorsportSeason> GetCurrentSeasonForLeague(Guid leagueId, CancellationToken cancellationToken);
         Task<IEnumerable<MotorsportSeason>> GetPastSeasonsForLeague(Guid leagueId, CancellationToken cancellationToken);
         Task<MotorsportRaceEvent> GetTodayEventForRace(Guid raceId);
         Task<IEnumerable<MotorsportRaceEvent>> GetEventsForRace(Guid raceId, Guid seasonId);
+        Task SetCurrentRaceEvents();
     }
 }

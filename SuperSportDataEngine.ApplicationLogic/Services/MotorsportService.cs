@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.ApplicationLogic.Services
+﻿using System.Collections;
+
+namespace SuperSportDataEngine.ApplicationLogic.Services
 {
     using System;
     using System.Collections.Generic;
@@ -13,7 +15,6 @@
 
     public class MotorsportService: IMotorsportService
     {
-
         private readonly IPublicSportDataUnitOfWork _publicSportDataUnitOfWork;
         private readonly ISystemSportDataUnitOfWork _systemSportDataUnitOfWork;
 
@@ -43,14 +44,6 @@
         public async Task<SchedulerStateForManagerJobPolling> GetSchedulerStateForManagerJobPolling(Guid leagueId)
         {
             return await  Task.FromResult(SchedulerStateForManagerJobPolling.NotRunning);
-        }
-
-        public async Task<IEnumerable<MotorsportRace>> GetLeagueRacesByProviderSeasonId(Guid leagueId, int providerSeasonId)
-        {
-            //TODO 
-            var races = new List<MotorsportRace>();
-
-            return await Task.FromResult(races);
         }
 
         public async Task<IEnumerable<MotorsportRace>> GetRacesForLeague(Guid leagueId)
@@ -96,6 +89,53 @@
                 e.MotorsportRace.Id == raceId && e.MotorsportSeason.Id == seasonId).ToList();
 
             return await Task.FromResult(raceEvents);
+        }
+
+        public async Task SetCurrentRaceEvents()
+        {
+            var motorsportLeagues = await GetActiveLeagues();
+
+            if (motorsportLeagues == null) return;
+
+            foreach (var league in motorsportLeagues)
+            {
+                var currentSeason = await GetCurrentSeasonForLeague(league.Id, CancellationToken.None);
+
+                var raceEvents = GetRaceEventsForLeague(league, currentSeason).ToList();
+
+                var previousRaceEvent = raceEvents.FirstOrDefault(e => e.IsCurrent);
+
+                raceEvents.Remove(previousRaceEvent);
+
+                foreach (var raceEvent in raceEvents)
+                {
+                    if (ShouldSetRaceEventAsCurrent(raceEvent))
+                    {
+                        raceEvent.IsCurrent = true;
+                        _publicSportDataUnitOfWork.MotorsportRaceEvents.Update(raceEvent);
+
+                        if (previousRaceEvent != null)
+                        {
+                            previousRaceEvent.IsCurrent = false;
+                            _publicSportDataUnitOfWork.MotorsportRaceEvents.Update(previousRaceEvent);
+                        }
+
+                        break;
+                    }
+                }
+            }
+        }
+
+        private IEnumerable<MotorsportRaceEvent> GetRaceEventsForLeague(MotorsportLeague league, MotorsportSeason currentSeason)
+        {
+            return _publicSportDataUnitOfWork.MotorsportRaceEvents.Where(e =>
+                e.MotorsportSeason.Id == currentSeason.Id &&
+                e.MotorsportRace.MotorsportLeague.Id == league.Id);
+        }
+
+        private static bool ShouldSetRaceEventAsCurrent(MotorsportRaceEvent raceEvent)
+        {
+            return false;
         }
     }
 }
