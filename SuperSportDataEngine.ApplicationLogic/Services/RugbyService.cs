@@ -449,8 +449,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         {
             var minDateTime = DateTime.UtcNow.Date - TimeSpan.FromMinutes(_numberOfMinutesToCheckForInProgressFixtures);
 
-            var todayFixtures = (await _publicSportDataUnitOfWork.RugbyFixtures.AllAsync())
-                .Where(f => 
+            var todayFixtures = _publicSportDataUnitOfWork.RugbyFixtures
+               .Where(f => 
                     f.StartDateTime.Date > minDateTime && 
                     f.RugbyTournament.IsEnabled)
                 .OrderBy(f => f.StartDateTime);
@@ -466,7 +466,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             var minDateTime = DateTime.UtcNow.Date - TimeSpan.FromMinutes(_numberOfMinutesToCheckForInProgressFixtures);
 
-            var todayFixtures = (await _publicSportDataUnitOfWork.RugbyFixtures.AllAsync())
+            var todayFixtures = _publicSportDataUnitOfWork.RugbyFixtures
                 .Where(f => 
                     f.StartDateTime.Date > minDateTime &&
                     f.RugbyTournament.IsEnabled &&
