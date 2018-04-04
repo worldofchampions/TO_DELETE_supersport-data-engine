@@ -447,7 +447,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<List<RugbyFixture>> GetCurrentDayFixturesForActiveTournaments()
         {
-            var minDateTime = DateTime.UtcNow - TimeSpan.FromMinutes(_numberOfMinutesToCheckForInProgressFixtures);
+            var minDateTime = DateTime.UtcNow.Date - TimeSpan.FromMinutes(_numberOfMinutesToCheckForInProgressFixtures);
 
             var todayFixtures = (await _publicSportDataUnitOfWork.RugbyFixtures.AllAsync())
                 .Where(f => 
@@ -464,7 +464,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             if (tournament is null) return Enumerable.Empty<RugbyFixture>();
 
-            var minDateTime = DateTime.UtcNow - TimeSpan.FromMinutes(_numberOfMinutesToCheckForInProgressFixtures);
+            var minDateTime = DateTime.UtcNow.Date - TimeSpan.FromMinutes(_numberOfMinutesToCheckForInProgressFixtures);
 
             var todayFixtures = (await _publicSportDataUnitOfWork.RugbyFixtures.AllAsync())
                 .Where(f => 
