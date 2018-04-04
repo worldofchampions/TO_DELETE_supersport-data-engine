@@ -451,7 +451,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             var todayFixtures = _publicSportDataUnitOfWork.RugbyFixtures
                .Where(f => 
-                    f.StartDateTime.Date > minDateTime && 
+                    f.StartDateTime > minDateTime && 
                     f.RugbyTournament.IsEnabled)
                 .OrderBy(f => f.StartDateTime);
 
@@ -468,7 +468,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             var todayFixtures = _publicSportDataUnitOfWork.RugbyFixtures
                 .Where(f => 
-                    f.StartDateTime.Date > minDateTime &&
+                    f.StartDateTime > minDateTime &&
                     f.RugbyTournament.IsEnabled &&
                     f.RugbyTournament.Id == tournament.Id)
                 .OrderBy(f => f.StartDateTime);
