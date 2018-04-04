@@ -3,7 +3,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class motorsportaddLapsBehind : DbMigration
+    public partial class Motorsport_Add_LapsBehind : DbMigration
     {
         public override void Up()
         {
