@@ -89,7 +89,7 @@
             }
             if (result.LapsBehind != 0)
             {
-                return result.LapsBehind > 1 ? $"+{result.LapsBehind} laps" : $"+{result.LapsBehind} lap";
+                return result.LapsBehind > 1 ? $"+{result.LapsBehind} Laps" : $"+{result.LapsBehind} Lap";
             }
             {
                 var seconds = result.GapToLeaderTimeSeconds.ToString().PadLeft(2, '0');
