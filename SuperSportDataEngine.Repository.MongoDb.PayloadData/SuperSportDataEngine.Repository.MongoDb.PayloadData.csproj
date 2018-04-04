@@ -60,9 +60,6 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AutoMapper, Version=6.1.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
-      <HintPath>..\packages\AutoMapper.6.1.1\lib\net45\AutoMapper.dll</HintPath>
-    </Reference>
     <Reference Include="MongoDB.Bson, Version=2.4.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MongoDB.Bson.2.4.4\lib\net45\MongoDB.Bson.dll</HintPath>
     </Reference>
@@ -90,21 +87,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MappingProfiles\RugbyFixturesMappingProfile.cs" />
-    <Compile Include="MappingProfiles\RugbyEventsFlowMappingProfile.cs" />
-    <Compile Include="MappingProfiles\RugbyMatchStatsMappingProfile.cs" />
-    <Compile Include="MappingProfiles\RugbyGroupedLogsMappingProfile.cs" />
-    <Compile Include="MappingProfiles\RugbyFlatLogsMappingProfile.cs" />
-    <Compile Include="Models\MongoRugbyEntities.cs" />
-    <Compile Include="Models\MongoRugbyEventsFlow.cs" />
-    <Compile Include="Models\MongoRugbyFixtures.cs" />
-    <Compile Include="Models\MongoRugbyFlatLogs.cs" />
-    <Compile Include="Models\MongoRugbyGroupedLogs.cs" />
-    <Compile Include="Models\MongoRugbyMatchStats.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\MongoDbMotorsportRepository.cs" />
     <Compile Include="Repositories\MongoDbRugbyRepository.cs" />
-    <Compile Include="MappingProfiles\RugbyEntitiesMappingProfile.cs" />
     <Compile Include="Repositories\TemporaryExampleMongoDbRepository.cs" />
   </ItemGroup>
   <ItemGroup>

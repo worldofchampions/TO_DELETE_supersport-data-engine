@@ -1,19 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Diagnostics;
+﻿using System.Configuration;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
-using AutoMapper;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
 using SuperSportDataEngine.Common.Logging;
-using SuperSportDataEngine.Repository.MongoDb.PayloadData.Models;
-using SuperSportDataEngine.Repository.MongoDb.PayloadData.Models.RugbyEntities;
 
 namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 {
@@ -31,40 +24,12 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
             _mongoClient = mongoClient;
             _logger = logger;
             _mongoDatabaseName = ConfigurationManager.AppSettings["MongoDbName"];
-
-            InitialiseMappings();
-        }
-
-        private void InitialiseMappings()
-        {
-            // Get all the mapping profiles from the current assembly.
-            var types = Assembly.GetExecutingAssembly()
-                .GetTypes()
-                .Where(t =>
-                    t.BaseType == typeof(Profile));
-
-            // Add all the mapping 
-            // profiles to Automapper.
-            Mapper.Initialize(cfg =>
-            {
-                foreach (var type in types)
-                    cfg.AddProfile(type);
-            });
         }
 
         public async Task Save(MotorsportEntitiesResponse leagues)
         {
             if (leagues == null)
                 return;
-
-            //Stopwatch watch = Stopwatch.StartNew();
-            //// Map the provider data to a type mongo understands.
-            //var mongoEntities =
-            //    Mapper.Map<ApiResult, MongoMotorsportApiResult>(leagues.apiResults[0]);
-            //watch.Stop();
-
-            //Console.WriteLine(
-            //    $"Mapping provider leagues to mongo object takes: {(watch.ElapsedMilliseconds / 1000.0)}s");
 
             // Get the Mongo DB.
             var db = _mongoClient.GetDatabase(_mongoDatabaseName);
