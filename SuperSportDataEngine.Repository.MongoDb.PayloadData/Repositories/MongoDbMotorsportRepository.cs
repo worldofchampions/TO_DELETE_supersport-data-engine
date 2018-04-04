@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -56,9 +57,14 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
             if (leagues == null)
                 return;
 
-            // Map the provider data to a type mongo understands.
-            var mongoEntities =
-                Mapper.Map<ApiResult, MongoMotorsportApiResult>(leagues.apiResults[0]);
+            //Stopwatch watch = Stopwatch.StartNew();
+            //// Map the provider data to a type mongo understands.
+            //var mongoEntities =
+            //    Mapper.Map<ApiResult, MongoMotorsportApiResult>(leagues.apiResults[0]);
+            //watch.Stop();
+
+            //Console.WriteLine(
+            //    $"Mapping provider leagues to mongo object takes: {(watch.ElapsedMilliseconds / 1000.0)}s");
 
             // Get the Mongo DB.
             var db = _mongoClient.GetDatabase(_mongoDatabaseName);
@@ -85,8 +91,8 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
             }
 
             // Add to the collection.
-            var collection = db.GetCollection<MongoMotorsportApiResult>("motorsport_entities");
-            await collection.InsertOneAsync(mongoEntities);
+            var collection = db.GetCollection<ApiResult>("motorsport_entities");
+            await collection.InsertOneAsync(leagues.apiResults[0]);
         }
     }
 }
