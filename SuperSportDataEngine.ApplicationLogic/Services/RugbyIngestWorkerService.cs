@@ -1607,9 +1607,6 @@
             if (cancellationToken.IsCancellationRequested)
                 return;
 
-            if (await _rugbyService.GetLiveFixturesCount(cancellationToken) > 0)
-                return;
-
             var currentDayFixtures = await _rugbyService.GetCurrentDayFixturesForActiveTournaments();
 
             foreach (var fixture in currentDayFixtures)
