@@ -24,19 +24,19 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 
         }
 
-        public void SaveEntities(RugbyEntitiesResponse entitiesResponse)
+        private async void Save<T>(T data, string collectionName)
         {
             // Get the Mongo DB.
             var db = _mongoClient.GetDatabase(_mongoDatabaseName);
             if (db == null)
             {
-                _logger.Error("MongoDbIsNull", "Mongo db object is null.");
+                await _logger.Error("MongoDbIsNull", "Mongo db object is null.");
                 return;
             }
 
             try
             {
-                bool isMongoLive = db.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
+                var isMongoLive = db.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
 
                 if (!isMongoLive)
                 {
@@ -48,166 +48,24 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
             }
             catch (System.Exception)
             {
+                // ignored
             }
 
             // Add to the collection.
-            var collection = db.GetCollection<RugbyEntitiesResponse>("entities");
-            collection.InsertOneAsync(entitiesResponse);
+            var collection = db.GetCollection<T>(collectionName);
+            await collection.InsertOneAsync(data);
         }
 
-        public void Save(RugbyFixturesResponse fixturesResponse)
-        {
-            // Get the Mongo DB.
-            var db = _mongoClient.GetDatabase(_mongoDatabaseName);
-            if (db == null)
-            {
-                _logger.Error("MongoDbIsNull", "Mongo db object is null.");
-                return;
-            }
+        public void SaveEntities(RugbyEntitiesResponse entitiesResponse) => Save(entitiesResponse, "entities");
 
-            try
-            {
-                bool isMongoLive = db.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
+        public void Save(RugbyFixturesResponse fixturesResponse) => Save(fixturesResponse, "fixtures");
 
-                if (!isMongoLive)
-                {
-#if(!DEBUG)
-                    _logger.Error("MongoDbCannotConnect" ,"Unable to connect to MongoDB.");
-#endif
-                    return;
-                }
-            }
-            catch (System.Exception e)
-            {
-            }
+        public void Save(RugbyFlatLogsResponse logsResponse) => Save(logsResponse, "logs");
 
-            // Add to the collection.
-            var collection = db.GetCollection<RugbyFixturesResponse>("fixtures");
-            collection.InsertOneAsync(fixturesResponse);
-        }
+        public void Save(RugbyGroupedLogsResponse logsResponse) => Save(logsResponse, "logs");
 
-        public void Save(RugbyFlatLogsResponse logsResponse)
-        {
-            // Get the Mongo DB.
-            var db = _mongoClient.GetDatabase(_mongoDatabaseName);
-            if (db == null)
-            {
-                _logger.Error("MongoDbIsNull", "Mongo db object is null.");
-                return;
-            }
+        public void Save(RugbyMatchStatsResponse matchStatsResponse) => Save(matchStatsResponse, "matchStats");
 
-            try
-            {
-                bool isMongoLive = db.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
-
-                if (!isMongoLive)
-                {
-#if (!DEBUG)
-                    _logger.Error("MongoDbCannotConnect", "Unable to connect to MongoDB.");
-#endif
-                    return;
-                }
-            }
-            catch (System.Exception e)
-            {
-            }
-
-            // Add to the collection.
-            var collection = db.GetCollection<RugbyFlatLogsResponse>("logs");
-            collection.InsertOneAsync(logsResponse);
-        }
-
-        public void Save(RugbyGroupedLogsResponse logsResponse)
-        {
-            // Get the Mongo DB.
-            var db = _mongoClient.GetDatabase(_mongoDatabaseName);
-            if (db == null)
-            {
-                _logger.Error("MongoDbIsNull", "Mongo db object is null.");
-                return;
-            }
-
-            try
-            {
-                bool isMongoLive = db.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
-
-                if (!isMongoLive)
-                {
-#if (!DEBUG)
-                    _logger.Error("MongoDbCannotConnect", "Unable to connect to MongoDB.");
-#endif
-                    return;
-                }
-            }
-            catch (System.Exception e)
-            {
-            }
-
-            // Add to the collection.
-            var collection = db.GetCollection<RugbyGroupedLogsResponse>("logs");
-            collection.InsertOneAsync(logsResponse);
-        }
-
-        public void Save(RugbyMatchStatsResponse matchStatsResponse)
-        {
-            // Get the Mongo DB.
-            var db = _mongoClient.GetDatabase(_mongoDatabaseName);
-            if(db == null)
-            {
-                _logger.Error("MongoDbIsNull", "Mongo db object is null.");
-                return;
-            }
-
-            try
-            {
-                bool isMongoLive = db.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
-
-                if (!isMongoLive)
-                {
-#if (!DEBUG)
-                    _logger.Error("MongoDbCannotConnect", "Unable to connect to MongoDB.");
-#endif
-                    return;
-                }
-            }
-            catch (System.Exception e)
-            {
-            }
-
-            // Add to the collection.
-            var collection = db.GetCollection<RugbyMatchStatsResponse>("matchStats");
-            collection.InsertOneAsync(matchStatsResponse);
-        }
-
-        public void Save(RugbyEventsFlowResponse eventsFlowResponse)
-        {
-            // Get the Mongo DB.
-            var db = _mongoClient.GetDatabase(_mongoDatabaseName);
-            if (db == null)
-            {
-                _logger.Error("MongoDbIsNull", "Mongo db object is null.");
-                return;
-            }
-
-            try
-            {
-                bool isMongoLive = db.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
-
-                if (!isMongoLive)
-                {
-#if (!DEBUG)
-                    _logger.Error("MongoDbCannotConnect", "Unable to connect to MongoDB.");
-#endif
-                    return;
-                }
-            }
-            catch (System.Exception e)
-            {
-            }
-
-            // Add to the collection.
-            var collection = db.GetCollection<RugbyEventsFlowResponse>("eventsFlow");
-            collection.InsertOneAsync(eventsFlowResponse);
-        }
+        public void Save(RugbyEventsFlowResponse eventsFlowResponse) => Save(eventsFlowResponse, "eventsFlow");
     }
 }

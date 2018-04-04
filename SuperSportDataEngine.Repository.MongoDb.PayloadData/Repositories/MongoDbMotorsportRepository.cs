@@ -12,10 +12,10 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 {
     public class MongoDbMotorsportRepository : IMongoDbMotorsportRepository
     {
-        private IMongoClient _mongoClient;
-        private ILoggingService _logger;
+        private readonly IMongoClient _mongoClient;
+        private readonly ILoggingService _logger;
 
-        private string _mongoDatabaseName;
+        private readonly string _mongoDatabaseName;
 
         public MongoDbMotorsportRepository(
             IMongoClient mongoClient, 
@@ -26,9 +26,10 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
             _mongoDatabaseName = ConfigurationManager.AppSettings["MongoDbName"];
         }
 
-        public async Task Save(MotorsportEntitiesResponse leagues)
+        private async Task Save<T>(T data)
+            where T : MotorsportEntitiesResponse
         {
-            if (leagues == null)
+            if (data == null)
                 return;
 
             // Get the Mongo DB.
@@ -57,7 +58,9 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 
             // Add to the collection.
             var collection = db.GetCollection<ApiResult>("motorsport_entities");
-            await collection.InsertOneAsync(leagues.apiResults[0]);
+            await collection.InsertOneAsync(data.apiResults[0]);
         }
+
+        public async Task Save(MotorsportEntitiesResponse leagues) => await Save(data: leagues);
     }
 }
