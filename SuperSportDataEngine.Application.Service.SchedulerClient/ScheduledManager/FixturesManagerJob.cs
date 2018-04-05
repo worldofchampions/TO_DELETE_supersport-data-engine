@@ -22,7 +22,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
     using System.Threading;
     using System.Threading.Tasks;
 
-    internal class FixturesManagerJob
+    public class FixturesManagerJob
     {
         private readonly IRecurringJobManager _recurringJobManager;
         private static int _maxNumberOfHoursToCheckForUpcomingFixtures;

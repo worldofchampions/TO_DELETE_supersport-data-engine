@@ -123,6 +123,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ScheduledManagerTests\FixedScheduledJobTest.cs" />
+    <Compile Include="ScheduledManagerTests\FixturesManagerJobTests.cs" />
     <Compile Include="ScheduledManagerTests\LiveManagerJobTest.cs" />
     <Compile Include="ScheduledManagerTests\LogsManagerJobTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
