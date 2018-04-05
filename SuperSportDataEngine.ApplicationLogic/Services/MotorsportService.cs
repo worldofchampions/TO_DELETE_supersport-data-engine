@@ -1,6 +1,4 @@
-﻿using System.Collections;
-
-namespace SuperSportDataEngine.ApplicationLogic.Services
+﻿namespace SuperSportDataEngine.ApplicationLogic.Services
 {
     using System;
     using System.Collections.Generic;
@@ -13,7 +11,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
 
-    public class MotorsportService: IMotorsportService
+    public class MotorsportService : IMotorsportService
     {
         private readonly IPublicSportDataUnitOfWork _publicSportDataUnitOfWork;
         private readonly ISystemSportDataUnitOfWork _systemSportDataUnitOfWork;
@@ -29,7 +27,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         public async Task<IEnumerable<MotorsportLeague>> GetActiveLeagues()
         {
             var activeLeagues = await _publicSportDataUnitOfWork.MotorsportLeagues.WhereAsync(l => l.IsEnabled);
-            
+
             return activeLeagues;
         }
 
@@ -43,13 +41,13 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<SchedulerStateForManagerJobPolling> GetSchedulerStateForManagerJobPolling(Guid leagueId)
         {
-            return await  Task.FromResult(SchedulerStateForManagerJobPolling.NotRunning);
+            return await Task.FromResult(SchedulerStateForManagerJobPolling.NotRunning);
         }
 
         public async Task<IEnumerable<MotorsportRace>> GetRacesForLeague(Guid leagueId)
         {
-            var races =  _publicSportDataUnitOfWork.MotorsportRaces.Where(r =>
-                r.MotorsportLeague.Id == leagueId).ToList();
+            var races = _publicSportDataUnitOfWork.MotorsportRaces.Where(r =>
+               r.MotorsportLeague.Id == leagueId).ToList();
 
             return await Task.FromResult(races);
         }
@@ -69,7 +67,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             const int numberOfPastSeasons = 2;
 
             var pastSeasonsForLeague = await _publicSportDataUnitOfWork.MotorsportSeasons.WhereAsync(s =>
-                s.ProviderSeasonId >= currentYear - numberOfPastSeasons && s.ProviderSeasonId <= currentYear -1
+                s.ProviderSeasonId >= currentYear - numberOfPastSeasons && s.ProviderSeasonId <= currentYear - 1
                 && s.MotorsportLeague.Id == leagueId);
 
             return pastSeasonsForLeague;
@@ -105,8 +103,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
                 var previousRaceEvent = raceEvents.FirstOrDefault(e => e.IsCurrent);
 
-                raceEvents.Remove(previousRaceEvent);
-
                 foreach (var raceEvent in raceEvents)
                 {
                     if (ShouldSetRaceEventAsCurrent(raceEvent))
@@ -119,6 +115,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                             previousRaceEvent.IsCurrent = false;
                             _publicSportDataUnitOfWork.MotorsportRaceEvents.Update(previousRaceEvent);
                         }
+
+                        await _publicSportDataUnitOfWork.SaveChangesAsync();
 
                         break;
                     }
@@ -135,7 +133,11 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         private static bool ShouldSetRaceEventAsCurrent(MotorsportRaceEvent raceEvent)
         {
-            return false;
+            if (raceEvent.StartDateTimeUtc == null) return false;
+
+            var diff = Math.Round(raceEvent.StartDateTimeUtc.Value.Subtract(DateTime.UtcNow).TotalHours, MidpointRounding.AwayFromZero);
+
+            return (int)diff == 27; // TODO: @thobani Refactor magic number
         }
     }
 }
