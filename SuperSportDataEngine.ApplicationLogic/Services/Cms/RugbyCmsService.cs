@@ -43,11 +43,12 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             {
                 tournaments = await CreatePagedResults<RugbyTournament, RugbyTournamentEntity>(
                                     _publicSportDataUnitOfWork.RugbyTournaments.Where(q => q.Name.Contains(query)
-                                                        || q.NameCmsOverride.Contains(query)), pageIndex, pageSize, abpath);
+                                                        || q.NameCmsOverride.Contains(query)), pageIndex, pageSize, abpath, query);
             }
             else
             {
-                tournaments = await CreatePagedResults<RugbyTournament, RugbyTournamentEntity>(_publicSportDataUnitOfWork.RugbyTournaments.All(), pageIndex, pageSize, abpath);
+                tournaments = await CreatePagedResults<RugbyTournament, RugbyTournamentEntity>(
+                                            _publicSportDataUnitOfWork.RugbyTournaments.All(), pageIndex, pageSize, abpath, query);
             }
 
             if (tournaments.Results.Any())
@@ -67,11 +68,12 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
                                     _publicSportDataUnitOfWork.RugbyFixtures.Where(q => q.TeamA.Name.Contains(query)
                                                         || q.TeamA.NameCmsOverride.Contains(query)
                                                         || q.TeamB.Name.Contains(query)
-                                                        || q.TeamB.NameCmsOverride.Contains(query)), pageIndex, pageSize, abpath);
+                                                        || q.TeamB.NameCmsOverride.Contains(query)), pageIndex, pageSize, abpath, query);
             }
             else
             {
-                fixtures = await CreatePagedResults<RugbyFixture, RugbyFixtureEntity>(_publicSportDataUnitOfWork.RugbyFixtures.All(), pageIndex, pageSize, abpath);
+                fixtures = await CreatePagedResults<RugbyFixture, RugbyFixtureEntity>(
+                                    _publicSportDataUnitOfWork.RugbyFixtures.All(), pageIndex, pageSize, abpath, query);
             }
 
             if (fixtures.Results.Any())
@@ -88,11 +90,12 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             if (!String.IsNullOrEmpty(query))
             {
                 seasons = await CreatePagedResults<RugbySeason, RugbySeasonEntity>(
-                                    _publicSportDataUnitOfWork.RugbySeasons.Where(q => q.Name.Contains(query)), pageIndex, pageSize, abpath);
+                                    _publicSportDataUnitOfWork.RugbySeasons.Where(q => q.Name.Contains(query)), pageIndex, pageSize, abpath, query);
             }
             else
             {
-                seasons = await CreatePagedResults<RugbySeason, RugbySeasonEntity>(_publicSportDataUnitOfWork.RugbySeasons.All(), pageIndex, pageSize, abpath);
+                seasons = await CreatePagedResults<RugbySeason, RugbySeasonEntity>(
+                                    _publicSportDataUnitOfWork.RugbySeasons.All(), pageIndex, pageSize, abpath, query);
             }
 
             if (seasons.Results.Any())
@@ -111,11 +114,12 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
                 teams = await CreatePagedResults<RugbyTeam, RugbyTeamEntity>(
                                     _publicSportDataUnitOfWork.RugbyTeams.Where(q => q.Name.Contains(query)
                                                         || q.NameCmsOverride.Contains(query)
-                                                        || q.Abbreviation.Contains(query)), pageIndex, pageSize, abpath);
+                                                        || q.Abbreviation.Contains(query)), pageIndex, pageSize, abpath, query);
             }
             else
             {
-                teams = await CreatePagedResults<RugbyTeam, RugbyTeamEntity>(_publicSportDataUnitOfWork.RugbyTeams.All(), pageIndex, pageSize, abpath);
+                teams = await CreatePagedResults<RugbyTeam, RugbyTeamEntity>(
+                                    _publicSportDataUnitOfWork.RugbyTeams.All(), pageIndex, pageSize, abpath, query);
             }
 
             if (teams.Results.Any())
@@ -135,11 +139,12 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
                                     _publicSportDataUnitOfWork.RugbyPlayers.Where(q => q.FirstName.Contains(query)
                                                            || q.LastName.Contains(query)
                                                            || q.FullName.Contains(query)
-                                                           || q.DisplayNameCmsOverride.Contains(query)), pageIndex, pageSize, abpath);
+                                                           || q.DisplayNameCmsOverride.Contains(query)), pageIndex, pageSize, abpath, query);
             }
             else
             {
-                players = await CreatePagedResults<RugbyPlayer, RugbyPlayerEntity>(_publicSportDataUnitOfWork.RugbyPlayers.All(), pageIndex, pageSize, abpath);
+                players = await CreatePagedResults<RugbyPlayer, RugbyPlayerEntity>(
+                                    _publicSportDataUnitOfWork.RugbyPlayers.All(), pageIndex, pageSize, abpath, query);
             }
 
             if (players.Results.Any())
@@ -156,12 +161,13 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             if (!String.IsNullOrEmpty(query))
             {
                 tournamentSeasons = await CreatePagedResults<RugbySeason, RugbySeasonEntity>(
-                                    _publicSportDataUnitOfWork.RugbySeasons.Where(q => q.Name.Contains(query) && q.RugbyTournament.Id == tournamentId), pageIndex, pageSize, abpath);
+                                    _publicSportDataUnitOfWork.RugbySeasons.Where(q => q.Name.Contains(query)
+                                                                                    && q.RugbyTournament.Id == tournamentId), pageIndex, pageSize, abpath, query);
             }
             else
             {
                 tournamentSeasons = await CreatePagedResults<RugbySeason, RugbySeasonEntity>(_publicSportDataUnitOfWork.RugbySeasons.Where(
-                                                            season => season.RugbyTournament.Id == tournamentId), pageIndex, pageSize, abpath);
+                                                            season => season.RugbyTournament.Id == tournamentId), pageIndex, pageSize, abpath, query);
             }
 
             if (tournamentSeasons.Results.Any())
@@ -182,17 +188,50 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
                                                         .Where(q => q.TeamA.Name.Contains(query)
                                                         || q.TeamA.NameCmsOverride.Contains(query)
                                                         || q.TeamB.Name.Contains(query)
-                                                        || q.TeamB.NameCmsOverride.Contains(query)), pageIndex, pageSize, abpath);
+                                                        || q.TeamB.NameCmsOverride.Contains(query)), pageIndex, pageSize, abpath, query);
             }
             else
             {
                 tournamentSeasonFixtures = await CreatePagedResults<RugbyFixture, RugbyFixtureEntity>(_publicSportDataUnitOfWork.RugbyFixtures.Where(
-                                                            fixture => fixture.RugbySeason.Id == seasonId), pageIndex, pageSize, abpath);
+                                                            fixture => fixture.RugbySeason.Id == seasonId), pageIndex, pageSize, abpath, query);
             }
 
             if (tournamentSeasonFixtures.Results.Any())
             {
                 return tournamentSeasonFixtures;
+            }
+            return null;
+        }
+
+        public async Task<PagedResultsEntity<RugbyFixtureEntity>> GetTournamentFixtures(Guid tournamentId, int pageIndex, int pageSize, string abpath, string query = null)
+        {
+            var tournamentFixtures = (PagedResultsEntity<RugbyFixtureEntity>)null;
+
+            if (!String.IsNullOrEmpty(query))
+            {
+                tournamentFixtures = await CreatePagedResults<RugbyFixture, RugbyFixtureEntity>(
+                            _publicSportDataUnitOfWork.RugbyFixtures.Where(t =>
+                                    t.RugbyTournament.Id == tournamentId &&
+                                    t.RugbySeason != null &&
+                                    t.RugbySeason.IsCurrent).OrderBy(f => f.StartDateTime)
+                                    .Where(q => q.TeamA.Name.Contains(query)
+                                                        || q.TeamA.NameCmsOverride.Contains(query)
+                                                        || q.TeamB.Name.Contains(query)
+                                                        || q.TeamB.NameCmsOverride.Contains(query)), pageIndex, pageSize, abpath, query);
+            }
+            else
+            {
+                tournamentFixtures = await CreatePagedResults<RugbyFixture, RugbyFixtureEntity>(
+                            _publicSportDataUnitOfWork.RugbyFixtures.Where(t =>
+                                    t.RugbyTournament.Id == tournamentId &&
+                                    t.RugbySeason != null &&
+                                    t.RugbySeason.IsCurrent).OrderBy(f => f.StartDateTime), pageIndex, pageSize, abpath, query);
+            }
+
+
+            if (tournamentFixtures.Results.Any())
+            {
+                return tournamentFixtures;
             }
             return null;
         }
@@ -416,7 +455,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             return success;
         }
 
-        protected async Task<PagedResultsEntity<TReturn>> CreatePagedResults<T, TReturn>(IEnumerable<T> queryable, int pageIndex, int pageSize, string abpath)
+        protected async Task<PagedResultsEntity<TReturn>> CreatePagedResults<T, TReturn>(IEnumerable<T> queryable, int pageIndex, int pageSize, string abpath, string query)
         {
             var skipAmount = pageSize * (pageIndex - 1);
 
@@ -425,15 +464,16 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
 
             var mod = totalNumberOfRecords % pageSize;
             var totalPageCount = (totalNumberOfRecords / pageSize) + (mod == 0 ? 0 : 1);
-             
-            var nextPageUrl = pageIndex == totalPageCount ? null : abpath + string.Format("?pageIndex={0}&pageSize={1}", pageIndex + 1, pageSize);
+
+            var nextPageUrl = pageIndex == totalPageCount ? null : abpath + string.Format("?pageIndex={0}&pageSize={1}", pageIndex + 1, pageSize)
+                                                    + (!String.IsNullOrEmpty(query) ? "&query=" + query : "");
 
             var results = iMapper.Map<IEnumerable<T>, IEnumerable<TReturn>>(projection);
             return new PagedResultsEntity<TReturn>
             {
                 Results = results,
                 PageNumber = pageIndex,
-                PageSize = projection.Count(),
+                PageSize = pageSize,
                 TotalNumberOfPages = totalPageCount,
                 TotalNumberOfRecords = totalNumberOfRecords,
                 NextPageUrl = nextPageUrl

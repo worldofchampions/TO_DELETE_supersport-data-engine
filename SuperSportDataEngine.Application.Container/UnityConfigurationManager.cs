@@ -5,6 +5,7 @@
     using Microsoft.Practices.Unity;
     using MongoDB.Driver;
     using NLog.Slack;
+    using NLog.MSFTTeams;
     using StackExchange.Redis;
     using ApplicationLogic.Services.Cms;
     using System;
@@ -50,8 +51,23 @@
 
         public static void RegisterTypes(IUnityContainer container, ApplicationScope applicationScope)
         {
-            // Hack sort of. To get the NLog.Slack.dll to be copied.
+            //   I had to add explicit usage of third party assemblies to the UnityConfigurationManager class just so that the third party dlls gets copied.
+
+            //    Here's the reason why it happens.
+            //    Before hack:
+            //    - *Container* project is a class library which has the reference to NLog.Slack.dll
+            //    - *SchedulerClient* project references* Container* but does not make use of the NLog.Slack.dll, so the dll is 
+            //      not copied to the */bin* folder of the SchedulerClient.
+
+            //    After Hack:
+            //    - SchedulerClient references *Container* which makes direct use of the dll. So the dll is copied.
+
+            // Reference: https://stackoverflow.com/questions/20280717/references-from-class-library-are-not-copied-to-running-project-bin-folder
+
+            // ReSharper disable once ObjectCreationAsStatement
             new SlackClient();
+            // ReSharper disable once ObjectCreationAsStatement
+            new ConnectorCard();
 
             ApplyRegistrationsForLogging(container);
             ApplyRegistrationsForApplicationLogic(container, applicationScope);
