@@ -67,7 +67,9 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
             _fixturesManagerJob =
                 new FixturesManagerJob(
                     _recurringJobManager,
-                    _container);
+                    _systemSportDataUnitOfWork,
+                    _rugbyService,
+                    _rugbyIngestWorkerService);
 
             _liveManagerJob = new LiveManagerJob(
                 _recurringJobManager,

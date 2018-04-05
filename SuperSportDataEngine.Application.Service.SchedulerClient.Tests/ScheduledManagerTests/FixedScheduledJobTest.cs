@@ -15,13 +15,13 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
     [Category("FixedScheduleJob")]
     public class FixedScheduledJobTest
     {
-        [TestCase("FixedScheduleJob→ReferenceData", "0 2 * * *", "normal_priority")]
-        [TestCase("FixedScheduleJob→Fixtures", "5 2 * * *", "normal_priority")]
-        [TestCase("FixedScheduleJob→Logs→ActiveTournaments", "5 2 * * *", "normal_priority")]
-        [TestCase("FixedScheduleJob→Logs→CurrentTournaments", "0 */1 * * *", "normal_priority")]
-        [TestCase("FixedScheduleJob→Results→AllFixtures", "5 2 * * *", "normal_priority")]
-        [TestCase("FixedScheduleJob→Results→EndedFixtures", "0 */1 * * *", "normal_priority")]
-        [TestCase("FixedScheduleJob→Results→CurrentDayFixtures", "*/15 * * * *", "high_priority")]
+        [TestCase("Rugby→StatsProzone→FixedScheduleJob→ReferenceData", "0 2 * * *", "normal_priority")]
+        [TestCase("Rugby→StatsProzone→FixedScheduleJob→Fixtures", "5 2 * * *", "normal_priority")]
+        [TestCase("Rugby→StatsProzone→FixedScheduleJob→Logs→ActiveTournaments", "5 2 * * *", "normal_priority")]
+        [TestCase("Rugby→StatsProzone→FixedScheduleJob→Logs→CurrentTournaments", "0 */1 * * *", "normal_priority")]
+        [TestCase("Rugby→StatsProzone→FixedScheduleJob→Results→AllFixtures", "5 2 * * *", "normal_priority")]
+        [TestCase("Rugby→StatsProzone→FixedScheduleJob→Results→EndedFixtures", "0 */1 * * *", "normal_priority")]
+        [TestCase("Rugby→StatsProzone→FixedScheduleJob→Results→CurrentDayFixtures", "*/15 * * * *", "high_priority")]
         public void FixedScheduleJob_WhenUpdateFixedJobsCalled_AddsJobToHangfire(
             string hangfireJobId,
             string hangfireCronExpression,

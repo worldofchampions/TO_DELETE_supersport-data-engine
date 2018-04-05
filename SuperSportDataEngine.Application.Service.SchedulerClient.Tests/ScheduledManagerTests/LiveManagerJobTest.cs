@@ -278,14 +278,14 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
             await LiveManagerJob.DoWorkAsync();
 
             MockRecurringJobManager.Verify(m => m.AddOrUpdate(
-                        "LiveManagerJob→LiveMatch→TeamA vs TeamB→123",
+                        "Rugby→StatsProzone→LiveManagerJob→LiveMatch→TeamA vs TeamB→123",
                         It.IsAny<Job>(),
                         "0 */2 * * *",
                         It.IsAny<RecurringJobOptions>()),
                         Times.Once());
 
             MockRecurringJobManager.Verify(m => m.Trigger(
-                        "LiveManagerJob→LiveMatch→TeamA vs TeamB→123"),
+                        "Rugby→StatsProzone→LiveManagerJob→LiveMatch→TeamA vs TeamB→123"),
                         Times.Once());
 
             var f = MockUnitOfWork.SchedulerTrackingRugbyFixtures.All().FirstOrDefault();

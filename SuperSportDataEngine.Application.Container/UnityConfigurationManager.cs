@@ -1,4 +1,7 @@
-﻿namespace SuperSportDataEngine.Application.Container
+﻿using SuperSportDataEngine.Application.Service.Common.Interfaces;
+using SuperSportDataEngine.Application.Service.Common.Services;
+
+namespace SuperSportDataEngine.Application.Container
 {
     using Hangfire;
     using Hangfire.SqlServer;
@@ -90,6 +93,7 @@
 
         private static void ApplyRegistrationsForApplicationLogic(IUnityContainer container, ApplicationScope applicationScope)
         {
+            container.RegisterType<ISystemTimeService, SystemTimeService>();
             container.RegisterType<ITemporaryExampleService, TemporaryExampleService>();
             container.RegisterType<IRugbyService, RugbyService>(new HierarchicalLifetimeManager());
             container.RegisterType<IMotorsportService, MotorsportService>(new HierarchicalLifetimeManager());
