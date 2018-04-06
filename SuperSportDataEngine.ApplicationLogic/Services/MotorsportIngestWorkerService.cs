@@ -1,6 +1,4 @@
-﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
-
-namespace SuperSportDataEngine.ApplicationLogic.Services
+﻿namespace SuperSportDataEngine.ApplicationLogic.Services
 {
     using System.Linq;
     using System.Threading;
@@ -8,6 +6,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
     using SuperSportDataEngine.Common.Logging;
 
     public class MotorsportIngestWorkerService : IMotorsportIngestWorkerService
@@ -87,7 +87,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             {
                 foreach (var league in motorsportLeagues)
                 {
-                    if (league.ProviderSlug is null) continue;
+                    if (league.ProviderSlug is null || league.MotorsportSportType == MotorsportSportType.Superbike) continue;
 
                     var providerResponse = _statsMotorsportIngestService.IngestTeamsForLeague(league.ProviderSlug);
 
@@ -130,7 +130,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             {
                 foreach (var league in motorLeagues)
                 {
-                    if (league.ProviderSlug is null) continue;
+                    if (league.ProviderSlug is null || league.MotorsportSportType == MotorsportSportType.Superbike) continue;
 
                     var season = await _motorsportService.GetCurrentSeasonForLeague(league.Id, cancellationToken);
 
@@ -362,7 +362,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             {
                 foreach (var league in motorsportLeagues)
                 {
-                    if (league.ProviderSlug is null) continue;
+                    if (league.ProviderSlug is null || league.MotorsportSportType == MotorsportSportType.Superbike) continue;
 
                     var motorsportSeasons = 
                         (await _motorsportService.GetPastSeasonsForLeague(league.Id, cancellationToken)).ToList();
