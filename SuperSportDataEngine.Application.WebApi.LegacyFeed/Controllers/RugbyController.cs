@@ -189,7 +189,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         /// <returns></returns>
         [HttpGet, HttpHead]
         [Route("live")]
-        [ResponseType(typeof(Match))]
+        [ResponseType(typeof(List<Match>))]
         public async Task<IHttpActionResult> GetTodayFixtures()
         {
             const string cachePrefix = "LIVE:";
