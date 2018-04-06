@@ -343,10 +343,10 @@
             if (qualifyingRuns == null) return;
 
             var bestQualifyingRun = providerGridEntry.qualifying?.qualifyingRuns?.FirstOrDefault();
+            if (bestQualifyingRun == null) return;
 
             foreach (var run in qualifyingRuns)
             {
-                if (bestQualifyingRun == null) continue;
 
                 var bestRunTime = new TimeSpan(0, 0, bestQualifyingRun.time.minutes, bestQualifyingRun.time.seconds,
                     bestQualifyingRun.time.milliseconds);
