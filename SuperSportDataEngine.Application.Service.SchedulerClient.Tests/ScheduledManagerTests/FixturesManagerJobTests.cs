@@ -36,9 +36,10 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
             _systemSportDataUnitOfWork = new TestSystemSportDataUnitOfWork();
             _publicSportDataUnitOfWork = new TestPublicSportDataUnitOfWork();
 
-            _rugbyService = new RugbyService(
-                _publicSportDataUnitOfWork,
-                _systemSportDataUnitOfWork);
+            _rugbyService = 
+                new RugbyService(
+                    _publicSportDataUnitOfWork,
+                    _systemSportDataUnitOfWork);
 
             _fixturesManagerJob =
                 new FixturesManagerJob(
@@ -66,7 +67,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
         public async Task FixturesManagerJob_CreateChildJobForActiveTournament()
         {
             var tournamentId = Guid.NewGuid();
-            var tournament = new RugbyTournament()
+            var rugbyTournament = new RugbyTournament()
             {
                 Id = tournamentId,
                 Name = "Test Tournament",
@@ -75,18 +76,19 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
                 IsEnabled = true
             };
 
-            _publicSportDataUnitOfWork.RugbyTournaments.Add(
-                tournament);
+            _publicSportDataUnitOfWork.RugbyTournaments.Add(rugbyTournament);
 
-            _publicSportDataUnitOfWork.RugbySeasons.Add(
+            var rugbySeason = 
                 new RugbySeason()
                 {
                     Id = Guid.NewGuid(),
-                    RugbyTournament = tournament,
+                    RugbyTournament = rugbyTournament,
                     IsCurrent = true,
                     ProviderSeasonId = 2000,
                     Name = "Test Season"
-                });
+                };
+
+            _publicSportDataUnitOfWork.RugbySeasons.Add(rugbySeason);
 
             try
             {
@@ -95,7 +97,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
                     .Verify(
                         m => m.AddOrUpdate(
                             ConfigurationManager.AppSettings[
-                                "ScheduleManagerJob_Fixtures_ActiveTournaments_JobIdPrefix"] + tournament.Name,
+                                "ScheduleManagerJob_Fixtures_ActiveTournaments_JobIdPrefix"] + rugbyTournament.Name,
                             It.IsAny<Job>(),
                             ConfigurationManager.AppSettings[
                                 "ScheduleManagerJob_Fixtures_ActiveTournaments_JobCronExpression"],
@@ -112,39 +114,39 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
         public async Task FixturesManagerJob_WhenJobCreatedSystemTrackingTournamentSetToRunning()
         {
             var tournamentId = Guid.NewGuid();
-            var tournament = new RugbyTournament()
-            {
-                Id = tournamentId,
-                Name = "Test Tournament",
-                LegacyTournamentId = 0,
-                ProviderTournamentId = 0,
-                IsEnabled = true
-            };
+            var rugbyTournament = 
+                new RugbyTournament()
+                {
+                    Id = tournamentId,
+                    Name = "Test Tournament",
+                    LegacyTournamentId = 0,
+                    ProviderTournamentId = 0,
+                    IsEnabled = true
+                };
 
-            _publicSportDataUnitOfWork.RugbyTournaments.Add(
-                tournament);
+            _publicSportDataUnitOfWork.RugbyTournaments.Add(rugbyTournament);
 
-            var season = new RugbySeason()
-            {
-                Id = Guid.NewGuid(),
-                RugbyTournament = tournament,
-                IsCurrent = true,
-                ProviderSeasonId = 2000,
-                Name = "Test Season"
-            };
+            var rugbySeason = 
+                new RugbySeason()
+                {
+                    Id = Guid.NewGuid(),
+                    RugbyTournament = rugbyTournament,
+                    IsCurrent = true,
+                    ProviderSeasonId = 2000,
+                    Name = "Test Season"
+                };  
 
-            _publicSportDataUnitOfWork.RugbySeasons.Add(
-                season);
+            _publicSportDataUnitOfWork.RugbySeasons.Add(rugbySeason);
 
-            var trackingEntry = new SchedulerTrackingRugbyTournament()
-            {
-                TournamentId = tournament.Id,
-                SeasonId = season.Id,
-                SchedulerStateForManagerJobPolling = SchedulerStateForManagerJobPolling.NotRunning
-            };
+            var trackingEntry = 
+                new SchedulerTrackingRugbyTournament()
+                {
+                    TournamentId = rugbyTournament.Id,
+                    SeasonId = rugbySeason.Id,
+                    SchedulerStateForManagerJobPolling = SchedulerStateForManagerJobPolling.NotRunning
+                };
 
-            _systemSportDataUnitOfWork.SchedulerTrackingRugbyTournaments.Add(
-                trackingEntry);
+            _systemSportDataUnitOfWork.SchedulerTrackingRugbyTournaments.Add(trackingEntry);
 
             try
             {
