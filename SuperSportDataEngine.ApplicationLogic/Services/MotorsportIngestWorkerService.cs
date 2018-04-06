@@ -38,8 +38,7 @@
 
             await _motorsportStorageService.PersistLeaguesInRepository(leagues, cancellationToken);
 
-            //[TODO] This takes too long to save into MongoDB.
-            //await _mongoDbMotorsportRepository.Save(leagues);
+            await _mongoDbMotorsportRepository.Save(leagues);
         }
 
         public async Task IngestSeasons(CancellationToken cancellationToken)
@@ -54,9 +53,7 @@
 
                     await _motorsportStorageService.PersistSeasonsInRepository(providerResponse, league, cancellationToken);
 
-                    //[TODO] This takes too long to save into MongoDB.
-                    //await _mongoDbMotorsportRepository.Save(providerResponse);
-
+                    await _mongoDbMotorsportRepository.Save(providerResponse);
                 }
             }
         }
@@ -73,8 +70,7 @@
                         _statsMotorsportIngestService.IngestDriversForLeague(league.ProviderSlug);
 
                     await _motorsportStorageService.PersistLeagueDriversInRepository(providerResponse, league);
-                    //[TODO] This takes too long to save into MongoDB.
-                    //await _mongoDbMotorsportRepository.Save(providerResponse);
+                    await _mongoDbMotorsportRepository.Save(providerResponse);
                 }
             }
         }
@@ -92,8 +88,7 @@
                     var providerResponse = _statsMotorsportIngestService.IngestTeamsForLeague(league.ProviderSlug);
 
                     await _motorsportStorageService.PersistTeamsInRepository(providerResponse, league);
-                    //[TODO] This takes too long to save into MongoDB.
-                    //await _mongoDbMotorsportRepository.Save(providerResponse);
+                    await _mongoDbMotorsportRepository.Save(providerResponse);
                 }
             }
         }
@@ -116,8 +111,7 @@
                         _statsMotorsportIngestService.IngestDriverStandings(league.ProviderSlug, season.ProviderSeasonId);
 
                     await _motorsportStorageService.PersistDriverStandingsInRepository(providerResponse, league, season, cancellationToken);
-                    //[TODO] This takes too long to save into MongoDB.
-                    //await _mongoDbMotorsportRepository.Save(providerResponse);
+                    await _mongoDbMotorsportRepository.Save(providerResponse);
                 }
             }
         }
@@ -140,8 +134,7 @@
                         _statsMotorsportIngestService.IngestTeamStandings(league.ProviderSlug, season.ProviderSeasonId);
 
                     await _motorsportStorageService.PersistTeamStandingsInRepository(providerResponse, league, season, cancellationToken);
-                    //[TODO] This takes too long to save into MongoDB.
-                    //await _mongoDbMotorsportRepository.Save(providerResponse);
+                    await _mongoDbMotorsportRepository.Save(providerResponse);
                 }
             }
         }
@@ -164,8 +157,7 @@
                         _statsMotorsportIngestService.IngestLeagueRaces(league.ProviderSlug, season.ProviderSeasonId);
 
                     await _motorsportStorageService.PersistRacesInRepository(providerResponse, league, cancellationToken);
-                    //[TODO] This takes too long to save into MongoDB.
-                    //await _mongoDbMotorsportRepository.Save(providerResponse);
+                    await _mongoDbMotorsportRepository.Save(providerResponse);
                 }
             }
         }
@@ -196,8 +188,7 @@
                                     race.ProviderRaceId);
 
                             await _motorsportStorageService.PersistResultsInRepository(providerResponse, raceEvent, cancellationToken);
-                            //[TODO] This takes too long to save into MongoDB.
-                            //await _mongoDbMotorsportRepository.Save(providerResponse);
+                            await _mongoDbMotorsportRepository.Save(providerResponse);
                         }
                     }
                 }
@@ -226,8 +217,7 @@
                                     league.ProviderSlug, season.ProviderSeasonId, race.ProviderRaceId);
 
                             await _motorsportStorageService.PersistRaceEventsInRepository(providerResponse, race, season, cancellationToken);
-                            //[TODO] This takes too long to save into MongoDB.
-                            //await _mongoDbMotorsportRepository.Save(providerResponse);
+                            await _mongoDbMotorsportRepository.Save(providerResponse);
                         }
                     }
                 }
@@ -256,8 +246,7 @@
                             _statsMotorsportIngestService.IngestRaceEventsForLeague(league.ProviderSlug, season.ProviderSeasonId, race.ProviderRaceId);
 
                         await _motorsportStorageService.PersistRaceEventsInRepository(providerResponse, race, season, cancellationToken);
-                        //[TODO] This takes too long to save into MongoDB.
-                        //await _mongoDbMotorsportRepository.Save(providerResponse);
+                        await _mongoDbMotorsportRepository.Save(providerResponse);
                     }
                 }
             }
@@ -289,8 +278,7 @@
                                     race.ProviderRaceId);
 
                             await _motorsportStorageService.PersistGridInRepository(raceResults, raceEvent, cancellationToken);
-                            //[TODO] This takes too long to save into MongoDB.
-                            //await _mongoDbMotorsportRepository.Save(raceResults);
+                            await _mongoDbMotorsportRepository.Save(raceResults);
                         }
                     }
                 }
@@ -315,8 +303,7 @@
                             _statsMotorsportIngestService.IngestLeagueRaces(league.ProviderSlug, season.ProviderSeasonId);
 
                         await _motorsportStorageService.PersistRacesInRepository(providerResponse, league, cancellationToken);
-                        //[TODO] This takes too long to save into MongoDB.
-                        //await _mongoDbMotorsportRepository.Save(providerResponse);
+                        await _mongoDbMotorsportRepository.Save(providerResponse);
                     }
                 }
             }
@@ -346,8 +333,7 @@
                                     race.ProviderRaceId);
 
                             await _motorsportStorageService.PersistResultsInRepository(providerResponse, raceEvent, cancellationToken);
-                            //[TODO] This takes too long to save into MongoDB.
-                            //await _mongoDbMotorsportRepository.Save(providerResponse);
+                            await _mongoDbMotorsportRepository.Save(providerResponse);
                         }
                     } 
                 }
@@ -373,8 +359,7 @@
                             _statsMotorsportIngestService.IngestTeamStandings(league.ProviderSlug, season.ProviderSeasonId);
 
                         await _motorsportStorageService.PersistTeamStandingsInRepository(providerResponse, league, season, cancellationToken);
-                        //[TODO] This takes too long to save into MongoDB.
-                        //await _mongoDbMotorsportRepository.Save(providerResponse);
+                        await _mongoDbMotorsportRepository.Save(providerResponse);
                     }
                 }
             }
@@ -398,8 +383,7 @@
                             _statsMotorsportIngestService.IngestDriverStandings(league.ProviderSlug, season.ProviderSeasonId);
 
                         await _motorsportStorageService.PersistDriverStandingsInRepository(providerResponse, league, season, cancellationToken);
-                        //[TODO] This takes too long to save into MongoDB.
-                        //await _mongoDbMotorsportRepository.Save(providerResponse);
+                        await _mongoDbMotorsportRepository.Save(providerResponse);
                     }
                 }
             }
@@ -438,8 +422,7 @@
                                         race.ProviderRaceId);
 
                                 await _motorsportStorageService.PersistGridInRepository(providerResponse, raceEvent, cancellationToken);
-                                //[TODO] This takes too long to save into MongoDB.
-                                //await _mongoDbMotorsportRepository.Save(providerResponse);
+                                await _mongoDbMotorsportRepository.Save(providerResponse);
                             }
                         } 
                     }
