@@ -135,11 +135,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ScheduledManagerTests\FixedScheduledJobTest.cs" />
+    <Compile Include="ScheduledManagerTests\FixedScheduledManagerJobTest.cs" />
     <Compile Include="ScheduledManagerTests\FixturesManagerJobTests.cs" />
     <Compile Include="ScheduledManagerTests\LiveManagerJobTest.cs" />
     <Compile Include="ScheduledManagerTests\LogsManagerJobTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ScheduledManagerTests\PlayerStatisticsManagerJobTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

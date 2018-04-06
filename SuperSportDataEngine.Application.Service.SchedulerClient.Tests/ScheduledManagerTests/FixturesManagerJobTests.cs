@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Hangfire;
 using Hangfire.Common;
@@ -17,7 +14,8 @@ using SuperSportDataEngine.ApplicationLogic.Services;
 using SuperSportDataEngine.Tests.Common.Repositories.Test;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.ScheduledManagerTests
-{
+{ 
+    [Category("FixturesManagerJob")]
     public class FixturesManagerJobTests
     {
         FixturesManagerJob _fixturesManagerJob;

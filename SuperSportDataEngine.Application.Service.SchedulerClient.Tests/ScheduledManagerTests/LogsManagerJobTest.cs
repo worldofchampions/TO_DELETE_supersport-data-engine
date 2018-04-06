@@ -4,7 +4,6 @@ using Moq;
 using NUnit.Framework;
 using SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledManager;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
@@ -14,15 +13,11 @@ using SuperSportDataEngine.Tests.Common.Repositories.Test;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using MongoDB.Driver;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
-using SuperSportDataEngine.Gateway.Http.StatsProzone.Services;
-using SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.ScheduledManagerTests
 {
@@ -36,7 +31,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
         private Mock<IRecurringJobManager> _mockRecurringJobManager;
         private LogsManagerJob _logsManagerJob;
         private Mock<ILoggingService> _mockLogger;
-        private Mock<IMongoClient> _mongoClient;
 
         [SetUp]
         public void SetUp()
@@ -46,7 +40,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
 
             _mockRecurringJobManager = new Mock<IRecurringJobManager>();
             _mockLogger = new Mock<ILoggingService>();
-            _mongoClient = new Mock<IMongoClient>();
 
             _rugbyService = new RugbyService(
                 _publicSportDataUnitOfWork, 

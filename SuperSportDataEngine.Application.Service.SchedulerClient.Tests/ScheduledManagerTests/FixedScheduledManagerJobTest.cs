@@ -12,8 +12,8 @@ using System;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.ScheduledManagerTests
 {
-    [Category("FixedScheduleJob")]
-    public class FixedScheduledJobTest
+    [Category("FixedScheduledManagerJob")]
+    public class FixedScheduledManagerJobTest
     {
         [TestCase("Rugby→StatsProzone→FixedScheduleJob→ReferenceData", "0 2 * * *", "normal_priority")]
         [TestCase("Rugby→StatsProzone→FixedScheduleJob→Fixtures", "0 2 * * *", "normal_priority")]

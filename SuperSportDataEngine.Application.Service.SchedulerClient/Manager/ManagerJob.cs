@@ -91,7 +91,8 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
             _playerStatisticsManagerJob =
                 new PlayerStatisticsManagerJob(
                     _recurringJobManager,
-                    _container);
+                    _rugbyService,
+                    _rugbyIngestWorkerService);
         }
 
         private void ConfigureTimer()
