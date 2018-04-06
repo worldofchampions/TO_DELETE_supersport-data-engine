@@ -40,7 +40,6 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
             SeedRugbyEventTypes.Seed(context);
             SeedRugbyEventTypeProviderMappings.Seed(context);
             SeedRugbyTeams.Seed(context);
-            Round01Dubai.Seed(context);
             SeedRugbyLogGroupsForTournamentSuperRugby2017.Seed(context);
             SeedRugbyLogGroupsForTournamentSuperRugby2018.Seed(context);
             SeedRugbyLogGroupsForChampionsCup2018.Seed(context);
@@ -51,6 +50,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
 
         private static void SeedSevens(PublicSportDataContext context)
         {
+            Round01Dubai.Seed(context);
             Round03Sydney.Seed(context);
             Round04Hamilton.Seed(context);
             Round05LasVegas.Seed(context);
