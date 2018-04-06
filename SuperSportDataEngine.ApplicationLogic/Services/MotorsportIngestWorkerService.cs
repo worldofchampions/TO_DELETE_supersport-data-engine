@@ -208,7 +208,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                     if (league.ProviderSlug is null) continue;
 
                     var leagueRaces = (await _motorsportService.GetRacesForLeague(league.Id)).ToList();
-                    var motorsportSeasons = (await _motorsportService.GetPastSeasonsForLeague(league.Id, cancellationToken)).ToList();
+                    var motorsportSeasons = (await _motorsportService.GetHistoricSeasonsForLeague(league.Id, true)).ToList();
 
                     foreach (var season in motorsportSeasons)
                     {
@@ -297,7 +297,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 {
                     if (league.ProviderSlug is null) continue;
 
-                    var motorsportSeasons = (await _motorsportService.GetPastSeasonsForLeague(league.Id, cancellationToken)).ToList();
+                    var motorsportSeasons = (await _motorsportService.GetHistoricSeasonsForLeague(league.Id, true)).ToList();
 
                     foreach (var season in motorsportSeasons)
                     {
@@ -317,7 +317,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             foreach (var league in motorsportLeagues)
             {
-                var motorsportSeasons = (await _motorsportService.GetPastSeasonsForLeague(league.Id, cancellationToken)).ToList();
+                var motorsportSeasons = (await _motorsportService.GetHistoricSeasonsForLeague(league.Id, true)).ToList();
                 foreach (var season in motorsportSeasons)
                 {
                     var motorsportRaces = await _motorsportService.GetRacesForLeague(league.Id);
@@ -353,7 +353,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                     if (league.ProviderSlug is null) continue;
 
                     var motorsportSeasons = 
-                        (await _motorsportService.GetPastSeasonsForLeague(league.Id, cancellationToken)).ToList();
+                        (await _motorsportService.GetHistoricSeasonsForLeague(league.Id, true)).ToList();
 
                     foreach (var season in motorsportSeasons)
                     {
@@ -377,7 +377,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 {
                     if (league.ProviderSlug is null) continue;
 
-                    var motorsportSeasons = (await _motorsportService.GetPastSeasonsForLeague(league.Id, cancellationToken)).ToList();
+                    var motorsportSeasons = (await _motorsportService.GetHistoricSeasonsForLeague(league.Id, true)).ToList();
 
                     foreach (var season in motorsportSeasons)
                     {
@@ -405,7 +405,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             {
                 foreach (var league in activeLeagues)
                 {
-                    var motorsportSeasons = (await _motorsportService.GetPastSeasonsForLeague(league.Id, cancellationToken)).ToList();
+                    var motorsportSeasons = (await _motorsportService.GetHistoricSeasonsForLeague(league.Id, true)).ToList();
 
                     foreach (var season in motorsportSeasons)
                     {

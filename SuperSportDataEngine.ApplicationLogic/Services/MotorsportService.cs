@@ -11,7 +11,7 @@
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
 
-    public class MotorsportService: IMotorsportService
+    public class MotorsportService : IMotorsportService
     {
 
         private readonly IPublicSportDataUnitOfWork _publicSportDataUnitOfWork;
@@ -28,7 +28,7 @@
         public async Task<IEnumerable<MotorsportLeague>> GetActiveLeagues()
         {
             var activeLeagues = await _publicSportDataUnitOfWork.MotorsportLeagues.WhereAsync(l => l.IsEnabled);
-            
+
             return activeLeagues;
         }
 
@@ -42,7 +42,7 @@
 
         public async Task<SchedulerStateForManagerJobPolling> GetSchedulerStateForManagerJobPolling(Guid leagueId)
         {
-            return await  Task.FromResult(SchedulerStateForManagerJobPolling.NotRunning);
+            return await Task.FromResult(SchedulerStateForManagerJobPolling.NotRunning);
         }
 
         public async Task<IEnumerable<MotorsportRace>> GetLeagueRacesByProviderSeasonId(Guid leagueId, int providerSeasonId)
@@ -55,8 +55,8 @@
 
         public async Task<IEnumerable<MotorsportRace>> GetRacesForLeague(Guid leagueId)
         {
-            var races =  _publicSportDataUnitOfWork.MotorsportRaces.Where(r =>
-                r.MotorsportLeague.Id == leagueId).ToList();
+            var races = 
+                _publicSportDataUnitOfWork.MotorsportRaces.Where(r => r.MotorsportLeague.Id == leagueId).ToList();
 
             return await Task.FromResult(races);
         }
@@ -70,16 +70,33 @@
             return await Task.FromResult(season);
         }
 
-        public async Task<IEnumerable<MotorsportSeason>> GetPastSeasonsForLeague(Guid leagueId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<MotorsportSeason>> GetHistoricSeasonsForLeague(Guid leagueId, bool includeCurrentSeason)
         {
-            var currentYear = DateTime.UtcNow.Year;
             const int numberOfPastSeasons = 2;
 
-            var pastSeasonsForLeague = await _publicSportDataUnitOfWork.MotorsportSeasons.WhereAsync(s =>
-                s.ProviderSeasonId >= currentYear - numberOfPastSeasons && s.ProviderSeasonId <= currentYear -1
-                && s.MotorsportLeague.Id == leagueId);
+            var providerCurentSeasonId = DateTime.Now.Year;
 
-            return pastSeasonsForLeague;
+            if (!includeCurrentSeason)
+            {
+                return await _publicSportDataUnitOfWork.MotorsportSeasons.WhereAsync(s =>
+                    s.ProviderSeasonId >= providerCurentSeasonId - numberOfPastSeasons &&
+                    s.ProviderSeasonId <= providerCurentSeasonId
+                    && s.MotorsportLeague.Id == leagueId);
+            }
+
+            var currentSeason =
+                _publicSportDataUnitOfWork.MotorsportSeasons.FirstOrDefault(s =>
+                    s.IsCurrent && s.MotorsportLeague.Id == leagueId);
+
+            if (currentSeason != null)
+            {
+                providerCurentSeasonId = currentSeason.ProviderSeasonId;
+            }
+
+            return await _publicSportDataUnitOfWork.MotorsportSeasons.WhereAsync(s =>
+                s.ProviderSeasonId >= providerCurentSeasonId - numberOfPastSeasons
+                && s.ProviderSeasonId <= providerCurentSeasonId
+                && s.MotorsportLeague.Id == leagueId);
         }
 
         public async Task<MotorsportRaceEvent> GetTodayEventForRace(Guid raceId)
