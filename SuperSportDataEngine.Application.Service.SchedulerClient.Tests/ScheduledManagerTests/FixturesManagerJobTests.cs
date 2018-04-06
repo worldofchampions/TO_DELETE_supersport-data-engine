@@ -14,7 +14,6 @@ using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramewor
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
 using SuperSportDataEngine.ApplicationLogic.Services;
-using SuperSportDataEngine.Common.Logging;
 using SuperSportDataEngine.Tests.Common.Repositories.Test;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.ScheduledManagerTests
@@ -51,7 +50,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
         }
 
         [Test]
-        public async Task FixturesManagerJob_NoExceptionsWhenCallingDoWork()
+        public async Task FixturesManagerJob_ThrowsNoExceptions()
         {
             try
             {
@@ -64,7 +63,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
         }
 
         [Test]
-        public async Task FixturesManagerJob_CreateChildJobForActiveTournament()
+        public async Task FixturesManagerJob_TournamentActive_ChildJobGetsCreated()
         {
             var tournamentId = Guid.NewGuid();
             var rugbyTournament = new RugbyTournament()
@@ -111,7 +110,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
         }
 
         [Test]
-        public async Task FixturesManagerJob_WhenJobCreatedSystemTrackingTournamentSetToRunning()
+        public async Task FixturesManagerJob_TournamentActive_TrackingTableUpdated()
         {
             var tournamentId = Guid.NewGuid();
             var rugbyTournament = 

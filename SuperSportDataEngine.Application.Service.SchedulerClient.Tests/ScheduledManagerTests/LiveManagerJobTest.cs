@@ -24,54 +24,51 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
     [Category("LiveManagerJob")]
     public class LiveManagerJobTest
     {
-        LiveManagerJob LiveManagerJob;
-        Mock<IRugbyService> MockRugbyService;
-        Mock<IRugbyIngestWorkerService> MockRugbyIngestWorkerService;
-        private TestSystemSportDataUnitOfWork MockUnitOfWork;
-        Mock<TestEntityFrameworkRepository<RugbyFixture>> MockRugbyFixtures;
-        Mock<IRecurringJobManager> MockRecurringJobManager;
-        Mock<ILoggingService> MockLogger;
+        LiveManagerJob _liveManagerJob;
+        Mock<IRugbyService> _mockRugbyService;
+        Mock<IRugbyIngestWorkerService> _mockRugbyIngestWorkerService;
+        private TestSystemSportDataUnitOfWork _mockUnitOfWork;
+        Mock<TestEntityFrameworkRepository<RugbyFixture>> _mockRugbyFixtures;
+        Mock<IRecurringJobManager> _mockRecurringJobManager;
 
         [SetUp]
         public void SetUp()
         {
-            MockRugbyFixtures =
+            _mockRugbyFixtures =
                 new Mock<TestEntityFrameworkRepository<RugbyFixture>>(new List<RugbyFixture>());
 
-            MockRugbyService = new Mock<IRugbyService>();
-            MockRugbyIngestWorkerService = new Mock<IRugbyIngestWorkerService>();
-            MockRecurringJobManager = new Mock<IRecurringJobManager>();
-            MockUnitOfWork = new TestSystemSportDataUnitOfWork();
+            _mockRugbyService = new Mock<IRugbyService>();
+            _mockRugbyIngestWorkerService = new Mock<IRugbyIngestWorkerService>();
+            _mockRecurringJobManager = new Mock<IRecurringJobManager>();
+            _mockUnitOfWork = new TestSystemSportDataUnitOfWork();
 
-            MockLogger = new Mock<ILoggingService>();
-
-            LiveManagerJob =
+            _liveManagerJob =
                 new LiveManagerJob(
-                    MockRecurringJobManager.Object,
-                    MockRugbyService.Object,
-                    MockRugbyIngestWorkerService.Object,
-                    MockUnitOfWork);
+                    _mockRecurringJobManager.Object,
+                    _mockRugbyService.Object,
+                    _mockRugbyIngestWorkerService.Object,
+                    _mockUnitOfWork);
         }
 
         [Test]
         public async Task LiveManagerJob_EmptyDataSet_AssertEmpty()
         {
-            long count = await MockUnitOfWork.SchedulerTrackingRugbyFixtures.CountAsync();
+            long count = await _mockUnitOfWork.SchedulerTrackingRugbyFixtures.CountAsync();
             Assert.AreEqual(0, count);
         }
 
         [Test]
         public async Task LiveManagerJob_NoEndedFixtures_NoJobsRemoved()
         {
-            await LiveManagerJob.DoWorkAsync();
+            await _liveManagerJob.DoWorkAsync();
 
-            MockRecurringJobManager.Verify(m => m.RemoveIfExists(It.IsAny<string>()), Times.Never());
+            _mockRecurringJobManager.Verify(m => m.RemoveIfExists(It.IsAny<string>()), Times.Never());
         }
 
         [Test]
         public async Task LiveManagerJob_HasEndedFixture_OnlyOneJobRemoved()
         {
-            MockRugbyService
+            _mockRugbyService
                 .Setup(r => r.GetCompletedFixtures()).Returns(
                     Task.FromResult(new List<RugbyFixture>() {
                         new RugbyFixture
@@ -82,41 +79,41 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
                         }
                     }.AsEnumerable()));
 
-            await LiveManagerJob.DoWorkAsync();
+            await _liveManagerJob.DoWorkAsync();
 
-            MockRecurringJobManager.Verify(m => m.RemoveIfExists(It.IsAny<string>()), Times.Once());
+            _mockRecurringJobManager.Verify(m => m.RemoveIfExists(It.IsAny<string>()), Times.Once());
         }
 
         [Test]
         public async Task LiveManagerJob_NoCurrentTournaments_DoNotQueryForLiveFixtures()
         {
-            MockRugbyService.Setup(r => r.GetCurrentTournaments()).Returns(Task.FromResult(new List<RugbyTournament>().AsEnumerable()));
+            _mockRugbyService.Setup(r => r.GetCurrentTournaments()).Returns(Task.FromResult(new List<RugbyTournament>().AsEnumerable()));
 
-            await LiveManagerJob.DoWorkAsync();
+            await _liveManagerJob.DoWorkAsync();
 
-            MockRugbyService.Verify(m => m.GetLiveFixturesForCurrentTournament(It.IsAny<CancellationToken>(), It.IsAny<Guid>()), Times.Never());
+            _mockRugbyService.Verify(m => m.GetLiveFixturesForCurrentTournament(It.IsAny<CancellationToken>(), It.IsAny<Guid>()), Times.Never());
         }
 
         [Test]
         public async Task LiveManagerJob_OneCurrentTournament_OneCallForLiveFixtures()
         {
-            MockRugbyService.Setup(r => r.GetCurrentTournaments()).Returns(
+            _mockRugbyService.Setup(r => r.GetCurrentTournaments()).Returns(
                     Task.FromResult(new List<RugbyTournament>(){
                         new RugbyTournament(){Id = Guid.NewGuid()}
                     }.AsEnumerable()));
 
-            MockRugbyService.Setup(r => r.GetCompletedFixtures()).Returns(
+            _mockRugbyService.Setup(r => r.GetCompletedFixtures()).Returns(
                     Task.FromResult(new List<RugbyFixture>().AsEnumerable()));
 
-            await LiveManagerJob.DoWorkAsync();
+            await _liveManagerJob.DoWorkAsync();
 
-            MockRugbyService.Verify(m => m.GetLiveFixturesForCurrentTournament(It.IsAny<CancellationToken>(), It.IsAny<Guid>()), Times.Once());
+            _mockRugbyService.Verify(m => m.GetLiveFixturesForCurrentTournament(It.IsAny<CancellationToken>(), It.IsAny<Guid>()), Times.Once());
         }
 
         [Test]
         public async Task LiveManagerJob_TwoCurrentTournaments_TwoCallsForLiveFixtures()
         {
-            MockRugbyService
+            _mockRugbyService
                 .Setup(r => r.GetCurrentTournaments()).Returns(
                     Task.FromResult(new List<RugbyTournament>()
                     {
@@ -124,13 +121,13 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
                         new RugbyTournament(){Id = Guid.NewGuid()}
                     }.AsEnumerable()));
 
-            MockRugbyService
+            _mockRugbyService
                 .Setup(r => r.GetCompletedFixtures()).Returns(
                     Task.FromResult(new List<RugbyFixture>().AsEnumerable()));
 
-            await LiveManagerJob.DoWorkAsync();
+            await _liveManagerJob.DoWorkAsync();
 
-            MockRugbyService.Verify(m => m.GetLiveFixturesForCurrentTournament(It.IsAny<CancellationToken>(), It.IsAny<Guid>()), Times.Exactly(2));
+            _mockRugbyService.Verify(m => m.GetLiveFixturesForCurrentTournament(It.IsAny<CancellationToken>(), It.IsAny<Guid>()), Times.Exactly(2));
         }
 
         [Test]
@@ -139,7 +136,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
             Guid tournamentId = Guid.NewGuid();
             Guid fixtureId = Guid.NewGuid();
 
-            MockUnitOfWork.SchedulerTrackingRugbyFixtures.Add(
+            _mockUnitOfWork.SchedulerTrackingRugbyFixtures.Add(
                 new SchedulerTrackingRugbyFixture
                 {
                     TournamentId = tournamentId,
@@ -150,7 +147,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
 
             var tournament = new RugbyTournament() { Id = tournamentId };
 
-            MockRugbyService
+            _mockRugbyService
                 .Setup(r => r.GetCurrentTournaments()).Returns(
                     Task.FromResult(new List<RugbyTournament>() { tournament }.AsEnumerable()));
 
@@ -168,22 +165,22 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
                         }
                     }.AsEnumerable());
 
-            MockRugbyService.Setup(r => r.GetLiveFixturesForCurrentTournament(CancellationToken.None, tournamentId)).Returns(rugbyFixtures);
+            _mockRugbyService.Setup(r => r.GetLiveFixturesForCurrentTournament(CancellationToken.None, tournamentId)).Returns(rugbyFixtures);
 
-            await LiveManagerJob.DoWorkAsync();
+            await _liveManagerJob.DoWorkAsync();
 
-            MockRecurringJobManager.Verify(m => m.AddOrUpdate(
+            _mockRecurringJobManager.Verify(m => m.AddOrUpdate(
                         "Rugby→StatsProzone→LiveManagerJob→LiveMatch→TeamA vs TeamB→123",
                         It.IsAny<Job>(),
                         "0 0 29 2/12000 WED",
                         It.IsAny<RecurringJobOptions>()),
                         Times.Once());
 
-            MockRecurringJobManager.Verify(m => m.Trigger(
+            _mockRecurringJobManager.Verify(m => m.Trigger(
                         "Rugby→StatsProzone→LiveManagerJob→LiveMatch→TeamA vs TeamB→123"),
                         Times.Once());             
 
-            var f = MockUnitOfWork.SchedulerTrackingRugbyFixtures.All().FirstOrDefault();
+            var f = _mockUnitOfWork.SchedulerTrackingRugbyFixtures.All().FirstOrDefault();
 
             Assert.AreEqual(true, f.IsJobRunning);
         }
@@ -194,12 +191,12 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
             Guid tournamentId = Guid.NewGuid();
             Guid fixtureId = Guid.NewGuid();
 
-            MockUnitOfWork.SchedulerTrackingRugbyFixtures.Add(
+            _mockUnitOfWork.SchedulerTrackingRugbyFixtures.Add(
                 new SchedulerTrackingRugbyFixture { TournamentId = tournamentId, FixtureId = fixtureId, SchedulerStateFixtures = SchedulerStateForRugbyFixturePolling.LivePolling });
 
             var tournament = new RugbyTournament() { Id = tournamentId };
 
-            MockRugbyService
+            _mockRugbyService
                 .Setup(r => r.GetCurrentTournaments()).Returns(
                     Task.FromResult(new List<RugbyTournament>() { tournament }.AsEnumerable()));
 
@@ -217,20 +214,20 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
                         }
                     }.AsEnumerable());
 
-            MockRugbyService.Setup(r => r.GetCompletedFixtures()).Returns(rugbyFixtures);
+            _mockRugbyService.Setup(r => r.GetCompletedFixtures()).Returns(rugbyFixtures);
 
-            await LiveManagerJob.DoWorkAsync();
+            await _liveManagerJob.DoWorkAsync();
 
-            MockRecurringJobManager.Verify(m => m.AddOrUpdate(
+            _mockRecurringJobManager.Verify(m => m.AddOrUpdate(
                         "Rugby→StatsProzone→LiveManagerJob→LiveMatch→TeamA vs TeamB→123",
                         It.IsAny<Job>(),
                         "0 0 29 2/12000 WED",
                         It.IsAny<RecurringJobOptions>()),
                         Times.Never());
 
-            var f = MockUnitOfWork.SchedulerTrackingRugbyFixtures.All().FirstOrDefault();
+            var f = _mockUnitOfWork.SchedulerTrackingRugbyFixtures.All().FirstOrDefault();
 
-            MockRecurringJobManager.Verify(m => m.RemoveIfExists(It.IsAny<string>()), Times.Once());
+            _mockRecurringJobManager.Verify(m => m.RemoveIfExists(It.IsAny<string>()), Times.Once());
             Assert.AreEqual(SchedulerStateForRugbyFixturePolling.SchedulingCompleted, f.SchedulerStateFixtures);
         }
 
@@ -242,7 +239,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
             Guid tournamentId = Guid.NewGuid();
             Guid fixtureId = Guid.NewGuid();
 
-            MockUnitOfWork.SchedulerTrackingRugbyFixtures.Add(
+            _mockUnitOfWork.SchedulerTrackingRugbyFixtures.Add(
                 new SchedulerTrackingRugbyFixture
                 {
                     TournamentId = tournamentId,
@@ -253,7 +250,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
 
             var tournament = new RugbyTournament() { Id = tournamentId };
 
-            MockRugbyService
+            _mockRugbyService
                 .Setup(r => r.GetCurrentTournaments()).Returns(
                     Task.FromResult(new List<RugbyTournament>() { tournament }.AsEnumerable()));
 
@@ -272,23 +269,23 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
                         }
                     }.AsEnumerable());
 
-            MockRugbyFixtures.Object.AddRange(await rugbyFixtures);
-            MockRugbyService.Setup(r => r.GetLiveFixturesForCurrentTournament(CancellationToken.None, tournamentId)).Returns(rugbyFixtures);
+            _mockRugbyFixtures.Object.AddRange(await rugbyFixtures);
+            _mockRugbyService.Setup(r => r.GetLiveFixturesForCurrentTournament(CancellationToken.None, tournamentId)).Returns(rugbyFixtures);
 
-            await LiveManagerJob.DoWorkAsync();
+            await _liveManagerJob.DoWorkAsync();
 
-            MockRecurringJobManager.Verify(m => m.AddOrUpdate(
+            _mockRecurringJobManager.Verify(m => m.AddOrUpdate(
                         "Rugby→StatsProzone→LiveManagerJob→LiveMatch→TeamA vs TeamB→123",
                         It.IsAny<Job>(),
                         "0 0 29 2/12000 WED",
                         It.IsAny<RecurringJobOptions>()),
                         Times.Once());
 
-            MockRecurringJobManager.Verify(m => m.Trigger(
+            _mockRecurringJobManager.Verify(m => m.Trigger(
                         "Rugby→StatsProzone→LiveManagerJob→LiveMatch→TeamA vs TeamB→123"),
                         Times.Once());
 
-            var f = MockUnitOfWork.SchedulerTrackingRugbyFixtures.All().FirstOrDefault();
+            var f = _mockUnitOfWork.SchedulerTrackingRugbyFixtures.All().FirstOrDefault();
 
             Assert.AreEqual(true, f.IsJobRunning);
         }

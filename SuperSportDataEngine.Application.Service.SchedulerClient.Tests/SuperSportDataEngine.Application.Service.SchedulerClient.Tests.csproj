@@ -103,6 +103,15 @@
     <Reference Include="Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\MSTest.TestFramework.1.1.18\lib\net45\Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll</HintPath>
     </Reference>
+    <Reference Include="MongoDB.Bson, Version=2.4.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MongoDB.Bson.2.4.4\lib\net45\MongoDB.Bson.dll</HintPath>
+    </Reference>
+    <Reference Include="MongoDB.Driver, Version=2.4.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MongoDB.Driver.2.4.4\lib\net45\MongoDB.Driver.dll</HintPath>
+    </Reference>
+    <Reference Include="MongoDB.Driver.Core, Version=2.4.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MongoDB.Driver.Core.2.4.4\lib\net45\MongoDB.Driver.Core.dll</HintPath>
+    </Reference>
     <Reference Include="Moq, Version=4.7.137.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
       <HintPath>..\packages\Moq.4.7.137\lib\net45\Moq.dll</HintPath>
     </Reference>
@@ -120,6 +129,10 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ScheduledManagerTests\FixedScheduledJobTest.cs" />
@@ -153,9 +166,17 @@
       <Project>{BBE845AF-8B84-4B61-ABD7-724ACA22AB69}</Project>
       <Name>SuperSportDataEngine.Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SuperSportDataEngine.Gateway.Http.StatsProzone\SuperSportDataEngine.Gateway.Http.StatsProzone.csproj">
+      <Project>{90E43DAD-2892-4438-92E1-B1966B6AAAEC}</Project>
+      <Name>SuperSportDataEngine.Gateway.Http.StatsProzone</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SuperSportDataEngine.Logging.NLog\SuperSportDataEngine.Logging.NLog.csproj">
       <Project>{B07C451E-7B8B-406F-92CC-03B68F54E3AC}</Project>
       <Name>SuperSportDataEngine.Logging.NLog</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SuperSportDataEngine.Repository.MongoDb.PayloadData\SuperSportDataEngine.Repository.MongoDb.PayloadData.csproj">
+      <Project>{BC67A79A-3884-4022-B1B6-04C7C58CFA2D}</Project>
+      <Name>SuperSportDataEngine.Repository.MongoDb.PayloadData</Name>
     </ProjectReference>
     <ProjectReference Include="..\SuperSportDataEngine.Tests.Common\SuperSportDataEngine.Tests.Common.csproj">
       <Project>{65e69b64-f50a-477a-a355-f2b681ed6314}</Project>

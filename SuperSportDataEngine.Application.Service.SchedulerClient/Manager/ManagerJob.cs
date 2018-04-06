@@ -1,6 +1,7 @@
 ﻿using System.Configuration;
 using System.Runtime.CompilerServices;
 using SuperSportDataEngine.Application.Container.Enums;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
@@ -22,6 +23,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
         private IRugbyService _rugbyService;
         private IRugbyIngestWorkerService _rugbyIngestWorkerService;
         private ISystemSportDataUnitOfWork _systemSportDataUnitOfWork;
+        private IPublicSportDataUnitOfWork _publicSportDataUnitOfWork;
         private FixturesManagerJob _fixturesManagerJob;
         private LiveManagerJob _liveManagerJob;
         private LogsManagerJob _logsManagerJob;
@@ -51,6 +53,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
 
             _recurringJobManager = _container.Resolve<IRecurringJobManager>();
             _systemSportDataUnitOfWork = _container.Resolve<ISystemSportDataUnitOfWork>();
+            _publicSportDataUnitOfWork = _container.Resolve<IPublicSportDataUnitOfWork>();
 
             _rugbyService = _container.Resolve<IRugbyService>();
             _rugbyIngestWorkerService = _container.Resolve<IRugbyIngestWorkerService>();
@@ -80,7 +83,10 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
             _logsManagerJob =
                 new LogsManagerJob(
                     _recurringJobManager,
-                    _container);
+                    _rugbyService,
+                    _rugbyIngestWorkerService,
+                    _systemSportDataUnitOfWork,
+                    _publicSportDataUnitOfWork);
             
             _playerStatisticsManagerJob =
                 new PlayerStatisticsManagerJob(
