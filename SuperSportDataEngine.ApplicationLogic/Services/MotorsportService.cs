@@ -135,9 +135,12 @@
         {
             if (raceEvent.StartDateTimeUtc == null) return false;
 
-            var diff = Math.Round(raceEvent.StartDateTimeUtc.Value.Subtract(DateTime.UtcNow).TotalHours, MidpointRounding.AwayFromZero);
+            var hoursBeforeEventStarts =
+                Math.Round(raceEvent.StartDateTimeUtc.Value.Subtract(DateTime.UtcNow).TotalHours, MidpointRounding.AwayFromZero);
 
-            return (int)diff == 27; // TODO: @thobani Refactor magic number
+            const int hourToSetEventCurrent = 27;
+
+            return (int)hoursBeforeEventStarts == hourToSetEventCurrent;
         }
     }
 }
