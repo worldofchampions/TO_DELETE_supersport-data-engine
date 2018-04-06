@@ -6,9 +6,9 @@ using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramewor
 using SuperSportDataEngine.ApplicationLogic.Constants.Providers;
 using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
 
-namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed
+namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.Sevens._2018
 {
-    public static class SeedRugbyLogGroupsForHongKongSevens2018
+    public static class Round07HongKong
     {
         private const string SlugHierachyLevel1HongKongSevens2018 = "Sevens-2018-HL1-HongKongSevens";
         private const string SlugHierarchyLevel2HongKongNonCoreGroup = "Sevens-2018-HL2-HongKongSevensNonCoreGroup";
@@ -46,7 +46,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
 
                 context.SaveChanges();
 
-                context.RugbyLogGroups.Single(x => x.Slug == SlugHierachyLevel1HongKongSevens2018).ParentRugbyLogGroup = context.RugbyLogGroups.Single(x => x.Slug == SeedRugbyLogGroupsForSydneySevens2018.SlugHierachyLevel0Sevens2018);
+                context.RugbyLogGroups.Single(x => x.Slug == SlugHierachyLevel1HongKongSevens2018).ParentRugbyLogGroup = context.RugbyLogGroups.Single(x => x.Slug == Round03Sydney.SlugHierachyLevel0Sevens2018);
                 context.RugbyLogGroups.Single(x => x.Slug == SlugHierarchyLevel2HongKongNonCoreGroup).ParentRugbyLogGroup =
                     context.RugbyLogGroups.Single(x => x.Slug == SlugHierachyLevel1HongKongSevens2018);
 

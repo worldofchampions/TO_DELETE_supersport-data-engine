@@ -1,3 +1,6 @@
+using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.Sevens._2017;
+using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.Sevens._2018;
+
 namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations
 {
     using Context;
@@ -37,17 +40,25 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
             SeedRugbyEventTypes.Seed(context);
             SeedRugbyEventTypeProviderMappings.Seed(context);
             SeedRugbyTeams.Seed(context);
-            SeedRugbyLogGroupsForTournamentSevens2017.Seed(context);
+            Round01Dubai.Seed(context);
             SeedRugbyLogGroupsForTournamentSuperRugby2017.Seed(context);
             SeedRugbyLogGroupsForTournamentSuperRugby2018.Seed(context);
             SeedRugbyLogGroupsForChampionsCup2018.Seed(context);
             SeedRugbyLogGroupsForPro142018.Seed(context);
             SeedRugbyGroupsForMitreCup2017.Seed(context);
-            SeedRugbyLogGroupsForSydneySevens2018.Seed(context);
-            SeedRugbyLogGroupsForHamiltonSevens2018.Seed(context);
-            SeedRugbyLogGroupsForLasVegasSevens2018.Seed(context);
-            SeedRugbyLogGroupsForVancouverSevens2018.Seed(context);
-            SeedRugbyLogGroupsForHongKongSevens2018.Seed(context);
+            SeedSevens(context);
+        }
+
+        private static void SeedSevens(PublicSportDataContext context)
+        {
+            Round03Sydney.Seed(context);
+            Round04Hamilton.Seed(context);
+            Round05LasVegas.Seed(context);
+            Round06Vancouver.Seed(context);
+            Round07HongKong.Seed(context);
+            Round08Singapore.Seed(context);
+            Round09London.Seed(context);
+            Round10Paris.Seed(context);
         }
     }
 }

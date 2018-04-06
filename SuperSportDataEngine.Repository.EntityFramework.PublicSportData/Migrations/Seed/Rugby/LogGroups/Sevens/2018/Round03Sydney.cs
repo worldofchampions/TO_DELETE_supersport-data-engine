@@ -6,9 +6,9 @@ using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramewor
 using SuperSportDataEngine.ApplicationLogic.Constants.Providers;
 using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
 
-namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed
+namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.Sevens._2018
 {
-    public static class SeedRugbyLogGroupsForSydneySevens2018
+    public static class Round03Sydney
     {
         public const string SlugHierachyLevel0Sevens2018 = "Sevens-2018-HL0-Sevens2018";
         private const string SlugHierachyLevel1SydneySevens2018 = "Sevens-2018-HL1-SydneySevens";
