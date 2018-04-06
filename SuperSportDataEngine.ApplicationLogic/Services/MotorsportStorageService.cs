@@ -446,10 +446,25 @@
                 eventResultInRepo.FinishingTimeMilliseconds = result.finishingTime.milliseconds;
             }
 
-            eventResultInRepo.Position = result.carPosition.position;
-            eventResultInRepo.GridPosition = result.carPosition.startingPosition;
-            eventResultInRepo.OutReason = result.carStatus.name;
-            eventResultInRepo.CompletedRace = result.carStatus.carStatusId.Equals(0);
+            if (result.carPosition != null)
+            {
+                eventResultInRepo.Position = result.carPosition.position;
+                eventResultInRepo.GridPosition = result.carPosition.startingPosition;
+
+                if (result.carPosition.position == 1)
+                {
+                    var raceEvent = _publicSportDataUnitOfWork.MotorsportRaceEvents.FirstOrDefault(e =>
+                        e.Id == eventResultInRepo.MotorsportRaceEventId);
+                    
+                    AssignRaceEventWinner(raceEvent, eventResultInRepo.MotorsportDriver);
+                }
+            }
+
+            if (result.carStatus != null)
+            {
+                eventResultInRepo.OutReason = result.carStatus.name;
+                eventResultInRepo.CompletedRace = result.carStatus.carStatusId.Equals(0);
+            }
 
             if (result.laps?.completed != null)
             {
@@ -483,6 +498,11 @@
             {
                 motorsportRaceResult.Position = result.carPosition.position;
                 motorsportRaceResult.GridPosition = result.carPosition.startingPosition;
+
+                if (result.carPosition.position == 1)
+                {
+                    AssignRaceEventWinner(raceEvent, driver);
+                }
             }
 
             if (result.carStatus != null)
@@ -531,6 +551,13 @@
 
             _publicSportDataUnitOfWork.MotorsportRaceEventResults.Add(motorsportRaceResult);
 
+        }
+
+        private void AssignRaceEventWinner(MotorsportRaceEvent raceEvent, MotorsportDriver driver)
+        {
+            raceEvent.RaceEventWinner = driver;
+
+            _publicSportDataUnitOfWork.MotorsportRaceEvents.Update(raceEvent);
         }
 
         private void UpdateLeagueInRepo(League leagueFromProvider, MotorsportLeague leagueInRepo)
