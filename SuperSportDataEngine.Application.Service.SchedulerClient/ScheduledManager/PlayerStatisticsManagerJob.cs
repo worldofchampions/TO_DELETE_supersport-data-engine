@@ -5,52 +5,35 @@ using System.Threading;
 using System.Threading.Tasks;
 using Hangfire;
 using Hangfire.Common;
-using Microsoft.Practices.Unity;
-using SuperSportDataEngine.Application.Container;
-using SuperSportDataEngine.Application.Container.Enums;
 using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Services;
-using SuperSportDataEngine.Common.Logging;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledManager
 {
     public class PlayerStatisticsManagerJob
     {
-        private IRecurringJobManager _recurringJobManager;
-        private IUnityContainer _childContainer;
+        private readonly IRecurringJobManager _recurringJobManager;
         private static int _maxNumberOfRecentFixturesToConsider;
+        private readonly IRugbyService _rugbyService;
+        private readonly IRugbyIngestWorkerService _rugbyIngestWorkerService;
 
         public PlayerStatisticsManagerJob(
             IRecurringJobManager recurringJobManager,
-            IUnityContainer childContainer)
+            IRugbyService rugbyService, 
+            IRugbyIngestWorkerService rugbyIngestWorkerService)
         {
             _recurringJobManager = recurringJobManager;
-            _childContainer = childContainer;
+            _rugbyService = rugbyService;
+            _rugbyIngestWorkerService = rugbyIngestWorkerService;
+
             _maxNumberOfRecentFixturesToConsider =
                 int.Parse(ConfigurationManager.AppSettings["MaxNumberOfRecentFixturesToConsider"]);
         }
 
         public async Task DoWorkAsync()
         {
-            CreateContainer();
-            ConfigureDependencies();
-
             await CreateAndDeleteChildJobsForFetchingPlayerStatistics();
-        }
-
-        private void ConfigureDependencies()
-        {
-            _recurringJobManager = _childContainer.Resolve<IRecurringJobManager>();
-        }
-
-        private void CreateContainer()
-        {
-            _childContainer?.Dispose();
-
-            _childContainer = new UnityContainer();
-            UnityConfigurationManager.RegisterTypes(_childContainer, ApplicationScope.ServiceSchedulerClient);
-            UnityConfigurationManager.RegisterApiGlobalTypes(_childContainer, ApplicationScope.ServiceSchedulerClient);
         }
 
         private async Task CreateAndDeleteChildJobsForFetchingPlayerStatistics()
@@ -59,14 +42,14 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
             var now = DateTime.UtcNow;
 
             var todayTournaments =
-                (await _childContainer.Resolve<IRugbyService>().GetRecentResultsFixtures(_maxNumberOfRecentFixturesToConsider))
+                (await _rugbyService.GetRecentResultsFixtures(_maxNumberOfRecentFixturesToConsider))
                 .Where(f => f.StartDateTime.Date == today)
                 .Select(f => f.RugbyTournament)
                 .ToList();
 
             var todayTournamentIds = todayTournaments.Select(t => t.ProviderTournamentId);
 
-            var notTodayTournaments = (await _childContainer.Resolve<IRugbyService>().GetCurrentTournaments())
+            var notTodayTournaments = (await _rugbyService.GetCurrentTournaments())
                 .Where(t => todayTournamentIds.Contains(t.ProviderTournamentId));
 
             foreach (var tournament in notTodayTournaments)
@@ -80,7 +63,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
             foreach (var tournament in todayTournaments)
             {
                 var seasonId = 
-                    await _childContainer.Resolve<IRugbyService>().GetCurrentProviderSeasonIdForTournament(CancellationToken.None, tournament.Id);
+                    await _rugbyService.GetCurrentProviderSeasonIdForTournament(CancellationToken.None, tournament.Id);
 
                 var jobId = 
                     ConfigurationManager.AppSettings["ScheduleManagerJob_PlayerStats_CurrentTournaments_JobIdPrefix"] + tournament.Name;
@@ -94,11 +77,9 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
 
         private void AddOrUpdateHangfireJob(int tournamentId, int seasonId, string jobId, string jobCronExpression)
         {
-            var rugbyService = _childContainer.Resolve<IRugbyIngestWorkerService>();
-
             _recurringJobManager.AddOrUpdate(
                 jobId,
-                Job.FromExpression(() => rugbyService.IngestPlayerStatsForCurrentTournaments(tournamentId, seasonId ,CancellationToken.None)),
+                Job.FromExpression(() => _rugbyIngestWorkerService.IngestPlayerStatsForCurrentTournaments(tournamentId, seasonId ,CancellationToken.None)),
                 jobCronExpression,
                 new RecurringJobOptions
                 {
