@@ -80,33 +80,34 @@
 
         private async Task PersistPlayerDataInRepository(CancellationToken cancellationToken, RugbyEntitiesResponse entitiesResponse)
         {
-            if (entitiesResponse.Entities.players == null)
+            if (entitiesResponse.Entities != null && entitiesResponse.Entities.players == null)
                 return;
 
             var playersAlreadyInDb = await _publicSportDataUnitOfWork.RugbyPlayers.AllAsync();
             var players = playersAlreadyInDb as IList<RugbyPlayer> ?? playersAlreadyInDb.ToList();
 
-            foreach (var player in entitiesResponse.Entities.players)
-            {
-                if (cancellationToken.IsCancellationRequested)
-                    return;
-
-                var playerInDb = players.FirstOrDefault(p => p.ProviderPlayerId == player.id);
-
-                var newPlayer = new RugbyPlayer()
+            if (entitiesResponse.Entities != null)
+                foreach (var player in entitiesResponse.Entities.players)
                 {
-                    FirstName = null,
-                    LastName = null,
-                    FullName = player.name,
-                    ProviderPlayerId = player.id,
-                    DataProvider = DataProvider.StatsProzone
-                };
+                    if (cancellationToken.IsCancellationRequested)
+                        return;
 
-                if (playerInDb == null)
-                {
-                    _publicSportDataUnitOfWork.RugbyPlayers.Add(newPlayer);
+                    var playerInDb = players.FirstOrDefault(p => p.ProviderPlayerId == player.id);
+
+                    var newPlayer = new RugbyPlayer()
+                    {
+                        FirstName = null,
+                        LastName = null,
+                        FullName = player.name,
+                        ProviderPlayerId = player.id,
+                        DataProvider = DataProvider.StatsProzone
+                    };
+
+                    if (playerInDb == null)
+                    {
+                        _publicSportDataUnitOfWork.RugbyPlayers.Add(newPlayer);
+                    }
                 }
-            }
 
             await _publicSportDataUnitOfWork.SaveChangesAsync();
         }
@@ -195,37 +196,38 @@
             if (cancellationToken.IsCancellationRequested)
                 return;
 
-            if (entitiesResponse.Entities.venues == null)
+            if (entitiesResponse.Entities != null && entitiesResponse.Entities.venues == null)
                 return;
 
             var venuesAlreadyInDb = (await _publicSportDataUnitOfWork.RugbyVenues.AllAsync()).ToList();
 
-            foreach (var venue in entitiesResponse.Entities.venues)
-            {
-                if (cancellationToken.IsCancellationRequested)
-                    return;
-
-                // Lookup in db
-                var venueInDb = venuesAlreadyInDb.FirstOrDefault(v => v.ProviderVenueId == venue.id);
-
-                if (venueInDb == null)
+            if (entitiesResponse.Entities != null)
+                foreach (var venue in entitiesResponse.Entities.venues)
                 {
-                    var newVenue = new RugbyVenue()
+                    if (cancellationToken.IsCancellationRequested)
+                        return;
+
+                    // Lookup in db
+                    var venueInDb = venuesAlreadyInDb.FirstOrDefault(v => v.ProviderVenueId == venue.id);
+
+                    if (venueInDb == null)
                     {
-                        ProviderVenueId = venue.id,
-                        Name = venue.name,
-                        DataProvider = DataProvider.StatsProzone
-                    };
-                    _publicSportDataUnitOfWork.RugbyVenues.Add(newVenue);
-                }
-                else
-                {
-                    venueInDb.Name = venue.name;
-                    venueInDb.ProviderVenueId = venue.id;
+                        var newVenue = new RugbyVenue()
+                        {
+                            ProviderVenueId = venue.id,
+                            Name = venue.name,
+                            DataProvider = DataProvider.StatsProzone
+                        };
+                        _publicSportDataUnitOfWork.RugbyVenues.Add(newVenue);
+                    }
+                    else
+                    {
+                        venueInDb.Name = venue.name;
+                        venueInDb.ProviderVenueId = venue.id;
 
-                    _publicSportDataUnitOfWork.RugbyVenues.Update(venueInDb);
+                        _publicSportDataUnitOfWork.RugbyVenues.Update(venueInDb);
+                    }
                 }
-            }
 
             await _publicSportDataUnitOfWork.SaveChangesAsync();
         }
@@ -1491,51 +1493,52 @@
 
         private async Task PersistTournamentsInRepository(CancellationToken cancellationToken, RugbyEntitiesResponse entitiesResponse)
         {
-            if (entitiesResponse.Entities.competitions == null)
+            if (entitiesResponse.Entities != null && entitiesResponse.Entities.competitions == null)
                 return;
 
-            foreach (var competition in entitiesResponse.Entities.competitions)
-            {
-                if (cancellationToken.IsCancellationRequested)
-                    return;
-
-                var entry = (await _publicSportDataUnitOfWork.RugbyTournaments.AllAsync())
-                    .FirstOrDefault(c => c.ProviderTournamentId == competition.id);
-
-                // We are disregarding competition 401.
-                // The provider has another listing for "World Rugby Seven Series"
-                // under the ID 831. We are using that instead.
-                if (competition.id == 401)
-                    continue;
-
-                var newEntry = new RugbyTournament
+            if (entitiesResponse.Entities != null)
+                foreach (var competition in entitiesResponse.Entities.competitions)
                 {
-                    ProviderTournamentId = competition.id,
-                    Name = competition.name,
-                    IsEnabled = entry != null,
-                    LogoUrl = competition.CompetitionLogoURL,
-                    Abbreviation = competition.CompetitionAbbrev,
-                    Slug = GetSlug(competition.name),
-                    DataProvider = DataProvider.StatsProzone,
-                    IsLiveScored = false
-                };
+                    if (cancellationToken.IsCancellationRequested)
+                        return;
 
-                if (entry == null)
-                {
-                    _publicSportDataUnitOfWork.RugbyTournaments.Add(newEntry);
+                    var entry = (await _publicSportDataUnitOfWork.RugbyTournaments.AllAsync())
+                        .FirstOrDefault(c => c.ProviderTournamentId == competition.id);
+
+                    // We are disregarding competition 401.
+                    // The provider has another listing for "World Rugby Seven Series"
+                    // under the ID 831. We are using that instead.
+                    if (competition.id == 401)
+                        continue;
+
+                    var newEntry = new RugbyTournament
+                    {
+                        ProviderTournamentId = competition.id,
+                        Name = competition.name,
+                        IsEnabled = entry != null,
+                        LogoUrl = competition.CompetitionLogoURL,
+                        Abbreviation = competition.CompetitionAbbrev,
+                        Slug = GetSlug(competition.name),
+                        DataProvider = DataProvider.StatsProzone,
+                        IsLiveScored = false
+                    };
+
+                    if (entry == null)
+                    {
+                        _publicSportDataUnitOfWork.RugbyTournaments.Add(newEntry);
+                    }
+                    else
+                    {
+                        entry.ProviderTournamentId = newEntry.ProviderTournamentId;
+                        entry.Name = newEntry.Name;
+                        entry.LogoUrl = newEntry.LogoUrl;
+                        entry.Abbreviation = newEntry.Abbreviation;
+                        // Do not update the IsLiveScored property here.
+                        // It will be updated by the CMS.
+
+                        _publicSportDataUnitOfWork.RugbyTournaments.Update(entry);
+                    }
                 }
-                else
-                {
-                    entry.ProviderTournamentId = newEntry.ProviderTournamentId;
-                    entry.Name = newEntry.Name;
-                    entry.LogoUrl = newEntry.LogoUrl;
-                    entry.Abbreviation = newEntry.Abbreviation;
-                    // Do not update the IsLiveScored property here.
-                    // It will be updated by the CMS.
-
-                    _publicSportDataUnitOfWork.RugbyTournaments.Update(entry);
-                }
-            }
 
             await _publicSportDataUnitOfWork.SaveChangesAsync();
         }
