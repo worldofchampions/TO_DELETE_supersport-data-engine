@@ -13,7 +13,6 @@
 
     public class MotorsportService : IMotorsportService
     {
-
         private readonly IPublicSportDataUnitOfWork _publicSportDataUnitOfWork;
         private readonly ISystemSportDataUnitOfWork _systemSportDataUnitOfWork;
 
@@ -45,14 +44,6 @@
             return await Task.FromResult(SchedulerStateForManagerJobPolling.NotRunning);
         }
 
-        public async Task<IEnumerable<MotorsportRace>> GetLeagueRacesByProviderSeasonId(Guid leagueId, int providerSeasonId)
-        {
-            //TODO 
-            var races = new List<MotorsportRace>();
-
-            return await Task.FromResult(races);
-        }
-
         public async Task<IEnumerable<MotorsportRace>> GetRacesForLeague(Guid leagueId)
         {
             var races = 
@@ -68,6 +59,22 @@
                     s.IsCurrent && s.MotorsportLeague.Id == leagueId);
 
             return await Task.FromResult(season);
+        }
+
+        public async Task<IEnumerable<MotorsportSeason>> GetCurrentAndFutureSeasonsForLeague(Guid leagueId)
+        {
+            var currentSeason =
+                _publicSportDataUnitOfWork.MotorsportSeasons.FirstOrDefault(s =>
+                s.MotorsportLeague.Id == leagueId && s.IsCurrent);
+
+            if (currentSeason == null) return null;
+
+            var result =
+                _publicSportDataUnitOfWork.MotorsportSeasons.Where(s =>
+                    s.MotorsportLeague.Id == leagueId && 
+                    s.ProviderSeasonId >= currentSeason.ProviderSeasonId).ToList();
+
+            return await Task.FromResult(result);
         }
 
         public async Task<IEnumerable<MotorsportSeason>> GetHistoricSeasonsForLeague(Guid leagueId, bool includeCurrentSeason)
