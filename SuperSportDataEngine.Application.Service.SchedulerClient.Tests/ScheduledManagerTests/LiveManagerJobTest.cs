@@ -1,6 +1,5 @@
 ﻿using Hangfire;
 using Hangfire.Common;
-using Microsoft.Practices.Unity;
 using Moq;
 using NUnit.Framework;
 using SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledManager;
@@ -10,14 +9,12 @@ using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramewor
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
 using SuperSportDataEngine.ApplicationLogic.Services;
-using SuperSportDataEngine.Common.Logging;
 using SuperSportDataEngine.Tests.Common.Repositories.Test;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.ScheduledManagerTests
 {
@@ -51,14 +48,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
         }
 
         [Test]
-        public async Task LiveManagerJob_EmptyDataSet_AssertEmpty()
-        {
-            long count = await _mockUnitOfWork.SchedulerTrackingRugbyFixtures.CountAsync();
-            Assert.AreEqual(0, count);
-        }
-
-        [Test]
-        public async Task LiveManagerJob_NoEndedFixtures_NoJobsRemoved()
+        public async Task NoJobsRemoved_CriteriaNotMet()
         {
             await _liveManagerJob.DoWorkAsync();
 
@@ -66,7 +56,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
         }
 
         [Test]
-        public async Task LiveManagerJob_HasEndedFixture_OnlyOneJobRemoved()
+        public async Task WhenFixtureEnds_JobIsRemoved()
         {
             _mockRugbyService
                 .Setup(r => r.GetCompletedFixtures()).Returns(
@@ -85,7 +75,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
         }
 
         [Test]
-        public async Task LiveManagerJob_NoCurrentTournaments_DoNotQueryForLiveFixtures()
+        public async Task WhenNoCurrentTournaments_ServiceIsNotCalledForFixtures()
         {
             _mockRugbyService.Setup(r => r.GetCurrentTournaments()).Returns(Task.FromResult(new List<RugbyTournament>().AsEnumerable()));
 
@@ -95,7 +85,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
         }
 
         [Test]
-        public async Task LiveManagerJob_OneCurrentTournament_OneCallForLiveFixtures()
+        public async Task WhenOneCurrentTournament_OnlyOneCallToServiceForFixtures()
         {
             _mockRugbyService.Setup(r => r.GetCurrentTournaments()).Returns(
                     Task.FromResult(new List<RugbyTournament>(){
@@ -111,7 +101,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
         }
 
         [Test]
-        public async Task LiveManagerJob_TwoCurrentTournaments_TwoCallsForLiveFixtures()
+        public async Task WhenTwoCurrentTournaments_TwoCallsMadeToService()
         {
             _mockRugbyService
                 .Setup(r => r.GetCurrentTournaments()).Returns(
@@ -131,7 +121,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
         }
 
         [Test]
-        public async Task LiveManagerJob_InProgressFixtureGetsScheduled()
+        public async Task WhenFixtureInProgress_CreateChildJob()
         {
             Guid tournamentId = Guid.NewGuid();
             Guid fixtureId = Guid.NewGuid();
@@ -182,11 +172,11 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
 
             var f = _mockUnitOfWork.SchedulerTrackingRugbyFixtures.All().FirstOrDefault();
 
-            Assert.AreEqual(true, f.IsJobRunning);
+            Assert.AreEqual(true, f != null && f.IsJobRunning);
         }
 
         [Test]
-        public async Task LiveManagerJob_EndedFixtureGetsRemoved()
+        public async Task WhenFixtureEnds_RemoveChildJob()
         {
             Guid tournamentId = Guid.NewGuid();
             Guid fixtureId = Guid.NewGuid();
@@ -232,7 +222,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
         }
 
         [Test]
-        public async Task LiveManagerJob_FixtureGetsPolledPreGame()
+        public async Task WhenFixtureIsPreLivePolling_ChildJobGetsCreated()
         {
             DateTimeOffset now = DateTimeOffset.UtcNow;
 

@@ -48,20 +48,20 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
         }
 
         [Test]
-        public async Task FixturesManagerJob_ThrowsNoExceptions()
+        public async Task DoWorkAsync_ThrowsNoExceptions()
         {
             try
             {
                 await _fixturesManagerJob.DoWorkAsync();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 Assert.Fail();
             }
         }
 
         [Test]
-        public async Task FixturesManagerJob_TournamentActive_ChildJobGetsCreated()
+        public async Task ChildJobCreated_PollsActiveTournaments()
         {
             var tournamentId = Guid.NewGuid();
             var rugbyTournament = new RugbyTournament()
@@ -101,14 +101,14 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
                             It.IsAny<RecurringJobOptions>()),
                         Times.Once());
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 Assert.Fail();
             }
         }
 
         [Test]
-        public async Task FixturesManagerJob_TournamentActive_TrackingTableUpdated()
+        public async Task WhenChildJobCreatedForPollingActiveTournaments_TrackingTableAlsoUpdated()
         {
             var tournamentId = Guid.NewGuid();
             var rugbyTournament = 
@@ -151,7 +151,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
                 
                 Assert.AreEqual(SchedulerStateForManagerJobPolling.Running, trackingEntry.SchedulerStateForManagerJobPolling);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 Assert.Fail();
             }

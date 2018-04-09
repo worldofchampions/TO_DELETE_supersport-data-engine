@@ -56,7 +56,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
         }
 
         [Test]
-        public async Task PlayerStatisticsJob_ThrowsNoExceptions()
+        public async Task ThrowsNoExceptions()
         {
             try
             {
@@ -66,7 +66,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
             {
                 Assert.Fail();
             }
-
         }
     }
 }

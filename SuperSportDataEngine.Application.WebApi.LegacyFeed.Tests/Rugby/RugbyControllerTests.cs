@@ -56,7 +56,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Tests.Rugby
         [Test]
         // When there are no fixtures today, 
         // there should be no fixtures being served out on the feed.
-        public async Task RugbyController_GetTodayFixtures_NoFixtures()
+        public async Task NoFixturesToday()
         {
             var result = await _controller.GetTodayFixtures();
             if (result is OkNegotiatedContentResult<List<Match>> content)
@@ -75,7 +75,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Tests.Rugby
         [Test]
         // When there is one fixture today, 
         // that fixtures should be served out.
-        public async Task RugbyController_GetTodayFixtures_OneFixture()
+        public async Task OneFixtureToday()
         {
             var rugbyTournament = new RugbyTournament()
             {
@@ -110,7 +110,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Tests.Rugby
         // When the live endpoint is being called twice,
         // The service should only be called once.
         // This checks if the cache is queried and returns the object from cache.
-        public async Task RugbyController_GetTodayFixtures_OneFixture_ReturnCachedList()
+        public async Task EndpointCalledTwice_ServiceCalledOnce()
         {
             var rugbyTournament = new RugbyTournament()
             {
@@ -134,7 +134,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Tests.Rugby
         // One is today, and one in the past
         // Only one fixture is returned.
         // Also check if the fixture returned is the one that is today.
-        public async Task RugbyController_GetTodayFixtures_TwoFixture_OneIsPast()
+        public async Task OneFixturePast_OneFixtureToday()
         {
             var rugbyTournament = new RugbyTournament()
             {
@@ -180,7 +180,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Tests.Rugby
         [Test]
         // When there is a fixture that has started just before 12am UTC and the
         // fixture is in progress, also show this fixture on the live endpoint.
-        public async Task RugbyController_GetTodayFixtures_TwoFixture_OneStartedBefore12UtcAndInProgress()
+        public async Task OneInProgressFixtureStartedEndOfPreviousDay()
         {
             var rugbyTournament = new RugbyTournament()
             {
@@ -222,7 +222,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Tests.Rugby
         [Test]
         // When there is a fixture that has started long before 12am UTC and the
         // fixture is in progress, dont show this fixture on the feed.
-        public async Task RugbyController_GetTodayFixtures_TwoFixture_OneStartedLongBefore12Utc()
+        public async Task OneFixtureStartedLongAgoPreviousDay()
         {
             var rugbyTournament = new RugbyTournament()
             {

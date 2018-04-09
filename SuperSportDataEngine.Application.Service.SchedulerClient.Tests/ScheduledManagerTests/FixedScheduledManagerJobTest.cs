@@ -22,7 +22,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
         [TestCase("Rugby→StatsProzone→FixedScheduleJob→Results→AllFixtures", "5 2 * * *", "normal_priority")]
         [TestCase("Rugby→StatsProzone→FixedScheduleJob→Results→EndedFixtures", "0 * * * *", "normal_priority")]
         [TestCase("Rugby→StatsProzone→FixedScheduleJob→Results→CurrentDayFixtures", "*/15 * * * *", "high_priority")]
-        public void FixedScheduleJob_WhenUpdateFixedJobsCalled_AddsJobToHangfire(
+        public void AllJobsAreCreatedOnHangfire(
             string hangfireJobId,
             string hangfireCronExpression,
             string queue)

@@ -64,7 +64,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
         }
 
         [Test]
-        public async Task LogsManagerJob_NoCurrentTournaments_NoJobsScheduled()
+        public async Task WhenNoCurrentTournaments_NoJobsAreCreated()
         {
             await _logsManagerJob.CreateChildJobsForFetchingLogs();
 
@@ -77,7 +77,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
         }
 
         [Test]
-        public async Task LogsManagerJob_OneCurrentTournament_OneJobCreated()
+        public async Task WhenOneCurrentTournament_OnlyOneJobIsCreated()
         {
             var tournamentId = Guid.NewGuid();
             var rugbyTournament = new RugbyTournament()
@@ -112,7 +112,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
         }
 
         [Test]
-        public async Task LogsManagerJob_TwoCurrentTournament_TwoJobsCreated()
+        public async Task WhenTwoCurrentTournaments_TwoJobsAreCreated()
         {
             var tournamentId = Guid.NewGuid();
             var tournament2Id = Guid.NewGuid();
@@ -170,7 +170,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
         }
 
         [Test]
-        public async Task LogsManagerJob_ScheduleLogsForTournament_SchedulerStateSetToRunning()
+        public async Task SchedulerStateUpdatedWhenJobIsCreated()
         {
             var seasonId = Guid.NewGuid();
 
