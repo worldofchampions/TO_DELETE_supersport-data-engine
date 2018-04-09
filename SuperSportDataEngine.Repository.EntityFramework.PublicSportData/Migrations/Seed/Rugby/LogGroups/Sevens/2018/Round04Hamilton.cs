@@ -34,7 +34,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                 context.RugbyLogGroups.AddOrUpdate(
                     x => x.Slug,
                     // LogGroups for "SecondaryStandings" GroupHierachyLevel: 1
-                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = true, IsCoreGroup = true, Slug = SlugHierachyLevel1HamiltonSevens2018, ProviderLogGroupId = null, ProviderGroupName = "Hamilton 2018", GroupName = "Hamilton 2018", GroupShortName = "Hamilton 2018" },
+                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = true, IsCoreGroup = true, Slug = SlugHierachyLevel1HamiltonSevens2018, ProviderLogGroupId = 0, ProviderGroupName = "Hamilton 2018", GroupName = "Hamilton 2018", GroupShortName = "Hamilton 2018" },
 
                     // LogGroups for "groupStandings" GroupHierachyLevel: 2
                     new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 2, IsConference = false, Slug = SlugHierarchyLevel2HamiltonNonCoreGroup, ProviderLogGroupId = 0, ProviderGroupName = null, GroupName = "Non-Core Group", GroupShortName = "Non-Core Group", IsCoreGroup = false },
