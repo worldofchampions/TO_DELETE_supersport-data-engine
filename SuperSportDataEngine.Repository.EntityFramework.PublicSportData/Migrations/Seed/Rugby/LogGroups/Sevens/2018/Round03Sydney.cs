@@ -38,7 +38,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                     new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 0, IsConference = false, IsCoreGroup = true, Slug = SlugHierachyLevel0Sevens2018, ProviderLogGroupId = 0, ProviderGroupName = null, GroupName = "Sevens 2018", GroupShortName = "Sevens 2018" },
 
                     // LogGroups for "SecondaryStandings" GroupHierachyLevel: 1
-                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = true, IsCoreGroup = true, Slug = SlugHierachyLevel1SydneySevens2018, ProviderLogGroupId = null, ProviderGroupName = "Sydney 2018", GroupName = "Sydney 2018", GroupShortName = "Sydney 2018" },
+                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = true, IsCoreGroup = true, Slug = SlugHierachyLevel1SydneySevens2018, ProviderLogGroupId = 0, ProviderGroupName = "Sydney 2018", GroupName = "Sydney 2018", GroupShortName = "Sydney 2018" },
 
                     // LogGroups for "groupStandings" GroupHierachyLevel: 2
                     new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 2, IsConference = false, Slug = SlugHierarchyLevel2SydneyNonCoreGroup, ProviderLogGroupId = 0, ProviderGroupName = null, GroupName = "Non-Core Group", GroupShortName = "Non-Core Group", IsCoreGroup = false },
