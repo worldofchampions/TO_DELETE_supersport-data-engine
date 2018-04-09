@@ -156,5 +156,98 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
                 Assert.Fail();
             }
         }
+
+        [Test]
+        public async Task ChildJobDeleted_TournamentsInactive()
+        {
+            var tournamentId = Guid.NewGuid();
+            var rugbyTournament = new RugbyTournament()
+            {
+                Id = tournamentId,
+                Name = "Test Tournament",
+                LegacyTournamentId = 0,
+                ProviderTournamentId = 0,
+                IsEnabled = false
+            };
+
+            _publicSportDataUnitOfWork.RugbyTournaments.Add(rugbyTournament);
+
+            var rugbySeason =
+                new RugbySeason()
+                {
+                    Id = Guid.NewGuid(),
+                    RugbyTournament = rugbyTournament,
+                    IsCurrent = true,
+                    ProviderSeasonId = 2000,
+                    Name = "Test Season"
+                };
+
+            _publicSportDataUnitOfWork.RugbySeasons.Add(rugbySeason);
+
+            try
+            {
+                await _fixturesManagerJob.DoWorkAsync();
+
+                _mockRecurringJobManager
+                    .Verify(
+                        m => m.RemoveIfExists(
+                            ConfigurationManager.AppSettings[
+                                "ScheduleManagerJob_Fixtures_CurrentTournaments_JobIdPrefix"] + rugbyTournament.Name),
+                        Times.Once());
+            }
+            catch (Exception)
+            {
+                Assert.Fail();
+            }
+        }
+
+        [Test]
+        public async Task TrackingTableUpdated_TournamentInactive()
+        {
+            var tournamentId = Guid.NewGuid();
+            var rugbyTournament = new RugbyTournament()
+            {
+                Id = tournamentId,
+                Name = "Test Tournament",
+                LegacyTournamentId = 0,
+                ProviderTournamentId = 0,
+                IsEnabled = false
+            };
+
+            _publicSportDataUnitOfWork.RugbyTournaments.Add(rugbyTournament);
+
+            var rugbySeason =
+                new RugbySeason()
+                {
+                    Id = Guid.NewGuid(),
+                    RugbyTournament = rugbyTournament,
+                    IsCurrent = true,
+                    ProviderSeasonId = 2000,
+                    Name = "Test Season"
+                };
+
+            _publicSportDataUnitOfWork.RugbySeasons.Add(rugbySeason);
+
+            var schedulerEntry = new SchedulerTrackingRugbyTournament()
+            {
+                TournamentId = tournamentId,
+                SeasonId = rugbySeason.Id,
+                SchedulerStateForManagerJobPolling = SchedulerStateForManagerJobPolling.Running
+            };
+
+            _systemSportDataUnitOfWork.SchedulerTrackingRugbyTournaments.Add(
+                schedulerEntry);
+
+            try
+            {
+                await _fixturesManagerJob.DoWorkAsync();
+
+                Assert.AreEqual(SchedulerStateForManagerJobPolling.NotRunning, schedulerEntry.SchedulerStateForManagerJobPolling);
+            }
+            catch (Exception)
+            {
+                Assert.Fail();
+            }
+        }
     }
 }
