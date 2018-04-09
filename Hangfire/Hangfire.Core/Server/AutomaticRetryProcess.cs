@@ -71,7 +71,7 @@ namespace Hangfire.Server
                     var logLevel = GetLogLevel(i);
 
                     // Logging this under info.
-                    // This will show in log files and not Slack.
+                    // This will show in log files and not MSFTTeams.
                     _logger.Log(
                         LogLevel.Info,
                         // ReSharper disable once AccessToModifiedClosure
