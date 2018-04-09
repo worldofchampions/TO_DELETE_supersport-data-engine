@@ -87,6 +87,7 @@
             var players = playersAlreadyInDb as IList<RugbyPlayer> ?? playersAlreadyInDb.ToList();
 
             if (entitiesResponse.Entities != null)
+            {
                 foreach (var player in entitiesResponse.Entities.players)
                 {
                     if (cancellationToken.IsCancellationRequested)
@@ -108,6 +109,7 @@
                         _publicSportDataUnitOfWork.RugbyPlayers.Add(newPlayer);
                     }
                 }
+            }
 
             await _publicSportDataUnitOfWork.SaveChangesAsync();
         }
@@ -167,7 +169,7 @@
 
                 var teamInDb = teamsAlreadyInDb.FirstOrDefault(t => t.ProviderTeamId == team.id);
 
-                if (teamInDb == null || teamInDb.ProviderTeamId == 0)
+                if (teamInDb == null)
                 {
                     var newTeam = new RugbyTeam()
                     {
@@ -202,6 +204,7 @@
             var venuesAlreadyInDb = (await _publicSportDataUnitOfWork.RugbyVenues.AllAsync()).ToList();
 
             if (entitiesResponse.Entities != null)
+            {
                 foreach (var venue in entitiesResponse.Entities.venues)
                 {
                     if (cancellationToken.IsCancellationRequested)
@@ -228,6 +231,7 @@
                         _publicSportDataUnitOfWork.RugbyVenues.Update(venueInDb);
                     }
                 }
+            }
 
             await _publicSportDataUnitOfWork.SaveChangesAsync();
         }
@@ -1497,6 +1501,7 @@
                 return;
 
             if (entitiesResponse.Entities != null)
+            {
                 foreach (var competition in entitiesResponse.Entities.competitions)
                 {
                     if (cancellationToken.IsCancellationRequested)
@@ -1539,6 +1544,7 @@
                         _publicSportDataUnitOfWork.RugbyTournaments.Update(entry);
                     }
                 }
+            }
 
             await _publicSportDataUnitOfWork.SaveChangesAsync();
         }

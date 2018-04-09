@@ -11,6 +11,7 @@ using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.MongoDb.Payloa
 using SuperSportDataEngine.ApplicationLogic.Services;
 using SuperSportDataEngine.Common.Logging;
 using SuperSportDataEngine.Tests.Common.Repositories.Test;
+using Team = SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyEntities.Team;
 
 namespace SuperSportDataEngine.ApplicationLogic.Tests.Services
 {
@@ -74,7 +75,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests.Services
         }
 
         [Test]
-        public async Task IngestTournaments()
+        public async Task IngestTournamentsWithNoDuplicates()
         {
             _mockStatsProzoneIngestService
                 .Setup(m =>
@@ -93,10 +94,92 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests.Services
                     }));
 
             await _rugbyIngestWorkerService.IngestReferenceData(CancellationToken.None);
+            await _rugbyIngestWorkerService.IngestReferenceData(CancellationToken.None);
 
             Assert.AreEqual(2, await _publicSportDataUnitOfWork.RugbyTournaments.CountAsync());
             Assert.AreEqual("test competition 1", _publicSportDataUnitOfWork.RugbyTournaments.FirstOrDefault(t => t.ProviderTournamentId == 0).Name);
             Assert.AreEqual("test competition 2", _publicSportDataUnitOfWork.RugbyTournaments.FirstOrDefault(t => t.ProviderTournamentId == 1).Name);
+        }
+
+        [Test]
+        public async Task IngestPlayersWithNoDuplicates()
+        {
+            _mockStatsProzoneIngestService
+                .Setup(m =>
+                    m.IngestRugbyReferenceData(It.IsAny<CancellationToken>()))
+                .Returns(() => Task.FromResult(
+                    new RugbyEntitiesResponse()
+                    {
+                        Entities = new RugbyEntities()
+                        {
+                            players = new List<Player>()
+                            {
+                                new Player{ id = 0, name = "Player 1" },
+                                new Player{ id = 1, name = "Player 2" },
+                            }
+                        }
+                    }));
+
+            await _rugbyIngestWorkerService.IngestReferenceData(CancellationToken.None);
+            await _rugbyIngestWorkerService.IngestReferenceData(CancellationToken.None);
+
+            Assert.AreEqual(2, await _publicSportDataUnitOfWork.RugbyPlayers.CountAsync());
+            Assert.AreEqual("Player 1", _publicSportDataUnitOfWork.RugbyPlayers.FirstOrDefault(t => t.ProviderPlayerId == 0).FullName);
+            Assert.AreEqual("Player 2", _publicSportDataUnitOfWork.RugbyPlayers.FirstOrDefault(t => t.ProviderPlayerId == 1).FullName);
+        }
+
+        [Test]
+        public async Task IngestVenuesWithNoDuplicates()
+        {
+            _mockStatsProzoneIngestService
+                .Setup(m =>
+                    m.IngestRugbyReferenceData(It.IsAny<CancellationToken>()))
+                .Returns(() => Task.FromResult(
+                    new RugbyEntitiesResponse()
+                    {
+                        Entities = new RugbyEntities()
+                        {
+                            venues = new List<Venue>()
+                            {
+                                new Venue{ id = 0, name = "Venue 1"},
+                                new Venue{ id = 1, name = "Venue 2"},
+                            }
+                        }
+                    }));
+
+            await _rugbyIngestWorkerService.IngestReferenceData(CancellationToken.None);
+            await _rugbyIngestWorkerService.IngestReferenceData(CancellationToken.None);
+
+            Assert.AreEqual(2, await _publicSportDataUnitOfWork.RugbyVenues.CountAsync());
+            Assert.AreEqual("Venue 1", _publicSportDataUnitOfWork.RugbyVenues.FirstOrDefault(t => t.ProviderVenueId == 0).Name);
+            Assert.AreEqual("Venue 2", _publicSportDataUnitOfWork.RugbyVenues.FirstOrDefault(t => t.ProviderVenueId == 1).Name);
+        }
+
+        [Test]
+        public async Task IngestTeamsWithNoDuplicates()
+        {
+            _mockStatsProzoneIngestService
+                .Setup(m =>
+                    m.IngestRugbyReferenceData(It.IsAny<CancellationToken>()))
+                .Returns(() => Task.FromResult(
+                    new RugbyEntitiesResponse()
+                    {
+                        Entities = new RugbyEntities()
+                        {
+                            teams = new List<Team>()
+                            {
+                                new Team{ id = 0, name = "Team 1"},
+                                new Team{ id = 1, name = "Team 2"}
+                            }
+                        }
+                    }));
+
+            await _rugbyIngestWorkerService.IngestReferenceData(CancellationToken.None);
+            await _rugbyIngestWorkerService.IngestReferenceData(CancellationToken.None);
+
+            Assert.AreEqual(2, await _publicSportDataUnitOfWork.RugbyTeams.CountAsync());
+            Assert.AreEqual("Team 1", _publicSportDataUnitOfWork.RugbyTeams.FirstOrDefault(t => t.ProviderTeamId == 0).Name);
+            Assert.AreEqual("Team 2", _publicSportDataUnitOfWork.RugbyTeams.FirstOrDefault(t => t.ProviderTeamId == 1).Name);
         }
     }
 }
