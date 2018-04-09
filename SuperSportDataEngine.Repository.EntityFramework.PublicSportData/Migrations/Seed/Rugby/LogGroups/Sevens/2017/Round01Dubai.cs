@@ -1,14 +1,14 @@
-﻿namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed
-{
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-    using SuperSportDataEngine.ApplicationLogic.Constants.Providers;
-    using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
-    using System;
-    using System.Data.Entity.Migrations;
-    using System.Linq;
+﻿using System;
+using System.Data.Entity.Migrations;
+using System.Linq;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+using SuperSportDataEngine.ApplicationLogic.Constants.Providers;
+using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
 
-    public static class SeedRugbyLogGroupsForTournamentSevens2017
+namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.Sevens._2017
+{
+    public static class Round01Dubai
     {
         private const string SlugHierarchyLevel0 = "Sevens-2017-HL0";
         private const string SlugHierarchyLevel1Dubai = "Sevens-2017-HL1-Dubai";
