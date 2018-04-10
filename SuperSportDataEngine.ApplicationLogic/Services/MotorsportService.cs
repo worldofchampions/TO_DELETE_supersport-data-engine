@@ -116,5 +116,59 @@
 
             return await Task.FromResult(raceEvents);
         }
+
+        public async Task SetCurrentRaceEvents()
+        {
+            var motorsportLeagues = await GetActiveLeagues();
+
+            if (motorsportLeagues == null) return;
+
+            foreach (var league in motorsportLeagues)
+            {
+                var currentSeason = await GetCurrentSeasonForLeague(league.Id, CancellationToken.None);
+
+                var raceEvents = GetRaceEventsForLeague(league, currentSeason).ToList();
+
+                var previousRaceEvent = raceEvents.FirstOrDefault(e => e.IsCurrent);
+
+                foreach (var raceEvent in raceEvents)
+                {
+                    if (ShouldSetRaceEventAsCurrent(raceEvent))
+                    {
+                        raceEvent.IsCurrent = true;
+                        _publicSportDataUnitOfWork.MotorsportRaceEvents.Update(raceEvent);
+
+                        if (previousRaceEvent != null)
+                        {
+                            previousRaceEvent.IsCurrent = false;
+                            _publicSportDataUnitOfWork.MotorsportRaceEvents.Update(previousRaceEvent);
+                        }
+
+                        await _publicSportDataUnitOfWork.SaveChangesAsync();
+
+                        break;
+                    }
+                }
+            }
+        }
+
+        private IEnumerable<MotorsportRaceEvent> GetRaceEventsForLeague(MotorsportLeague league, MotorsportSeason currentSeason)
+        {
+            return _publicSportDataUnitOfWork.MotorsportRaceEvents.Where(e =>
+                e.MotorsportSeason.Id == currentSeason.Id &&
+                e.MotorsportRace.MotorsportLeague.Id == league.Id);
+        }
+
+        private static bool ShouldSetRaceEventAsCurrent(MotorsportRaceEvent raceEvent)
+        {
+            if (raceEvent.StartDateTimeUtc == null) return false;
+
+            var hoursBeforeEventStarts =
+                Math.Round(raceEvent.StartDateTimeUtc.Value.Subtract(DateTime.UtcNow).TotalHours, MidpointRounding.AwayFromZero);
+
+            const int hourToSetEventCurrent = 72;
+
+            return (int)hoursBeforeEventStarts == hourToSetEventCurrent;
+        }
     }
 }
