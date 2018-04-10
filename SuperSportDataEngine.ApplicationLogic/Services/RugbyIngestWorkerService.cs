@@ -2201,7 +2201,7 @@
                     ConversionsMissed = (int)statsMap.GetValueOrDefault(10),
                     DefendersBeaten = (int)statsMap.GetValueOrDefault(8),
                     DropGoalAttempts = (int)statsMap.GetValueOrDefault(2049),
-                    DropGoals = (int)statsMap.GetValueOrDefault(2050),
+                    DropGoals = (int)statsMap.GetValueOrDefault(13),
                     DropGoalsMissed = (int)(statsMap.GetValueOrDefault(2049) - statsMap.GetValueOrDefault(2050)),
                     LineOutsLost = (int)statsMap.GetValueOrDefault(20),
                     LineOutsWon = (int)statsMap.GetValueOrDefault(19),
