@@ -18,5 +18,6 @@
         Task<MotorsportRaceEvent> GetTodayEventForRace(Guid raceId);
         Task<IEnumerable<MotorsportRaceEvent>> GetEventsForRace(Guid raceId, Guid seasonId);
         Task<IEnumerable<MotorsportSeason>> GetCurrentAndFutureSeasonsForLeague(Guid leagueId);
+        Task SetCurrentRaceEvents();
     }
 }
