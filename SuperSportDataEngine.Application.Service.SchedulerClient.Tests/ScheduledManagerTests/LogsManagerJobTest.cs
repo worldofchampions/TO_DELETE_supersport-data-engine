@@ -1,11 +1,9 @@
 ﻿using Hangfire;
 using Hangfire.Common;
-using Microsoft.Practices.Unity;
 using Moq;
 using NUnit.Framework;
 using SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledManager;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
@@ -15,165 +13,214 @@ using SuperSportDataEngine.Tests.Common.Repositories.Test;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
+using MongoDB.Driver;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.ScheduledManagerTests
 {
     [Category("LogsManagerJob")]
     public class LogsManagerJobTest
     {
-        Mock<IRugbyService> MockRugbyService;
-        Mock<IRugbyIngestWorkerService> MockRugbyIngestWorkerService;
-        TestSystemSportDataUnitOfWork _systemSportDataUnitOfWork;
-        Mock<IRecurringJobManager> MockRecurringJobManager;
-        IUnityContainer MockUnityContainer;
-        LogsManagerJob LogsManagerJob;
-        Mock<ILoggingService> MockLogger;
+        private IRugbyService _rugbyService;
+        private IRugbyIngestWorkerService _rugbyIngestWorkerService;
+        private TestSystemSportDataUnitOfWork _systemSportDataUnitOfWork;
+        private TestPublicSportDataUnitOfWork _publicSportDataUnitOfWork;
+        private Mock<IRecurringJobManager> _mockRecurringJobManager;
+        private LogsManagerJob _logsManagerJob;
+        private Mock<ILoggingService> _mockLogger;
 
         [SetUp]
         public void SetUp()
         {
             _systemSportDataUnitOfWork = new TestSystemSportDataUnitOfWork();
+            _publicSportDataUnitOfWork = new TestPublicSportDataUnitOfWork();
 
-            MockRugbyService = new Mock<IRugbyService>();
-            MockRugbyIngestWorkerService = new Mock<IRugbyIngestWorkerService>();
-            MockRecurringJobManager = new Mock<IRecurringJobManager>();
-            MockUnityContainer = new UnityContainer();
+            _mockRecurringJobManager = new Mock<IRecurringJobManager>();
+            _mockLogger = new Mock<ILoggingService>();
 
-            MockUnityContainer.RegisterType<IUnityContainer>(
-                new InjectionFactory((x) => MockUnityContainer));
+            _rugbyService = new RugbyService(
+                _publicSportDataUnitOfWork, 
+                _systemSportDataUnitOfWork);
 
-            MockUnityContainer.RegisterType<IRugbyService>(
-                new InjectionFactory((x) => MockRugbyService.Object));
+            _rugbyIngestWorkerService = 
+                new RugbyIngestWorkerService(
+                    _publicSportDataUnitOfWork, 
+                    _systemSportDataUnitOfWork, 
+                    _mockLogger.Object,
+                    (new Mock<IStatsProzoneRugbyIngestService>()).Object,
+                    (new Mock<IMongoDbRugbyRepository>()).Object,
+                    _rugbyService);
 
-            MockUnityContainer.RegisterType<IRugbyIngestWorkerService>(
-                new InjectionFactory((x) => MockRugbyIngestWorkerService.Object));
-
-            MockUnityContainer.RegisterType<IRecurringJobManager>(
-                new InjectionFactory((x) => MockRecurringJobManager.Object));
-
-            MockLogger = new Mock<ILoggingService>();
-
-            MockUnityContainer.RegisterType<ISystemSportDataUnitOfWork>(
-                new InjectionFactory((x) => _systemSportDataUnitOfWork));
-
-            MockUnityContainer.RegisterType<ILoggingService>(
-                new InjectionFactory((x) => MockLogger.Object));
-
-            LogsManagerJob =
+            _logsManagerJob =
                 new LogsManagerJob(
-                        MockRecurringJobManager.Object,
-                        MockUnityContainer);
+                        _mockRecurringJobManager.Object,
+                        _rugbyService,
+                        _rugbyIngestWorkerService,
+                        _systemSportDataUnitOfWork,
+                        _publicSportDataUnitOfWork);
         }
 
-    //    [Test]
-    //    public async Task LogsManagerJob_NoCurrentTournaments_NoJobsScheduled()
-    //    {
-    //        MockRugbyService.Setup(r => r.GetActiveTournamentsForMatchesInResultsState()).Returns(Task.FromResult(new List<RugbyTournament>() { }.AsEnumerable()));
+        [Test]
+        public async Task WhenNoCurrentTournaments_NoJobsAreCreated()
+        {
+            await _logsManagerJob.CreateChildJobsForFetchingLogs();
 
-    //        await LogsManagerJob.CreateChildJobsForFetchingLogs();
+            _mockRecurringJobManager.Verify(m => m.AddOrUpdate(
+                            It.IsAny<string>(),
+                            It.IsAny<Job>(),
+                            It.IsAny<string>(),
+                            It.IsAny<RecurringJobOptions>()),
+                            Times.Never());
+        }
 
-    //        MockRecurringJobManager.Verify(m => m.AddOrUpdate(
-    //                        It.IsAny<string>(),
-    //                        It.IsAny<Job>(),
-    //                        It.IsAny<string>(),
-    //                        It.IsAny<RecurringJobOptions>()),
-    //                        Times.Never());
-    //    }
+        [Test]
+        public async Task WhenOneCurrentTournament_OnlyOneJobIsCreated()
+        {
+            var tournamentId = Guid.NewGuid();
+            var rugbyTournament = new RugbyTournament()
+            {
+                Id = tournamentId,
+                Name = "TestTournament",
+                IsEnabled = true,
+                Slug = "test",
+            };
 
-    //    [Test]
-    //    public async Task LogsManagerJob_OneCurrentTournament_GetActiveTournamentsForMatchesInResultsStateOnce()
-    //    {
-    //        MockRugbyService.Setup(r => r.GetActiveTournamentsForMatchesInResultsState()).Returns(
-    //        Task.FromResult(new List<RugbyTournament>() {
-    //            new RugbyTournament(){
-    //                Id = Guid.NewGuid()
-    //            }
-    //        }.AsEnumerable()));
+            var rugbyFixture = new RugbyFixture()
+            {
+                RugbyTournament = rugbyTournament,
+                Id = Guid.NewGuid(),
+                LegacyFixtureId = 0,
+                ProviderFixtureId = 0,
+                RugbyFixtureStatus = RugbyFixtureStatus.Result,
+                StartDateTime = DateTimeOffset.UtcNow - TimeSpan.FromMinutes(1)
+            };
 
-    //        await LogsManagerJob.CreateChildJobsForFetchingLogs();
+            _publicSportDataUnitOfWork.RugbyTournaments.Add(rugbyTournament);
+            _publicSportDataUnitOfWork.RugbyFixtures.Add(rugbyFixture);
 
-    //        MockRugbyService.Verify(r => r.GetCurrentProviderSeasonIdForTournament(It.IsAny<CancellationToken>(), It.IsAny<Guid>()), Times.Once());
-    //    }
+            await _logsManagerJob.CreateChildJobsForFetchingLogs();
 
-    //    [Test]
-    //    public async Task LogsManagerJob_TwoCurrentTournament_GetActiveTournamentsForMatchesInResultsStateTwice()
-    //    {
-    //        MockRugbyService.Setup(r => r.GetActiveTournamentsForMatchesInResultsState()).Returns(
-    //            Task.FromResult(
-    //            new List<RugbyTournament>() {
-    //                new RugbyTournament(){
-    //                    Id = Guid.NewGuid()
-    //                },
-    //                new RugbyTournament(){
-    //                    Id = Guid.NewGuid()
-    //                }
-    //        }.AsEnumerable()));
+            _mockRecurringJobManager.Verify(m => m.AddOrUpdate(
+                        It.IsAny<string>(),
+                        It.IsAny<Job>(),
+                        It.IsAny<string>(),
+                        It.IsAny<RecurringJobOptions>()),
+                        Times.Once());
+        }
 
-    //        await LogsManagerJob.CreateChildJobsForFetchingLogs();
+        [Test]
+        public async Task WhenTwoCurrentTournaments_TwoJobsAreCreated()
+        {
+            var tournamentId = Guid.NewGuid();
+            var tournament2Id = Guid.NewGuid();
+            var tournaments = new List<RugbyTournament>()
+            {
+                new RugbyTournament()
+                {
+                    Id = tournamentId,
+                    Name = "TestTournament",
+                    IsEnabled = true,
+                    Slug = "test",
+                },
+                new RugbyTournament()
+                {
+                    Id = tournament2Id,
+                    Name = "TestTournament2",
+                    IsEnabled = true,
+                    Slug = "test2",
+                }
+            };
 
-    //        MockRugbyService.Verify(r => r.GetCurrentProviderSeasonIdForTournament(It.IsAny<CancellationToken>(), It.IsAny<Guid>()), Times.Exactly(2));
-    //    }
+            var fixtures = new List<RugbyFixture>()
+            {
+                new RugbyFixture()
+                {
+                    RugbyTournament = tournaments[0],
+                    Id = Guid.NewGuid(),
+                    LegacyFixtureId = 0,
+                    ProviderFixtureId = 0,
+                    RugbyFixtureStatus = RugbyFixtureStatus.Result,
+                    StartDateTime = DateTimeOffset.UtcNow - TimeSpan.FromHours(1)
+                },
+                new RugbyFixture()
+                {
+                    RugbyTournament = tournaments[1],
+                    Id = Guid.NewGuid(),
+                    LegacyFixtureId = 0,
+                    ProviderFixtureId = 0,
+                    StartDateTime = DateTimeOffset.UtcNow - TimeSpan.FromHours(1),
+                    RugbyFixtureStatus = RugbyFixtureStatus.Result,
+                }
+            };
 
-    //    [Test]
-    //    public async Task LogsManagerJob_ScheduleLogsForTournamentXAndSeason2018()
-    //    {
-    //        MockRugbyService.Setup(r => r.GetActiveTournamentsForMatchesInResultsState()).Returns(
-    //            Task.FromResult(new List<RugbyTournament>() {
-    //            new RugbyTournament(){
-    //                Id = Guid.NewGuid(),
-    //                Name = "X"
-    //            }
-    //        }.AsEnumerable()));
+            tournaments.ForEach(t => _publicSportDataUnitOfWork.RugbyTournaments.Add(t));
+            fixtures.ForEach(f => _publicSportDataUnitOfWork.RugbyFixtures.Add(f));
 
-    //        MockRugbyService.Setup(r => r.GetCurrentProviderSeasonIdForTournament(It.IsAny<CancellationToken>(), It.IsAny<Guid>())).Returns(Task.FromResult(2018));
-    //        MockRugbyService.Setup(r => r.GetSchedulerStateForManagerJobPolling(It.IsAny<Guid>())).Returns(Task.FromResult(SchedulerStateForManagerJobPolling.NotRunning));
+            await _logsManagerJob.CreateChildJobsForFetchingLogs();
 
-    //        await LogsManagerJob.CreateChildJobsForFetchingLogs();
+            _mockRecurringJobManager.Verify(m => m.AddOrUpdate(
+                    It.IsAny<string>(),
+                    It.IsAny<Job>(),
+                    It.IsAny<string>(),
+                    It.IsAny<RecurringJobOptions>()),
+                Times.Exactly(2));
+        }
 
-    //        MockRecurringJobManager.Verify(m => m.AddOrUpdate(
-    //                    It.IsAny<string>(),
-    //                    It.IsAny<Job>(),
-    //                    It.IsAny<string>(),
-    //                    It.IsAny<RecurringJobOptions>()),
-    //                    Times.Once());
-    //    }
+        [Test]
+        public async Task SchedulerStateUpdatedWhenJobIsCreated()
+        {
+            var seasonId = Guid.NewGuid();
 
-    //    [Test]
-    //    public async Task LogsManagerJob_ScheduleLogsForTournament_SchedulerStateSetToRunning()
-    //    {
-    //        var tournamentId = Guid.NewGuid();
-    //        var seasonId = Guid.NewGuid();
+            var tournamentId = Guid.NewGuid();
+            var rugbyTournament = new RugbyTournament()
+            {
+                Id = tournamentId,
+                Name = "TestTournament",
+                IsEnabled = true,
+                Slug = "test",
+            };
 
-    //        _systemSportDataUnitOfWork.SchedulerTrackingRugbySeasons.Add(
-    //            new SchedulerTrackingRugbySeason()
-    //            {
-    //                TournamentId = tournamentId,
-    //                SeasonId = seasonId,
-    //                RugbySeasonStatus = RugbySeasonStatus.InProgress,
-    //                SchedulerStateForManagerJobPolling = SchedulerStateForManagerJobPolling.NotRunning
-    //            });
+            var season = new RugbySeason
+            {
+                Id = seasonId,
+                RugbyTournament = rugbyTournament,
+                ProviderSeasonId = 0,
+                IsCurrent = true
+            };
 
-    //        MockRugbyService.Setup(r => r.GetActiveTournamentsForMatchesInResultsState()).Returns(
-    //            Task.FromResult(new List<RugbyTournament>() {
-    //            new RugbyTournament(){
-    //                Id = tournamentId,
-    //                Name = "X"
-    //            }
-    //        }.AsEnumerable()));
+            _publicSportDataUnitOfWork.RugbySeasons.Add(season);
 
-    //        MockRugbyService.Setup(r => r.GetCurrentProviderSeasonIdForTournament(It.IsAny<CancellationToken>(), It.IsAny<Guid>())).Returns(Task.FromResult(2018));
-    //        MockRugbyService.Setup(r => r.GetSchedulerStateForManagerJobPolling(It.IsAny<Guid>())).Returns(Task.FromResult(SchedulerStateForManagerJobPolling.NotRunning));
+            var rugbyFixture = new RugbyFixture()
+            {
+                RugbyTournament = rugbyTournament,
+                Id = Guid.NewGuid(),
+                LegacyFixtureId = 0,
+                ProviderFixtureId = 0,
+                RugbyFixtureStatus = RugbyFixtureStatus.Result,
+                StartDateTime = DateTimeOffset.UtcNow - TimeSpan.FromMinutes(1)
+            };
 
-    //        await LogsManagerJob.CreateChildJobsForFetchingLogs();
+            _publicSportDataUnitOfWork.RugbyTournaments.Add(rugbyTournament);
+            _publicSportDataUnitOfWork.RugbyFixtures.Add(rugbyFixture);
 
-    //        var seasonEntry = _systemSportDataUnitOfWork.SchedulerTrackingRugbySeasons.All().FirstOrDefault();
+            _systemSportDataUnitOfWork.SchedulerTrackingRugbySeasons.Add(
+                new SchedulerTrackingRugbySeason()
+                {
+                    TournamentId = tournamentId,
+                    SeasonId = seasonId,
+                    RugbySeasonStatus = RugbySeasonStatus.InProgress,
+                    SchedulerStateForManagerJobPolling = SchedulerStateForManagerJobPolling.NotRunning
+                });
 
-    //        Assert.IsNotNull(seasonEntry);
-    //        Assert.AreEqual(SchedulerStateForManagerJobPolling.Running, seasonEntry.SchedulerStateForManagerJobPolling);
-    //    }
+            await _logsManagerJob.CreateChildJobsForFetchingLogs();
+
+            var seasonEntry = _systemSportDataUnitOfWork.SchedulerTrackingRugbySeasons.All().FirstOrDefault();
+
+            Assert.IsNotNull(seasonEntry);
+            Assert.AreEqual(SchedulerStateForManagerJobPolling.Running, seasonEntry.SchedulerStateForManagerJobPolling);
+        }
     }
 }
