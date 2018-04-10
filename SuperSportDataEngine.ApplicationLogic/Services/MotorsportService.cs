@@ -166,7 +166,7 @@
             var hoursBeforeEventStarts =
                 Math.Round(raceEvent.StartDateTimeUtc.Value.Subtract(DateTime.UtcNow).TotalHours, MidpointRounding.AwayFromZero);
 
-            const int hourToSetEventCurrent = 27;
+            const int hourToSetEventCurrent = 72;
 
             return (int)hoursBeforeEventStarts == hourToSetEventCurrent;
         }
