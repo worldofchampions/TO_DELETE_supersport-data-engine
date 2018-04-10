@@ -14,9 +14,10 @@
         Task<SchedulerStateForManagerJobPolling> GetSchedulerStateForManagerJobPolling(Guid leagueId);
         Task<IEnumerable<MotorsportRace>> GetRacesForLeague(Guid leagueId);
         Task<MotorsportSeason> GetCurrentSeasonForLeague(Guid leagueId, CancellationToken cancellationToken);
-        Task<IEnumerable<MotorsportSeason>> GetPastSeasonsForLeague(Guid leagueId, CancellationToken cancellationToken);
+        Task<IEnumerable<MotorsportSeason>> GetHistoricSeasonsForLeague(Guid leagueId, bool includeCurrentSeason = false);
         Task<MotorsportRaceEvent> GetTodayEventForRace(Guid raceId);
         Task<IEnumerable<MotorsportRaceEvent>> GetEventsForRace(Guid raceId, Guid seasonId);
+        Task<IEnumerable<MotorsportSeason>> GetCurrentAndFutureSeasonsForLeague(Guid leagueId);
         Task SetCurrentRaceEvents();
     }
 }
