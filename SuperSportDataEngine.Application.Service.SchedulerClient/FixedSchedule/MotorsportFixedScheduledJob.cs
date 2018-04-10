@@ -49,9 +49,9 @@
         private void UpdateRecurringJobDefinition_SetCurrentRaceEvents()
         {
             _recurringJobManager.AddOrUpdate(
-                ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_CurrentEvents_JobId"],
+                ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_SetCurrentEvents_JobId"],
                 Job.FromExpression(() => _container.Resolve<IMotorsportService>().SetCurrentRaceEvents()),
-                ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_CurrentEvents_JobCronExpression"],
+                ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_SetCurrentEvents_JobCronExpression"],
                 new RecurringJobOptions
                 {
                     TimeZone = TimeZoneInfo.Local,
