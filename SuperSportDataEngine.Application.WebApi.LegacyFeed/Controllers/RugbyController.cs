@@ -184,12 +184,12 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         }
 
         /// <summary>
-        /// Get News for Rugby
+        /// Get Today fixtures for Rugby
         /// </summary>
         /// <returns></returns>
         [HttpGet, HttpHead]
         [Route("live")]
-        [ResponseType(typeof(Match))]
+        [ResponseType(typeof(IEnumerable<Match>))]
         public async Task<IHttpActionResult> GetTodayFixtures()
         {
             const string cachePrefix = "LIVE:";
@@ -217,7 +217,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         /// <returns></returns>
         [HttpGet, HttpHead]
         [Route("{category}/live")]
-        [ResponseType(typeof(List<Match>))]
+        [ResponseType(typeof(IEnumerable<Match>))]
         public async Task<IHttpActionResult> GetTodayFixturesForTournament(string category)
         {
             const string cachePrefix = "LIVE:";

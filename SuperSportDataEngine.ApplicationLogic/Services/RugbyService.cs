@@ -23,7 +23,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         private readonly IPublicSportDataUnitOfWork _publicSportDataUnitOfWork;
         private readonly ISystemSportDataUnitOfWork _systemSportDataUnitOfWork;
 
-        private int _numberOfMinutesToCheckForInProgressFixtures;
+        private readonly int _numberOfMinutesToCheckForInProgressFixtures;
 
         public RugbyService(
             IPublicSportDataUnitOfWork publicSportDataUnitOfWork,
