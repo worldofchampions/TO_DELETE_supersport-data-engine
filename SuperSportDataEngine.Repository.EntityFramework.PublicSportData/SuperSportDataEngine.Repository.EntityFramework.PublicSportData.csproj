@@ -266,12 +266,15 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Seed\Motorsport\SeedMotorsportCurrentSeasons.cs" />
-    <Compile Include="Migrations\Seed\SeedRugbyLogGroupsForHongKongSevens2018.cs" />
-    <Compile Include="Migrations\Seed\SeedRugbyLogGroupsForVancouverSevens2018.cs" />
+    <Compile Include="Migrations\Seed\Rugby\LogGroups\Sevens\2018\Round10Paris.cs" />
+    <Compile Include="Migrations\Seed\Rugby\LogGroups\Sevens\2018\Round09London.cs" />
+    <Compile Include="Migrations\Seed\Rugby\LogGroups\Sevens\2018\Round08Singapore.cs" />
+    <Compile Include="Migrations\Seed\Rugby\LogGroups\Sevens\2018\Round07HongKong.cs" />
+    <Compile Include="Migrations\Seed\Rugby\LogGroups\Sevens\2018\Round06Vancouver.cs" />
     <Compile Include="Migrations\Seed\Motorsport\SeedMotorsportEnabledLeagues.cs" />
     <Compile Include="Migrations\Seed\Motorsport\SeedMotorsportHistoricSeasons.cs" />
     <Compile Include="Migrations\Seed\Motorsport\SeedMotorsportLeagueSlugs.cs" />
-    <Compile Include="Migrations\Seed\SeedRugbyLogGroupsForLasVegasSevens2018.cs" />
+    <Compile Include="Migrations\Seed\Rugby\LogGroups\Sevens\2018\Round05LasVegas.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyTeamNames.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEnabledTournaments.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypeProviderMappings.cs" />
@@ -279,9 +282,9 @@
     <Compile Include="Migrations\Seed\SeedRugbyGroupsForMitreCup2017.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyLogGroupsForChampionsCup2018.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyLogGroupsForPro142018.cs" />
-    <Compile Include="Migrations\Seed\SeedRugbyLogGroupsForHamiltonSevens2018.cs" />
-    <Compile Include="Migrations\Seed\SeedRugbyLogGroupsForSydneySevens2018.cs" />
-    <Compile Include="Migrations\Seed\SeedRugbyLogGroupsForTournamentSevens2017.cs" />
+    <Compile Include="Migrations\Seed\Rugby\LogGroups\Sevens\2018\Round04Hamilton.cs" />
+    <Compile Include="Migrations\Seed\Rugby\LogGroups\Sevens\2018\Round03Sydney.cs" />
+    <Compile Include="Migrations\Seed\Rugby\LogGroups\Sevens\2017\Round01Dubai.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyHasLogsTournaments.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyLiveScoredTournaments.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyLogGroupsForTournamentSuperRugby2017.cs" />
