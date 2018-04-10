@@ -46,7 +46,7 @@
 
         public async Task<IEnumerable<MotorsportRace>> GetRacesForLeague(Guid leagueId)
         {
-            var races = 
+            var races =
                 _publicSportDataUnitOfWork.MotorsportRaces.Where(r => r.MotorsportLeague.Id == leagueId).ToList();
 
             return await Task.FromResult(races);
@@ -71,7 +71,7 @@
 
             var result =
                 _publicSportDataUnitOfWork.MotorsportSeasons.Where(s =>
-                    s.MotorsportLeague.Id == leagueId && 
+                    s.MotorsportLeague.Id == leagueId &&
                     s.ProviderSeasonId >= currentSeason.ProviderSeasonId).ToList();
 
             return await Task.FromResult(result);
@@ -81,28 +81,23 @@
         {
             const int numberOfPastSeasons = 2;
 
-            var providerCurentSeasonId = DateTime.Now.Year;
-
-            if (!includeCurrentSeason)
-            {
-                return await _publicSportDataUnitOfWork.MotorsportSeasons.WhereAsync(s =>
-                    s.ProviderSeasonId >= providerCurentSeasonId - numberOfPastSeasons &&
-                    s.ProviderSeasonId <= providerCurentSeasonId
-                    && s.MotorsportLeague.Id == leagueId);
-            }
-
             var currentSeason =
                 _publicSportDataUnitOfWork.MotorsportSeasons.FirstOrDefault(s =>
                     s.IsCurrent && s.MotorsportLeague.Id == leagueId);
 
-            if (currentSeason != null)
+            if (includeCurrentSeason && currentSeason != null)
             {
-                providerCurentSeasonId = currentSeason.ProviderSeasonId;
+                var providerCurentSeasonId = currentSeason.ProviderSeasonId;
+
+                return await _publicSportDataUnitOfWork.MotorsportSeasons.WhereAsync(s =>
+                    s.ProviderSeasonId >= providerCurentSeasonId - numberOfPastSeasons
+                    && s.ProviderSeasonId <= providerCurentSeasonId
+                    && s.MotorsportLeague.Id == leagueId);
             }
 
             return await _publicSportDataUnitOfWork.MotorsportSeasons.WhereAsync(s =>
-                s.ProviderSeasonId >= providerCurentSeasonId - numberOfPastSeasons
-                && s.ProviderSeasonId <= providerCurentSeasonId
+                s.ProviderSeasonId >= DateTime.UtcNow.Year - numberOfPastSeasons &&
+                s.ProviderSeasonId <= DateTime.UtcNow.Year
                 && s.MotorsportLeague.Id == leagueId);
         }
 
