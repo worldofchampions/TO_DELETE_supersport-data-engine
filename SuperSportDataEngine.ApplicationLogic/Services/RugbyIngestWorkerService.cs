@@ -2411,7 +2411,27 @@
                     var dbPlayer = playersForFixture.FirstOrDefault(p => p.ProviderPlayerId == playerId);
 
                     if (dbPlayer == null)
-                        break;
+                    {
+                        // If we cannot find the player in the database.
+                        // Query STATS for the updated reference data.
+                        // and ingest the new players.
+                        var entities = await _statsProzoneIngestService.IngestRugbyReferenceData(cancellationToken);
+                        await PersistPlayerDataInRepository(cancellationToken, entities);
+
+                        // Get the player from the Db.
+                        dbPlayer = _publicSportDataUnitOfWork.RugbyPlayers.FirstOrDefault(p =>
+                            p.ProviderPlayerId == playerId);
+
+                        // Update the list of players for this fixture.
+                        playersForFixture = (await _publicSportDataUnitOfWork.RugbyPlayers.AllAsync()).Where(p => 
+                            players.Any(providerPlayer => 
+                                providerPlayer.playerId.Equals(
+                                    p.ProviderPlayerId))).ToList();
+
+                        await _logger.Warn("IngestingNewPlayers.Lineups",
+                            "We are ingesting new players from STATS while ingesting Lineups. LegacyFixtureId = " +
+                            fixture.LegacyFixtureId);
+                    }
 
                     if (dbPlayer.FirstName == null && dbPlayer.LastName == null)
                     {
