@@ -168,7 +168,7 @@
 
             const int hourToSetEventCurrent = 72;
 
-            return (int)hoursBeforeEventStarts == hourToSetEventCurrent;
+            return (int)hoursBeforeEventStarts < hourToSetEventCurrent && (int)hoursBeforeEventStarts > 0;
         }
     }
 }
