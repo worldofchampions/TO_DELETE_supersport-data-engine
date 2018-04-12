@@ -873,10 +873,7 @@
                                                  s.RugbyTournament.ProviderTournamentId == tournament.ProviderTournamentId);
 
                 if (season == null) continue;
-                var numberOfRounds = (int)(
-                        season.CurrentRoundNumberCmsOverride == null ?
-                            season.CurrentRoundNumber :
-                            season.CurrentRoundNumberCmsOverride);
+                var numberOfRounds = season.CurrentRoundNumberCmsOverride ?? season.CurrentRoundNumber;
 
                 var logType = season.RugbyLogType;
 
@@ -1332,9 +1329,7 @@
                 if (rugbyTeam == null) continue;
 
                 var roundNumber = 
-                    rugbySeason.CurrentRoundNumberCmsOverride == null ? 
-                        rugbySeason.CurrentRoundNumber : 
-                        rugbySeason.CurrentRoundNumberCmsOverride;
+                    rugbySeason.CurrentRoundNumberCmsOverride ?? rugbySeason.CurrentRoundNumber;
 
                 if (ladder.roundNumber != roundNumber)
                     continue;
@@ -2196,13 +2191,13 @@
                     RugbyTeamId = team.Id,
                     YellowCards = (int)statsMap.GetValueOrDefault(2),
                     CleanBreaks = (int)statsMap.GetValueOrDefault(7),
-                    ConversionAttempts = (int)statsMap.GetValueOrDefault(2047),
+                    ConversionAttempts = (int)statsMap.GetValueOrDefault(2041),
                     Conversions = (int)statsMap.GetValueOrDefault(9),
                     ConversionsMissed = (int)statsMap.GetValueOrDefault(10),
                     DefendersBeaten = (int)statsMap.GetValueOrDefault(8),
-                    DropGoalAttempts = (int)statsMap.GetValueOrDefault(2049),
-                    DropGoals = (int)statsMap.GetValueOrDefault(2050),
-                    DropGoalsMissed = (int)(statsMap.GetValueOrDefault(2049) - statsMap.GetValueOrDefault(2050)),
+                    DropGoalAttempts = (int)statsMap.GetValueOrDefault(2043),
+                    DropGoals = (int)statsMap.GetValueOrDefault(13),
+                    DropGoalsMissed = (int)statsMap.GetValueOrDefault(14),
                     LineOutsLost = (int)statsMap.GetValueOrDefault(20),
                     LineOutsWon = (int)statsMap.GetValueOrDefault(19),
                     Offloads = (int)statsMap.GetValueOrDefault(46),
@@ -2216,10 +2211,10 @@
                     RedCards = (int)statsMap.GetValueOrDefault(3),
                     ScrumsLost = (int)statsMap.GetValueOrDefault(55),
                     ScrumsWon = (int)statsMap.GetValueOrDefault(53),
-                    Tackles = (int)statsMap.GetValueOrDefault(72),
+                    Tackles = (int)statsMap.GetValueOrDefault(2055),
                     TacklesMissed = (int)statsMap.GetValueOrDefault(71),
                     Territory = (int)statsMap.GetValueOrDefault(10000),
-                    Tries = (int)statsMap.GetValueOrDefault(5)
+                    Tries = (int)statsMap.GetValueOrDefault(2035)
                 };
 
                 if (statsInDb == null)
@@ -2416,7 +2411,27 @@
                     var dbPlayer = playersForFixture.FirstOrDefault(p => p.ProviderPlayerId == playerId);
 
                     if (dbPlayer == null)
-                        break;
+                    {
+                        // If we cannot find the player in the database.
+                        // Query STATS for the updated reference data.
+                        // and ingest the new players.
+                        var entities = await _statsProzoneIngestService.IngestRugbyReferenceData(cancellationToken);
+                        await PersistPlayerDataInRepository(cancellationToken, entities);
+
+                        // Get the player from the Db.
+                        dbPlayer = _publicSportDataUnitOfWork.RugbyPlayers.FirstOrDefault(p =>
+                            p.ProviderPlayerId == playerId);
+
+                        // Update the list of players for this fixture.
+                        playersForFixture = (await _publicSportDataUnitOfWork.RugbyPlayers.AllAsync()).Where(p => 
+                            players.Any(providerPlayer => 
+                                providerPlayer.playerId.Equals(
+                                    p.ProviderPlayerId))).ToList();
+
+                        await _logger.Warn("IngestingNewPlayers.Lineups",
+                            "We are ingesting new players from STATS while ingesting Lineups. LegacyFixtureId = " +
+                            fixture.LegacyFixtureId);
+                    }
 
                     if (dbPlayer.FirstName == null && dbPlayer.LastName == null)
                     {
@@ -2510,10 +2525,7 @@
             if (!season.Any())
                 return;
 
-            int numberOfRounds = (int)(
-                    season.First().CurrentRoundNumberCmsOverride == null ?
-                        season.First().CurrentRoundNumber : 
-                        season.First().CurrentRoundNumberCmsOverride);
+            var numberOfRounds = season.First().CurrentRoundNumberCmsOverride ?? season.First().CurrentRoundNumber;
 
             var logType = season.First().RugbyLogType;
 
