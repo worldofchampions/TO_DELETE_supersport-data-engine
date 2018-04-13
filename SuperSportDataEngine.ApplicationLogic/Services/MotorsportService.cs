@@ -173,44 +173,46 @@
 
             var superbikePreviousActivePair = GetSuperbikePreviousActivePair(raceEvents);
 
-            if (superbikeNextActivePair != null)
-            {
-                superbikeNextActivePair.Item1.IsCurrent = true;
-                superbikeNextActivePair.Item2.IsCurrent = true;
+            var isNextEventsAvailable = superbikeNextActivePair.firstEvent != null && superbikeNextActivePair.secondEvent != null;
 
-                _publicSportDataUnitOfWork.MotorsportRaceEvents.Update(superbikeNextActivePair.Item1);
-                _publicSportDataUnitOfWork.MotorsportRaceEvents.Update(superbikeNextActivePair.Item2);
+            var isPreviousEventsAvailable = superbikePreviousActivePair.firstEvent != null && superbikePreviousActivePair.secondEvent != null;
+
+            if (isNextEventsAvailable)
+            {
+                superbikeNextActivePair.firstEvent.IsCurrent = true;
+                superbikeNextActivePair.secondEvent.IsCurrent = true;
+
+                _publicSportDataUnitOfWork.MotorsportRaceEvents.Update(superbikeNextActivePair.firstEvent);
+                _publicSportDataUnitOfWork.MotorsportRaceEvents.Update(superbikeNextActivePair.secondEvent);
             }
 
-            if (superbikePreviousActivePair != null && superbikeNextActivePair != null)
+            if (isPreviousEventsAvailable && isNextEventsAvailable)
             {
-                superbikePreviousActivePair.Item1.IsCurrent = false;
-                superbikePreviousActivePair.Item2.IsCurrent = false;
+                superbikePreviousActivePair.firstEvent.IsCurrent = false;
+                superbikePreviousActivePair.secondEvent.IsCurrent = false;
 
-                _publicSportDataUnitOfWork.MotorsportRaceEvents.Update(superbikePreviousActivePair.Item1);
-                _publicSportDataUnitOfWork.MotorsportRaceEvents.Update(superbikePreviousActivePair.Item2);
+                _publicSportDataUnitOfWork.MotorsportRaceEvents.Update(superbikePreviousActivePair.firstEvent);
+                _publicSportDataUnitOfWork.MotorsportRaceEvents.Update(superbikePreviousActivePair.secondEvent);
             }
 
-            if (superbikePreviousActivePair != null || superbikeNextActivePair != null)
+            if (isPreviousEventsAvailable || isNextEventsAvailable)
             {
                 await _publicSportDataUnitOfWork.SaveChangesAsync();
             }
         }
 
-        private static Tuple<MotorsportRaceEvent, MotorsportRaceEvent> GetSuperbikePreviousActivePair(IEnumerable<MotorsportRaceEvent> raceEvents)
+        private static (MotorsportRaceEvent firstEvent, MotorsportRaceEvent secondEvent) GetSuperbikePreviousActivePair(IEnumerable<MotorsportRaceEvent> raceEvents)
         {
             var currentEvents = raceEvents.Where(e => e.IsCurrent).ToList();
 
-            return currentEvents.Count != 2 ? null : 
-                new Tuple<MotorsportRaceEvent, MotorsportRaceEvent>(currentEvents[0], currentEvents[1]);
+            return currentEvents.Count != 2 ? (null, null) : (currentEvents[0], currentEvents[1]);
         }
 
-        private static Tuple<MotorsportRaceEvent, MotorsportRaceEvent> GetSuperbikeNextActivePair(IEnumerable<MotorsportRaceEvent> raceEvents)
+        private static (MotorsportRaceEvent firstEvent, MotorsportRaceEvent secondEvent) GetSuperbikeNextActivePair(IEnumerable<MotorsportRaceEvent> raceEvents)
         {
             var nextActiveEvents = raceEvents.Where(ShouldSetRaceEventAsCurrent).ToList();
 
-            return nextActiveEvents.Count != 2 ? null :
-                new Tuple<MotorsportRaceEvent, MotorsportRaceEvent>(nextActiveEvents[0], nextActiveEvents[1]);
+            return nextActiveEvents.Count != 2 ? (null, null) : (nextActiveEvents[0], nextActiveEvents[1]);
         }
 
         private IEnumerable<MotorsportRaceEvent> GetRaceEventsForLeague(MotorsportLeague league, MotorsportSeason currentSeason)
