@@ -118,6 +118,13 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
                     if (fixture.TeamA == null) continue;
                     if (fixture.TeamB == null) continue;
 
+                    if (fixture.TeamA.Name == "TBC" ||
+                        fixture.TeamB.Name == "TBC")
+                    {
+                        await _logger.Warn("LoggingTBCLiveFixture." + fixture,
+                            "Scheduling a fixture that has TBC teams. LegacyfixtureId = " + fixture.LegacyFixtureId);
+                    }
+
                     var matchName = GetMatchName(fixture);
 
                     var jobId = ConfigurationManager.AppSettings["LiveManagerJob_LiveMatch_JobIdPrefix"] + matchName;

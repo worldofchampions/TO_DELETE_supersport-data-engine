@@ -6,6 +6,7 @@
     using System.Threading;
     using System.Threading.Tasks;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
@@ -129,27 +130,90 @@
 
                 var raceEvents = GetRaceEventsForLeague(league, currentSeason).ToList();
 
-                var previousRaceEvent = raceEvents.FirstOrDefault(e => e.IsCurrent);
-
-                foreach (var raceEvent in raceEvents)
+                if (league.MotorsportSportType == MotorsportSportType.Superbike)
                 {
-                    if (ShouldSetRaceEventAsCurrent(raceEvent))
-                    {
-                        raceEvent.IsCurrent = true;
-                        _publicSportDataUnitOfWork.MotorsportRaceEvents.Update(raceEvent);
-
-                        if (previousRaceEvent != null)
-                        {
-                            previousRaceEvent.IsCurrent = false;
-                            _publicSportDataUnitOfWork.MotorsportRaceEvents.Update(previousRaceEvent);
-                        }
-
-                        await _publicSportDataUnitOfWork.SaveChangesAsync();
-
-                        break;
-                    }
+                    await SetSuperbikeCurrentRaceEvents(raceEvents);
+                }
+                else
+                {
+                    await SetOtherLeagueCurrentEvent(raceEvents);
                 }
             }
+        }
+
+        private async Task SetOtherLeagueCurrentEvent(ICollection<MotorsportRaceEvent> raceEvents)
+        {
+            var previousRaceEvent = raceEvents.FirstOrDefault(e => e.IsCurrent);
+
+            raceEvents.Remove(previousRaceEvent);
+
+            foreach (var raceEvent in raceEvents)
+            {
+                if (!ShouldSetRaceEventAsCurrent(raceEvent)) continue;
+
+                if (previousRaceEvent != null)
+                {
+                    previousRaceEvent.IsCurrent = false;
+
+                    _publicSportDataUnitOfWork.MotorsportRaceEvents.Update(previousRaceEvent);
+                }
+
+                raceEvent.IsCurrent = true;
+
+                _publicSportDataUnitOfWork.MotorsportRaceEvents.Update(raceEvent);
+
+                await _publicSportDataUnitOfWork.SaveChangesAsync();
+
+                break;
+            }
+        }
+
+        private async Task SetSuperbikeCurrentRaceEvents(IReadOnlyCollection<MotorsportRaceEvent> raceEvents)
+        {
+            var superbikeNextActivePair = GetSuperbikeNextActivePair(raceEvents);
+
+            var superbikePreviousActivePair = GetSuperbikePreviousActivePair(raceEvents);
+
+            var isNextEventsAvailable = superbikeNextActivePair.firstEvent != null && superbikeNextActivePair.secondEvent != null;
+
+            var isPreviousEventsAvailable = superbikePreviousActivePair.firstEvent != null && superbikePreviousActivePair.secondEvent != null;
+
+            if (isNextEventsAvailable)
+            {
+                superbikeNextActivePair.firstEvent.IsCurrent = true;
+                superbikeNextActivePair.secondEvent.IsCurrent = true;
+
+                _publicSportDataUnitOfWork.MotorsportRaceEvents.Update(superbikeNextActivePair.firstEvent);
+                _publicSportDataUnitOfWork.MotorsportRaceEvents.Update(superbikeNextActivePair.secondEvent);
+            }
+
+            if (isPreviousEventsAvailable && isNextEventsAvailable)
+            {
+                superbikePreviousActivePair.firstEvent.IsCurrent = false;
+                superbikePreviousActivePair.secondEvent.IsCurrent = false;
+
+                _publicSportDataUnitOfWork.MotorsportRaceEvents.Update(superbikePreviousActivePair.firstEvent);
+                _publicSportDataUnitOfWork.MotorsportRaceEvents.Update(superbikePreviousActivePair.secondEvent);
+            }
+
+            if (isPreviousEventsAvailable || isNextEventsAvailable)
+            {
+                await _publicSportDataUnitOfWork.SaveChangesAsync();
+            }
+        }
+
+        private static (MotorsportRaceEvent firstEvent, MotorsportRaceEvent secondEvent) GetSuperbikePreviousActivePair(IEnumerable<MotorsportRaceEvent> raceEvents)
+        {
+            var currentEvents = raceEvents.Where(e => e.IsCurrent).ToList();
+
+            return currentEvents.Count != 2 ? (null, null) : (currentEvents[0], currentEvents[1]);
+        }
+
+        private static (MotorsportRaceEvent firstEvent, MotorsportRaceEvent secondEvent) GetSuperbikeNextActivePair(IEnumerable<MotorsportRaceEvent> raceEvents)
+        {
+            var nextActiveEvents = raceEvents.Where(ShouldSetRaceEventAsCurrent).ToList();
+
+            return nextActiveEvents.Count != 2 ? (null, null) : (nextActiveEvents[0], nextActiveEvents[1]);
         }
 
         private IEnumerable<MotorsportRaceEvent> GetRaceEventsForLeague(MotorsportLeague league, MotorsportSeason currentSeason)
