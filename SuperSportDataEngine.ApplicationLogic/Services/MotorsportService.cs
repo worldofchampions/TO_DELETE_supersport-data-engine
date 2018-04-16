@@ -141,29 +141,30 @@
             }
         }
 
-        private async Task SetOtherLeagueCurrentEvent(IReadOnlyCollection<MotorsportRaceEvent> raceEvents)
+        private async Task SetOtherLeagueCurrentEvent(ICollection<MotorsportRaceEvent> raceEvents)
         {
+            var previousRaceEvent = raceEvents.FirstOrDefault(e => e.IsCurrent);
+
+            raceEvents.Remove(previousRaceEvent);
+
             foreach (var raceEvent in raceEvents)
             {
-                var previousRaceEvent = raceEvents.FirstOrDefault(e => e.IsCurrent);
+                if (!ShouldSetRaceEventAsCurrent(raceEvent)) continue;
 
-                if (ShouldSetRaceEventAsCurrent(raceEvent))
+                if (previousRaceEvent != null)
                 {
-                    raceEvent.IsCurrent = true;
+                    previousRaceEvent.IsCurrent = false;
 
-                    _publicSportDataUnitOfWork.MotorsportRaceEvents.Update(raceEvent);
-
-                    if (previousRaceEvent != null)
-                    {
-                        previousRaceEvent.IsCurrent = false;
-
-                        _publicSportDataUnitOfWork.MotorsportRaceEvents.Update(previousRaceEvent);
-                    }
-
-                    await _publicSportDataUnitOfWork.SaveChangesAsync();
-
-                    break;
+                    _publicSportDataUnitOfWork.MotorsportRaceEvents.Update(previousRaceEvent);
                 }
+
+                raceEvent.IsCurrent = true;
+
+                _publicSportDataUnitOfWork.MotorsportRaceEvents.Update(raceEvent);
+
+                await _publicSportDataUnitOfWork.SaveChangesAsync();
+
+                break;
             }
         }
 
