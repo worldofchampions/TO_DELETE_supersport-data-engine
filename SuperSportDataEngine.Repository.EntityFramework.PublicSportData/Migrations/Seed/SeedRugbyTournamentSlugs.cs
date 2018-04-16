@@ -52,7 +52,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                 new RugbyTournament {Slug = "international",ProviderTournamentId = 810},
                 new RugbyTournament {Slug = "pro14",ProviderTournamentId = 293},
                 new RugbyTournament {Slug = "pro-d2",ProviderTournamentId = 242},
-                new RugbyTournament {Slug = "rugby-championship",ProviderTournamentId = 117},
+                new RugbyTournament {Slug = "rugby-championship",ProviderTournamentId = 191},
                 new RugbyTournament {Slug = "sevens",ProviderTournamentId = 831},
                 new RugbyTournament {Slug = "six-nations",ProviderTournamentId = 301},
                 new RugbyTournament {Slug = "super-rugby",ProviderTournamentId = 181},
