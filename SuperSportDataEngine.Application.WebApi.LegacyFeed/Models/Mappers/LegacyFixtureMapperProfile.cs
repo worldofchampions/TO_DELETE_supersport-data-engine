@@ -3,7 +3,7 @@
     using AutoMapper;
     using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-    
+
     // This class is used by Reflection.
     public class LegacyFixtureMapperProfile : Profile
     {
@@ -30,7 +30,8 @@
                     src => (src.TeamAIsHomeTeam ? src.TeamBScore : src.TeamAScore)))
 
                 .ForMember(dest => dest.Location, expression => expression.MapFrom(
-                    src => src.RugbyVenue != null ? src.RugbyVenue.Name : "TBC"))
+                    src => src.RugbyVenue == null ?
+                        "TBC" : (src.RugbyVenue.NameCmsOverride ?? src.RugbyVenue.Name)))
 
                 .ForMember(dest => dest.Preview, src => src.Ignore())
 
