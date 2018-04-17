@@ -79,12 +79,17 @@ namespace SuperSportDataEngine.Logging.NLog.Logging
 
         private void WriteLog(Type type, LogEventInfo logEvent)
         {
-            logEvent.Message = 
-                Environment.MachineName + 
-                Environment.NewLine + 
-                logEvent.Message;
-
-            var message = logEvent.Message;
+            try
+            {
+                logEvent.Message =
+                    Environment.MachineName +
+                    Environment.NewLine +
+                    logEvent.Message;
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
 
             Log(typeof(LoggingService), logEvent);
         }
