@@ -74,7 +74,9 @@
 
                 .ForMember(dest => dest.LeagueUrlName, exp => exp.MapFrom(src => src.RugbyFixture.RugbyTournament.Slug))
 
-                .ForMember(dest => dest.Location, exp => exp.MapFrom(src => src.RugbyFixture.RugbyVenue.Name))
+                .ForMember(dest => dest.Location, expression => expression.MapFrom(
+                    src => src.RugbyFixture.RugbyVenue == null ?
+                        "TBC" : (src.RugbyFixture.RugbyVenue.NameCmsOverride ?? src.RugbyFixture.RugbyVenue.Name)))
 
                 .ForMember(dest => dest.MatchCompleted, exp => exp.MapFrom(
                     src => src.RugbyFixture.RugbyFixtureStatus == RugbyFixtureStatus.Result))
