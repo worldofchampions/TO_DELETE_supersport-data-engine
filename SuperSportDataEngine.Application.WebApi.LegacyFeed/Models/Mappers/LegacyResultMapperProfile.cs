@@ -33,7 +33,8 @@
                         (src.TeamA.NameCmsOverride ?? src.TeamA.Name) : (src.TeamB.NameCmsOverride ?? src.TeamB.Name)))
 
                 .ForMember(dest => dest.Location, expression => expression.MapFrom(
-                    src => src.RugbyVenue.Name))
+                    src => src.RugbyVenue == null ?
+                        "TBC" : (src.RugbyVenue.NameCmsOverride ?? src.RugbyVenue.Name)))
 
                 .ForMember(dest => dest.Result, expression => expression.UseValue(true))
 
