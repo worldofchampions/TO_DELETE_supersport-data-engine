@@ -422,9 +422,12 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<IEnumerable<RugbyGroupedLog>> GetGroupedLogs(string tournamentSlug)
         {
-            var tournament = await GetTournamentBySlug(tournamentSlug);
-
             var logs = Enumerable.Empty<RugbyGroupedLog>();
+
+            if (IsNationalTeamSlug(tournamentSlug))
+                return logs;
+
+            var tournament = await GetTournamentBySlug(tournamentSlug);
 
             if (tournament != null && tournament.HasLogs)
             {
@@ -445,9 +448,12 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<IEnumerable<RugbyFlatLog>> GetFlatLogs(string tournamentSlug)
         {
-            var tournament = await GetTournamentBySlug(tournamentSlug);
-
             var flatLogs = Enumerable.Empty<RugbyFlatLog>();
+
+            if (IsNationalTeamSlug(tournamentSlug))
+                return flatLogs;
+
+            var tournament = await GetTournamentBySlug(tournamentSlug);
 
             if (tournament != null && tournament.HasLogs)
             {
