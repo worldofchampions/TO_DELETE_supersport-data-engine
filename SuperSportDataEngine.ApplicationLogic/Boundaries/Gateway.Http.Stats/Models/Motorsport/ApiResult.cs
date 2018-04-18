@@ -1,9 +1,9 @@
-﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport
+﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.Stats.Models.Motorsport
 {
     using System;
     using System.Collections.Generic;
-    using Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Enums;
-    
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.Stats.Models.Motorsport.Enums;
+
     public class ApiResult
     {
         public int sportId { get; set; }

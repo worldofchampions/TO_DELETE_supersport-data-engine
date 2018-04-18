@@ -1,5 +1,8 @@
 ﻿using SuperSportDataEngine.Application.Service.Common.Interfaces;
 using SuperSportDataEngine.Application.Service.Common.Services;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.Stats.Interfaces;
+using SuperSportDataEngine.Gateway.Http.Stats;
+using SuperSportDataEngine.Gateway.Http.StatsProzone.Services;
 
 namespace SuperSportDataEngine.Application.Container
 {
@@ -26,7 +29,7 @@ namespace SuperSportDataEngine.Application.Container
     using Common.Caching;
     using Common.Logging;
     using Gateway.Http.DeprecatedFeed.Services;
-    using Gateway.Http.StatsProzone.Services;
+    using Gateway.Http.Stats.Services;
     using Logging.NLog.Logging;
     using Repository.EntityFramework.PublicSportData.Context;
     using Repository.EntityFramework.PublicSportData.UnitOfWork;
