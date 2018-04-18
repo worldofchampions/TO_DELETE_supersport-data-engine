@@ -25,12 +25,17 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         private readonly int _numberOfMinutesToCheckForInProgressFixtures;
 
+        private ILoggingService _logger;
+
         public RugbyService(
             IPublicSportDataUnitOfWork publicSportDataUnitOfWork,
-            ISystemSportDataUnitOfWork systemSportDataUnitOfWork)
+            ISystemSportDataUnitOfWork systemSportDataUnitOfWork,
+            ILoggingService logger)
         {
             _publicSportDataUnitOfWork = publicSportDataUnitOfWork;
             _systemSportDataUnitOfWork = systemSportDataUnitOfWork;
+
+            _logger = logger;
 
             _numberOfMinutesToCheckForInProgressFixtures =
                 int.Parse(ConfigurationManager.AppSettings["NumberOfMinutesToCheckForInProgressFixtures"] ?? "120");
@@ -274,7 +279,17 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<RugbyTournament> GetTournamentBySlug(string tournamentSlug)
         {
-            return await Task.FromResult(_publicSportDataUnitOfWork.RugbyTournaments.FirstOrDefault(f => f.Slug.Equals(tournamentSlug, StringComparison.InvariantCultureIgnoreCase)));
+            var tournament =
+                await Task.FromResult(_publicSportDataUnitOfWork.RugbyTournaments.FirstOrDefault(f =>
+                    f.Slug.Equals(tournamentSlug, StringComparison.InvariantCultureIgnoreCase)));
+
+            if (tournament == null)
+            {
+                await _logger.Warn("TournamentDoesNotExist" + tournamentSlug,
+                    "The requested tournament Slug does not exist -> " + tournamentSlug);
+            }
+        
+            return tournament;
         }
 
         public async Task<IEnumerable<RugbyFixture>> GetRecentResultsFixtures(int maxCount)
@@ -334,10 +349,12 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             var fixturesInResultsState = Enumerable.Empty<RugbyFixture>();
 
-            if (tournament != null)
+            if (tournament == null)
             {
-                fixturesInResultsState = await GetTournamentFixtures(tournament.Id, RugbyFixtureStatus.Result);
+                return fixturesInResultsState;
             }
+
+            fixturesInResultsState = await GetTournamentFixtures(tournament.Id, RugbyFixtureStatus.Result);
 
             if (!tournamentSlug.Equals("sevens")) return await Task.FromResult(fixturesInResultsState.ToList());
 

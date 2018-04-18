@@ -24,12 +24,14 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests.Services
         private Mock<IStatsProzoneRugbyIngestService> _mockStatsProzoneIngestService;
         private Mock<IMongoDbRugbyRepository> _mockMongoDbRepositoryService;
         private RugbyService _rugbyService;
+        private Mock<ILoggingService> _mockLogger;
 
         [SetUp]
         public void Setup()
         {
             _publicSportDataUnitOfWork = new TestPublicSportDataUnitOfWork();
             _systemSportDataUnitOfWork = new TestSystemSportDataUnitOfWork();
+            _mockLogger = new Mock<ILoggingService>();
 
             _mockStatsProzoneIngestService = new Mock<IStatsProzoneRugbyIngestService>();
             _mockMongoDbRepositoryService = new Mock<IMongoDbRugbyRepository>();
@@ -37,7 +39,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests.Services
             _rugbyService = 
                 new RugbyService(
                     _publicSportDataUnitOfWork,
-                    _systemSportDataUnitOfWork);
+                    _systemSportDataUnitOfWork,
+                    _mockLogger.Object);
 
             _rugbyIngestWorkerService =
                 new RugbyIngestWorkerService(
