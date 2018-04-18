@@ -25,17 +25,20 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Tests.Rugby
         private RugbyController _controller;
         private RugbyController _controllerWithMockRugbyService;
         private Mock<IRugbyService> _mockRugbyService;
+        private Mock<ILoggingService> _mockLogger;
 
         [SetUp]
         public void Setup()
         {
             _publicSportDataUnitOfWork = new TestPublicSportDataUnitOfWork();
             _systemSportDataUnitOfWork = new TestSystemSportDataUnitOfWork();
+            _mockLogger = new Mock<ILoggingService>();
 
             _cache = new TestCache();
             var rugbyService = new RugbyService(
                 _publicSportDataUnitOfWork,
-                _systemSportDataUnitOfWork);
+                _systemSportDataUnitOfWork,
+                _mockLogger.Object);
 
             _mockRugbyService = new Mock<IRugbyService>();
             _controllerWithMockRugbyService = new RugbyController(
