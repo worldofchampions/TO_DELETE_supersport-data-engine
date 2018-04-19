@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace SuperSportDataEngine.ApplicationLogic.Entities.SystemAPI
 {
-    public class SingleFixtureEntity
+    public class RugbyFixtureEntitySingle
     {
         /// <summary>
         /// The rugby fixture.

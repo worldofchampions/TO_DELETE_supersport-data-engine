@@ -251,14 +251,14 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             return null;
         }
 
-        public async Task<SingleFixtureEntity> GetFixtureById(Guid id)
+        public async Task<RugbyFixtureEntitySingle> GetFixtureById(Guid id)
         {
             var rugbyFixture = await Task.FromResult(_publicSportDataUnitOfWork.RugbyFixtures.FirstOrDefault(
                                                         fixture => fixture.Id == id));
 
             if (rugbyFixture != null)
             {
-                return new SingleFixtureEntity
+                return new RugbyFixtureEntitySingle
                 {
                     Fixture = iMapper.Map<RugbyFixture, RugbyFixtureEntity>(rugbyFixture)
                 };
