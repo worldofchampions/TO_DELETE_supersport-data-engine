@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.WebPages;
-using AutoMapper;
-using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Motorsport;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-
-namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Motorsport
+﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Motorsport
 {
+    using AutoMapper;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Motorsport;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+
     // This class is used by Reflection.
     public class LegacyMotorsportResultMapperProfile : Profile
     {
@@ -21,7 +16,10 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Moto
                 .ForMember(dest => dest.GridPosition, expression => expression.MapFrom(
                     src => src.GridPosition))
 
-                .ForMember(dest => dest.PositionText, expression => expression.UseValue((string) null))
+                .ForMember(dest => dest.PositionText, expression => expression.UseValue((string)null))
+
+                .ForMember(dest => dest.Laps, expression => expression.MapFrom(
+                    src => src.LapsCompleted))
 
                 .ForMember(dest => dest.GapToCarInFront, expression => expression.UseValue(string.Empty))
 
@@ -44,7 +42,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Moto
 
                 .ForMember(dest => dest.FirstName, expression => expression.MapFrom(
                     src => src.MotorsportDriver.FirstName))
-                
+
                 .ForMember(dest => dest.LastName, expression => expression.MapFrom(
                     src => src.MotorsportDriver.LastName))
 
@@ -71,7 +69,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Moto
                 .ForMember(dest => dest.TeamShortName, expression => expression.MapFrom(
                     src => src.MotorsportTeam.NameCmsOverride ?? src.MotorsportTeam.Name))
 
-                .ForMember(dest => dest.TeamCompetition, expression => expression.UseValue((string) null))
+                .ForMember(dest => dest.TeamCompetition, expression => expression.UseValue((string)null))
 
                 .ForMember(dest => dest.TeamCompetitionId, expression => expression.UseValue(0))
 
@@ -89,7 +87,10 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Moto
 
                 return hours + minutes + seconds + milliseconds;
             }
-            else
+            if (result.LapsBehind != 0)
+            {
+                return result.LapsBehind > 1 ? $"+{result.LapsBehind} Laps" : $"+{result.LapsBehind} Lap";
+            }
             {
                 var seconds = result.GapToLeaderTimeSeconds.ToString().PadLeft(2, '0');
                 var milliseconds = result.GapToLeaderTimeMilliseconds.ToString().PadLeft(3, '0');

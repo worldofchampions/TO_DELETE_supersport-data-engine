@@ -1,47 +1,156 @@
-﻿using NUnit.Framework;
-using Moq;
-using SuperSportDataEngine.ApplicationLogic.Services;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
-using SuperSportDataEngine.Tests.Common.Repositories.Test;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using System;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
-using SuperSportDataEngine.Common.Logging;
-using System.Threading;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Moq;
+using NUnit.Framework;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
+using SuperSportDataEngine.ApplicationLogic.Services;
+using SuperSportDataEngine.Common.Logging;
+using SuperSportDataEngine.Tests.Common.Repositories.Test;
 
-namespace SuperSportDataEngine.ApplicationLogic.Tests
+namespace SuperSportDataEngine.ApplicationLogic.Tests.Services
 {
-    [Category("RugbyServiceTest")]
-    public class RugbyServiceTest
+    [Category("RugbyService")]
+    public class RugbyServiceTests
     {
-        RugbyService _rugbyService;
-        TestPublicSportDataUnitOfWork _publicSportDataUnitOfWork;
-        TestSystemSportDataUnitOfWork _systemSportDataUnitOfWork;
+        private TestPublicSportDataUnitOfWork _publicSportDataUnitOfWork;
+        private TestSystemSportDataUnitOfWork _systemSportDataUnitOfWork;
+        private RugbyService _rugbyService;
+        private Mock<ILoggingService> _mockLogger;
 
         [SetUp]
-        public void SetUp()
+        public void Setup()
         {
             _publicSportDataUnitOfWork = new TestPublicSportDataUnitOfWork();
             _systemSportDataUnitOfWork = new TestSystemSportDataUnitOfWork();
+            _mockLogger = new Mock<ILoggingService>();
 
-            _rugbyService = new RugbyService(
-                _publicSportDataUnitOfWork,
-                _systemSportDataUnitOfWork);
+            _rugbyService = 
+                new RugbyService(
+                    _publicSportDataUnitOfWork,
+                    _systemSportDataUnitOfWork,
+                    _mockLogger.Object);
+        }
+
+        [Test]
+        public async Task GetTournamentByName_HasTournament()
+        {
+            var rugbyTournament = new RugbyTournament()
+            {
+                Slug = "TEST"
+            };
+
+            _publicSportDataUnitOfWork.RugbyTournaments.Add(
+                rugbyTournament);
+
+            Assert.IsNotNull(await _rugbyService.GetTournamentBySlug("TEST"));
+        }
+
+        [Test]
+        public async Task GetTournamentByName_NoTournament()
+        {
+            var rugbyTournament = new RugbyTournament()
+            {
+                Slug = "TEST"
+            };
+
+            _publicSportDataUnitOfWork.RugbyTournaments.Add(
+                rugbyTournament);
+
+            Assert.IsNull(await _rugbyService.GetTournamentBySlug("INCORRECT"));
+        }
+
+        [Test]
+        public async Task OneEndedTournament()
+        {
+            var tournamentId = Guid.NewGuid();
+            var seasonId = Guid.NewGuid();
+
+            var rugbyTournament = new RugbyTournament()
+            {
+                Id = tournamentId,
+            };
+
+            var season = new RugbySeason()
+            {
+                Id = seasonId
+            };
+
+            var schedule = new SchedulerTrackingRugbySeason()
+            {
+                TournamentId = tournamentId,
+                SeasonId = seasonId,
+                SchedulerStateForManagerJobPolling = SchedulerStateForManagerJobPolling.Running,
+                RugbySeasonStatus = RugbySeasonStatus.Ended
+            };
+
+            _publicSportDataUnitOfWork.RugbyTournaments.Add(
+                rugbyTournament);
+
+            _publicSportDataUnitOfWork.RugbySeasons.Add(
+                season);
+
+            _systemSportDataUnitOfWork.SchedulerTrackingRugbySeasons.Add(
+                schedule);
+
+            var endedTournaments = await _rugbyService.GetEndedTournaments();
+
+            Assert.AreEqual(1, endedTournaments.Count());
+        }
+
+        [Test]
+        public async Task NoEndedTournaments()
+        {
+            var tournamentId = Guid.NewGuid();
+            var seasonId = Guid.NewGuid();
+
+            var rugbyTournament = new RugbyTournament()
+            {
+                Id = tournamentId,
+            };
+
+            var season = new RugbySeason()
+            {
+                Id = seasonId
+            };
+
+            var schedule = new SchedulerTrackingRugbySeason()
+            {
+                TournamentId = tournamentId,
+                SeasonId = seasonId,
+                SchedulerStateForManagerJobPolling = SchedulerStateForManagerJobPolling.NotRunning,
+                RugbySeasonStatus = RugbySeasonStatus.InProgress
+            };
+
+            _publicSportDataUnitOfWork.RugbyTournaments.Add(
+                rugbyTournament);
+
+            _publicSportDataUnitOfWork.RugbySeasons.Add(
+                season);
+
+            _systemSportDataUnitOfWork.SchedulerTrackingRugbySeasons.Add(
+                schedule);
+
+            var endedTournaments = await _rugbyService.GetEndedTournaments();
+
+            Assert.AreEqual(0, endedTournaments.Count());
         }
 
         [Test]
         public async Task CleanupFixturesTable_OneFixtureTrackedToday_NotDeleted()
         {
-            _systemSportDataUnitOfWork.SchedulerTrackingRugbyFixtures.Add(new SchedulerTrackingRugbyFixture() {
-                    FixtureId = Guid.NewGuid(),
-                    StartDateTime = DateTimeOffset.UtcNow,
-                    RugbyFixtureStatus = RugbyFixtureStatus.PreMatch
+            _systemSportDataUnitOfWork.SchedulerTrackingRugbyFixtures.Add(new SchedulerTrackingRugbyFixture()
+            {
+                FixtureId = Guid.NewGuid(),
+                StartDateTime = DateTimeOffset.UtcNow,
+                RugbyFixtureStatus = RugbyFixtureStatus.PreMatch
             });
-            
+
             await _rugbyService.CleanupSchedulerTrackingRugbyFixturesTable();
 
             Assert.AreEqual(1, await _systemSportDataUnitOfWork.SchedulerTrackingRugbyFixtures.CountAsync());
@@ -56,7 +165,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
                 StartDateTime = DateTimeOffset.UtcNow - TimeSpan.FromDays(181),
                 RugbyFixtureStatus = RugbyFixtureStatus.Result
             });
-            
+
             await _rugbyService.CleanupSchedulerTrackingRugbyFixturesTable();
 
             Assert.AreEqual(0, await _systemSportDataUnitOfWork.SchedulerTrackingRugbyFixtures.CountAsync());
@@ -99,7 +208,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
                 SeasonId = Guid.NewGuid(),
                 RugbySeasonStatus = RugbySeasonStatus.Ended
             });
-            
+
             await _rugbyService.CleanupSchedulerTrackingRugbySeasonsTable();
 
             Assert.AreEqual(0, await _systemSportDataUnitOfWork.SchedulerTrackingRugbySeasons.CountAsync());
@@ -120,7 +229,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests
             {
                 TournamentId = tournamentId
             });
-            
+
             await _rugbyService.CleanupSchedulerTrackingRugbySeasonsTable();
 
             Assert.AreEqual(1, await _systemSportDataUnitOfWork.SchedulerTrackingRugbyTournaments.CountAsync());

@@ -1,4 +1,5 @@
-﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
+﻿using System.Configuration;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
 
 namespace SuperSportDataEngine.ApplicationLogic.Services
@@ -22,12 +23,22 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         private readonly IPublicSportDataUnitOfWork _publicSportDataUnitOfWork;
         private readonly ISystemSportDataUnitOfWork _systemSportDataUnitOfWork;
 
+        private readonly int _numberOfMinutesToCheckForInProgressFixtures;
+
+        private ILoggingService _logger;
+
         public RugbyService(
             IPublicSportDataUnitOfWork publicSportDataUnitOfWork,
-            ISystemSportDataUnitOfWork systemSportDataUnitOfWork)
+            ISystemSportDataUnitOfWork systemSportDataUnitOfWork,
+            ILoggingService logger)
         {
             _publicSportDataUnitOfWork = publicSportDataUnitOfWork;
             _systemSportDataUnitOfWork = systemSportDataUnitOfWork;
+
+            _logger = logger;
+
+            _numberOfMinutesToCheckForInProgressFixtures =
+                int.Parse(ConfigurationManager.AppSettings["NumberOfMinutesToCheckForInProgressFixtures"] ?? "120");
         }
 
         public async Task<IEnumerable<RugbyTournament>> GetActiveTournaments()
@@ -192,7 +203,16 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<IEnumerable<RugbyFixture>> GetTournamentFixtures(Guid tournamentId, RugbyFixtureStatus fixtureStatus)
         {
-            var today = DateTime.UtcNow;
+            // The logic is now corrected.
+            // We are serving out on the fixtures endpoint all fixtures that are 
+            // upcoming and In Progress(this is based on a time period, 
+            // only check fixtures that started two hours ago. This is configurable.)
+            // The issue Darren was having was:
+            // Fixture started at 1:45am SAST and ended just after 2:00am SAST
+            // Due to UTC Dates, the fixtures endpoint at 2:01am SAST would not 
+            // show the fixture In Progress since the days would have changed.
+
+            var today = DateTime.UtcNow - TimeSpan.FromMinutes(120);
 
             var fixtures = await Task.FromResult(_publicSportDataUnitOfWork.RugbyFixtures.Where(t => 
                         t.IsDisabledInbound == false && 
@@ -219,8 +239,16 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             var fixtures = Enumerable.Empty<RugbyFixture>();
 
             if (tournament == null) return fixtures;
+            // The logic is now corrected.
+            // We are serving out on the fixtures endpoint all fixtures that are 
+            // upcoming and In Progress(this is based on a time period, 
+            // only check fixtures that started two hours ago. This is configurable.)
+            // The issue Darren was having was:
+            // Fixture started at 1:45am SAST and ended just after 2:00am SAST
+            // Due to UTC Dates, the fixtures endpoint at 2:01am SAST would not 
+            // show the fixture In Progress since the days would have changed.
 
-            var today = DateTime.UtcNow;
+            var today = DateTime.UtcNow - TimeSpan.FromMinutes(120);
 
             fixtures = _publicSportDataUnitOfWork.RugbyFixtures.Where(t =>
                     t.IsDisabledInbound == false &&
@@ -251,7 +279,17 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<RugbyTournament> GetTournamentBySlug(string tournamentSlug)
         {
-            return await Task.FromResult(_publicSportDataUnitOfWork.RugbyTournaments.FirstOrDefault(f => f.Slug.Equals(tournamentSlug, StringComparison.InvariantCultureIgnoreCase)));
+            var tournament =
+                await Task.FromResult(_publicSportDataUnitOfWork.RugbyTournaments.FirstOrDefault(f =>
+                    f.Slug.Equals(tournamentSlug, StringComparison.InvariantCultureIgnoreCase)));
+
+            if (tournament == null)
+            {
+                await _logger.Warn("TournamentDoesNotExist" + tournamentSlug,
+                    "The requested tournament Slug does not exist -> " + tournamentSlug);
+            }
+        
+            return tournament;
         }
 
         public async Task<IEnumerable<RugbyFixture>> GetRecentResultsFixtures(int maxCount)
@@ -311,10 +349,12 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             var fixturesInResultsState = Enumerable.Empty<RugbyFixture>();
 
-            if (tournament != null)
+            if (tournament == null)
             {
-                fixturesInResultsState = await GetTournamentFixtures(tournament.Id, RugbyFixtureStatus.Result);
+                return fixturesInResultsState;
             }
+
+            fixturesInResultsState = await GetTournamentFixtures(tournament.Id, RugbyFixtureStatus.Result);
 
             if (!tournamentSlug.Equals("sevens")) return await Task.FromResult(fixturesInResultsState.ToList());
 
@@ -382,9 +422,12 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<IEnumerable<RugbyGroupedLog>> GetGroupedLogs(string tournamentSlug)
         {
-            var tournament = await GetTournamentBySlug(tournamentSlug);
-
             var logs = Enumerable.Empty<RugbyGroupedLog>();
+
+            if (IsNationalTeamSlug(tournamentSlug))
+                return logs;
+
+            var tournament = await GetTournamentBySlug(tournamentSlug);
 
             if (tournament != null && tournament.HasLogs)
             {
@@ -405,9 +448,12 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<IEnumerable<RugbyFlatLog>> GetFlatLogs(string tournamentSlug)
         {
-            var tournament = await GetTournamentBySlug(tournamentSlug);
-
             var flatLogs = Enumerable.Empty<RugbyFlatLog>();
+
+            if (IsNationalTeamSlug(tournamentSlug))
+                return flatLogs;
+
+            var tournament = await GetTournamentBySlug(tournamentSlug);
 
             if (tournament != null && tournament.HasLogs)
             {
@@ -424,11 +470,15 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<List<RugbyFixture>> GetCurrentDayFixturesForActiveTournaments()
         {
-            var today = DateTime.UtcNow.Date;
-            var todayFixtures = (await _publicSportDataUnitOfWork.RugbyFixtures.AllAsync()).Where(f => 
-                                    f.StartDateTime.Date == today && 
-                                    f.RugbyTournament.IsEnabled)
-                                 .OrderBy(f => f.StartDateTime);
+            var minDateTime = DateTime.UtcNow.Date - TimeSpan.FromMinutes(_numberOfMinutesToCheckForInProgressFixtures);
+            var tomorrow = DateTime.UtcNow.Date + TimeSpan.FromDays(1);
+
+            var todayFixtures = _publicSportDataUnitOfWork.RugbyFixtures
+               .Where(f => 
+                    f.StartDateTime > minDateTime && 
+                    f.StartDateTime < tomorrow &&
+                    f.RugbyTournament.IsEnabled)
+                .OrderBy(f => f.StartDateTime);
 
             return await Task.FromResult(todayFixtures.ToList());
         }
@@ -439,12 +489,15 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             if (tournament is null) return Enumerable.Empty<RugbyFixture>();
 
-            var today = DateTime.UtcNow.Date;
+            var minDateTime = DateTime.UtcNow.Date - TimeSpan.FromMinutes(_numberOfMinutesToCheckForInProgressFixtures);
+            var tomorrow = DateTime.UtcNow.Date + TimeSpan.FromDays(1);
 
-            var todayFixtures = (await _publicSportDataUnitOfWork.RugbyFixtures.AllAsync())
-                .Where(f => f.StartDateTime.Date == today &&
-                f.RugbyTournament.IsEnabled &&
-                f.RugbyTournament.Id == tournament.Id)
+            var todayFixtures = _publicSportDataUnitOfWork.RugbyFixtures
+                .Where(f => 
+                    f.StartDateTime > minDateTime &&
+                    f.StartDateTime < tomorrow &&
+                    f.RugbyTournament.IsEnabled &&
+                    f.RugbyTournament.Id == tournament.Id)
                 .OrderBy(f => f.StartDateTime);
 
             return await Task.FromResult(todayFixtures.ToList());

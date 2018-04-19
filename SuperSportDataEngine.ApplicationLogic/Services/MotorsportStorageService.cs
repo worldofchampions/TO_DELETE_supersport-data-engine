@@ -343,10 +343,10 @@
             if (qualifyingRuns == null) return;
 
             var bestQualifyingRun = providerGridEntry.qualifying?.qualifyingRuns?.FirstOrDefault();
+            if (bestQualifyingRun == null) return;
 
             foreach (var run in qualifyingRuns)
             {
-                if (bestQualifyingRun == null) continue;
 
                 var bestRunTime = new TimeSpan(0, 0, bestQualifyingRun.time.minutes, bestQualifyingRun.time.seconds,
                     bestQualifyingRun.time.milliseconds);
@@ -446,10 +446,35 @@
                 eventResultInRepo.FinishingTimeMilliseconds = result.finishingTime.milliseconds;
             }
 
-            eventResultInRepo.Position = result.carPosition.position;
-            eventResultInRepo.GridPosition = result.carPosition.startingPosition;
-            eventResultInRepo.OutReason = result.carStatus.name;
-            eventResultInRepo.CompletedRace = result.carStatus.carStatusId.Equals(0);
+            if (result.carPosition != null)
+            {
+                eventResultInRepo.Position = result.carPosition.position;
+                eventResultInRepo.GridPosition = result.carPosition.startingPosition;
+
+                if (result.carPosition.position == 1)
+                {
+                    var raceEvent = _publicSportDataUnitOfWork.MotorsportRaceEvents.FirstOrDefault(e =>
+                        e.Id == eventResultInRepo.MotorsportRaceEventId);
+                    
+                    AssignRaceEventWinner(raceEvent, eventResultInRepo.MotorsportDriver);
+                }
+            }
+
+            if (result.carStatus != null)
+            {
+                eventResultInRepo.OutReason = result.carStatus.name;
+                eventResultInRepo.CompletedRace = result.carStatus.carStatusId.Equals(0);
+            }
+
+            if (result.laps?.completed != null)
+            {
+                eventResultInRepo.LapsCompleted = result.laps.completed.Value;
+            }
+
+            if (result.laps?.behind != null)
+            {
+                eventResultInRepo.LapsBehind = result.laps.behind.Value;
+            }
 
             _publicSportDataUnitOfWork.MotorsportRaceEventResults.Update(eventResultInRepo);
         }
@@ -473,6 +498,11 @@
             {
                 motorsportRaceResult.Position = result.carPosition.position;
                 motorsportRaceResult.GridPosition = result.carPosition.startingPosition;
+
+                if (result.carPosition.position == 1)
+                {
+                    AssignRaceEventWinner(raceEvent, driver);
+                }
             }
 
             if (result.carStatus != null)
@@ -509,8 +539,25 @@
                 motorsportRaceResult.FinishingTimeMilliseconds = result.finishingTime.milliseconds;
             }
 
+            if (result.laps?.completed != null)
+            {
+                motorsportRaceResult.LapsCompleted = result.laps.completed.Value;
+            }
+
+            if (result.laps?.behind != null)
+            {
+                motorsportRaceResult.LapsBehind = result.laps.behind.Value;
+            }
+
             _publicSportDataUnitOfWork.MotorsportRaceEventResults.Add(motorsportRaceResult);
 
+        }
+
+        private void AssignRaceEventWinner(MotorsportRaceEvent raceEvent, MotorsportDriver driver)
+        {
+            raceEvent.RaceEventWinner = driver;
+
+            _publicSportDataUnitOfWork.MotorsportRaceEvents.Update(raceEvent);
         }
 
         private void UpdateLeagueInRepo(League leagueFromProvider, MotorsportLeague leagueInRepo)

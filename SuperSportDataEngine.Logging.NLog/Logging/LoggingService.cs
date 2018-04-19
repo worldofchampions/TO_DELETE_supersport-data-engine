@@ -56,7 +56,7 @@ namespace SuperSportDataEngine.Logging.NLog.Logging
 
             if (Cache == null)
             {
-                Log(typeof(LoggingService), logEvent);
+                WriteLog(typeof(LoggingService), logEvent);
             }
             else
             {
@@ -66,15 +66,32 @@ namespace SuperSportDataEngine.Logging.NLog.Logging
                     if (cacheObject == null)
                     {
                         Cache.Add(key, logEvent, TimeSpan.FromMinutes(_cacheTtlInMinutes));
-                        Log(typeof(LoggingService), logEvent);
+                        WriteLog(typeof(LoggingService), logEvent);
                     }
                 }
                 catch (Exception)
                 {
                     // Ignore the exception and log it anyways?
-                    Log(typeof(LoggingService), logEvent);
+                    WriteLog(typeof(LoggingService), logEvent);
                 }
             }
+        }
+
+        private void WriteLog(Type type, LogEventInfo logEvent)
+        {
+            try
+            {
+                logEvent.Message =
+                    Environment.MachineName +
+                    Environment.NewLine +
+                    logEvent.Message;
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+
+            Log(typeof(LoggingService), logEvent);
         }
 
         public async Task Error(string key, string format, params object[] args)

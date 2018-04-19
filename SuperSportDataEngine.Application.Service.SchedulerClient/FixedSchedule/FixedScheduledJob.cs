@@ -15,12 +15,14 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
     {
         private readonly IRecurringJobManager _recurringJobManager;
         private readonly IUnityContainer _container;
+        private readonly ILoggingService _logger;
 
         public FixedScheduledJob(IUnityContainer container)
         {
             _container = container;
 
             _recurringJobManager = _container.Resolve<IRecurringJobManager>();
+            _logger = _container.Resolve<ILoggingService>();
         }
 
         public void UpdateRecurringJobDefinitions()

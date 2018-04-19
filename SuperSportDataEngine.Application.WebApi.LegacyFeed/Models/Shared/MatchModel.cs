@@ -11,6 +11,8 @@
         public string LeagueUrlName { get; set; }
         public int LeagueId { get; set; }
         public long MatchID { get; set; }
+        public bool IsPlaceholderHomeTeam { get; set; }
+        public bool IsPlaceholderAwayTeam { get; set; }
         public string HomeTeam { get; set; }
         public string AwayTeam { get; set; }
         public string HomeTeamShortName { get; set; }

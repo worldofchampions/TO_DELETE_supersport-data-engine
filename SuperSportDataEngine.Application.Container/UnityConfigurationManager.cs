@@ -1,35 +1,38 @@
-﻿namespace SuperSportDataEngine.Application.Container
+﻿using SuperSportDataEngine.Application.Service.Common.Interfaces;
+using SuperSportDataEngine.Application.Service.Common.Services;
+
+namespace SuperSportDataEngine.Application.Container
 {
     using Hangfire;
     using Hangfire.SqlServer;
     using Microsoft.Practices.Unity;
     using MongoDB.Driver;
-    using NLog.Slack;
+    using NLog.MSFTTeams;
     using StackExchange.Redis;
     using ApplicationLogic.Services.Cms;
     using System;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.CmsLogic.Interfaces;
-    using SuperSportDataEngine.Common.Interfaces;
-    using SuperSportDataEngine.Application.Container.Enums;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces.LegacyFeed;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.DeprecatedFeed.Interfaces;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
-    using SuperSportDataEngine.ApplicationLogic.Services;
-    using SuperSportDataEngine.ApplicationLogic.Services.LegacyFeed;
-    using SuperSportDataEngine.Common.Caching;
-    using SuperSportDataEngine.Common.Logging;
-    using SuperSportDataEngine.Gateway.Http.DeprecatedFeed.Services;
-    using SuperSportDataEngine.Gateway.Http.StatsProzone.Services;
-    using SuperSportDataEngine.Logging.NLog.Logging;
-    using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
-    using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.UnitOfWork;
-    using SuperSportDataEngine.Repository.EntityFramework.SystemSportData.Context;
-    using SuperSportDataEngine.Repository.EntityFramework.SystemSportData.UnitOfWork;
-    using SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories;
+    using ApplicationLogic.Boundaries.CmsLogic.Interfaces;
+    using Common.Interfaces;
+    using Enums;
+    using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+    using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces.LegacyFeed;
+    using ApplicationLogic.Boundaries.Gateway.Http.DeprecatedFeed.Interfaces;
+    using ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
+    using ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
+    using ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
+    using ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
+    using ApplicationLogic.Services;
+    using ApplicationLogic.Services.LegacyFeed;
+    using Common.Caching;
+    using Common.Logging;
+    using Gateway.Http.DeprecatedFeed.Services;
+    using Gateway.Http.StatsProzone.Services;
+    using Logging.NLog.Logging;
+    using Repository.EntityFramework.PublicSportData.Context;
+    using Repository.EntityFramework.PublicSportData.UnitOfWork;
+    using Repository.EntityFramework.SystemSportData.Context;
+    using Repository.EntityFramework.SystemSportData.UnitOfWork;
+    using Repository.MongoDb.PayloadData.Repositories;
     using System.Configuration;
     using System.Data.Entity;
 
@@ -50,8 +53,21 @@
 
         public static void RegisterTypes(IUnityContainer container, ApplicationScope applicationScope)
         {
-            // Hack sort of. To get the NLog.Slack.dll to be copied.
-            new SlackClient();
+            //   I had to add explicit usage of third party assemblies to the UnityConfigurationManager class just so that the third party dlls gets copied.
+
+            //    Here's the reason why it happens.
+            //    Before hack:
+            //    - *Container* project is a class library which has the reference to NLog.MSFTTeams.dll
+            //    - *SchedulerClient* project references* Container* but does not make use of the NLog.MSFTTeams.dll, so the dll is 
+            //      not copied to the */bin* folder of the SchedulerClient.
+
+            //    After Hack:
+            //    - SchedulerClient references *Container* which makes direct use of the dll. So the dll is copied.
+
+            // Reference: https://stackoverflow.com/questions/20280717/references-from-class-library-are-not-copied-to-running-project-bin-folder
+
+            // ReSharper disable once ObjectCreationAsStatement
+            new ConnectorCard();
 
             ApplyRegistrationsForLogging(container);
             ApplyRegistrationsForApplicationLogic(container, applicationScope);
@@ -74,6 +90,7 @@
 
         private static void ApplyRegistrationsForApplicationLogic(IUnityContainer container, ApplicationScope applicationScope)
         {
+            container.RegisterType<ISystemTimeService, SystemTimeService>();
             container.RegisterType<ITemporaryExampleService, TemporaryExampleService>();
             container.RegisterType<IRugbyService, RugbyService>(new HierarchicalLifetimeManager());
             container.RegisterType<IMotorsportService, MotorsportService>(new HierarchicalLifetimeManager());

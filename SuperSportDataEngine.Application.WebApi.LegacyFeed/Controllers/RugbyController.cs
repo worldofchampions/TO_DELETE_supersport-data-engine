@@ -3,17 +3,17 @@
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 {
     using AutoMapper;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Helpers.Extensions;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.News;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-    using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
-    using SuperSportDataEngine.Common.Logging;
+    using Filters;
+    using Helpers.Extensions;
+    using Models.Mappers;
+    using Models.News;
+    using Models.Rugby;
+    using Models.Shared;
+    using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+    using ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
+    using ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+    using ApplicationLogic.Entities.Legacy;
+    using Common.Logging;
     using System;
     using System.Collections.Generic;
     using System.Configuration;
@@ -184,12 +184,12 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         }
 
         /// <summary>
-        /// Get News for Rugby
+        /// Get Today fixtures for Rugby
         /// </summary>
         /// <returns></returns>
         [HttpGet, HttpHead]
         [Route("live")]
-        [ResponseType(typeof(Match))]
+        [ResponseType(typeof(IEnumerable<Match>))]
         public async Task<IHttpActionResult> GetTodayFixtures()
         {
             const string cachePrefix = "LIVE:";
@@ -217,7 +217,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         /// <returns></returns>
         [HttpGet, HttpHead]
         [Route("{category}/live")]
-        [ResponseType(typeof(List<Match>))]
+        [ResponseType(typeof(IEnumerable<Match>))]
         public async Task<IHttpActionResult> GetTodayFixturesForTournament(string category)
         {
             const string cachePrefix = "LIVE:";
