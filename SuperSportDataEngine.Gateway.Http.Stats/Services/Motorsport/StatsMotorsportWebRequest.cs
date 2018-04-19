@@ -1,6 +1,4 @@
-﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
-
-namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
+﻿namespace SuperSportDataEngine.Gateway.Http.Stats.Services
 {
     using System;
     using System.Collections.Generic;
@@ -8,12 +6,13 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
     using System.Net;
     using System.Security.Cryptography;
     using System.Text;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.Stats.Interfaces;
 
     public class StatsMotorsportMotorsportWebRequest : IStatsMotorsportWebRequest
     {
-        private readonly string _statsApiSharedSecret;// = "JDgQnhPVZQ";
-        private readonly string _statsApiKey;// = "ta3dprpc4sn79ecm2wg7tqbg";
-        private readonly string _statsApiBaseUrl; //= "http://api.stats.com";
+        private readonly string _statsApiSharedSecret;  // = "JDgQnhPVZQ";
+        private readonly string _statsApiKey;           // = "ta3dprpc4sn79ecm2wg7tqbg";
+        private readonly string _statsApiBaseUrl;       //= "http://api.stats.com";
 
         public StatsMotorsportMotorsportWebRequest(string statsApiBaseUrl, string statsApiKey, string statsApiSharedSecret)
         {

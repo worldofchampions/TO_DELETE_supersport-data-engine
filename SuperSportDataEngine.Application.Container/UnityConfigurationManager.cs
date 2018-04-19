@@ -1,7 +1,4 @@
-﻿using SuperSportDataEngine.Application.Service.Common.Interfaces;
-using SuperSportDataEngine.Application.Service.Common.Services;
-
-namespace SuperSportDataEngine.Application.Container
+﻿namespace SuperSportDataEngine.Application.Container
 {
     using Hangfire;
     using Hangfire.SqlServer;
@@ -21,12 +18,16 @@ namespace SuperSportDataEngine.Application.Container
     using ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
     using ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
     using ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
+    using SuperSportDataEngine.Application.Service.Common.Interfaces;
+    using SuperSportDataEngine.Application.Service.Common.Services;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.Stats.Interfaces;
+    using SuperSportDataEngine.Gateway.Http.StatsProzone.Services;
     using ApplicationLogic.Services;
     using ApplicationLogic.Services.LegacyFeed;
     using Common.Caching;
     using Common.Logging;
     using Gateway.Http.DeprecatedFeed.Services;
-    using Gateway.Http.StatsProzone.Services;
+    using Gateway.Http.Stats.Services;
     using Logging.NLog.Logging;
     using Repository.EntityFramework.PublicSportData.Context;
     using Repository.EntityFramework.PublicSportData.UnitOfWork;
@@ -73,6 +74,7 @@ namespace SuperSportDataEngine.Application.Container
             ApplyRegistrationsForApplicationLogic(container, applicationScope);
             ApplyRegistrationsForGatewayHttpDeprecatedFeed(container, applicationScope);
             ApplyRegistrationsForGatewayHttpStatsProzone(container, applicationScope);
+            ApplyRegistrationsForGatewayHttpStats(container, applicationScope);
             ApplyRegistrationsForRepositoryEntityFrameworkPublicSportData(container);
             ApplyRegistrationsForRepositoryEntityFrameworkSystemSportData(container);
             ApplyRegistrationsForRepositoryMongoDbPayloadData(container, applicationScope);
@@ -148,13 +150,17 @@ namespace SuperSportDataEngine.Application.Container
             {
                 container.RegisterType<IStatsProzoneRugbyIngestService, StatsProzoneRugbyIngestService>(
                     new HierarchicalLifetimeManager());
+            }
+        }
 
-                //container.RegisterType<ILoggingService>(new InjectionFactory(l => logger));
-
-                var temp = new StatsMotorsportMotorsportWebRequest("http://api.stats.com", "ta3dprpc4sn79ecm2wg7tqbg", "JDgQnhPVZQ");
+        private static void ApplyRegistrationsForGatewayHttpStats(IUnityContainer container, ApplicationScope applicationScope)
+        {
+            if (applicationScope == ApplicationScope.ServiceSchedulerClient || applicationScope == ApplicationScope.ServiceSchedulerIngestServer)
+            {
+                var motorsportWebRequest = new StatsMotorsportMotorsportWebRequest("http://api.stats.com", "ta3dprpc4sn79ecm2wg7tqbg", "JDgQnhPVZQ");
                 container.RegisterType<IStatsMotorsportIngestService, StatsMotorsportIngestService>(
                     new HierarchicalLifetimeManager(),
-                    new InjectionConstructor(temp, logger));
+                    new InjectionConstructor(motorsportWebRequest, logger));
             }
         }
 
