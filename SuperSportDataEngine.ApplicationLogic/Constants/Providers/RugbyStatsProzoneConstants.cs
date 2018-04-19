@@ -7,6 +7,7 @@
         public const int ProviderTournamentIdSuperRugby = 181;
         public const int ProviderTournamentIdChampionsCup = 291;
         public const int ProviderTournamentIdPro14 = 293;
+        public const int ProviderTournamentIdRugbyChallenge = 165;
         public const int ProviderTournamentIdMitreCup = 101;
 
         // Tournament Season IDs.

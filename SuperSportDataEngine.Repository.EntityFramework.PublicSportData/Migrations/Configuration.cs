@@ -46,6 +46,8 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
             SeedRugbyLogGroupsForPro142018.Seed(context);
             SeedRugbyGroupsForMitreCup2017.Seed(context);
             SeedSevens(context);
+
+            SeedRugbyLogGroupsForRugbyChallenge.Seed(context);
         }
 
         private static void SeedSevens(PublicSportDataContext context)

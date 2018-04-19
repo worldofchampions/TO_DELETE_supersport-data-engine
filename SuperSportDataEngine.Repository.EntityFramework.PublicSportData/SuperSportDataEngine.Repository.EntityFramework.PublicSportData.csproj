@@ -279,6 +279,7 @@
     <Compile Include="Migrations\Seed\Motorsport\SeedMotorsportHistoricSeasons.cs" />
     <Compile Include="Migrations\Seed\Motorsport\SeedMotorsportLeagueSlugs.cs" />
     <Compile Include="Migrations\Seed\Rugby\LogGroups\Sevens\2018\Round05LasVegas.cs" />
+    <Compile Include="Migrations\Seed\SeedRugbyLogGroupsForRugbyChallenge.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyTeamNames.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEnabledTournaments.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypeProviderMappings.cs" />
