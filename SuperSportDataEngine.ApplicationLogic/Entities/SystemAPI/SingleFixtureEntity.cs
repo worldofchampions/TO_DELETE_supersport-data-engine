@@ -11,7 +11,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Entities.SystemAPI
         /// </summary>
         public RugbyFixtureEntity Fixture { get; set; }
         /// <summary>
-        /// The records this page represents.
+        /// List of available fixture statuses.
         /// </summary>
         public List<EnumValue> RugbyFixtureStatuses
         {
