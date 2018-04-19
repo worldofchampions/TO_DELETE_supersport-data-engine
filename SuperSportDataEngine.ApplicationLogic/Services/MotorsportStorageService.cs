@@ -10,6 +10,8 @@
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.Stats.Models.Motorsport;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.Stats.Models.Motorsport.Enums;
 
@@ -17,9 +19,12 @@
     {
         private readonly IPublicSportDataUnitOfWork _publicSportDataUnitOfWork;
 
-        public MotorsportStorageService(IPublicSportDataUnitOfWork publicSportDataUnitOfWork)
+        private readonly ISystemSportDataUnitOfWork _publicSystemSportDataUnitOfWork;
+
+        public MotorsportStorageService(IPublicSportDataUnitOfWork publicSportDataUnitOfWork, ISystemSportDataUnitOfWork publicSystemSportDataUnitOfWork)
         {
             _publicSportDataUnitOfWork = publicSportDataUnitOfWork;
+            _publicSystemSportDataUnitOfWork = publicSystemSportDataUnitOfWork;
         }
 
         public async Task PersistLeagueDriversInRepository(MotorsportEntitiesResponse providerResponse, MotorsportLeague league)
@@ -82,6 +87,10 @@
             var raceEventsFromProviderResponse = ExtractRaceEventsFromProviderResponse(providerResponse);
             if (raceEventsFromProviderResponse is null) return;
 
+            var eventsToAddToTrackingRepo = new List<Event>();
+
+            var eventsToUpdateInTrackingRepo = new List<Event>();
+
             foreach (var providerRaceEvent in raceEventsFromProviderResponse)
             {
                 if (providerRaceEvent.race == null) continue;
@@ -93,14 +102,24 @@
                 if (eventInRepo is null)
                 {
                     AddNewRaceEventToRepo(providerRaceEvent, race, season);
+
+                    eventsToAddToTrackingRepo.Add(providerRaceEvent);
                 }
                 else
                 {
                     UpdateRaceEventInRepo(providerRaceEvent, eventInRepo);
+
+                    eventsToUpdateInTrackingRepo.Add(providerRaceEvent);
                 }
             }
 
             await _publicSportDataUnitOfWork.SaveChangesAsync();
+
+            AddRaceEventToSchedulerTracking(eventsToAddToTrackingRepo, race, season);
+
+            UpdateRaceEventInSchedulerTracking(eventsToAddToTrackingRepo, race, season);
+
+            await _publicSystemSportDataUnitOfWork.SaveChangesAsync();
         }
 
         public async Task PersistLeaguesInRepository(
@@ -270,13 +289,13 @@
 
         private async Task UpdateGapToLeaderTimesForEvent(MotorsportRaceEvent motorsportRaceEvent)
         {
-            var leaderResults = 
+            var leaderResults =
                 _publicSportDataUnitOfWork.MotorsportRaceEventResults.FirstOrDefault(r =>
                 r.Position == 1 && r.MotorsportRaceEventId == motorsportRaceEvent.Id);
-            
-            if(leaderResults == null) return;
 
-            var leaderTimeCombinedInMilliseconds = 
+            if (leaderResults == null) return;
+
+            var leaderTimeCombinedInMilliseconds =
                 leaderResults.FinishingTimeHours * 3600000 +
                 leaderResults.FinishingTimeMinutes * 60000 +
                 leaderResults.FinishingTimeSeconds * 1000 +
@@ -376,11 +395,11 @@
 
         private void AddNewGridEntryToRepo(Result providerGridEntry, MotorsportRaceEvent raceEvent)
         {
-            var driverInRepo = 
+            var driverInRepo =
                 _publicSportDataUnitOfWork.MotorsportDrivers.FirstOrDefault(d => d.ProviderDriverId == providerGridEntry.player.playerId);
             if (driverInRepo is null) return;
 
-            var racecEvent = 
+            var racecEvent =
                 _publicSportDataUnitOfWork.MotorsportRaceEvents.FirstOrDefault(e => e.Id == raceEvent.Id);
             if (racecEvent is null) return;
 
@@ -395,7 +414,7 @@
 
             if (providerGridEntry.owner != null)
             {
-                var teamInRepo = 
+                var teamInRepo =
                     _publicSportDataUnitOfWork.MotortsportTeams.FirstOrDefault(d => d.ProviderTeamId == providerGridEntry.owner.ownerId);
 
                 newGridEntry.MotorsportTeam = teamInRepo;
@@ -455,7 +474,7 @@
                 {
                     var raceEvent = _publicSportDataUnitOfWork.MotorsportRaceEvents.FirstOrDefault(e =>
                         e.Id == eventResultInRepo.MotorsportRaceEventId);
-                    
+
                     AssignRaceEventWinner(raceEvent, eventResultInRepo.MotorsportDriver);
                 }
             }
@@ -796,6 +815,64 @@
             }
 
             _publicSportDataUnitOfWork.MotorsportRaceEvents.Add(motorsportRaceEvent);
+
+        }
+
+        private void AddRaceEventToSchedulerTracking(IEnumerable<Event> providerEvents, MotorsportRace motorsportRace, MotorsportSeason season)
+        {
+            foreach (var providerEvent in providerEvents)
+            {
+                var motorsportRaceEvent = _publicSportDataUnitOfWork.MotorsportRaceEvents.FirstOrDefault(e =>
+                        e.ProviderRaceEventId == providerEvent.eventId
+                        && e.MotorsportRace.Id == motorsportRace.Id
+                        && e.MotorsportSeason.Id == season.Id);
+
+                var trackingMotorsportRaceEvent = new SchedulerTrackingMotorsportRaceEvent
+                {
+                    MotorsportLeagueId = motorsportRaceEvent.MotorsportRace.MotorsportLeague.Id,
+                    MotorsportRaceEventId = motorsportRaceEvent.Id,
+                    StartDateTime = motorsportRaceEvent.StartDateTimeUtc,
+                    MotorsportRaceEventStatus = motorsportRaceEvent.MotorsportRaceEventStatus
+                };
+
+                if (trackingMotorsportRaceEvent.MotorsportRaceEventStatus == MotorsportRaceEventStatus.Result)
+                {
+                    trackingMotorsportRaceEvent.EndedDateTime = DateTimeOffset.UtcNow;
+                }
+
+                _publicSystemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.Add(trackingMotorsportRaceEvent);
+            }
+        }
+
+        private void UpdateRaceEventInSchedulerTracking(IEnumerable<Event> providerEvents, MotorsportRace motorsportRace, MotorsportSeason season)
+        {
+            foreach (var providerEvent in providerEvents)
+            {
+                var motorsportRaceEvent = _publicSportDataUnitOfWork.MotorsportRaceEvents.FirstOrDefault(e =>
+                    e.ProviderRaceEventId == providerEvent.eventId
+                    && e.MotorsportRace.Id == motorsportRace.Id
+                    && e.MotorsportSeason.Id == season.Id);
+
+                if(motorsportRaceEvent == null) continue;
+
+                var trackingMotorsportRaceEvent =
+                    _publicSystemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.FirstOrDefault(e =>
+                        e.MotorsportLeagueId == motorsportRaceEvent.MotorsportRace.MotorsportLeague.Id &&
+                        e.MotorsportRaceEventId == motorsportRaceEvent.Id);
+
+                if (trackingMotorsportRaceEvent == null) continue;
+
+                trackingMotorsportRaceEvent.MotorsportRaceEventStatus = motorsportRaceEvent.MotorsportRaceEventStatus;
+
+                trackingMotorsportRaceEvent.StartDateTime = motorsportRaceEvent.StartDateTimeUtc;
+
+                if (motorsportRaceEvent.MotorsportRaceEventStatus == MotorsportRaceEventStatus.Result)
+                {
+                    trackingMotorsportRaceEvent.EndedDateTime = DateTimeOffset.UtcNow;
+                }
+
+                _publicSystemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.Update(trackingMotorsportRaceEvent);
+            }
         }
 
         private void UpdateOwnerInRepo(MotorsportTeam ownerInRepo, Owner owner)

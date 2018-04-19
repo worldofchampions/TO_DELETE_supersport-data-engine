@@ -16,7 +16,7 @@
         Task IngestResultsForActiveLeagues(CancellationToken cancellationToken);
         Task IngestRacesEvents(CancellationToken cancellationToken);
         Task IngestRacesEventsGrids(CancellationToken cancellationToken);
-        Task IngestLiveRaceEventData(MotorsportRace race, CancellationToken cancellationToken);
+        Task IngestLiveRaceEventData(MotorsportRaceEvent raceEvent, int pollingTimeInSeconds, CancellationToken cancellationToken);
         Task IngestHistoricRaces(CancellationToken cancellationToken);
         Task IngestHistoricRaceEvents(CancellationToken cancellationToken);
         Task IngestHistoricEventsGrids(CancellationToken cancellationToken);
