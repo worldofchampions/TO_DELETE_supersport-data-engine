@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
+using System;
+using System.Collections.Generic;
 
 namespace SuperSportDataEngine.ApplicationLogic.Entities.SystemAPI
 {
@@ -18,6 +20,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Entities.SystemAPI
         public bool CmsOverrideModeIsActive { get; set; }
         public int GameTimeInSeconds { get; set; }
         public int RoundNumber { get; set; }
+
+        public RugbyFixtureStatus RugbyFixtureStatus { get; set; }
 
         public RugbyTeamEntity TeamA { get; set; }
         public RugbyTeamEntity TeamB { get; set; }
