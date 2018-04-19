@@ -2786,6 +2786,9 @@
                     providerSeasonId,
                     cancellationToken);
 
+            if (response?.RugbyPlayerStats == null)
+                return;
+
             foreach (var player in response.RugbyPlayerStats.players)
             {
                 var playerInDb =
