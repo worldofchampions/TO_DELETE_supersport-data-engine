@@ -117,7 +117,7 @@
 
             AddRaceEventToSchedulerTracking(eventsToAddToTrackingRepo, race, season);
 
-            UpdateRaceEventInSchedulerTracking(eventsToAddToTrackingRepo, race, season);
+            UpdateRaceEventInSchedulerTracking(eventsToUpdateInTrackingRepo, race, season);
 
             await _publicSystemSportDataUnitOfWork.SaveChangesAsync();
         }
