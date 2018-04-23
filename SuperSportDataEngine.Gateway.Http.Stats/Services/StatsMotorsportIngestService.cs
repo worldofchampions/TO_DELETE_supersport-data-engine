@@ -1,14 +1,14 @@
 ﻿namespace SuperSportDataEngine.Gateway.Http.Stats.Services
 {
     using System;
-    using System.Net;
     using System.IO;
+    using System.Net;
     using System.Text;
     using Newtonsoft.Json;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.Stats.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.Stats.Models.Motorsport;
-    using SuperSportDataEngine.Common.Logging;
     using SuperSportDataEngine.ApplicationLogic.Constants.Providers;
+    using SuperSportDataEngine.Common.Logging;
 
     public class StatsMotorsportIngestService : IStatsMotorsportIngestService
     {
