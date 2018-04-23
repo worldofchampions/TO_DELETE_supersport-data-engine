@@ -385,7 +385,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             return await Task.FromResult(fixtures.ToList());
         }
 
-        private static bool IsNationalTeamSlug(string slug)
+        public bool IsNationalTeamSlug(string slug)
         {
             var result = slug.Equals("springboks", StringComparison.CurrentCultureIgnoreCase);
 

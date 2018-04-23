@@ -53,6 +53,11 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         [ResponseType(typeof(IEnumerable<RugbyPointsScorerModel>))]
         public async Task<IHttpActionResult> GetTournamentTryScorers(string category, int recordsCount = 0)
         {
+            if (_rugbyService.IsNationalTeamSlug(category))
+            {
+                return Ok(Task.FromResult(new List<RugbyPointsScorerModel>()));    
+            }
+
             if (recordsCount == 0)
             {
                 recordsCount = int.Parse(ConfigurationManager.AppSettings["MaxResponseCount.TryScorers"]);
@@ -86,6 +91,11 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         [ResponseType(typeof(IEnumerable<RugbyPointsScorerModel>))]
         public async Task<IHttpActionResult> GetTournamentScorers(string category, int recordsCount = 0)
         {
+            if (_rugbyService.IsNationalTeamSlug(category))
+            {
+                return Ok(Task.FromResult(new List<RugbyPointsScorerModel>()));
+            }
+
             if (recordsCount == 0)
             {
                 recordsCount = int.Parse(ConfigurationManager.AppSettings["MaxResponseCount.TryScorers"]);
@@ -436,6 +446,11 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         [ResponseType(typeof(List<Log>))]
         public async Task<IHttpActionResult> GetLogs(string category, string groupName = null)
         {
+            if (_rugbyService.IsNationalTeamSlug(category))
+            {
+                return Ok(Task.FromResult(new List<Log>()));
+            }
+
             const string flatLogsCacheKeyPrefix = "FLATLOGS:";
             var flatLogsCacheKey = flatLogsCacheKeyPrefix + $"rugby/flatLogs/{category}";
 

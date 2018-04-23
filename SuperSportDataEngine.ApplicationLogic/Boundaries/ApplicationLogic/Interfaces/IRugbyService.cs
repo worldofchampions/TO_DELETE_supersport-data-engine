@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
 using System;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Threading;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
@@ -41,5 +42,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Inte
         Task<IEnumerable<RugbyPlayerStatistics>> GetTournamentTryScorers(string tournamentSlug);
         Task<IEnumerable<RugbyPlayerStatistics>> GetTournamentPointsScorers(string tournamentSlug);
         Task<IEnumerable<RugbyTournament>> GetTournamentsForJustEndedFixtures();
+        bool IsNationalTeamSlug(string slugName);
     }
 }
