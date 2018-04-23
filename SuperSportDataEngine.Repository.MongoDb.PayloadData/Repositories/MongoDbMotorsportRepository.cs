@@ -1,15 +1,13 @@
-﻿using System.Configuration;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-using MongoDB.Bson;
-using MongoDB.Driver;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
-using SuperSportDataEngine.Common.Logging;
-
-namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
+﻿namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 {
+    using System.Configuration;
+    using System.Threading.Tasks;
+    using MongoDB.Bson;
+    using MongoDB.Driver;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.Stats.Models.Motorsport;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
+    using SuperSportDataEngine.Common.Logging;
+
     public class MongoDbMotorsportRepository : IMongoDbMotorsportRepository
     {
         private readonly IMongoClient _mongoClient;

@@ -1,9 +1,8 @@
-﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport;
-
-namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces
+﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces
 {
     using System.Threading;
     using System.Threading.Tasks;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.Stats.Models.Motorsport;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
 
     public interface IMotorsportStorageService
