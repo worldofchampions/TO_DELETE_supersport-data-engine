@@ -251,6 +251,9 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         /// Get paginated list of rugby tournament fixtures and return a 500 error response if something failed while doing it
         /// </summary>
         /// <param name="tournamentId"></param>
+        /// <param name="seasonId">
+        /// SeasonId for fixture
+        /// </param>
         /// <param name="pageIndex">
         /// Page number
         /// </param>
@@ -264,11 +267,11 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
 
         [Route("api/Rugby/tournament/{tournamentId:guid}/fixtures")]
         [HttpGet]
-        public async Task<HttpResponseMessage> GetAllFixturesForTournament(Guid tournamentId, int pageIndex, int pageSize, string query = null)
+        public async Task<HttpResponseMessage> GetAllFixturesForTournament(Guid tournamentId, int pageIndex, int pageSize, Guid? seasonId = null, string query = null)
         {
             try
             {
-                var tournamentFixtures = await _rugbyService.GetTournamentFixtures(tournamentId, pageIndex, pageSize, path, query);
+                var tournamentFixtures = await _rugbyService.GetTournamentFixtures(tournamentId, seasonId, pageIndex, pageSize, path, query);
                 return Request.CreateResponse(HttpStatusCode.OK, tournamentFixtures);
             }
             catch (Exception exception)
