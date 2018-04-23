@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.Application.Container
+﻿using SuperSportDataEngine.Gateway.Http.Stats.Services;
+
+namespace SuperSportDataEngine.Application.Container
 {
     using Hangfire;
     using Hangfire.SqlServer;
@@ -27,7 +29,6 @@
     using Common.Caching;
     using Common.Logging;
     using Gateway.Http.DeprecatedFeed.Services;
-    using Gateway.Http.Stats.Services;
     using Logging.NLog.Logging;
     using Repository.EntityFramework.PublicSportData.Context;
     using Repository.EntityFramework.PublicSportData.UnitOfWork;

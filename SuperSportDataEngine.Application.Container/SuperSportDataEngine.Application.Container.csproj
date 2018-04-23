@@ -178,13 +178,13 @@
       <Project>{e1f85cf9-339f-47e2-99ca-afb021210dbf}</Project>
       <Name>SuperSportDataEngine.Gateway.Http.DeprecatedFeed</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SuperSportDataEngine.Gateway.Http.Stats2\SuperSportDataEngine.Gateway.Http.Stats.csproj">
+      <Project>{C3AEA7FF-D0A4-473A-8B49-AA52EF7058A6}</Project>
+      <Name>SuperSportDataEngine.Gateway.Http.Stats</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SuperSportDataEngine.Gateway.Http.StatsProzone\SuperSportDataEngine.Gateway.Http.StatsProzone.csproj">
       <Project>{90e43dad-2892-4438-92e1-b1966b6aaaec}</Project>
       <Name>SuperSportDataEngine.Gateway.Http.StatsProzone</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SuperSportDataEngine.Gateway.Http.Stats\SuperSportDataEngine.Gateway.Http.Stats.csproj">
-      <Project>{C05C8813-B59D-4382-9B00-BCA911D92E9F}</Project>
-      <Name>SuperSportDataEngine.Gateway.Http.Stats</Name>
     </ProjectReference>
     <ProjectReference Include="..\SuperSportDataEngine.Logging.NLog\SuperSportDataEngine.Logging.NLog.csproj">
       <Project>{b07c451e-7b8b-406f-92cc-03b68f54e3ac}</Project>
