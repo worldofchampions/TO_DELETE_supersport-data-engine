@@ -1,9 +1,9 @@
-﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport
+﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.Stats.Models.Motorsport
 {
     using System;
     using System.Collections.Generic;
-    using Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Enums;
-    
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.Stats.Models.Motorsport.Enums;
+
     public class ApiResult
     {
         public int sportId { get; set; }
@@ -26,7 +26,6 @@
         public string abbreviation { get; set; }
         public string displayName { get; set; }
         public SubLeague subLeague { get; set; }
-        // public List<UriPath> uriPaths { get; set; }
         public Season season { get; set; }
         public List<Race> races { get; set; }
         public List<UriPath2> uriPaths { get; set; }
@@ -51,7 +50,6 @@
         public League2 league { get; set; }
         public List<Season> seasons { get; set; }
     }
-
 
     public class Season
     {
