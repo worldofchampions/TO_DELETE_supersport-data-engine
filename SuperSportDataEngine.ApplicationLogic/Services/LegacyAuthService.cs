@@ -20,7 +20,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
     {
         private readonly ILoggingService _loggingService;
         private readonly ISystemSportDataUnitOfWork _systemSportDataUnitOfWork;
-        private readonly List<LegacyAuthFeedConsumer> _consumers;
 
         public LegacyAuthService(
             ILoggingService loggingService,
@@ -28,7 +27,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         {
             _loggingService = loggingService;
             _systemSportDataUnitOfWork = systemSportDataUnitOfWork;
-            _consumers = _systemSportDataUnitOfWork.LegacyAuthFeedConsumers.All().ToList();
         }
 
         public async Task<bool> IsAuthorised(string authKey, int siteId = 0)
@@ -40,7 +38,10 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             try
             {
                 // Get the Auth key from the DB.
-                var legacyAuthFeed = _consumers.FirstOrDefault(c => c.AuthKey == authKey && c.Active);
+                var legacyAuthFeed = 
+                        _systemSportDataUnitOfWork
+                            .LegacyAuthFeedConsumers
+                            .FirstOrDefault(c => c.AuthKey == authKey && c.Active);
 
                 // Auth key doesnt exist.
 

@@ -28,9 +28,9 @@
                 // For Home team
                 .ForMember(dest => dest.HomeTeam, expression => expression.MapFrom(
                     src => GeHomeTeam(src)))
-                
-                    .ForMember(dest => dest.AwayTeamId, expression => expression.MapFrom(
-                    src => src.TeamAIsHomeTeam ? src.TeamB.LegacyTeamId : src.TeamA.LegacyTeamId))
+
+                .ForMember(dest => dest.HomeTeamId, expression => expression.MapFrom(
+                    src => src.TeamAIsHomeTeam ? src.TeamA.LegacyTeamId : src.TeamB.LegacyTeamId))
 
                 .ForMember(dest => dest.IsPlaceholderHomeTeam, expression => expression.MapFrom(
                     src => GeHomeTeam(src) == "TBC"))
