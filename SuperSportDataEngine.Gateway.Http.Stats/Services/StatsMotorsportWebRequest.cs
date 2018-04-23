@@ -1,6 +1,4 @@
-﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
-
-namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
+﻿namespace SuperSportDataEngine.Gateway.Http.Stats.Services
 {
     using System;
     using System.Collections.Generic;
@@ -8,6 +6,7 @@ namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
     using System.Net;
     using System.Security.Cryptography;
     using System.Text;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.Stats.Interfaces;
 
     public class StatsMotorsportMotorsportWebRequest : IStatsMotorsportWebRequest
     {

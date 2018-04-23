@@ -1,5 +1,12 @@
 ﻿namespace SuperSportDataEngine.Gateway.Http.StatsProzone.Services
 {
+    using System;
+    using System.Configuration;
+    using System.IO;
+    using System.Net;
+    using System.Text;
+    using System.Threading;
+    using System.Threading.Tasks;
     using Newtonsoft.Json;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models;
@@ -10,18 +17,11 @@
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyGroupedLogs;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.RugbyMatchStats;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.ResponseModels;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.ResponseModels.RugbyRoundFixturesResponse;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
     using SuperSportDataEngine.ApplicationLogic.Constants.Providers;
     using SuperSportDataEngine.Common.Extentions;
     using SuperSportDataEngine.Common.Logging;
-    using System;
-    using System.Configuration;
-    using System.IO;
-    using System.Net;
-    using System.Text;
-    using System.Threading;
-    using System.Threading.Tasks;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.ResponseModels.RugbyRoundFixturesResponse;
 
     public class StatsProzoneRugbyIngestService : IStatsProzoneRugbyIngestService
     {

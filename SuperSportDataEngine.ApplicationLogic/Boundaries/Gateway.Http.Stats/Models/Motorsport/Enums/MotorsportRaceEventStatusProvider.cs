@@ -1,4 +1,4 @@
-﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Models.Motorsport.Enums
+﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.Stats.Models.Motorsport.Enums
 {
     // Note: These values are provider driven.
     public enum MotorsportRaceEventStatusProvider
