@@ -55,7 +55,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         {
             if (_rugbyService.IsNationalTeamSlug(category))
             {
-                return Ok(Task.FromResult(new List<RugbyPointsScorerModel>()));    
+                return Ok(Enumerable.Empty<RugbyPointsScorerModel>());    
             }
 
             if (recordsCount == 0)
@@ -93,7 +93,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         {
             if (_rugbyService.IsNationalTeamSlug(category))
             {
-                return Ok(Task.FromResult(new List<RugbyPointsScorerModel>()));
+                return Ok(Enumerable.Empty<RugbyPointsScorerModel>());
             }
 
             if (recordsCount == 0)
@@ -448,7 +448,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         {
             if (_rugbyService.IsNationalTeamSlug(category))
             {
-                return Ok(Task.FromResult(new List<Log>()));
+                return Ok(Enumerable.Empty<Log>());
             }
 
             const string flatLogsCacheKeyPrefix = "FLATLOGS:";

@@ -272,7 +272,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             var tournament = _publicSportDataUnitOfWork.RugbyTournaments.FirstOrDefault(f => f.Slug == tournamentSlug);
 
             if (tournament == null)
-                throw new Exception("Tournament slug does not exist.");
+                return await Task.FromResult(Guid.Empty);
 
             return await Task.FromResult(tournament.Id);
         }
