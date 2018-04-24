@@ -102,13 +102,23 @@
                 && s.MotorsportLeague.Id == leagueId);
         }
 
-        public async Task<MotorsportRaceEvent> GetTodayEventForLeague(Guid leagueId)
+        public async Task<MotorsportRaceEvent> GetLiveEventForLeague(Guid leagueId)
         {
-            var raceEvent =
-                _publicSportDataUnitOfWork.MotorsportRaceEvents.FirstOrDefault(e =>
-                e.MotorsportRace.MotorsportLeague.Id == leagueId && e.IsCurrent);
+            var raceEvent = _publicSportDataUnitOfWork.MotorsportRaceEvents
+                .Where(e => e.MotorsportRace.MotorsportLeague.Id == leagueId)
+                .FirstOrDefault(IsEventStartingNow);
 
             return await Task.FromResult(raceEvent);
+        }
+
+        private static bool IsEventStartingNow(MotorsportRaceEvent raceEvent)
+        {
+            if (raceEvent.StartDateTimeUtc is null) return false;
+
+            var minutesBeforeEventStarts =
+                Math.Round(raceEvent.StartDateTimeUtc.Value.Subtract(DateTime.UtcNow).TotalMinutes, MidpointRounding.AwayFromZero);
+
+            return (int)minutesBeforeEventStarts < 5 && (int)minutesBeforeEventStarts > 0;
         }
 
         public async Task<IEnumerable<MotorsportRaceEvent>> GetEventsForRace(Guid raceId, Guid seasonId)
