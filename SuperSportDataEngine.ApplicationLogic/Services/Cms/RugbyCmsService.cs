@@ -208,28 +208,28 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             var tournamentFixtures = (PagedResultsEntity<RugbyFixtureEntity>)null;
 
             var tourFixtures = (await _publicSportDataUnitOfWork.RugbyFixtures.WhereAsync(t => t.RugbyTournament.Id == tournamentId)).OrderBy(f => f.StartDateTime).ToList();
-            var fixtures = (IEnumerable<RugbyFixture>)null;
 
             if (seasonId != null)
             {
-                fixtures = tourFixtures.Where(fixture => fixture?.RugbySeason?.Id != null
-                                                    && fixture?.RugbySeason?.Id == seasonId);
+                tourFixtures = tourFixtures.Where(fixture => fixture?.RugbySeason?.Id != null
+                                                    && fixture?.RugbySeason?.Id == seasonId).ToList();
             }
             else
             {
-                fixtures = tourFixtures.Where(fixture => fixture?.RugbySeason?.Id != null
-                                                                && fixture?.RugbySeason?.IsCurrent == true);
+                tourFixtures = tourFixtures.Where(fixture => fixture?.RugbySeason?.Id != null
+                                                                && fixture?.RugbySeason?.IsCurrent == true).ToList();
             }
 
             if (!String.IsNullOrEmpty(query))
             {
-                fixtures = fixtures.Where(q => q.TeamA.Name.Contains(query)
-                                                       || q.TeamA.NameCmsOverride.Contains(query)
-                                                       || q.TeamB.Name.Contains(query)
-                                                       || q.TeamB.NameCmsOverride.Contains(query));
+                query = query.ToLower();
+                tourFixtures = tourFixtures.Where(q => (q.TeamA.Name != null && q.TeamA.Name.ToLower().Contains(query))
+                                                       || (q.TeamA.NameCmsOverride != null && q.TeamA.NameCmsOverride.ToLower().Contains(query))
+                                                       || (q.TeamB.Name != null && q.TeamB.Name.ToLower().Contains(query))
+                                                       || (q.TeamB.NameCmsOverride != null && q.TeamB.NameCmsOverride.ToLower().Contains(query))).ToList();
             }
 
-            tournamentFixtures = await CreatePagedResults<RugbyFixture, RugbyFixtureEntity>(fixtures, pageIndex, pageSize, abpath, query);
+            tournamentFixtures = await CreatePagedResults<RugbyFixture, RugbyFixtureEntity>(tourFixtures, pageIndex, pageSize, abpath, query);
 
             if (tournamentFixtures.Results.Any())
             {
