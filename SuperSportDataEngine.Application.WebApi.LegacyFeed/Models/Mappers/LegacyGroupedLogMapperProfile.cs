@@ -90,7 +90,7 @@
                 .ForMember(dest => dest.TriesBonusPoints, src => src.UseValue(0))
 
                 .ForMember(dest => dest.LossBonusPoints, src => src.UseValue(0))
-
+                
                 .ForAllOtherMembers(dest => dest.Ignore());
         }
     }

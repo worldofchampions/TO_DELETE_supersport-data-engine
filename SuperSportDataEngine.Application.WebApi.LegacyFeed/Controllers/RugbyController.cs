@@ -1,4 +1,5 @@
-﻿using SuperSportDataEngine.Common.Interfaces;
+﻿using Microsoft.Ajax.Utilities;
+using SuperSportDataEngine.Common.Interfaces;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 {
@@ -538,12 +539,50 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 
             var groupedLogsCache = rugbyGroupedLogs.Select(Mapper.Map<Log>).ToList();
 
+            // Dynamically calculate the qualifier indicator
+            // to append to the team names.
+            if (category.ToLower() == "super-rugby")
+            {
+                groupedLogsCache = AddQualifiersToTeams(groupedLogsCache);
+            }
+
             PersistToCache(groupedLogsCacheKey, groupedLogsCache);
 
             if (groupName != null)
                 groupedLogsCache = groupedLogsCache.Where(g => String.Equals(g.GroupName, groupName, StringComparison.CurrentCultureIgnoreCase)).ToList();
 
             return Ok(groupedLogsCache);
+        }
+
+        private static List<Log> AddQualifiersToTeams(List<Log> groupedLogsCache)
+        {
+            var overallStandingsLogs = groupedLogsCache.Where(l =>
+                l.GroupName.ToLower().Contains("overall"));
+
+            var conferenceLogs = groupedLogsCache.Where(l =>
+                !l.GroupName.ToLower().Contains("overall"));
+
+            // Update the team names in the overall standings
+            // With the following rules:
+            //   1. Position 1-3: indicated with “(Q)”, denoting the 3 winners from each conference.
+            var standingsLogs = overallStandingsLogs as IList<Log> ?? overallStandingsLogs.ToList();
+
+            standingsLogs.Take(3).ForEach(
+                log => log.Team = log.Team + " (Q)");
+
+            //  2. Position 4: indicated with “(WC)”, denoting the home wild card position.
+            standingsLogs.Skip(3).Take(1).ForEach(
+                log => log.Team = log.Team + " (WC)");
+
+            //  3. Position 5-8: indicated with “(wc)”, denoting the remaining wild card positions.
+            standingsLogs.Skip(4).Take(3).ForEach(
+                log => log.Team = log.Team + " (wc)");
+
+            // Now that all the overall standings team names have been updated.
+            // Update the conference's team's name's to what the overall standings name is.
+            conferenceLogs.ForEach(log => log.Team = standingsLogs.FirstOrDefault(l => l.TeamID == log.TeamID)?.Team);
+
+            return groupedLogsCache;
         }
 
         // [TODO] Refactor this method out of this class and into a base class that has the cache.
