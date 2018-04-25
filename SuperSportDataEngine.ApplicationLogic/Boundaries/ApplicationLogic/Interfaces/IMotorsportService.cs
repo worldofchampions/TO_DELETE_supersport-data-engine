@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces
+﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
+
+namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces
 {
     using System;
     using System.Collections.Generic;
@@ -6,6 +8,7 @@
     using System.Threading.Tasks;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
 
     public interface IMotorsportService
     {
@@ -16,8 +19,10 @@
         Task<MotorsportSeason> GetCurrentSeasonForLeague(Guid leagueId, CancellationToken cancellationToken);
         Task<IEnumerable<MotorsportSeason>> GetHistoricSeasonsForLeague(Guid leagueId, bool includeCurrentSeason = false);
         Task<MotorsportRaceEvent> GetLiveEventForLeague(Guid leagueId);
+        Task<MotorsportRaceEvent> GetEndedRaceEventForLeague(Guid leagueId);
         Task<IEnumerable<MotorsportRaceEvent>> GetEventsForRace(Guid raceId, Guid seasonId);
         Task<IEnumerable<MotorsportSeason>> GetCurrentAndFutureSeasonsForLeague(Guid leagueId);
         Task SetCurrentRaceEvents();
+        Task<SchedulerTrackingMotorsportRaceEvent> GetSchedulerTrackingEvent(MotorsportRaceEvent raceEvent);
     }
 }

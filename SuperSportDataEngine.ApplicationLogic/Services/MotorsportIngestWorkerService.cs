@@ -389,8 +389,20 @@
                     }
                 }
 
+                if (await ShouldStopLivePollingForEvent(raceEvent))
+                {
+                    break;
+                }
+
                 PauseLiveJobPolling(pollingTimeInSeconds); 
             }
+        }
+
+        private async Task<bool> ShouldStopLivePollingForEvent(MotorsportRaceEvent raceEvent)
+        {
+            var schedulerTrackingEvent = await _motorsportService.GetSchedulerTrackingEvent(raceEvent);
+
+            return schedulerTrackingEvent?.EndedDateTime != null && schedulerTrackingEvent.MotorsportRaceEventStatus == MotorsportRaceEventStatus.Result;
         }
 
         public async Task IngestHistoricTeamStandings(CancellationToken cancellationToken)
