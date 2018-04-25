@@ -41,10 +41,13 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
             return new List<RugbyTeam>
             {
                 new RugbyTeam {ProviderTeamId = 1252, NameCmsOverride = "Vodacom Blue Bulls"},
-                new RugbyTeam {ProviderTeamId = 1253, NameCmsOverride = "Toyota Free State Cheetahs"},
-                new RugbyTeam {ProviderTeamId = 1254, NameCmsOverride = "Xerox Golden Lions"},
+                new RugbyTeam {ProviderTeamId = 1216, NameCmsOverride = "Down Touch Griffons"},
+                new RugbyTeam {ProviderTeamId = 1519, NameCmsOverride = "Windhoek Draught Welwitschias"},
+                new RugbyTeam {ProviderTeamId = 1260, NameCmsOverride = "EP Elephants"},
+                new RugbyTeam {ProviderTeamId = 1253, NameCmsOverride = "Toyota Free State XV"},
+                new RugbyTeam {ProviderTeamId = 1254, NameCmsOverride = "Xerox Golden Lions XV"},
                 new RugbyTeam {ProviderTeamId = 1255, NameCmsOverride = "Tafel Lager Griquas"},
-                new RugbyTeam {ProviderTeamId = 1256, NameCmsOverride = "Cell C Sharks"},
+                new RugbyTeam {ProviderTeamId = 1256, NameCmsOverride = "Cell C Sharks XV"},
                 new RugbyTeam {ProviderTeamId = 1263, NameCmsOverride = "Steval Pumas"},
                 new RugbyTeam {ProviderTeamId = 1257, NameCmsOverride = "DHL Western Province"},
                 //Sevens
