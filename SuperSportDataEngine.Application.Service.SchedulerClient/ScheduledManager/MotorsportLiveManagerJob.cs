@@ -11,7 +11,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
     using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
 
     public class MotorsportLiveManagerJob
@@ -56,8 +55,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
             var eventInRepo = (await _systemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.AllAsync())
                 .FirstOrDefault(e => e.MotorsportRaceEventId == raceEvent.Id);
 
-            await AddLiveEventToTrackingTable(raceEvent);
-
             if (eventInRepo != null && eventInRepo.IsJobRunning != true)
             {
                 var jobId = ConfigurationManager.AppSettings["Motorsport_LiveRaceJob_JobIdPrefix"] + raceEvent.MotorsportRace.RaceName;
@@ -80,21 +77,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
 
                 _recurringJobManager.Trigger(jobId);
             }
-        }
-
-        private async Task AddLiveEventToTrackingTable(MotorsportRaceEvent raceEvent)
-        {
-            _systemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.Add(
-                new SchedulerTrackingMotorsportRaceEvent
-                {
-                    MotorsportRaceEventStatus = raceEvent.MotorsportRaceEventStatus,
-                    MotorsportRaceEventId = raceEvent.Id,
-                    IsJobRunning = false,
-                    MotorsportLeagueId = raceEvent.MotorsportRace.MotorsportLeague.Id,
-                    StartDateTime = raceEvent.StartDateTimeUtc
-                });
-
-            await _systemSportDataUnitOfWork.SaveChangesAsync();
         }
     }
 }
