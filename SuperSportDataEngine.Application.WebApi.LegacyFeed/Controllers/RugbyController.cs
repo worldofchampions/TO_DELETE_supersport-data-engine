@@ -575,7 +575,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
                 log => log.Team = log.Team + " (WC)");
 
             //  3. Position 5-8: indicated with “(wc)”, denoting the remaining wild card positions.
-            standingsLogs.Skip(4).Take(3).ForEach(
+            standingsLogs.Skip(4).Take(4).ForEach(
                 log => log.Team = log.Team + " (wc)");
 
             // Now that all the overall standings team names have been updated.
