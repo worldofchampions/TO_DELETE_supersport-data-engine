@@ -1,6 +1,4 @@
-﻿using System.Runtime.Serialization;
-
-namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared
+﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared
 {
     public class Log
     {
@@ -47,16 +45,6 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared
         }
 
         public int Position
-        {
-            get;
-            set;
-        }
-
-        // We don't want to serve out this property
-        // on the feed. But would still want 
-        // to have it in the model.
-        [IgnoreDataMember]
-        public int PositionOnOverallStandings
         {
             get;
             set;
