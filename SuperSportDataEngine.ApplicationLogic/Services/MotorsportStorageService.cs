@@ -93,7 +93,7 @@
 
             foreach (var providerRaceEvent in raceEventsFromProviderResponse)
             {
-                if (providerRaceEvent.race == null) continue;
+                if (providerRaceEvent?.race == null) continue;
 
                 var eventInRepo = _publicSportDataUnitOfWork.MotorsportRaceEvents.FirstOrDefault(r =>
                     r.MotorsportRace.ProviderRaceId == providerRaceEvent.race.raceId
@@ -107,9 +107,20 @@
                 }
                 else
                 {
-                    UpdateRaceEventInRepo(providerRaceEvent, eventInRepo);
+                    var eventInTrackingRepo = 
+                        _publicSystemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.FirstOrDefault(r => 
+                        r.MotorsportRaceEventId == eventInRepo.Id);
 
-                    eventsToUpdateInTrackingRepo.Add(providerRaceEvent);
+                    if (eventInTrackingRepo is null)
+                    {
+                        eventsToAddToTrackingRepo.Add(providerRaceEvent);
+                    }
+                    else
+                    {
+                        eventsToUpdateInTrackingRepo.Add(providerRaceEvent);
+                    }
+
+                    UpdateRaceEventInRepo(providerRaceEvent, eventInRepo);
                 }
             }
 
@@ -853,7 +864,7 @@
                     && e.MotorsportRace.Id == motorsportRace.Id
                     && e.MotorsportSeason.Id == season.Id);
 
-                if(motorsportRaceEvent == null) continue;
+                if (motorsportRaceEvent == null) continue;
 
                 var trackingMotorsportRaceEvent =
                     _publicSystemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.FirstOrDefault(e =>

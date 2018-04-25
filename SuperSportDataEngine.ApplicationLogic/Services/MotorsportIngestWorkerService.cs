@@ -382,11 +382,11 @@
 
                 await _mongoDbMotorsportRepository.Save(providerResponse);
 
-                PausePolling(pollingTimeInSeconds);
+                PauseLiveJobPolling(pollingTimeInSeconds);
             }
         }
 
-        private static void PausePolling(int pollingTimeInSeconds)
+        private static void PauseLiveJobPolling(int pollingTimeInSeconds)
         {
             var sleepTimeInMilliseconds = pollingTimeInSeconds * 1000;
 
