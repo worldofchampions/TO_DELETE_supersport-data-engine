@@ -107,8 +107,8 @@
                 }
                 else
                 {
-                    var eventInTrackingRepo = 
-                        _publicSystemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.FirstOrDefault(r => 
+                    var eventInTrackingRepo =
+                        _publicSystemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.FirstOrDefault(r =>
                         r.MotorsportRaceEventId == eventInRepo.Id);
 
                     if (eventInTrackingRepo is null)
@@ -296,6 +296,39 @@
             await _publicSportDataUnitOfWork.SaveChangesAsync();
 
             await UpdateGapToLeaderTimesForEvent(raceEvent);
+        }
+
+        public async Task PersistLiveResultsInRepository(MotorsportEntitiesResponse response, MotorsportRaceEvent raceEvent)
+        {
+            var eventStatusFromProviderResponse = ExtractRaceEventStatusFromProviderResponse(response);
+
+            if (eventStatusFromProviderResponse is null) return;
+
+            var raceEventStatus = MapProviderRaceEventStatusToInternal(eventStatusFromProviderResponse.eventStatusId);
+
+            var raceEventInTrackingRepo =
+                _publicSystemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.FirstOrDefault(e =>
+                    e.MotorsportRaceEventId == raceEvent.Id);
+
+            if (raceEventInTrackingRepo != null)
+            {
+                raceEventInTrackingRepo.MotorsportRaceEventStatus = raceEventStatus;
+
+                if(raceEventStatus.Equals(MotorsportRaceEventStatus.Result))
+                {
+                    raceEventInTrackingRepo.EndedDateTime = DateTimeOffset.UtcNow;
+                }
+
+                _publicSystemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.Update(raceEventInTrackingRepo);
+
+                await _publicSystemSportDataUnitOfWork.SaveChangesAsync();
+            }
+
+            raceEvent.MotorsportRaceEventStatus = raceEventStatus;
+
+            _publicSportDataUnitOfWork.MotorsportRaceEvents.Update(raceEvent);
+
+            await _publicSportDataUnitOfWork.SaveChangesAsync();
         }
 
         private async Task UpdateGapToLeaderTimesForEvent(MotorsportRaceEvent motorsportRaceEvent)
@@ -1115,6 +1148,22 @@
                 ?.events.FirstOrDefault()
                 ?.boxscore
                 ?.results;
+
+            return result;
+        }
+
+        private static EventStatus ExtractRaceEventStatusFromProviderResponse(MotorsportEntitiesResponse response)
+        {
+            if (response != null && response.recordCount <= 0)
+                return null;
+
+            var result = response
+                ?.apiResults.FirstOrDefault()
+                ?.league.subLeague
+                ?.season
+                ?.eventType.FirstOrDefault()
+                ?.events.FirstOrDefault()
+                ?.eventStatus;
 
             return result;
         }

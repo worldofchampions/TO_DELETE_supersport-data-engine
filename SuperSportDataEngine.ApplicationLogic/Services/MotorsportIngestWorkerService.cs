@@ -370,27 +370,27 @@
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                var providerSeasonId = raceEvent.MotorsportSeason.ProviderSeasonId;
+                if (raceEvent?.MotorsportSeason != null)
+                {
+                    var providerSeasonId = raceEvent.MotorsportSeason.ProviderSeasonId;
 
-                var providerSlug = raceEvent.MotorsportRace.MotorsportLeague.ProviderSlug;
+                    if (raceEvent.MotorsportRace.MotorsportLeague?.ProviderSlug != null)
+                    {
+                        var providerSlug = raceEvent.MotorsportRace.MotorsportLeague.ProviderSlug;
 
-                var providerRaceId = raceEvent.MotorsportRace.ProviderRaceId;
+                        var providerRaceId = raceEvent.MotorsportRace.ProviderRaceId;
 
-                var providerResponse = _statsMotorsportIngestService.IngestRaceResults(providerSlug, providerSeasonId, providerRaceId);
+                        var providerResponse =
+                            _statsMotorsportIngestService.IngestRaceResults(providerSlug, providerSeasonId, providerRaceId);
 
-                await _motorsportStorageService.PersistResultsInRepository(providerResponse, raceEvent, cancellationToken);
+                        await _motorsportStorageService.PersistLiveResultsInRepository(providerResponse, raceEvent);
 
-                await _mongoDbMotorsportRepository.Save(providerResponse);
+                        await _mongoDbMotorsportRepository.Save(providerResponse);
+                    }
+                }
 
-                PauseLiveJobPolling(pollingTimeInSeconds);
+                PauseLiveJobPolling(pollingTimeInSeconds); 
             }
-        }
-
-        private static void PauseLiveJobPolling(int pollingTimeInSeconds)
-        {
-            var sleepTimeInMilliseconds = pollingTimeInSeconds * 1000;
-
-            Thread.Sleep(sleepTimeInMilliseconds);
         }
 
         public async Task IngestHistoricTeamStandings(CancellationToken cancellationToken)
@@ -484,6 +484,13 @@
                     }
                 }
             }
+        }
+
+        private static void PauseLiveJobPolling(int pollingTimeInSeconds)
+        {
+            var sleepTimeInMilliseconds = pollingTimeInSeconds * 1000;
+
+            Thread.Sleep(sleepTimeInMilliseconds);
         }
     }
 }
