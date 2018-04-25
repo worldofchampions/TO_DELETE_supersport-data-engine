@@ -269,10 +269,12 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<Guid> GetTournamentId(string tournamentSlug)
         {
-            var tournament = _publicSportDataUnitOfWork.RugbyTournaments.FirstOrDefault(f => f.Slug == tournamentSlug);
+            var tournament = await GetTournamentBySlug(tournamentSlug);
 
             if (tournament == null)
+            {
                 return await Task.FromResult(Guid.Empty);
+            }
 
             return await Task.FromResult(tournament.Id);
         }
