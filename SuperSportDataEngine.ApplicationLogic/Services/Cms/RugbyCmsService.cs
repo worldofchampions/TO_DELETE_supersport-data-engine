@@ -43,12 +43,12 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             {
                 tournaments = await CreatePagedResults<RugbyTournament, RugbyTournamentEntity>(
                                     _publicSportDataUnitOfWork.RugbyTournaments.Where(q => q.Name.Contains(query)
-                                                        || q.NameCmsOverride.Contains(query)), pageIndex, pageSize, abpath, query);
+                                                        || q.NameCmsOverride.Contains(query)).OrderBy(tournament => tournament.Name), pageIndex, pageSize, abpath, query);
             }
             else
             {
                 tournaments = await CreatePagedResults<RugbyTournament, RugbyTournamentEntity>(
-                                            _publicSportDataUnitOfWork.RugbyTournaments.All(), pageIndex, pageSize, abpath, query);
+                                            _publicSportDataUnitOfWork.RugbyTournaments.All().OrderBy(tournament => tournament.Name), pageIndex, pageSize, abpath, query);
             }
 
             if (tournaments.Results.Any())
