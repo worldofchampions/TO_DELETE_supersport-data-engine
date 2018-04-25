@@ -48,6 +48,10 @@
             MotorsportRaceEvent raceEvent,
             CancellationToken cancellationToken);
 
+        Task PersistLiveResultsInRepository(
+            MotorsportEntitiesResponse response,
+            MotorsportRaceEvent raceEvent);
+
         Task PersistGridInRepository(
             MotorsportEntitiesResponse response,
             MotorsportRaceEvent raceEvent,
