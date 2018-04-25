@@ -7,6 +7,7 @@
     using System.Threading.Tasks;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
@@ -17,9 +18,7 @@
         private readonly IPublicSportDataUnitOfWork _publicSportDataUnitOfWork;
         private readonly ISystemSportDataUnitOfWork _systemSportDataUnitOfWork;
 
-        public MotorsportService(
-            IPublicSportDataUnitOfWork publicSportDataUnitOfWork,
-            ISystemSportDataUnitOfWork systemSportDataUnitOfWork)
+        public MotorsportService(IPublicSportDataUnitOfWork publicSportDataUnitOfWork, ISystemSportDataUnitOfWork systemSportDataUnitOfWork)
         {
             _publicSportDataUnitOfWork = publicSportDataUnitOfWork;
             _systemSportDataUnitOfWork = systemSportDataUnitOfWork;
@@ -106,19 +105,35 @@
         {
             var raceEvent = _publicSportDataUnitOfWork.MotorsportRaceEvents
                 .Where(e => e.MotorsportRace.MotorsportLeague.Id == leagueId)
-                .FirstOrDefault(IsEventStartingNow);
+                .FirstOrDefault(IsEventLive);
 
             return await Task.FromResult(raceEvent);
         }
 
-        private static bool IsEventStartingNow(MotorsportRaceEvent raceEvent)
+        public async Task<MotorsportRaceEvent> GetEndedRaceEventForLeague(Guid leagueId)
+        {
+            var raceEvent =
+                _publicSportDataUnitOfWork.MotorsportRaceEvents.FirstOrDefault(e =>
+                    e.MotorsportRace.MotorsportLeague.Id == leagueId
+                    && e.MotorsportRaceEventStatus == MotorsportRaceEventStatus.Result
+                    && e.MotorsportSeason.IsCurrent
+                    && e.MotorsportSeason.IsCurrent);
+
+            return await Task.FromResult(raceEvent);
+        }
+
+        private static bool IsEventLive(MotorsportRaceEvent raceEvent)
         {
             if (raceEvent.StartDateTimeUtc is null) return false;
 
             var minutesBeforeEventStarts =
                 Math.Round(raceEvent.StartDateTimeUtc.Value.Subtract(DateTime.UtcNow).TotalMinutes, MidpointRounding.AwayFromZero);
 
-            return (int)minutesBeforeEventStarts < 5 && (int)minutesBeforeEventStarts > 0;
+            const int maxRaceEventMinutes = 120;
+
+            const int minRaceEventMinutes = 0;
+
+            return (int)minutesBeforeEventStarts < maxRaceEventMinutes && (int)minutesBeforeEventStarts > minRaceEventMinutes;
         }
 
         public async Task<IEnumerable<MotorsportRaceEvent>> GetEventsForRace(Guid raceId, Guid seasonId)
@@ -245,6 +260,15 @@
             const int hourToSetEventCurrent = 72;
 
             return (int)hoursBeforeEventStarts < hourToSetEventCurrent && (int)hoursBeforeEventStarts > 0;
+        }
+
+        public async Task<SchedulerTrackingMotorsportRaceEvent> GetSchedulerTrackingEvent(MotorsportRaceEvent raceEvent)
+        {
+            var schedulerTrackingEvent =
+                _systemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.FirstOrDefault(e =>
+                    e.MotorsportRaceEventId == raceEvent.Id);
+
+            return await Task.FromResult(schedulerTrackingEvent);
         }
     }
 }

@@ -1,8 +1,7 @@
-﻿using System.Linq;
-
-namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledManager
+﻿namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledManager
 {
     using System;
+    using System.Linq;
     using System.Configuration;
     using System.Threading;
     using System.Threading.Tasks;
@@ -20,7 +19,11 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
         private readonly IMotorsportIngestWorkerService _motorsportIngestWorkerService;
         private readonly ISystemSportDataUnitOfWork _systemSportDataUnitOfWork;
 
-        public MotorsportLiveManagerJob(IRecurringJobManager recurringJobManager, IMotorsportService motorsportService, IMotorsportIngestWorkerService motorsportIngestWorkerService, ISystemSportDataUnitOfWork systemSportDataUnitOfWork)
+        public MotorsportLiveManagerJob(
+            IRecurringJobManager recurringJobManager,
+            IMotorsportService motorsportService,
+            IMotorsportIngestWorkerService motorsportIngestWorkerService,
+            ISystemSportDataUnitOfWork systemSportDataUnitOfWork)
         {
             _recurringJobManager = recurringJobManager;
             _motorsportService = motorsportService;
@@ -31,6 +34,33 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
         public async Task DoWorkAsync()
         {
             await CreateChildJobsForFetchingLiveRaceData();
+
+            await DeleteChildJobsForEndedRaceEvents();
+        }
+
+        private async Task DeleteChildJobsForEndedRaceEvents()
+        {
+            var currentLeagues = await _motorsportService.GetActiveLeagues();
+
+            foreach (var league in currentLeagues)
+            {
+                var raceEvent = await _motorsportService.GetEndedRaceEventForLeague(league.Id);
+
+                if (raceEvent == null) continue;
+
+                var jobId = ConfigurationManager.AppSettings["Motorsport_LiveRaceJob_JobIdPrefix"] + raceEvent.MotorsportRace.RaceName;
+
+                _recurringJobManager.RemoveIfExists(jobId);
+
+                var eventInRepo =
+                    _systemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.FirstOrDefault(e => e.MotorsportRaceEventId == raceEvent.Id);
+
+                eventInRepo.IsJobRunning = false;
+
+                _systemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.Update(eventInRepo);
+            }
+
+            await _systemSportDataUnitOfWork.SaveChangesAsync();
         }
 
         private async Task CreateChildJobsForFetchingLiveRaceData()
@@ -43,19 +73,20 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
 
                 if (raceEvent != null)
                 {
-                    await UpdateJobDefinitionForLiveRaceEvent(raceEvent);
+                    UpdateJobDefinitionForLiveRaceEvent(raceEvent);
                 }
             }
 
             await _systemSportDataUnitOfWork.SaveChangesAsync();
         }
 
-        private async Task UpdateJobDefinitionForLiveRaceEvent(MotorsportRaceEvent raceEvent)
+        private void UpdateJobDefinitionForLiveRaceEvent(MotorsportRaceEvent raceEvent)
         {
-            var eventInRepo = (await _systemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.AllAsync())
-                .FirstOrDefault(e => e.MotorsportRaceEventId == raceEvent.Id);
+            var trackingMotorsportRaceEvent =
+                 _systemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.FirstOrDefault(e =>
+                 e.MotorsportRaceEventId == raceEvent.Id);
 
-            if (eventInRepo != null && eventInRepo.IsJobRunning != true)
+            if (trackingMotorsportRaceEvent != null && trackingMotorsportRaceEvent.IsJobRunning != true)
             {
                 var jobId = ConfigurationManager.AppSettings["Motorsport_LiveRaceJob_JobIdPrefix"] + raceEvent.MotorsportRace.RaceName;
 
@@ -71,9 +102,9 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
                     jobCronExpression,
                     jobOptions);
 
-                eventInRepo.IsJobRunning = true;
+                trackingMotorsportRaceEvent.IsJobRunning = true;
 
-                _systemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.Update(eventInRepo);
+                _systemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.Update(trackingMotorsportRaceEvent);
 
                 _recurringJobManager.Trigger(jobId);
             }
