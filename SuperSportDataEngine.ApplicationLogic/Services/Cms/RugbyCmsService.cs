@@ -162,12 +162,14 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             {
                 tournamentSeasons = await CreatePagedResults<RugbySeason, RugbySeasonEntity>(
                                     _publicSportDataUnitOfWork.RugbySeasons.Where(q => q.Name.Contains(query)
-                                                                                    && q.RugbyTournament.Id == tournamentId), pageIndex, pageSize, abpath, query);
+                                                                                    && q.RugbyTournament.Id == tournamentId)
+                                                                                    .OrderByDescending(field => field.ProviderSeasonId), pageIndex, pageSize, abpath, query);
             }
             else
             {
                 tournamentSeasons = await CreatePagedResults<RugbySeason, RugbySeasonEntity>(_publicSportDataUnitOfWork.RugbySeasons.Where(
-                                                            season => season.RugbyTournament.Id == tournamentId), pageIndex, pageSize, abpath, query);
+                                                            season => season.RugbyTournament.Id == tournamentId)
+                                                            .OrderByDescending(field => field.ProviderSeasonId), pageIndex, pageSize, abpath, query);
             }
 
             if (tournamentSeasons.Results.Any())
