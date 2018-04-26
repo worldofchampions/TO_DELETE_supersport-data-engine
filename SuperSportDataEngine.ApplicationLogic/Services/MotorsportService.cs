@@ -128,11 +128,24 @@
             var minutesBeforeEventStarts =
                 Math.Round(raceEvent.StartDateTimeUtc.Value.Subtract(DateTime.UtcNow).TotalMinutes, MidpointRounding.AwayFromZero);
 
-            const int maxRaceEventMinutes = 120;
+            var maxRaceEventMinutes = GetEstimatedRaceEventTimeInMinutes(raceEvent.MotorsportRace.MotorsportLeague.MotorsportSportType);
 
             const int minRaceEventMinutes = 0;
 
             return (int)minutesBeforeEventStarts < maxRaceEventMinutes && (int)minutesBeforeEventStarts > minRaceEventMinutes;
+        }
+
+        private static int GetEstimatedRaceEventTimeInMinutes(MotorsportSportType motorsportSportType)
+        {
+            switch (motorsportSportType)
+            {
+                case MotorsportSportType.FormulaOne:
+                    return 135;
+                case MotorsportSportType.MotoGp:
+                    return 140;
+                default:
+                    return 120;
+            }
         }
 
         public async Task<IEnumerable<MotorsportRaceEvent>> GetEventsForRace(Guid raceId, Guid seasonId)
