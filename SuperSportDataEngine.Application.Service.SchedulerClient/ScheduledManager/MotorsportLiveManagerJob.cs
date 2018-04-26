@@ -88,7 +88,8 @@
 
             if (trackingMotorsportRaceEvent != null && trackingMotorsportRaceEvent.IsJobRunning != true)
             {
-                var jobId = ConfigurationManager.AppSettings["Motorsport_LiveRaceJob_JobIdPrefix"] + raceEvent.MotorsportRace.RaceName;
+                var jobId = 
+                    ConfigurationManager.AppSettings["Motorsport_LiveRaceJob_JobIdPrefix"] + raceEvent.MotorsportRace.RaceName + "→" + raceEvent.LegacyRaceEventId;
 
                 var jobCronExpression = ConfigurationManager.AppSettings["Motorsport_LiveRaceJob_JobCronExpression"];
 

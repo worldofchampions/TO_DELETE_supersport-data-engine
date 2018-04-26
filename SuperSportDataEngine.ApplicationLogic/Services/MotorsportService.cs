@@ -116,7 +116,6 @@
                 _publicSportDataUnitOfWork.MotorsportRaceEvents.FirstOrDefault(e =>
                     e.MotorsportRace.MotorsportLeague.Id == leagueId
                     && e.MotorsportRaceEventStatus == MotorsportRaceEventStatus.Result
-                    && e.MotorsportSeason.IsCurrent
                     && e.MotorsportSeason.IsCurrent);
 
             return await Task.FromResult(raceEvent);
