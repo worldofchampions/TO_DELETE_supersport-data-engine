@@ -889,6 +889,7 @@
                         continue;
 
                     await PersistFlatLogs(cancellationToken, logs);
+                    await CleanupFlatLogs(cancellationToken, logs);
 
                     _mongoDbRepository.Save(logs);
                 }
@@ -2646,6 +2647,7 @@
                     return;
 
                 await PersistFlatLogs(cancellationToken, logs);
+                await CleanupFlatLogs(cancellationToken, logs);
 
                 _mongoDbRepository.Save(logs);
             }
@@ -2662,6 +2664,47 @@
 
                 _mongoDbRepository.Save(logs);
             }
+        }
+
+        private async Task CleanupFlatLogs(CancellationToken cancellationToken, RugbyFlatLogsResponse logsFromProvider)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return;
+
+            var providerTournamentId = logsFromProvider.RugbyFlatLogs.competitionId;
+            var providerSeasonId = logsFromProvider.RugbyFlatLogs.seasonId;
+
+            // All the log entries that we have in the db for this tournament and season.
+            var logsInDb = _publicSportDataUnitOfWork.RugbyFlatLogs.Where(l =>
+                l.RugbyTournament.ProviderTournamentId == providerTournamentId &&
+                l.RugbySeason.ProviderSeasonId == providerSeasonId).ToList();
+
+            // Find all the entries we should remove.
+            // Find all the entries that are in the db 
+            // but not from the provider response.
+            var entriesToRemove = logsInDb.Where(l =>
+                logsFromProvider.RugbyFlatLogs.ladderposition.Count(lProvider =>
+                    lProvider.teamId == l.RugbyTeam.ProviderTeamId) == 0);
+
+            var rugbyFlatLogs = entriesToRemove as IList<RugbyFlatLog> ?? entriesToRemove.ToList();
+
+            // For each of those entries, log them as a 
+            // warning that we are going to remove them.
+            foreach (var rugbyFlatLog in rugbyFlatLogs)
+            {
+                await _logger.Warn("CleanUpFlatLogs." + 
+                                   rugbyFlatLog.RugbyTournament.ProviderTournamentId + "." +
+                                   rugbyFlatLog.RugbySeason.ProviderSeasonId + "." + 
+                                   rugbyFlatLog.RugbyTeam.LegacyTeamId,
+                    "Going to remove log entry for Team = " + rugbyFlatLog.RugbyTeam.Name +
+                    "from Tournament = " + rugbyFlatLog.RugbyTournament.Name + 
+                    "for Season = " + rugbyFlatLog.RugbySeason.ProviderSeasonId);
+            }
+
+            // Now remove the log entries that 
+            // should not be in the database.
+            _publicSportDataUnitOfWork.RugbyFlatLogs.DeleteRange(rugbyFlatLogs);
+            await _publicSportDataUnitOfWork.SaveChangesAsync();
         }
 
         public async Task IngestLineupsForPastGames(CancellationToken cancellationToken)
