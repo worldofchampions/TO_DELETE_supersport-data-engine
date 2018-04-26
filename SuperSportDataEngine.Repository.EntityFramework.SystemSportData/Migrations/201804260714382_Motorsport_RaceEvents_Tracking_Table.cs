@@ -13,8 +13,8 @@ namespace SuperSportDataEngine.Repository.EntityFramework.SystemSportData.Migrat
                     {
                         MotorsportRaceEventId = c.Guid(nullable: false),
                         MotorsportLeagueId = c.Guid(nullable: false),
-                        StartDateTime = c.DateTimeOffset(precision: 7),
-                        EndedDateTime = c.DateTimeOffset(precision: 7),
+                        StartDateTimeUtc = c.DateTimeOffset(precision: 7),
+                        EndedDateTimeUtc = c.DateTimeOffset(precision: 7),
                         MotorsportRaceEventStatus = c.Int(nullable: false),
                         IsJobRunning = c.Boolean(nullable: false),
                         TimestampCreated = c.DateTimeOffset(nullable: false, precision: 7),
