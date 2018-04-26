@@ -316,7 +316,7 @@
 
                 if(raceEventStatus.Equals(MotorsportRaceEventStatus.Result))
                 {
-                    raceEventInTrackingRepo.EndedDateTime = DateTimeOffset.UtcNow;
+                    raceEventInTrackingRepo.EndedDateTimeUtc = DateTimeOffset.UtcNow;
                 }
 
                 _publicSystemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.Update(raceEventInTrackingRepo);
@@ -875,13 +875,13 @@
                 {
                     MotorsportLeagueId = motorsportRaceEvent.MotorsportRace.MotorsportLeague.Id,
                     MotorsportRaceEventId = motorsportRaceEvent.Id,
-                    StartDateTime = motorsportRaceEvent.StartDateTimeUtc,
+                    StartDateTimeUtc = motorsportRaceEvent.StartDateTimeUtc,
                     MotorsportRaceEventStatus = motorsportRaceEvent.MotorsportRaceEventStatus
                 };
 
                 if (trackingMotorsportRaceEvent.MotorsportRaceEventStatus == MotorsportRaceEventStatus.Result)
                 {
-                    trackingMotorsportRaceEvent.EndedDateTime = DateTimeOffset.UtcNow;
+                    trackingMotorsportRaceEvent.EndedDateTimeUtc = DateTimeOffset.UtcNow;
                 }
 
                 _publicSystemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.Add(trackingMotorsportRaceEvent);
@@ -908,11 +908,11 @@
 
                 trackingMotorsportRaceEvent.MotorsportRaceEventStatus = motorsportRaceEvent.MotorsportRaceEventStatus;
 
-                trackingMotorsportRaceEvent.StartDateTime = motorsportRaceEvent.StartDateTimeUtc;
+                trackingMotorsportRaceEvent.StartDateTimeUtc = motorsportRaceEvent.StartDateTimeUtc;
 
                 if (motorsportRaceEvent.MotorsportRaceEventStatus == MotorsportRaceEventStatus.Result)
                 {
-                    trackingMotorsportRaceEvent.EndedDateTime = DateTimeOffset.UtcNow;
+                    trackingMotorsportRaceEvent.EndedDateTimeUtc = DateTimeOffset.UtcNow;
                 }
 
                 _publicSystemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.Update(trackingMotorsportRaceEvent);

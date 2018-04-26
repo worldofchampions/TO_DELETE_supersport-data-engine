@@ -398,13 +398,6 @@
             }
         }
 
-        private async Task<bool> ShouldStopLivePollingForEvent(MotorsportRaceEvent raceEvent)
-        {
-            var schedulerTrackingEvent = await _motorsportService.GetSchedulerTrackingEvent(raceEvent);
-
-            return schedulerTrackingEvent?.EndedDateTime != null && schedulerTrackingEvent.MotorsportRaceEventStatus == MotorsportRaceEventStatus.Result;
-        }
-
         public async Task IngestHistoricTeamStandings(CancellationToken cancellationToken)
         {
             var motorsportLeagues = await _motorsportService.GetActiveLeagues();
@@ -503,6 +496,13 @@
             var sleepTimeInMilliseconds = pollingTimeInSeconds * 1000;
 
             Thread.Sleep(sleepTimeInMilliseconds);
+        }
+
+        private async Task<bool> ShouldStopLivePollingForEvent(MotorsportRaceEvent raceEvent)
+        {
+            var schedulerTrackingEvent = await _motorsportService.GetSchedulerTrackingEvent(raceEvent);
+
+            return schedulerTrackingEvent?.EndedDateTimeUtc != null && schedulerTrackingEvent.MotorsportRaceEventStatus == MotorsportRaceEventStatus.Result;
         }
     }
 }

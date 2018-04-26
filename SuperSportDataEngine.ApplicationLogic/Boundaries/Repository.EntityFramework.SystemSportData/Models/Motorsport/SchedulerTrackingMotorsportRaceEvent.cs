@@ -10,10 +10,10 @@
 
         public Guid MotorsportLeagueId { get; set; }
 
-        public DateTimeOffset? StartDateTime { get; set; }
+        public DateTimeOffset? StartDateTimeUtc { get; set; }
 
         /// <summary> This value is set once we receive the corresponding status from the supplier data. </summary>
-        public DateTimeOffset? EndedDateTime { get; set; }
+        public DateTimeOffset? EndedDateTimeUtc { get; set; }
 
         public MotorsportRaceEventStatus MotorsportRaceEventStatus { get; set; }
 
