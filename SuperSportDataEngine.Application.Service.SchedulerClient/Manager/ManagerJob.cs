@@ -1,19 +1,18 @@
-﻿using System.Configuration;
-using System.Runtime.CompilerServices;
-using SuperSportDataEngine.Application.Container.Enums;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
-
-namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
+﻿namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
 {
     using Microsoft.Practices.Unity;
     using System;
     using System.Timers;
+    using System.Threading.Tasks;
     using ScheduledManager;
     using Hangfire;
     using Container;
     using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using ApplicationLogic.Services;
+    using System.Configuration;
+    using SuperSportDataEngine.Application.Container.Enums;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
 
     internal class ManagerJob
     {
@@ -29,21 +28,29 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
         private LogsManagerJob _logsManagerJob;
         private PlayerStatisticsManagerJob _playerStatisticsManagerJob;
         private MotorsportLiveManagerJob _motorsportLiveManagerJob;
-        private IMotorsportIngestWorkerService _motorIngestWorkerService;
+        private IMotorsportIngestWorkerService _motorsportIngestWorkerService;
         private IMotorsportService _motorsportService;
         private static int _managerLoopTimeInSeconds;
 
         public ManagerJob()
         {
-            _managerLoopTimeInSeconds = 
-                int.Parse(
-                    ConfigurationManager.AppSettings["ManagerLoopTimeInSeconds"]);
+            _managerLoopTimeInSeconds = int.Parse(ConfigurationManager.AppSettings["ManagerLoopTimeInSeconds"]);
 
             ConfigureTimer();
+
             ConfigureDepenencies();
         }
 
         private void ConfigureDepenencies()
+        {
+            ConfigureCommonDependencies();
+
+            ConfigureRugbyDependencies();
+
+            ConfigureMotorsportDependencies();
+        }
+
+        private void ConfigureCommonDependencies()
         {
             _container?.Dispose();
 
@@ -52,20 +59,17 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
             UnityConfigurationManager.RegisterTypes(_container, ApplicationScope.ServiceSchedulerClient);
 
             _recurringJobManager = _container.Resolve<IRecurringJobManager>();
+
             _systemSportDataUnitOfWork = _container.Resolve<ISystemSportDataUnitOfWork>();
+
             _publicSportDataUnitOfWork = _container.Resolve<IPublicSportDataUnitOfWork>();
+        }
 
+        private void ConfigureRugbyDependencies()
+        {
             _rugbyService = _container.Resolve<IRugbyService>();
+
             _rugbyIngestWorkerService = _container.Resolve<IRugbyIngestWorkerService>();
-
-            _motorsportService = _container.Resolve<IMotorsportService>();
-            _motorIngestWorkerService = _container.Resolve<IMotorsportIngestWorkerService>();
-
-            _motorsportLiveManagerJob = new MotorsportLiveManagerJob(
-                _recurringJobManager,
-                _container,
-                _motorsportService,
-                _motorIngestWorkerService);
 
             _fixturesManagerJob =
                 new FixturesManagerJob(
@@ -74,7 +78,8 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
                     _rugbyService,
                     _rugbyIngestWorkerService);
 
-            _liveManagerJob = new LiveManagerJob(
+            _liveManagerJob =
+                new LiveManagerJob(
                 _recurringJobManager,
                 _rugbyService,
                 _rugbyIngestWorkerService,
@@ -87,12 +92,22 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
                     _rugbyIngestWorkerService,
                     _systemSportDataUnitOfWork,
                     _publicSportDataUnitOfWork);
-            
+
             _playerStatisticsManagerJob =
                 new PlayerStatisticsManagerJob(
                     _recurringJobManager,
                     _rugbyService,
                     _rugbyIngestWorkerService);
+        }
+
+        private void ConfigureMotorsportDependencies()
+        {
+            _motorsportService = _container.Resolve<IMotorsportService>();
+
+            _motorsportIngestWorkerService = _container.Resolve<IMotorsportIngestWorkerService>();
+
+            _motorsportLiveManagerJob =
+                new MotorsportLiveManagerJob(_recurringJobManager, _motorsportService, _motorsportIngestWorkerService, _systemSportDataUnitOfWork);
         }
 
         private void ConfigureTimer()
@@ -109,34 +124,43 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
 
         private async void UpdateManagerJobs(object sender, ElapsedEventArgs e)
         {
-            ConfigureDepenencies();
-
             try
             {
+                ConfigureDepenencies();
+
                 var rugbyEnabled = bool.Parse(ConfigurationManager.AppSettings["RugbyIngestEnabled"]);
 
                 if (rugbyEnabled)
                 {
-                    await _liveManagerJob.DoWorkAsync();
-                    await _fixturesManagerJob.DoWorkAsync();
-                    await _logsManagerJob.DoWorkAsync();
-                    await _playerStatisticsManagerJob.DoWorkAsync();
+                    await ScheduleRugbyJobs();
                 }
 
-                var motorEnabled = bool.Parse(ConfigurationManager.AppSettings["MotorsportIngestEnabled"]);
+                var motorsportEnabled = bool.Parse(ConfigurationManager.AppSettings["MotorsportIngestEnabled"]);
 
-                if (motorEnabled)
+                if (motorsportEnabled)
                 {
-                    await _motorsportLiveManagerJob.DoWorkAsync();
+                    await ScheduleMotorsportJobs();
                 }
             }
             catch (Exception exception)
             {
                 Console.WriteLine(exception);
-                // ignored
             }
 
             _timer.Start();
+        }
+
+        private async Task ScheduleMotorsportJobs()
+        {
+            await _motorsportLiveManagerJob.DoWorkAsync();
+        }
+
+        private async Task ScheduleRugbyJobs()
+        {
+            await _liveManagerJob.DoWorkAsync();
+            await _fixturesManagerJob.DoWorkAsync();
+            await _logsManagerJob.DoWorkAsync();
+            await _playerStatisticsManagerJob.DoWorkAsync();
         }
     }
 }

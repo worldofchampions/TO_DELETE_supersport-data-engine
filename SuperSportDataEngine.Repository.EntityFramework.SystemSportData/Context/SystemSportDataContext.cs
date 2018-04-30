@@ -18,6 +18,7 @@
         public DbSet<SchedulerTrackingRugbySeason> SchedulerTrackingRugbySeason { get; set; }
         public DbSet<SchedulerTrackingRugbyTournament> SchedulerTrackingRugbyTournament { get; set; }
         public DbSet<SchedulerDashboardUser> SchedulingDashboardUsers { get; set; }
+        public DbSet<SchedulerTrackingMotorsportRaceEvent> SchedulerTrackingMotorsportRaceEvents { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
