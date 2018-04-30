@@ -1,5 +1,6 @@
 ﻿namespace SuperSportDataEngine.ApplicationLogic.Services
 {
+    using System;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
@@ -204,6 +205,34 @@
             }
         }
 
+        public async Task IngestResultsForRaceEvent(MotorsportRaceEvent motorsportRaceEvent, int threadSleepInSeconds, Action<MotorsportRaceEvent> deleteJobAction)
+        {
+            while (true)
+            {
+                var league = motorsportRaceEvent.MotorsportRace.MotorsportLeague;
+
+                var season = motorsportRaceEvent.MotorsportSeason;
+
+                var race = motorsportRaceEvent.MotorsportRace;
+
+                var providerResponse =
+                    _statsMotorsportIngestService.IngestRaceResults(league.ProviderSlug, season.ProviderSeasonId, race.ProviderRaceId);
+
+                await _motorsportStorageService.PersistResultsInRepository(providerResponse, motorsportRaceEvent, CancellationToken.None);
+
+                await _mongoDbMotorsportRepository.Save(providerResponse);
+
+                PauseIngest(threadSleepInSeconds);
+
+                if (await ShouldStopResultsPollingForEvent(motorsportRaceEvent))
+                {
+                    deleteJobAction.Invoke(motorsportRaceEvent);
+
+                    break;
+                }
+            }
+        }
+
         public async Task IngestHistoricRaceEvents(CancellationToken cancellationToken)
         {
             var motorLeagues = await _motorsportService.GetActiveLeagues();
@@ -394,7 +423,7 @@
                     break;
                 }
 
-                PauseLiveJobPolling(pollingTimeInSeconds); 
+                PauseIngest(pollingTimeInSeconds);
             }
         }
 
@@ -420,6 +449,56 @@
 
                         await _mongoDbMotorsportRepository.Save(providerResponse);
                     }
+                }
+            }
+        }
+
+        public async Task IngestTeamStandingsForLeague(MotorsportRaceEvent raceEvent, int pollingTimeInSeconds, Action<MotorsportRaceEvent> deleteJobAction)
+        {
+            while (true)
+            {
+                var league = raceEvent.MotorsportRace.MotorsportLeague;
+
+                var season = await _motorsportService.GetCurrentSeasonForLeague(league.Id, CancellationToken.None);
+
+                var providerResponse =
+                    _statsMotorsportIngestService.IngestTeamStandings(league.ProviderSlug, season.ProviderSeasonId);
+
+                await _motorsportStorageService.PersistTeamStandingsInRepository(providerResponse, league, season, CancellationToken.None);
+
+                await _mongoDbMotorsportRepository.Save(providerResponse);
+
+                if (await ShouldStopStandingsPollingForEvent(raceEvent))
+                {
+                    deleteJobAction.Invoke(raceEvent);
+
+                    break;
+                }
+            }
+        }
+
+        public async Task IngestDriverStandingsForLeague(MotorsportRaceEvent raceEvent, int pollingTimeInSeconds, Action<MotorsportRaceEvent> deleteJobAction)
+        {
+            while (true)
+            {
+                var league = raceEvent.MotorsportRace.MotorsportLeague;
+
+                var season = await _motorsportService.GetCurrentSeasonForLeague(league.Id, CancellationToken.None);
+
+                var providerResponse =
+                    _statsMotorsportIngestService.IngestDriverStandings(league.ProviderSlug, season.ProviderSeasonId);
+
+                await _motorsportStorageService.PersistDriverStandingsInRepository(providerResponse, league, season, CancellationToken.None);
+
+                await _mongoDbMotorsportRepository.Save(providerResponse); 
+
+                PauseIngest(pollingTimeInSeconds);
+
+                if (await ShouldStopStandingsPollingForEvent(raceEvent))
+                {
+                    deleteJobAction.Invoke(raceEvent);
+
+                    break;
                 }
             }
         }
@@ -491,7 +570,7 @@
             }
         }
 
-        private static void PauseLiveJobPolling(int pollingTimeInSeconds)
+        private static void PauseIngest(int pollingTimeInSeconds)
         {
             var sleepTimeInMilliseconds = pollingTimeInSeconds * 1000;
 
@@ -503,6 +582,28 @@
             var schedulerTrackingEvent = await _motorsportService.GetSchedulerTrackingEvent(raceEvent);
 
             return schedulerTrackingEvent?.EndedDateTimeUtc != null && schedulerTrackingEvent.MotorsportRaceEventStatus == MotorsportRaceEventStatus.Result;
+        }
+
+        private async Task<bool> ShouldStopResultsPollingForEvent(MotorsportRaceEvent raceEvent)
+        {
+            var schedulerTrackingEvent = await _motorsportService.GetSchedulerTrackingEvent(raceEvent);
+
+            if (schedulerTrackingEvent.EndedDateTimeUtc == null) return true;
+
+            var timeDiff = DateTimeOffset.UtcNow.Subtract(schedulerTrackingEvent.EndedDateTimeUtc.Value).TotalHours;
+
+            return timeDiff >= 2;
+        }
+
+        private async Task<bool> ShouldStopStandingsPollingForEvent(MotorsportRaceEvent raceEvent)
+        {
+            var schedulerTrackingEvent = await _motorsportService.GetSchedulerTrackingEvent(raceEvent);
+
+            if (schedulerTrackingEvent.EndedDateTimeUtc == null) return true;
+
+            var timeDiff = DateTimeOffset.UtcNow.Subtract(schedulerTrackingEvent.EndedDateTimeUtc.Value).TotalHours;
+
+            return timeDiff >= 2;
         }
     }
 }

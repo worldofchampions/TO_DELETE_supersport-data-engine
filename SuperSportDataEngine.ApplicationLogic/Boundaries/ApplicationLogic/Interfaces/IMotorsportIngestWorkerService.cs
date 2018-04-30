@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces
+﻿using System;
+
+namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces
 {
     using System.Threading;
     using System.Threading.Tasks;
@@ -16,12 +18,15 @@
         Task IngestResultsForActiveLeagues(CancellationToken cancellationToken);
         Task IngestRacesEvents(CancellationToken cancellationToken);
         Task IngestRacesEventsGrids(CancellationToken cancellationToken);
-        Task IngestLiveRaceEventData(MotorsportRaceEvent raceEvent, int pollingTimeInSeconds, CancellationToken cancellationToken);
         Task IngestHistoricRaces(CancellationToken cancellationToken);
         Task IngestHistoricRaceEvents(CancellationToken cancellationToken);
         Task IngestHistoricEventsGrids(CancellationToken cancellationToken);
         Task IngestHistoricEventsResults(CancellationToken cancellationToken);
         Task IngestHistoricDriverStandings(CancellationToken cancellationToken);
         Task IngestHistoricTeamStandings(CancellationToken cancellationToken);
+        Task IngestLiveRaceEventData(MotorsportRaceEvent raceEvent, int threadSleepInSeconds, CancellationToken cancellationToken);
+        Task IngestTeamStandingsForLeague(MotorsportRaceEvent motorsportRaceEvent, int threadSleepInSeconds, Action<MotorsportRaceEvent> deleteJobAction);
+        Task IngestDriverStandingsForLeague(MotorsportRaceEvent motorsportRaceEvent, int threadSleepInSeconds, Action<MotorsportRaceEvent> deleteJobAction);
+        Task IngestResultsForRaceEvent(MotorsportRaceEvent motorsportRaceEvent, int threadSleepInSeconds, Action<MotorsportRaceEvent> deleteJobAction);
     }
 }
