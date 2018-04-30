@@ -114,12 +114,14 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
                 teams = await CreatePagedResults<RugbyTeam, RugbyTeamEntity>(
                                     _publicSportDataUnitOfWork.RugbyTeams.Where(q => q.Name.Contains(query)
                                                         || q.NameCmsOverride.Contains(query)
-                                                        || q.Abbreviation.Contains(query)), pageIndex, pageSize, abpath, query);
+                                                        || q.Abbreviation.Contains(query))
+                                                        .OrderBy(field => field.Name), pageIndex, pageSize, abpath, query);
             }
             else
             {
                 teams = await CreatePagedResults<RugbyTeam, RugbyTeamEntity>(
-                                    _publicSportDataUnitOfWork.RugbyTeams.All(), pageIndex, pageSize, abpath, query);
+                                    _publicSportDataUnitOfWork.RugbyTeams.All()
+                                                            .OrderBy(field => field.Name), pageIndex, pageSize, abpath, query);
             }
 
             if (teams.Results.Any())
@@ -139,12 +141,14 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
                                     _publicSportDataUnitOfWork.RugbyPlayers.Where(q => q.FirstName.Contains(query)
                                                            || q.LastName.Contains(query)
                                                            || q.FullName.Contains(query)
-                                                           || q.DisplayNameCmsOverride.Contains(query)), pageIndex, pageSize, abpath, query);
+                                                           || q.DisplayNameCmsOverride.Contains(query))
+                                                           .OrderBy(field => field.FullName), pageIndex, pageSize, abpath, query);
             }
             else
             {
                 players = await CreatePagedResults<RugbyPlayer, RugbyPlayerEntity>(
-                                    _publicSportDataUnitOfWork.RugbyPlayers.All(), pageIndex, pageSize, abpath, query);
+                                    _publicSportDataUnitOfWork.RugbyPlayers.All()
+                                                           .OrderBy(field => field.FullName), pageIndex, pageSize, abpath, query);
             }
 
             if (players.Results.Any())
@@ -235,6 +239,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
 
             if (tournamentFixtures.Results.Any())
             {
+                if (seasonId != null && tournamentFixtures.NextPageUrl != null)
+                    tournamentFixtures.NextPageUrl += string.Format("&seasonId={0}", seasonId);
+
                 return tournamentFixtures;
             }
             return null;
