@@ -2715,9 +2715,9 @@
                                    rugbyGroupedLog.RugbyTeam.LegacyTeamId + "." +
                                    rugbyGroupedLog.RugbyLogGroup.Slug,
                     "Going to remove Secondary Group Standings log entry for Team = " + rugbyGroupedLog.RugbyTeam.Name +
-                    "from Tournament = " + rugbyGroupedLog.RugbyTournament.Name +
-                    "for Season = " + rugbyGroupedLog.RugbySeason.ProviderSeasonId +
-                    "for Group = " + rugbyGroupedLog.RugbyLogGroup.GroupName);
+                    " from Tournament = " + rugbyGroupedLog.RugbyTournament.Name +
+                    " for Season = " + rugbyGroupedLog.RugbySeason.ProviderSeasonId +
+                    " for Group = " + rugbyGroupedLog.RugbyLogGroup.GroupName);
             }
 
             _publicSportDataUnitOfWork.RugbyGroupedLogs.DeleteRange(standingsToRemove);
@@ -2750,9 +2750,9 @@
                                    rugbyGroupedLog.RugbyTeam.LegacyTeamId + "." +
                                    rugbyGroupedLog.RugbyLogGroup.Slug,
                     "Going to remove Group Standings log entry for Team = " + rugbyGroupedLog.RugbyTeam.Name +
-                    "from Tournament = " + rugbyGroupedLog.RugbyTournament.Name +
-                    "for Season = " + rugbyGroupedLog.RugbySeason.ProviderSeasonId +
-                    "for Group = " + rugbyGroupedLog.RugbyLogGroup.GroupName);
+                    " from Tournament = " + rugbyGroupedLog.RugbyTournament.Name +
+                    " for Season = " + rugbyGroupedLog.RugbySeason.ProviderSeasonId +
+                    " for Group = " + rugbyGroupedLog.RugbyLogGroup.GroupName);
             }
 
             _publicSportDataUnitOfWork.RugbyGroupedLogs.DeleteRange(standingsToRemove);
