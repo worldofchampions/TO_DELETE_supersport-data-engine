@@ -114,7 +114,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
                 await _rugbyService.GetInactiveTournaments();
 
             var rugbyTournaments = inactiveTournaments as IList<RugbyTournament> ?? inactiveTournaments.ToList();
-            //await DeleteJobsForFetchingFixturesForTournaments(rugbyTournaments);
+            await DeleteJobsForFetchingFixturesForTournaments(rugbyTournaments);
             await StopSchedulingInactiveTournaments(rugbyTournaments);
         }
 
