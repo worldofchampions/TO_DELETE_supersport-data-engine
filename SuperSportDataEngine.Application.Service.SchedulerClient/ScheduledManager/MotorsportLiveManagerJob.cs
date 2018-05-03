@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledManager
+﻿using System.Linq.Expressions;
+
+namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledManager
 {
     using System;
     using System.Configuration;
@@ -150,14 +152,17 @@
             if (schedulerEvent is null) return;
 
             var jobId =
-                ConfigurationManager.AppSettings["MotorsportChildJob_RaceEventsResults_JobId"] +
+                ConfigurationManager.AppSettings["MotorsportChildJob_RaceEventsResults_JobIdPrefix"] +
                 raceEvent.MotorsportRace.RaceName + "→" + raceEvent.LegacyRaceEventId;
 
             var jobCronExpression =
-                ConfigurationManager.AppSettings["MotorsportChildJob_RaceEventsResults__JobCronExpression"];
+                ConfigurationManager.AppSettings["MotorsportChildJob_RaceEventsResults_JobCronExpression"];
 
             var threadSleepInSeconds =
                 int.Parse(ConfigurationManager.AppSettings["MotorsportChildJob_RaceEventsResults_ThreadSleepInSeconds"]);
+
+            var pollingDurationInMinutes =
+                int.Parse(ConfigurationManager.AppSettings["MotorsportChildJob_RaceEventsResults_PollingDurationInMinutes"]);
 
             var jobOptions = new RecurringJobOptions
             {
@@ -165,15 +170,16 @@
                 QueueName = HangfireQueueConfiguration.HighPriority
             };
 
-            _recurringJobManager.AddOrUpdate(
-                jobId,
-                Job.FromExpression(
-                    () => _motorsportIngestWorkerService.IngestResultsForRaceEvent(raceEvent, threadSleepInSeconds, DeleteChildJobForRaceEventResults)),
-                jobCronExpression,
-                jobOptions);
+            Expression<Action> jobMethod =
+                () => _motorsportIngestWorkerService.IngestResultsForRaceEvent(
+                    raceEvent,
+                    threadSleepInSeconds,
+                    pollingDurationInMinutes,
+                    DeleteChildJobForRaceEventResults);
+
+            _recurringJobManager.AddOrUpdate(jobId, Job.FromExpression(jobMethod), jobCronExpression, jobOptions);
 
             _recurringJobManager.Trigger(jobId);
-
         }
 
         private void UpdateJobDefinitionForTeamStandings(MotorsportRaceEvent raceEvent)
@@ -185,20 +191,23 @@
             if (schedulerEvent is null) return;
 
             var jobId =
-                ConfigurationManager.AppSettings["Motorsport_LiveRaceJob_JobIdPrefix"] + raceEvent.MotorsportRace.MotorsportLeague.Name;
+                ConfigurationManager.AppSettings["MotorsportChildJob_TeamStandings_JobIdPrefix"] + raceEvent.MotorsportRace.MotorsportLeague.Name;
 
-            var jobCronExpression = ConfigurationManager.AppSettings["Motorsport_LiveRaceJob_JobCronExpression"];
+            var jobCronExpression = ConfigurationManager.AppSettings["MotorsportChildJob_TeamStandings_JobCronExpression"];
 
             var jobOptions = new RecurringJobOptions { TimeZone = TimeZoneInfo.Local, QueueName = HangfireQueueConfiguration.HighPriority };
 
             var threadSleepPollingInSeconds =
-                int.Parse(ConfigurationManager.AppSettings["Motorsport_LiveRaceJob_ThreadSleepPollingInSeconds"]);
+                int.Parse(ConfigurationManager.AppSettings["MotorsportChildJob_TeamStandings_ThreadSleepInSeconds"]);
 
-            _recurringJobManager.AddOrUpdate(
-                jobId,
-                Job.FromExpression(() => _motorsportIngestWorkerService.IngestTeamStandingsForLeague(raceEvent, threadSleepPollingInSeconds, DeleteChildJobForTeamStandings)),
-                jobCronExpression,
-                jobOptions);
+            var pollingDurationInMinutes =
+                int.Parse(ConfigurationManager.AppSettings["MotorsportChildJob_TeamStandings_PollingDurationInMinutes"]);
+
+            Expression<Action> jobMethod =
+                () => _motorsportIngestWorkerService.IngestTeamStandingsForLeague(
+                    raceEvent, threadSleepPollingInSeconds, pollingDurationInMinutes, DeleteChildJobForTeamStandings);
+
+            _recurringJobManager.AddOrUpdate(jobId, Job.FromExpression(jobMethod), jobCronExpression, jobOptions);
 
             _recurringJobManager.Trigger(jobId);
         }
@@ -212,20 +221,22 @@
             if (schedulerEvent is null) return;
 
             var jobId =
-                ConfigurationManager.AppSettings["Motorsport_LiveRaceJob_JobIdPrefix"] + raceEvent.MotorsportRace.MotorsportLeague.Name;
+                ConfigurationManager.AppSettings["MotorsportChildJob_DriverStandings_JobIdPrefix"] + raceEvent.MotorsportRace.MotorsportLeague.Name;
 
-            var jobCronExpression = ConfigurationManager.AppSettings["Motorsport_LiveRaceJob_JobCronExpression"];
+            var jobCronExpression = ConfigurationManager.AppSettings["MotorsportChildJob_DriverStandings_JobCronExpression"];
+
+            var threadSleepPollingInSeconds =
+                int.Parse(ConfigurationManager.AppSettings["MotorsportChildJob_DriverStandings_ThreadSleepInSeconds"]);
+
+            var pollingDurationInMinutes =
+                int.Parse(ConfigurationManager.AppSettings["MotorsportChildJob_DriverStandings_PollingDurationInMinutes"]);
 
             var jobOptions = new RecurringJobOptions { TimeZone = TimeZoneInfo.Local, QueueName = HangfireQueueConfiguration.HighPriority };
 
-            var threadSleepPollingInSeconds =
-                int.Parse(ConfigurationManager.AppSettings["Motorsport_LiveRaceJob_ThreadSleepPollingInSeconds"]);
+            Expression<Action> jobMethod = () => _motorsportIngestWorkerService.IngestDriverStandingsForLeague(
+                raceEvent, threadSleepPollingInSeconds, pollingDurationInMinutes, DeleteChildJobForDriverStandings);
 
-            _recurringJobManager.AddOrUpdate(
-                jobId,
-                Job.FromExpression(() => _motorsportIngestWorkerService.IngestDriverStandingsForLeague(raceEvent, threadSleepPollingInSeconds, DeleteChildJobForDriverStandings)),
-                jobCronExpression,
-                jobOptions);
+            _recurringJobManager.AddOrUpdate(jobId, Job.FromExpression(jobMethod), jobCronExpression, jobOptions);
 
             _recurringJobManager.Trigger(jobId);
         }
