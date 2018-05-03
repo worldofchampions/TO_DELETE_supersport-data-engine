@@ -279,7 +279,10 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             if (tournamentFixtures.Results.Any())
             {
                 if (seasonId != null && tournamentFixtures.NextPageUrl != null)
-                    tournamentFixtures.NextPageUrl += string.Format("&seasonId={0}", seasonId);
+                    tournamentFixtures.NextPageUrl += $"&seasonId={seasonId}";
+
+                if (status != null && tournamentFixtures.NextPageUrl != null)
+                    tournamentFixtures.NextPageUrl += $"&status={status}";
 
                 return tournamentFixtures;
             }
