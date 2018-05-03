@@ -281,6 +281,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
                 if (seasonId != null && tournamentFixtures.NextPageUrl != null)
                     tournamentFixtures.NextPageUrl += string.Format("&seasonId={0}", seasonId);
 
+                if (status != null && tournamentFixtures.NextPageUrl != null)
+                    tournamentFixtures.NextPageUrl += string.Format("&status={0}", status);
+
                 return tournamentFixtures;
             }
             return null;
