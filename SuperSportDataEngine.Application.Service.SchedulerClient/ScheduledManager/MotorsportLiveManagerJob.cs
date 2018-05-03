@@ -1,7 +1,6 @@
 ﻿namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledManager
 {
     using System;
-    using System.Linq;
     using System.Configuration;
     using System.Threading;
     using System.Threading.Tasks;
@@ -9,6 +8,7 @@
     using Hangfire.Common;
     using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
 
@@ -142,6 +142,13 @@
 
         private void UpdateJobDefinitionForRaceEventResults(MotorsportRaceEvent raceEvent)
         {
+
+            var schedulerEvent = _systemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.FirstOrDefault(e =>
+                e.MotorsportRaceEventId == raceEvent.Id &&
+                e.MotorsportRaceEventStatus == MotorsportRaceEventStatus.Result);
+
+            if (schedulerEvent is null) return;
+
             var jobId =
                 ConfigurationManager.AppSettings["MotorsportChildJob_RaceEventsResults_JobId"] +
                 raceEvent.MotorsportRace.RaceName + "→" + raceEvent.LegacyRaceEventId;
@@ -171,6 +178,12 @@
 
         private void UpdateJobDefinitionForTeamStandings(MotorsportRaceEvent raceEvent)
         {
+            var schedulerEvent = _systemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.FirstOrDefault(e =>
+                e.MotorsportRaceEventId == raceEvent.Id &&
+                e.MotorsportRaceEventStatus == MotorsportRaceEventStatus.Result);
+
+            if (schedulerEvent is null) return;
+
             var jobId =
                 ConfigurationManager.AppSettings["Motorsport_LiveRaceJob_JobIdPrefix"] + raceEvent.MotorsportRace.MotorsportLeague.Name;
 
@@ -192,6 +205,12 @@
 
         private void UpdateJobDefinitionForDriverStandings(MotorsportRaceEvent raceEvent)
         {
+            var schedulerEvent = _systemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.FirstOrDefault(e =>
+                e.MotorsportRaceEventId == raceEvent.Id &&
+                e.MotorsportRaceEventStatus == MotorsportRaceEventStatus.Result);
+
+            if (schedulerEvent is null) return;
+
             var jobId =
                 ConfigurationManager.AppSettings["Motorsport_LiveRaceJob_JobIdPrefix"] + raceEvent.MotorsportRace.MotorsportLeague.Name;
 
@@ -229,12 +248,15 @@
                 var eventInRepo =
                     _systemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.FirstOrDefault(e => e.MotorsportRaceEventId == raceEvent.Id);
 
+                if (eventInRepo == null) continue;
+
                 eventInRepo.IsJobRunning = false;
 
                 _systemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.Update(eventInRepo);
             }
 
             await _systemSportDataUnitOfWork.SaveChangesAsync();
+
         }
 
         private async void DeleteChildJobForRaceEventResults(MotorsportRaceEvent raceEvent)
@@ -249,6 +271,8 @@
 
             var eventInRepo =
                 _systemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.FirstOrDefault(e => e.MotorsportRaceEventId == raceEvent.Id);
+
+            if (eventInRepo == null) return;
 
             eventInRepo.IsJobRunning = false;
 
@@ -268,12 +292,13 @@
             var eventInRepo =
                 _systemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.FirstOrDefault(e => e.MotorsportRaceEventId == raceEvent.Id);
 
+            if (eventInRepo == null) return;
+
             eventInRepo.IsJobRunning = false;
 
             _systemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.Update(eventInRepo);
 
             await _systemSportDataUnitOfWork.SaveChangesAsync();
-
         }
 
         private async void DeleteChildJobForTeamStandings(MotorsportRaceEvent raceEvent)
@@ -287,12 +312,13 @@
             var eventInRepo =
                 _systemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.FirstOrDefault(e => e.MotorsportRaceEventId == raceEvent.Id);
 
+            if (eventInRepo == null) return;
+
             eventInRepo.IsJobRunning = false;
 
             _systemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.Update(eventInRepo);
 
             await _systemSportDataUnitOfWork.SaveChangesAsync();
         }
-
     }
 }
