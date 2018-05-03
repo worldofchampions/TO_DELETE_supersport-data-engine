@@ -31,17 +31,20 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
         private readonly ISystemSportDataUnitOfWork _systemSportDataUnitOfWork;
         private readonly IRugbyService _rugbyService;
         private readonly IRugbyIngestWorkerService _rugbyIngestWorkerService;
+        private readonly ILoggingService _loggingService;
 
         public FixturesManagerJob(
             IRecurringJobManager recurringJobManager,
             ISystemSportDataUnitOfWork systemSportDataUnitOfWork, 
             IRugbyService rugbyService, 
-            IRugbyIngestWorkerService rugbyIngestWorkerService)
+            IRugbyIngestWorkerService rugbyIngestWorkerService,
+            ILoggingService loggingService)
         {
             _recurringJobManager = recurringJobManager;
             _systemSportDataUnitOfWork = systemSportDataUnitOfWork;
             _rugbyService = rugbyService;
             _rugbyIngestWorkerService = rugbyIngestWorkerService;
+            _loggingService = loggingService;
 
             _maxNumberOfHoursToCheckForUpcomingFixtures =
                 int.Parse(ConfigurationManager.AppSettings["MaxNumberOfHoursToCheckForUpcomingFixtures"]);
@@ -85,6 +88,8 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
                             QueueName = HangfireQueueConfiguration.HighPriority
                         });
 
+                    await _loggingService.Info("CreatedJob." + jobId, "Created Job = " + jobId);
+
                     var tournamentInDb =
                         (await _systemSportDataUnitOfWork.SchedulerTrackingRugbyTournaments.AllAsync())
                         .FirstOrDefault(t => t.TournamentId == tournament.Id &&
@@ -109,7 +114,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
                 await _rugbyService.GetInactiveTournaments();
 
             var rugbyTournaments = inactiveTournaments as IList<RugbyTournament> ?? inactiveTournaments.ToList();
-            await DeleteJobsForFetchingFixturesForTournaments(rugbyTournaments);
+            //await DeleteJobsForFetchingFixturesForTournaments(rugbyTournaments);
             await StopSchedulingInactiveTournaments(rugbyTournaments);
         }
 
