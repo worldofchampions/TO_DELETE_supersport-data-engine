@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using SuperSportDataEngine.Application.Container.Enums;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
+using SuperSportDataEngine.Common.Logging;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
 {
@@ -32,6 +33,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
         private IMotorsportIngestWorkerService _motorIngestWorkerService;
         private IMotorsportService _motorsportService;
         private static int _managerLoopTimeInSeconds;
+        private ILoggingService _logger;
 
         public ManagerJob()
         {
@@ -61,6 +63,8 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
             _motorsportService = _container.Resolve<IMotorsportService>();
             _motorIngestWorkerService = _container.Resolve<IMotorsportIngestWorkerService>();
 
+            _logger = _container.Resolve<ILoggingService>();
+
             _motorsportLiveManagerJob = new MotorsportLiveManagerJob(
                 _recurringJobManager,
                 _container,
@@ -72,7 +76,8 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
                     _recurringJobManager,
                     _systemSportDataUnitOfWork,
                     _rugbyService,
-                    _rugbyIngestWorkerService);
+                    _rugbyIngestWorkerService,
+                    _logger);
 
             _liveManagerJob = new LiveManagerJob(
                 _recurringJobManager,

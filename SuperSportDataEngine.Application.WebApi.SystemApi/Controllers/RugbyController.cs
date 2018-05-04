@@ -263,15 +263,18 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         /// <param name="query">
         /// Search against fixtures team names
         /// </param>
+        /// <param name="status">
+        /// Specify game status E.g. Results, Today, Coming Up
+        /// </param>
         /// <returns></returns>
 
         [Route("api/Rugby/tournament/{tournamentId:guid}/fixtures")]
         [HttpGet]
-        public async Task<HttpResponseMessage> GetAllFixturesForTournament(Guid tournamentId, int pageIndex, int pageSize, Guid? seasonId = null, string query = null)
+        public async Task<HttpResponseMessage> GetAllFixturesForTournament(Guid tournamentId, int pageIndex, int pageSize, Guid? seasonId = null, string query = null, string status = null)
         {
             try
             {
-                var tournamentFixtures = await _rugbyService.GetTournamentFixtures(tournamentId, seasonId, pageIndex, pageSize, path, query);
+                var tournamentFixtures = await _rugbyService.GetTournamentFixtures(tournamentId, seasonId, pageIndex, pageSize, path, query, status);
                 return Request.CreateResponse(HttpStatusCode.OK, tournamentFixtures);
             }
             catch (Exception exception)
