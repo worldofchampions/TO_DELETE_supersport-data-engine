@@ -47,8 +47,8 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
                     _mockRecurringJobManager.Object,
                     _systemSportDataUnitOfWork,
                     _rugbyService,
-                    _mockRugbyIngestWorkerService.Object
-                    );
+                    _mockRugbyIngestWorkerService.Object,
+                    _mockLogger.Object);
         }
 
         [Test]
