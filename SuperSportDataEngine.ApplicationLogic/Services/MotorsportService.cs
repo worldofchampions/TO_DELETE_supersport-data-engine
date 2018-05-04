@@ -141,10 +141,10 @@
             {
                 case MotorsportSportType.FormulaOne:
                     return 135;
+                case MotorsportSportType.Superbike:
                 case MotorsportSportType.MotoGp:
-                    return 140;
                 default:
-                    return 120;
+                    return 75;
             }
         }
 
