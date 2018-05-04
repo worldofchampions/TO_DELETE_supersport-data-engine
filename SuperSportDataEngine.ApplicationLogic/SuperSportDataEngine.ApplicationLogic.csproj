@@ -199,6 +199,7 @@
     <Compile Include="Entities\SystemAPI\RugbyTournamentEntity.cs" />
     <Compile Include="Entities\SystemAPI\RugbyFixtureEntitySingle.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />
+    <Compile Include="Helpers\DateTimeOverride.cs" />
     <Compile Include="Helpers\FixturesStateHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Cms\RugbyCmsService.cs" />

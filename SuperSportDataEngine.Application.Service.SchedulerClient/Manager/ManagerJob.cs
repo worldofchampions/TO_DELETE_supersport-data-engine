@@ -13,6 +13,7 @@
     using SuperSportDataEngine.Application.Container.Enums;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
+    using SuperSportDataEngine.Common.Logging;
 
     internal class ManagerJob
     {
@@ -31,6 +32,7 @@
         private IMotorsportIngestWorkerService _motorsportIngestWorkerService;
         private IMotorsportService _motorsportService;
         private static int _managerLoopTimeInSeconds;
+        private ILoggingService _logger;
 
         public ManagerJob()
         {
@@ -76,7 +78,8 @@
                     _recurringJobManager,
                     _systemSportDataUnitOfWork,
                     _rugbyService,
-                    _rugbyIngestWorkerService);
+                    _rugbyIngestWorkerService,
+                    _logger);
 
             _liveManagerJob =
                 new LiveManagerJob(
