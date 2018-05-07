@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.ApplicationLogic.Services.LegacyFeed
+﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
+
+namespace SuperSportDataEngine.ApplicationLogic.Services.LegacyFeed
 {
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces.LegacyFeed;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
@@ -45,7 +47,7 @@
                         e.StartDateTimeUtc > today).ToList();
             }
 
-            schedule.MotorsportRaceEvents = 
+            schedule.MotorsportRaceEvents =
                 raceEvents;
 
             return await Task.FromResult(schedule);
@@ -115,6 +117,7 @@
             var raceEvent = _publicSportDataUnitOfWork.MotorsportRaceEvents
                 .FirstOrDefault(r =>
                     r.LegacyRaceEventId == eventId &&
+                    r.MotorsportRaceEventStatus == MotorsportRaceEventStatus.Result &&
                     r.MotorsportSeason.MotorsportLeague.Slug.Equals(category));
 
             var results = new MotorsportRaceEventResultsEntity()
@@ -125,7 +128,7 @@
 
             var group =
                 _publicSportDataUnitOfWork.MotorsportRaceEventResults
-                    .Where(g => g.MotorsportRaceEvent.LegacyRaceEventId == eventId)
+                    .Where(g => g.MotorsportRaceEvent.LegacyRaceEventId == eventId && g.Position != 0)
                     .OrderByDescending(g => g.MotorsportRaceEvent.StartDateTimeUtc)
                     .GroupBy(g => g.MotorsportRaceEvent.Id)
                     .FirstOrDefault();
@@ -142,6 +145,7 @@
             var raceEvent = _publicSportDataUnitOfWork.MotorsportRaceEvents
                 .FirstOrDefault(r =>
                     r.IsCurrent &&
+                    r.MotorsportRaceEventStatus == MotorsportRaceEventStatus.Result &&
                     r.MotorsportSeason.MotorsportLeague.Slug.Equals(category));
 
             var results = new MotorsportRaceEventResultsEntity()
@@ -155,7 +159,7 @@
 
             var group =
                 _publicSportDataUnitOfWork.MotorsportRaceEventResults
-                    .Where(g => g.MotorsportRaceEvent.LegacyRaceEventId == raceEvent.LegacyRaceEventId)
+                    .Where(g => g.MotorsportRaceEvent.LegacyRaceEventId == raceEvent.LegacyRaceEventId && g.Position != 0)
                     .OrderByDescending(g => g.MotorsportRaceEvent.StartDateTimeUtc)
                     .GroupBy(g => g.MotorsportRaceEvent.Id)
                     .FirstOrDefault();
