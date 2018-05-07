@@ -256,7 +256,7 @@
                 }
                 else
                 {
-                    UpdateResultsInRepo(resultInRepo, result);
+                    UpdateResultsInRepo(resultInRepo, result, league);
                 }
             }
 
@@ -428,7 +428,7 @@
             _publicSportDataUnitOfWork.MotorsportRaceEventGrids.Add(newGridEntry);
         }
 
-        private void UpdateResultsInRepo(MotorsportRaceEventResult eventResultInRepo, Result result)
+        private void UpdateResultsInRepo(MotorsportRaceEventResult eventResultInRepo, Result result, MotorsportLeague league)
         {
             if (result.points?.driver?.total != null)
             {
@@ -462,6 +462,18 @@
                 eventResultInRepo.OutReason = result.carStatus.name;
                 eventResultInRepo.CompletedRace = result.carStatus.carStatusId.Equals(0);
             }
+
+            if (result.owner != null)
+            {
+                var teamInRepo =
+                    _publicSportDataUnitOfWork.MotortsportTeams.FirstOrDefault(t =>
+                        t.ProviderTeamId == result.owner.ownerId
+                        && t.MotorsportLeague.Id == league.Id);
+
+                if (teamInRepo != null)
+                    eventResultInRepo.MotorsportTeam = teamInRepo;
+            }
+
 
             if (result.laps?.completed != null)
             {
