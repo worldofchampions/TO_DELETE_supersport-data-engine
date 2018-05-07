@@ -19,7 +19,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Inte
         Task<MotorsportSeason> GetCurrentSeasonForLeague(Guid leagueId, CancellationToken cancellationToken);
         Task<IEnumerable<MotorsportSeason>> GetHistoricSeasonsForLeague(Guid leagueId, bool includeCurrentSeason = false);
         Task<MotorsportRaceEvent> GetLiveEventForLeague(Guid leagueId);
-        Task<MotorsportRaceEvent> GetEndedRaceEventForLeague(Guid leagueId);
+        Task<IEnumerable<MotorsportRaceEvent>> GetEndedRaceEventsForLeague(Guid leagueId);
         Task<IEnumerable<MotorsportRaceEvent>> GetEventsForRace(Guid raceId, Guid seasonId);
         Task<IEnumerable<MotorsportSeason>> GetCurrentAndFutureSeasonsForLeague(Guid leagueId);
         Task SetCurrentRaceEvents();

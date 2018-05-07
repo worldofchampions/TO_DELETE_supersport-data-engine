@@ -110,15 +110,16 @@
             return await Task.FromResult(raceEvent);
         }
 
-        public async Task<MotorsportRaceEvent> GetEndedRaceEventForLeague(Guid leagueId)
+        public async Task<IEnumerable<MotorsportRaceEvent>> GetEndedRaceEventsForLeague(Guid leagueId)
         {
-            var raceEvent =
-                _publicSportDataUnitOfWork.MotorsportRaceEvents.FirstOrDefault(e =>
+            var raceEvents =
+                await _publicSportDataUnitOfWork.MotorsportRaceEvents.WhereAsync(e =>
                     e.MotorsportRace.MotorsportLeague.Id == leagueId
                     && e.MotorsportRaceEventStatus == MotorsportRaceEventStatus.Result
+                    && e.IsCurrent
                     && e.MotorsportSeason.IsCurrent);
 
-            return await Task.FromResult(raceEvent);
+            return raceEvents;
         }
 
         private static bool IsEventLive(MotorsportRaceEvent raceEvent)

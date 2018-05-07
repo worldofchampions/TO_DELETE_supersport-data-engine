@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models
+﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
+
+namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models
 {
     using System;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Base;
@@ -16,6 +18,8 @@
         public DateTimeOffset? EndedDateTimeUtc { get; set; }
 
         public MotorsportRaceEventStatus MotorsportRaceEventStatus { get; set; }
+
+        public SchedulerStateForMotorsportRaceEventPolling SchedulerStateForMotorsportRaceEventPolling { get; set; }
 
         public bool IsJobRunning { get; set; }
     }
