@@ -287,7 +287,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             if (tournament == null)
             {
-                await _logger.Warn("TournamentDoesNotExist" + tournamentSlug,
+                await _logger.Warn("TournamentDoesNotExist." + tournamentSlug,
                     "The requested tournament Slug does not exist -> " + tournamentSlug,
                     TimeSpan.FromHours(24));
             }

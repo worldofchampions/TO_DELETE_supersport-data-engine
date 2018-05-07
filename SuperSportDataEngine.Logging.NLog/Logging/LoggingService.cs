@@ -27,28 +27,28 @@ namespace SuperSportDataEngine.Logging.NLog.Logging
             return logger;
         }
 
-        public async Task Debug(string key, string format, TimeSpan loggingTtlInMinutes = default(TimeSpan), params object[] args)
+        public async Task Debug(string key, string format, TimeSpan ttlTimeSpan = default(TimeSpan), params object[] args)
         {
             if (!IsDebugEnabled) return;
             var logEvent = GetLogEvent(LoggerName, LogLevel.Debug, null, format, args);
-            await LogWithCache(key, logEvent, loggingTtlInMinutes);
+            await LogWithCache(key, logEvent, ttlTimeSpan);
         }
 
-        public async Task Debug(string key, string format, Exception exception, TimeSpan loggingTtlInMinutes = default(TimeSpan), params object[] args)
+        public async Task Debug(string key, string format, Exception exception, TimeSpan ttlTimeSpan = default(TimeSpan), params object[] args)
         {
             if (!IsDebugEnabled) return;
             var logEvent = GetLogEvent(LoggerName, LogLevel.Debug, exception, format, args);
-            await LogWithCache(key, logEvent, loggingTtlInMinutes);
+            await LogWithCache(key, logEvent, ttlTimeSpan);
         }
 
-        public async Task Debug(string key, Exception exception, string format, TimeSpan loggingTtlInMinutes = default(TimeSpan), params object[] args)
+        public async Task Debug(string key, Exception exception, string format, TimeSpan ttlTimeSpan = default(TimeSpan), params object[] args)
         {
             if (!IsDebugEnabled) return;
             var logEvent = GetLogEvent(LoggerName, LogLevel.Debug, exception, format, args);
-            await LogWithCache(key, logEvent, loggingTtlInMinutes);
+            await LogWithCache(key, logEvent, ttlTimeSpan);
         }
 
-        private async Task LogWithCache(string key, LogEventInfo logEvent, TimeSpan loggingTtlInMinutes)
+        private async Task LogWithCache(string key, LogEventInfo logEvent, TimeSpan ttlTimeSpan)
         {
             // Add a namespace to the Redis key.
             //key = key.Replace(":", "");
@@ -65,10 +65,10 @@ namespace SuperSportDataEngine.Logging.NLog.Logging
                     object cacheObject = await Cache.GetAsync<LogEventInfo>(key);
                     if (cacheObject == null)
                     {
-                        Cache.Add(key, logEvent, 
-                            loggingTtlInMinutes == default(TimeSpan) ?
+                        Cache.Add(key, logEvent,
+                            ttlTimeSpan == default(TimeSpan) ?
                                 TimeSpan.FromMinutes(_cacheTtlInMinutes) :
-                                loggingTtlInMinutes);
+                                ttlTimeSpan);
 
                         WriteLog(typeof(LoggingService), logEvent);
                     }
@@ -98,74 +98,74 @@ namespace SuperSportDataEngine.Logging.NLog.Logging
             Log(typeof(LoggingService), logEvent);
         }
 
-        public async Task Error(string key, string format, TimeSpan loggingTtlInMinutes = default(TimeSpan), params object[] args)
+        public async Task Error(string key, string format, TimeSpan ttlTimeSpan = default(TimeSpan), params object[] args)
         {
             if (!IsDebugEnabled) return;
             var logEvent = GetLogEvent(LoggerName, LogLevel.Error, null, format, args);
-            await LogWithCache(key, logEvent, loggingTtlInMinutes);
+            await LogWithCache(key, logEvent, ttlTimeSpan);
         }
 
-        public async Task Error(string key, Exception exception, string format, TimeSpan loggingTtlInMinutes = default(TimeSpan), params object[] args)
+        public async Task Error(string key, Exception exception, string format, TimeSpan ttlTimeSpan = default(TimeSpan), params object[] args)
         {
             if (!IsErrorEnabled) return;
             var logEvent = GetLogEvent(LoggerName, LogLevel.Error, exception, format, args);
-            await LogWithCache(key, logEvent, loggingTtlInMinutes);
+            await LogWithCache(key, logEvent, ttlTimeSpan);
         }
 
-        public async Task Fatal(string key, string format, TimeSpan loggingTtlInMinutes = default(TimeSpan), params object[] args)
+        public async Task Fatal(string key, string format, TimeSpan ttlTimeSpan = default(TimeSpan), params object[] args)
         {
             if (!IsDebugEnabled) return;
             var logEvent = GetLogEvent(LoggerName, LogLevel.Fatal, null, format, args);
-            await LogWithCache(key, logEvent, loggingTtlInMinutes);
+            await LogWithCache(key, logEvent, ttlTimeSpan);
         }
 
-        public async Task Fatal(string key, Exception exception, string format, TimeSpan loggingTtlInMinutes = default(TimeSpan), params object[] args)
+        public async Task Fatal(string key, Exception exception, string format, TimeSpan ttlTimeSpan = default(TimeSpan), params object[] args)
         {
             if (!IsFatalEnabled) return;
             var logEvent = GetLogEvent(LoggerName, LogLevel.Fatal, exception, format, args);
-            await LogWithCache(key, logEvent, loggingTtlInMinutes);
+            await LogWithCache(key, logEvent, ttlTimeSpan);
         }
 
-        public async Task Info(string key, string format, TimeSpan loggingTtlInMinutes = default(TimeSpan), params object[] args)
+        public async Task Info(string key, string format, TimeSpan ttlTimeSpan = default(TimeSpan), params object[] args)
         {
             if (!IsDebugEnabled) return;
             var logEvent = GetLogEvent(LoggerName, LogLevel.Info, null, format, args);
-            await LogWithCache(key, logEvent, loggingTtlInMinutes);
+            await LogWithCache(key, logEvent, ttlTimeSpan);
         }
 
-        public async Task Info(string key, Exception exception, string format, TimeSpan loggingTtlInMinutes = default(TimeSpan), params object[] args)
+        public async Task Info(string key, Exception exception, string format, TimeSpan ttlTimeSpan = default(TimeSpan), params object[] args)
         {
             if (!IsInfoEnabled) return;
             var logEvent = GetLogEvent(LoggerName, LogLevel.Info, exception, format, args);
-            await LogWithCache(key, logEvent, loggingTtlInMinutes);
+            await LogWithCache(key, logEvent, ttlTimeSpan);
         }
 
-        public async Task Trace(string key, string format, TimeSpan loggingTtlInMinutes = default(TimeSpan), params object[] args)
+        public async Task Trace(string key, string format, TimeSpan ttlTimeSpan = default(TimeSpan), params object[] args)
         {
             if (!IsDebugEnabled) return;
             var logEvent = GetLogEvent(LoggerName, LogLevel.Trace, null, format, args);
-            await LogWithCache(key, logEvent, loggingTtlInMinutes);
+            await LogWithCache(key, logEvent, ttlTimeSpan);
         }
 
-        public async Task Trace(string key, Exception exception, string format, TimeSpan loggingTtlInMinutes = default(TimeSpan), params object[] args)
+        public async Task Trace(string key, Exception exception, string format, TimeSpan ttlTimeSpan = default(TimeSpan), params object[] args)
         {
             if (!IsTraceEnabled) return;
             var logEvent = GetLogEvent(LoggerName, LogLevel.Trace, exception, format, args);
-            await LogWithCache(key, logEvent, loggingTtlInMinutes);
+            await LogWithCache(key, logEvent, ttlTimeSpan);
         }
 
-        public async Task Warn(string key, string format, TimeSpan loggingTtlInMinutes = default(TimeSpan), params object[] args)
+        public async Task Warn(string key, string format, TimeSpan ttlTimeSpan = default(TimeSpan), params object[] args)
         {
             if (!IsDebugEnabled) return;
             var logEvent = GetLogEvent(LoggerName, LogLevel.Warn, null, format, args);
-            await LogWithCache(key, logEvent, loggingTtlInMinutes);
+            await LogWithCache(key, logEvent, ttlTimeSpan);
         }
 
-        public async Task Warn(string key, Exception exception, string format, TimeSpan loggingTtlInMinutes = default(TimeSpan), params object[] args)
+        public async Task Warn(string key, Exception exception, string format, TimeSpan ttlTimeSpan = default(TimeSpan), params object[] args)
         {
             if (!IsWarnEnabled) return;
             var logEvent = GetLogEvent(LoggerName, LogLevel.Warn, exception, format, args);
-            await LogWithCache(key, logEvent, loggingTtlInMinutes);
+            await LogWithCache(key, logEvent, ttlTimeSpan);
         }
 
         public ICache Cache { get; set; }
