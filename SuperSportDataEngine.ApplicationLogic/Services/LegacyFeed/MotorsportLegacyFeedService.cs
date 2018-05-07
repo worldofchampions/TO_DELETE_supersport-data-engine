@@ -117,7 +117,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.LegacyFeed
             var raceEvent = _publicSportDataUnitOfWork.MotorsportRaceEvents
                 .FirstOrDefault(r =>
                     r.LegacyRaceEventId == eventId &&
-                    r.MotorsportRaceEventStatus == MotorsportRaceEventStatus.Result &&
                     r.MotorsportSeason.MotorsportLeague.Slug.Equals(category));
 
             var results = new MotorsportRaceEventResultsEntity()
@@ -145,7 +144,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.LegacyFeed
             var raceEvent = _publicSportDataUnitOfWork.MotorsportRaceEvents
                 .FirstOrDefault(r =>
                     r.IsCurrent &&
-                    r.MotorsportRaceEventStatus == MotorsportRaceEventStatus.Result &&
                     r.MotorsportSeason.MotorsportLeague.Slug.Equals(category));
 
             var results = new MotorsportRaceEventResultsEntity()
