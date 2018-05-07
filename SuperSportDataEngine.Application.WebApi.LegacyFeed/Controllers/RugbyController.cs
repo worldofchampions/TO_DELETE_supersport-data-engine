@@ -28,6 +28,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
     /// </summary>
     [LegacyExceptionFilter]
     [RoutePrefix("rugby")]
+    [LogUserAgentFilter]
     public class RugbyController : ApiController
     {
         private readonly IDeprecatedFeedIntegrationService _deprecatedFeedIntegrationService;

@@ -186,6 +186,7 @@
     <Compile Include="Controllers\MotorsportController.cs" />
     <Compile Include="Filters\LegacyExceptionFilter.cs" />
     <Compile Include="Filters\LogTimeFilter.cs" />
+    <Compile Include="Filters\LogUserAgentFilterAttribute.cs" />
     <Compile Include="Handlers\BufferedNonStreamedContentHandler.cs" />
     <Compile Include="Helpers\Extensions\ResponseModelsExtensions.cs" />
     <Compile Include="Models\Mappers\LegacyFeedConstants.cs" />
