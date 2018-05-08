@@ -28,6 +28,7 @@
     /// </summary>
     [LegacyExceptionFilter]
     [RoutePrefix("rugby")]
+    [LogUserAgentFilter]
     public class RugbyController : ApiController
     {
         private readonly IDeprecatedFeedIntegrationServiceRugby _deprecatedFeedIntegrationServiceRugby;

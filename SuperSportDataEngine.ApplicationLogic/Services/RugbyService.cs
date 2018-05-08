@@ -285,12 +285,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                 await Task.FromResult(_publicSportDataUnitOfWork.RugbyTournaments.FirstOrDefault(f =>
                     f.Slug.Equals(tournamentSlug, StringComparison.InvariantCultureIgnoreCase)));
 
-            if (tournament == null)
-            {
-                await _logger.Warn("TournamentDoesNotExist" + tournamentSlug,
-                    "The requested tournament Slug does not exist -> " + tournamentSlug);
-            }
-        
             return tournament;
         }
 
