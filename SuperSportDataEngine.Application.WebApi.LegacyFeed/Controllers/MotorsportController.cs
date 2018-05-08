@@ -3,11 +3,13 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
     using Filters;
     using Models.Motorsport;
     using Models.Shared;
-    using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces.LegacyFeed;
     using ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
     using Common.Interfaces;
     using Common.Logging;
+    using AutoMapper;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces.DeprecatedFeed;
+    using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
     using System;
     using System.Collections.Generic;
     using System.Net;
@@ -24,7 +26,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
     public class MotorsportController : ApiController
     {
         private readonly IMotorsportLegacyFeedService _motorsportLegacyFeedService;
-        private readonly IDeprecatedFeedIntegrationService _deprecatedFeedIntegrationService;
+        private readonly IDeprecatedFeedIntegrationServiceMotorsport _deprecatedFeedIntegrationServiceMotorsport;
         private readonly ICache _cache;
         private readonly ILoggingService _logger;
 
@@ -32,12 +34,12 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 
         public MotorsportController(
             IMotorsportLegacyFeedService motorsportLegacyFeedService,
-            IDeprecatedFeedIntegrationService deprecatedFeedIntegrationService,
+            IDeprecatedFeedIntegrationServiceMotorsport deprecatedFeedIntegrationServiceMotorsport,
             ICache cache,
             ILoggingService logger)
         {
             _motorsportLegacyFeedService = motorsportLegacyFeedService;
-            _deprecatedFeedIntegrationService = deprecatedFeedIntegrationService;
+            _deprecatedFeedIntegrationServiceMotorsport = deprecatedFeedIntegrationServiceMotorsport;
             _cache = cache;
             _logger = logger;
         }
@@ -64,6 +66,12 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
                 Map<List<Races>>(
                     (await _motorsportLegacyFeedService.GetSchedules(category, currentValue))
                         .MotorsportRaceEvents ?? new List<MotorsportRaceEvent>());
+
+            foreach (var race in scheduleFromService)
+            {
+                var deprecatedArticlesAndVideosEntity = await _deprecatedFeedIntegrationServiceMotorsport.GetArticlesAndVideos(race.EventId, race.Date);
+                Mapper.Map<DeprecatedArticlesAndVideosEntity, Races>(deprecatedArticlesAndVideosEntity, race);
+            }
 
             PersistToCache(key, scheduleFromService);
 

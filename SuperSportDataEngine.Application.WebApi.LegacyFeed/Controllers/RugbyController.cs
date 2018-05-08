@@ -1,20 +1,19 @@
-﻿using SuperSportDataEngine.Common.Interfaces;
-using WebGrease.Css.Extensions;
-
-namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
+﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 {
     using AutoMapper;
-    using Filters;
-    using Helpers.Extensions;
-    using Models.Mappers;
-    using Models.News;
-    using Models.Rugby;
-    using Models.Shared;
-    using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-    using ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
-    using ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-    using ApplicationLogic.Entities.Legacy;
-    using Common.Logging;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Helpers.Extensions;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.News;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces.DeprecatedFeed;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+    using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
+    using SuperSportDataEngine.Common.Interfaces;
+    using SuperSportDataEngine.Common.Logging;
     using System;
     using System.Collections.Generic;
     using System.Configuration;
@@ -22,6 +21,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
     using System.Threading.Tasks;
     using System.Web.Http;
     using System.Web.Http.Description;
+    using WebGrease.Css.Extensions;
 
     /// <summary>
     /// LegacyFeed Rugby Endpoints
@@ -31,7 +31,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
     [LogUserAgentFilter]
     public class RugbyController : ApiController
     {
-        private readonly IDeprecatedFeedIntegrationService _deprecatedFeedIntegrationService;
+        private readonly IDeprecatedFeedIntegrationServiceRugby _deprecatedFeedIntegrationServiceRugby;
         private readonly IRugbyService _rugbyService;
         private readonly ICache _cache;
         private readonly ILoggingService _logger;
@@ -40,11 +40,11 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 
         public RugbyController(
             IRugbyService rugbyService,
-            IDeprecatedFeedIntegrationService deprecatedFeedIntegrationService,
+            IDeprecatedFeedIntegrationServiceRugby deprecatedFeedIntegrationServiceRugby,
             ICache cache,
             ILoggingService logger)
         {
-            _deprecatedFeedIntegrationService = deprecatedFeedIntegrationService;
+            _deprecatedFeedIntegrationServiceRugby = deprecatedFeedIntegrationServiceRugby;
             _rugbyService = rugbyService;
             _cache = cache;
             _logger = logger;
@@ -57,7 +57,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         {
             if (_rugbyService.IsNationalTeamSlug(category))
             {
-                return Ok(Enumerable.Empty<RugbyPointsScorerModel>());    
+                return Ok(Enumerable.Empty<RugbyPointsScorerModel>());
             }
 
             if (recordsCount == 0)
@@ -155,7 +155,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             {
                 response.Events.AssignOrderingIds();
 
-                var deprecatedArticlesAndVideosEntity = await _deprecatedFeedIntegrationService.GetArticlesAndVideos(DeprecatedFeedSportNames.Rugby, id);
+                var deprecatedArticlesAndVideosEntity = await _deprecatedFeedIntegrationServiceRugby.GetArticlesAndVideos(id, response.MatchTime);
                 response = Mapper.Map<DeprecatedArticlesAndVideosEntity, RugbyMatchDetails>(deprecatedArticlesAndVideosEntity, response);
 
                 PersistToCache(cacheKey, response);
