@@ -31,7 +31,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters
 
             var userAgent = context.Request.Headers.UserAgent;
             var queryDictionary = HttpUtility.ParseQueryString(context.Request.RequestUri.Query);
-            var authKey = queryDictionary.Get("auth").Substring(0, 5);
+            var authKey = queryDictionary.Get("auth")?.Substring(0, 5);
 
             if (!(context.Request.GetDependencyScope().GetService(typeof(ILoggingService)) is ILoggingService logger))
                 return;
