@@ -1,10 +1,9 @@
-﻿using SuperSportDataEngine.Common.Extentions;
-
-namespace SuperSportDataEngine.Gateway.Http.DeprecatedFeed.Services
+﻿namespace SuperSportDataEngine.Gateway.Http.DeprecatedFeed.Services
 {
     using Newtonsoft.Json;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.DeprecatedFeed.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.DeprecatedFeed.ResponseModels;
+    using SuperSportDataEngine.Common.Extentions;
     using SuperSportDataEngine.Common.Logging;
     using System;
     using System.Collections.Generic;
