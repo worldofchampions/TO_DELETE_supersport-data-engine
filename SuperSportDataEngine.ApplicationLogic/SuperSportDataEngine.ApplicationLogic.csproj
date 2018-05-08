@@ -78,7 +78,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Boundaries\ApplicationLogic\Interfaces\IDeprecatedFeedIntegrationService.cs" />
+    <Compile Include="Boundaries\ApplicationLogic\Interfaces\DeprecatedFeed\IDeprecatedFeedIntegrationServiceMotorsport.cs" />
+    <Compile Include="Boundaries\ApplicationLogic\Interfaces\DeprecatedFeed\IDeprecatedFeedIntegrationServiceRugby.cs" />
     <Compile Include="Boundaries\ApplicationLogic\Interfaces\ILegacyAuthService.cs" />
     <Compile Include="Boundaries\ApplicationLogic\Interfaces\IMotorsportIngestWorkerService.cs" />
     <Compile Include="Boundaries\ApplicationLogic\Interfaces\IMotorsportService.cs" />
@@ -199,10 +200,13 @@
     <Compile Include="Entities\SystemAPI\RugbyTournamentEntity.cs" />
     <Compile Include="Entities\SystemAPI\RugbyFixtureEntitySingle.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />
+    <Compile Include="Helpers\DateTimeOverride.cs" />
     <Compile Include="Helpers\FixturesStateHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Cms\RugbyCmsService.cs" />
-    <Compile Include="Services\DeprecatedFeedIntegrationService.cs" />
+    <Compile Include="Services\DeprecatedFeed\Constants\DeprecatedFeedSportNames.cs" />
+    <Compile Include="Services\DeprecatedFeed\DeprecatedFeedIntegrationServiceRugby.cs" />
+    <Compile Include="Services\DeprecatedFeed\DeprecatedFeedIntegrationServiceMotorsport.cs" />
     <Compile Include="Services\LegacyAuthService.cs" />
     <Compile Include="Services\MotorsportIngestWorkerService.cs" />
     <Compile Include="Services\LegacyFeed\MotorsportLegacyFeedService.cs" />
