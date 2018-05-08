@@ -46,7 +46,7 @@
         Task PersistResultsInRepository(
             MotorsportEntitiesResponse response,
             MotorsportRaceEvent raceEvent,
-            CancellationToken cancellationToken);
+            MotorsportLeague league);
 
         Task PersistGridInRepository(
             MotorsportEntitiesResponse response,
