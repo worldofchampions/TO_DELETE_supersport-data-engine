@@ -1,4 +1,4 @@
-﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
+﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Rugby
 {
     using AutoMapper;
     using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby;
@@ -6,10 +6,9 @@
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.DeprecatedFeed.ResponseModels;
     using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
 
-    // This class is used by Reflection.
-    public class LegacyMatchDetailsArticlesAndVideosMapperProfile : Profile
+    public class LegacyRugbyMatchDetailsArticlesAndVideosMapperProfile : Profile
     {
-        public LegacyMatchDetailsArticlesAndVideosMapperProfile()
+        public LegacyRugbyMatchDetailsArticlesAndVideosMapperProfile()
         {
             CreateMap<LiveVideosResponse, MatchLiveVideoModel>();
 

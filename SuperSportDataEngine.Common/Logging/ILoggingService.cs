@@ -16,22 +16,22 @@ namespace SuperSportDataEngine.Common.Logging
         ICache Cache { get; set; }
 
         Task Debug(string key, Exception exception);
-        Task Debug(string key, string format, params object[] args);
-        Task Debug(string key, Exception exception, string format, params object[] args);
+        Task Debug(string key, string format, TimeSpan loggingTtlInMinutes = default(TimeSpan), params object[] args);
+        Task Debug(string key, Exception exception, string format, TimeSpan loggingTtlInMinutes = default(TimeSpan), params object[] args);
         Task Error(string key, Exception exception);
-        Task Error(string key, string format, params object[] args);
-        Task Error(string key, Exception exception, string format, params object[] args);
+        Task Error(string key, string format, TimeSpan loggingTtlInMinutes = default(TimeSpan), params object[] args);
+        Task Error(string key, Exception exception, string format, TimeSpan loggingTtlInMinutes = default(TimeSpan), params object[] args);
         Task Fatal(string key, Exception exception);
-        Task Fatal(string key, string format, params object[] args);
-        Task Fatal(string key, Exception exception, string format, params object[] args);
+        Task Fatal(string key, string format, TimeSpan loggingTtlInMinutes = default(TimeSpan), params object[] args);
+        Task Fatal(string key, Exception exception, string format, TimeSpan loggingTtlInMinutes = default(TimeSpan), params object[] args);
         Task Info(string key, Exception exception);
-        Task Info(string key, string format, params object[] args);
-        Task Info(string key, Exception exception, string format, params object[] args);
+        Task Info(string key, string format, TimeSpan loggingTtlInMinutes = default(TimeSpan), params object[] args);
+        Task Info(string key, Exception exception, string format, TimeSpan loggingTtlInMinutes = default(TimeSpan), params object[] args);
         Task Trace(string key, Exception exception);
-        Task Trace(string key, string format, params object[] args);
-        Task Trace(string key, Exception exception, string format, params object[] args);
+        Task Trace(string key, string format, TimeSpan loggingTtlInMinutes = default(TimeSpan), params object[] args);
+        Task Trace(string key, Exception exception, string format, TimeSpan loggingTtlInMinutes = default(TimeSpan), params object[] args);
         Task Warn(string key, Exception exception);
-        Task Warn(string key, string format, params object[] args);
-        Task Warn(string key, Exception exception, string format, params object[] args);
+        Task Warn(string key, string format, TimeSpan loggingTtlInMinutes = default(TimeSpan), params object[] args);
+        Task Warn(string key, Exception exception, string format, TimeSpan loggingTtlInMinutes = default(TimeSpan), params object[] args);
     }
 }
