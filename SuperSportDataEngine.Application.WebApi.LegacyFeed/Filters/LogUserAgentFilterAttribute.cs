@@ -2,10 +2,10 @@
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-using SuperSportDataEngine.ApplicationLogic.Extensions;
 using SuperSportDataEngine.Common.Logging;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters
@@ -30,6 +30,8 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters
             var isInvalidSlug = await rugbyService.GetTournamentId(category) == Guid.Empty;
 
             var userAgent = context.Request.Headers.UserAgent;
+            var queryDictionary = HttpUtility.ParseQueryString(context.Request.RequestUri.Query);
+            var authKey = queryDictionary.Get("auth").Substring(0, 5);
 
             if (!(context.Request.GetDependencyScope().GetService(typeof(ILoggingService)) is ILoggingService logger))
                 return;
@@ -37,7 +39,9 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters
             if (isInvalidSlug)
             {
                 await logger.Warn("InvalidSlugName.UserAgent." + category,
-                    "Invalid tournament slug =\"" + category + "\". Request coming from User Agent = " + userAgent,
+                    "Invalid tournament slug =\"" + category + "\". Request coming " +
+                    "from User Agent = " + userAgent + 
+                    " with Auth Key = " + authKey,
                     TimeSpan.FromHours(24));
             }
         }
