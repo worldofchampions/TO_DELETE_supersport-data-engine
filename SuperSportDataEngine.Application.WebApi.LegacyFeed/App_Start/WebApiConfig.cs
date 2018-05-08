@@ -3,6 +3,7 @@ using System.Net.Http.Formatting;
 using System.Web.Http;
 using Microsoft.Practices.Unity;
 using SuperSportDataEngine.Application.Container;
+using SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed
 {
@@ -35,7 +36,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed
 
         private static void RegisterLegacyExceptionFilter()
         {
-            GlobalConfiguration.Configuration.Filters.Add(new Filters.LegacyExceptionFilter());
+            GlobalConfiguration.Configuration.Filters.Add(new LegacyExceptionFilter());
         }
 
         private static void ConfigureResponseFormatters()
