@@ -110,7 +110,7 @@
             _motorsportIngestWorkerService = _container.Resolve<IMotorsportIngestWorkerService>();
 
             _motorsportLiveManagerJob =
-                new MotorsportLiveManagerJob(_recurringJobManager, _motorsportService, _motorsportIngestWorkerService, _systemSportDataUnitOfWork);
+                new MotorsportLiveManagerJob(_recurringJobManager, _motorsportService, _motorsportIngestWorkerService, _systemSportDataUnitOfWork, _publicSportDataUnitOfWork);
         }
 
         private void ConfigureTimer()

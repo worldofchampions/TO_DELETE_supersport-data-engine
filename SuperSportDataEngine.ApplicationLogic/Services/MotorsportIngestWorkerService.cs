@@ -205,7 +205,7 @@
             }
         }
 
-        public async Task IngestResultsForRaceEvent(MotorsportRaceEvent motorsportRaceEvent, int threadSleepInSeconds, int pollingDurationInMinutes, Action<MotorsportRaceEvent> deleteJobAction)
+        public async Task IngestResultsForRaceEvent(MotorsportRaceEvent motorsportRaceEvent, int threadSleepInSeconds, int pollingDurationInMinutes)
         {
             while (true)
             {
@@ -226,8 +226,6 @@
 
                 if (await ShouldStopResultsPollingForEvent(motorsportRaceEvent, pollingDurationInMinutes))
                 {
-                    deleteJobAction.Invoke(motorsportRaceEvent);
-
                     break;
                 }
             }
@@ -453,7 +451,7 @@
             }
         }
 
-        public async Task IngestTeamStandingsForLeague(MotorsportRaceEvent raceEvent, int pollingTimeInSeconds, int pollingDurationInMinutes, Action<MotorsportRaceEvent> deleteJobAction)
+        public async Task IngestTeamStandingsForLeague(MotorsportRaceEvent raceEvent, int pollingTimeInSeconds, int pollingDurationInMinutes)
         {
             while (true)
             {
@@ -468,16 +466,14 @@
 
                 await _mongoDbMotorsportRepository.Save(providerResponse);
 
-                if (await ShouldStopStandingsPollingForEvent(raceEvent, pollingDurationInMinutes))
+                if (await ShouldStopPollingForStandings(raceEvent, pollingDurationInMinutes))
                 {
-                    deleteJobAction.Invoke(raceEvent);
-
                     break;
                 }
             }
         }
 
-        public async Task IngestDriverStandingsForLeague(MotorsportRaceEvent raceEvent, int pollingTimeInSeconds, int pollingDurationInMinutes, Action<MotorsportRaceEvent> deleteJobAction)
+        public async Task IngestDriverStandingsForLeague(MotorsportRaceEvent raceEvent, int pollingTimeInSeconds, int pollingDurationInMinutes)
         {
             while (true)
             {
@@ -501,11 +497,8 @@
 
                 PauseIngest(pollingTimeInSeconds);
 
-
-                if (await ShouldStopStandingsPollingForEvent(raceEvent, pollingDurationInMinutes))
+                if (await ShouldStopPollingForStandings(raceEvent, pollingDurationInMinutes))
                 {
-                    deleteJobAction.Invoke(raceEvent);
-
                     break;
                 }
             }
@@ -603,13 +596,13 @@
             return timeDiff >= pollingDurationInMinutes;
         }
 
-        private async Task<bool> ShouldStopStandingsPollingForEvent(MotorsportRaceEvent raceEvent, int pollingDurationInMinutes)
+        private async Task<bool> ShouldStopPollingForStandings(MotorsportRaceEvent raceEvent, int pollingDurationInMinutes)
         {
             var schedulerTrackingEvent = await _motorsportService.GetSchedulerTrackingEvent(raceEvent);
 
             if (schedulerTrackingEvent.EndedDateTimeUtc == null) return true;
 
-            var timeDiff = DateTimeOffset.UtcNow.Subtract(schedulerTrackingEvent.EndedDateTimeUtc.Value).TotalHours;
+            var timeDiff = DateTimeOffset.UtcNow.Subtract(schedulerTrackingEvent.EndedDateTimeUtc.Value).TotalMinutes;
 
             return timeDiff >= pollingDurationInMinutes;
         }

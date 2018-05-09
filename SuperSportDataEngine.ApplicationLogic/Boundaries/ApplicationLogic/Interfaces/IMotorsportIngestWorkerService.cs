@@ -25,8 +25,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Inte
         Task IngestHistoricDriverStandings(CancellationToken cancellationToken);
         Task IngestHistoricTeamStandings(CancellationToken cancellationToken);
         Task IngestLiveRaceEventData(MotorsportRaceEvent raceEvent, int threadSleepInSeconds, CancellationToken cancellationToken);
-        Task IngestTeamStandingsForLeague(MotorsportRaceEvent motorsportRaceEvent, int threadSleepInSeconds, int pollingDurationInMinutes, Action<MotorsportRaceEvent> deleteJobAction);
-        Task IngestDriverStandingsForLeague(MotorsportRaceEvent motorsportRaceEvent, int threadSleepInSeconds, int pollingDurationInMinutes, Action<MotorsportRaceEvent> deleteJobAction);
-        Task IngestResultsForRaceEvent(MotorsportRaceEvent motorsportRaceEvent, int threadSleepInSeconds, int pollingDurationInMinutes, Action<MotorsportRaceEvent> deleteJobAction);
+        Task IngestTeamStandingsForLeague(MotorsportRaceEvent motorsportRaceEvent, int threadSleepInSeconds, int pollingDurationInMinutes);
+        Task IngestDriverStandingsForLeague(MotorsportRaceEvent motorsportRaceEvent, int threadSleepInSeconds, int pollingDurationInMinutes);
+        Task IngestResultsForRaceEvent(MotorsportRaceEvent motorsportRaceEvent, int threadSleepInSeconds, int pollingDurationInMinutes);
     }
 }
