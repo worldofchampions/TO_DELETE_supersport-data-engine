@@ -8,7 +8,7 @@ using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
 
 namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.JuniorRugby
 {
-    public static class SeedRugbyLogGroupsForJuniorRugbyWorldCup
+    public static class SeedRugbyLogGroupsForJuniorRugbyWorldCup2018
     {
         private const string SlugHierachyLevel0JuniorRugby = "JuniorRugbyWorldCup-2018-HL0-JuniorRugby";
         private const string SlugHierachyLevel1PoolA = "JuniorRugbyWorldCup-2018-HL1-PoolA";
