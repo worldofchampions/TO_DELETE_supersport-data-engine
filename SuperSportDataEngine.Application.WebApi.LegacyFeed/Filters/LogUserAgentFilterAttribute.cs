@@ -44,7 +44,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters
                     "Invalid tournament slug =\"" + category + "\". Request coming " +
                     "from User Agent = " + userAgent + 
                     " with Auth Key = " + authKey,
-                    TimeSpan.FromHours(24));
+                    TimeSpan.FromDays(7));
             }
         }
     }
