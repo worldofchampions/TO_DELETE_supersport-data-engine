@@ -27,7 +27,9 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters
             if (category == null)
                 return;
 
-            var isInvalidSlug = await rugbyService.GetTournamentId(category) == Guid.Empty;
+            var isInvalidSlug = 
+                await rugbyService.GetTournamentId(category) == Guid.Empty &&
+                !rugbyService.IsNationalTeamSlug(category);
 
             var userAgent = context.Request.Headers.UserAgent;
             var queryDictionary = HttpUtility.ParseQueryString(context.Request.RequestUri.Query);
