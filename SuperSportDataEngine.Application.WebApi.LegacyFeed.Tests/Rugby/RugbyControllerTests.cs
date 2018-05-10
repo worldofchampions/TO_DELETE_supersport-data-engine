@@ -1,21 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Web.Http.Results;
-using Moq;
-using NUnit.Framework;
-using SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-using SuperSportDataEngine.ApplicationLogic.Services;
-using SuperSportDataEngine.Common.Interfaces;
-using SuperSportDataEngine.Common.Logging;
-using SuperSportDataEngine.Tests.Common.Repositories.Test;
-using Match = SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared.Match;
-
-namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Tests.Rugby
+﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Tests.Rugby
 {
+    using Moq;
+    using NUnit.Framework;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces.DeprecatedFeed;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+    using SuperSportDataEngine.ApplicationLogic.Services;
+    using SuperSportDataEngine.Common.Interfaces;
+    using SuperSportDataEngine.Common.Logging;
+    using SuperSportDataEngine.Tests.Common.Repositories.Test;
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using System.Web.Http.Results;
+    using Match = SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared.Match;
+
     [Category("LegacyFeed")]
     public class RugbyControllerTests
     {
@@ -43,7 +44,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Tests.Rugby
             _mockRugbyService = new Mock<IRugbyService>();
             _controllerWithMockRugbyService = new RugbyController(
                 _mockRugbyService.Object,
-                new Mock<IDeprecatedFeedIntegrationService>().Object,
+                new Mock<IDeprecatedFeedIntegrationServiceRugby>().Object,
                 _cache,
                 new Mock<ILoggingService>().Object);
 
@@ -51,13 +52,13 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Tests.Rugby
 
             _controller = new RugbyController(
                 rugbyService,
-                new Mock<IDeprecatedFeedIntegrationService>().Object,
+                new Mock<IDeprecatedFeedIntegrationServiceRugby>().Object,
                 _cache,
                 new Mock<ILoggingService>().Object);
         }
 
         [Test]
-        // When there are no fixtures today, 
+        // When there are no fixtures today,
         // there should be no fixtures being served out on the feed.
         public async Task NoFixturesToday()
         {
@@ -76,7 +77,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Tests.Rugby
         }
 
         [Test]
-        // When there is one fixture today, 
+        // When there is one fixture today,
         // that fixtures should be served out.
         public async Task OneFixtureToday()
         {
@@ -133,7 +134,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Tests.Rugby
         }
 
         [Test]
-        // When there are two fixtures, 
+        // When there are two fixtures,
         // One is today, and one in the past
         // Only one fixture is returned.
         // Also check if the fixture returned is the one that is today.
@@ -276,7 +277,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Tests.Rugby
 
         public void Add<T>(string key, T cacheObject, TimeSpan? ttl = null, string parentKey = null) where T : class
         {
-            if(!_database.ContainsKey(key))
+            if (!_database.ContainsKey(key))
                 _database.Add(key, cacheObject);
         }
 
@@ -291,7 +292,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Tests.Rugby
 
         public Task<T> GetAsync<T>(string key) where T : class
         {
-            return _database.ContainsKey(key) ? Task.FromResult((T) _database[key]) : null;
+            return _database.ContainsKey(key) ? Task.FromResult((T)_database[key]) : null;
         }
     }
 }

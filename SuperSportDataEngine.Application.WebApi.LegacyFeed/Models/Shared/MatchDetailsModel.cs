@@ -108,6 +108,9 @@
 
         public Boolean Postponed { get; set; }
 
+        /// <summary>
+        /// Time at which the match ends.
+        /// </summary>
         public DateTimeOffset MatchTime { get; set; }
     }
 }

@@ -196,7 +196,7 @@
                                 _statsMotorsportIngestService.IngestRaceResults(league.ProviderSlug, season.ProviderSeasonId,
                                     race.ProviderRaceId);
 
-                            await _motorsportStorageService.PersistResultsInRepository(providerResponse, raceEvent, cancellationToken);
+                            await _motorsportStorageService.PersistResultsInRepository(providerResponse, raceEvent, league);
 
                             await _mongoDbMotorsportRepository.Save(providerResponse);
                         }
@@ -218,7 +218,7 @@
                 var providerResponse =
                     _statsMotorsportIngestService.IngestRaceResults(league.ProviderSlug, season.ProviderSeasonId, race.ProviderRaceId);
 
-                await _motorsportStorageService.PersistResultsInRepository(providerResponse, motorsportRaceEvent, CancellationToken.None);
+                await _motorsportStorageService.PersistResultsInRepository(providerResponse, motorsportRaceEvent, league);
 
                 await _mongoDbMotorsportRepository.Save(providerResponse);
 
@@ -384,7 +384,7 @@
                                 _statsMotorsportIngestService.IngestRaceResults(league.ProviderSlug, season.ProviderSeasonId,
                                     race.ProviderRaceId);
 
-                            await _motorsportStorageService.PersistResultsInRepository(providerResponse, raceEvent, cancellationToken);
+                            await _motorsportStorageService.PersistResultsInRepository(providerResponse, raceEvent, league);
 
                             await _mongoDbMotorsportRepository.Save(providerResponse);
                         }
