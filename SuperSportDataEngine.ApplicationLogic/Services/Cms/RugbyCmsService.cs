@@ -32,6 +32,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
                         .ForMember(dest => dest.TeamB, opt => opt.MapFrom(origin => origin.TeamB));
                     cfg.CreateMap<RugbySeason, RugbySeasonEntity>();
                     cfg.CreateMap<RugbyPlayer, RugbyPlayerEntity>();
+                    cfg.CreateMap<RugbyVenue, RugbyVenueEntity>();
                 });
             iMapper = config.CreateMapper();
         }
@@ -155,6 +156,31 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             if (players.Results.Any())
             {
                 return players;
+            }
+            return null;
+        }
+
+        public async Task<PagedResultsEntity<RugbyVenueEntity>> GetAllVenues(int pageIndex, int pageSize, string abpath, string query = null)
+        {
+            var venues = (PagedResultsEntity<RugbyVenueEntity>)null;
+
+            if (!String.IsNullOrEmpty(query))
+            {
+                venues = await CreatePagedResults<RugbyVenue, RugbyVenueEntity>(
+                                    _publicSportDataUnitOfWork.RugbyVenues.Where(q => q.Name.Contains(query)
+                                                           || q.NameCmsOverride.Contains(query))
+                                                           .OrderBy(field => field.Name), pageIndex, pageSize, abpath, query);
+            }
+            else
+            {
+                venues = await CreatePagedResults<RugbyVenue, RugbyVenueEntity>(
+                                    _publicSportDataUnitOfWork.RugbyVenues.All()
+                                                           .OrderBy(field => field.Name), pageIndex, pageSize, abpath, query);
+            }
+
+            if (venues.Results.Any())
+            {
+                return venues;
             }
             return null;
         }
@@ -357,6 +383,19 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             return null;
         }
 
+        public async Task<RugbyVenueEntity> GetVenueById(Guid id)
+        {
+            var rugbyVenue = await Task.FromResult(_publicSportDataUnitOfWork.RugbyVenues.FirstOrDefault(
+                                                        venue => venue.Id == id));
+
+            if (rugbyVenue != null)
+            {
+                return iMapper.Map<RugbyVenue, RugbyVenueEntity>(rugbyVenue);
+            }
+
+            return null;
+        }
+
         /// <summary>
         /// Updates tournament table and only accepts values => NameCmsOverride, IsEnabled, IsLiveScored, Slug
         /// </summary>
@@ -512,6 +551,35 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
                     rugbyPlayer.DisplayNameCmsOverride = !String.IsNullOrEmpty(rugbyPlayerEntity.DisplayNameCmsOverride?.Trim()) ? rugbyPlayerEntity.DisplayNameCmsOverride : null;
 
                     _publicSportDataUnitOfWork.RugbyPlayers.Update(rugbyPlayer);
+                    await _publicSportDataUnitOfWork.SaveChangesAsync();
+                    success = true;
+                }
+
+            }
+            return success;
+        }
+
+        /// <summary>
+        /// Updates rugby venues table and only accepts values => NameCmsOverride
+        /// </summary>
+        /// <param name="venueId"></param>
+        /// <param name="rugbyVenueEntity"></param>
+        /// <returns></returns>
+        public async Task<bool> UpdateVenue(Guid id, RugbyVenueEntity rugbyVenueEntity)
+        {
+            var success = false;
+
+            if (rugbyVenueEntity != null)
+            {
+                var rugbyVenue = (await Task.FromResult(_publicSportDataUnitOfWork.RugbyVenues.FirstOrDefault(
+                                                            venue => venue.Id == id)));
+
+                if (rugbyVenue != null)
+                {
+                    /** Only accept these values hard coded below **/
+                    rugbyVenue.NameCmsOverride = !String.IsNullOrEmpty(rugbyVenueEntity.NameCmsOverride?.Trim()) ? rugbyVenueEntity.NameCmsOverride : null;
+
+                    _publicSportDataUnitOfWork.RugbyVenues.Update(rugbyVenue);
                     await _publicSportDataUnitOfWork.SaveChangesAsync();
                     success = true;
                 }
