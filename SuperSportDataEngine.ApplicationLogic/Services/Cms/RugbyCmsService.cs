@@ -413,7 +413,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
 
                 if (rugbyTournament != null)
                 {
-                    /** Only accept these values hard coded below **/
+                    /** Only accept these values below **/
                     rugbyTournament.NameCmsOverride = !String.IsNullOrEmpty(rugbyTournamentEntity.NameCmsOverride?.Trim()) ? rugbyTournamentEntity.NameCmsOverride : null;
                     rugbyTournament.IsEnabled = rugbyTournamentEntity.IsEnabled;
                     rugbyTournament.IsLiveScored = rugbyTournamentEntity.IsLiveScored;
@@ -445,7 +445,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
 
                 if (rugbyFixture != null)
                 {
-                    /** Only accept these values hard coded below **/
+                    /** Only accept these values below **/
                     rugbyFixture.IsDisabledInbound = rugbyFixtureEntity.IsDisabledInbound;
                     rugbyFixture.IsDisabledOutbound = rugbyFixtureEntity.IsDisabledOutbound;
                     rugbyFixture.IsLiveScored = rugbyFixtureEntity.IsLiveScored;
@@ -486,7 +486,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
 
                 if (rugbySeason != null)
                 {
-                    /** Only accept these values hard coded below **/
+                    /** Only accept these values below **/
                     rugbySeason.IsCurrent = rugbySeasonEntity.IsCurrent;
                     rugbySeason.CurrentRoundNumber = rugbySeasonEntity.CurrentRoundNumber;
                     rugbySeason.CurrentRoundNumberCmsOverride = rugbySeasonEntity.CurrentRoundNumberCmsOverride;
@@ -518,7 +518,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
 
                 if (rugbyTeam != null)
                 {
-                    /** Only accept these values hard coded below **/
                     rugbyTeam.NameCmsOverride = !String.IsNullOrEmpty(rugbyteamEntity.NameCmsOverride?.Trim()) ? rugbyteamEntity.NameCmsOverride : null;
 
                     _publicSportDataUnitOfWork.RugbyTeams.Update(rugbyTeam);
@@ -547,7 +546,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
 
                 if (rugbyPlayer != null)
                 {
-                    /** Only accept these values hard coded below **/
                     rugbyPlayer.DisplayNameCmsOverride = !String.IsNullOrEmpty(rugbyPlayerEntity.DisplayNameCmsOverride?.Trim()) ? rugbyPlayerEntity.DisplayNameCmsOverride : null;
 
                     _publicSportDataUnitOfWork.RugbyPlayers.Update(rugbyPlayer);
@@ -576,7 +574,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
 
                 if (rugbyVenue != null)
                 {
-                    /** Only accept these values hard coded below **/
                     rugbyVenue.NameCmsOverride = !String.IsNullOrEmpty(rugbyVenueEntity.NameCmsOverride?.Trim()) ? rugbyVenueEntity.NameCmsOverride : null;
 
                     _publicSportDataUnitOfWork.RugbyVenues.Update(rugbyVenue);
