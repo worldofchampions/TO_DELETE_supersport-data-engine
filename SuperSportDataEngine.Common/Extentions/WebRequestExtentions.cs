@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using SuperSportDataEngine.Common.Logging;
 
@@ -23,7 +20,7 @@ namespace SuperSportDataEngine.Common.Extentions
 
                 request.Abort();
 
-                await logger.Error("PROVIDERCALLS:REQUESTDURATION:" + request.GetBaseUri(), "Request timed out. Timeout length is " + timeoutInMilliseconds / 1000 + " seconds" + request.RequestUri, WebExceptionStatus.Timeout);
+                await logger.Error("PROVIDERCALLS:REQUESTDURATION:" + request.GetBaseUri(), "Request timed out. Timeout length is " + timeoutInMilliseconds / 1000 + " seconds" + request.RequestUri);
 
                 return null;
             }

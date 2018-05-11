@@ -2,14 +2,16 @@ using System.Configuration;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 {
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Motorsport;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces.LegacyFeed;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-    using SuperSportDataEngine.Common.Interfaces;
-    using SuperSportDataEngine.Common.Logging;
+    using Filters;
+    using Models.Motorsport;
+    using Models.Shared;
+    using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces.LegacyFeed;
+    using ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+    using Common.Interfaces;
+    using Common.Logging;
+    using AutoMapper;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces.DeprecatedFeed;
+    using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
     using System;
     using System.Collections.Generic;
     using System.Net;
@@ -26,7 +28,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
     public class MotorsportController : ApiController
     {
         private readonly IMotorsportLegacyFeedService _motorsportLegacyFeedService;
-        private readonly IDeprecatedFeedIntegrationService _deprecatedFeedIntegrationService;
+        private readonly IDeprecatedFeedIntegrationServiceMotorsport _deprecatedFeedIntegrationServiceMotorsport;
         private readonly ICache _cache;
         private readonly ILoggingService _logger;
 
@@ -34,12 +36,12 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 
         public MotorsportController(
             IMotorsportLegacyFeedService motorsportLegacyFeedService,
-            IDeprecatedFeedIntegrationService deprecatedFeedIntegrationService,
+            IDeprecatedFeedIntegrationServiceMotorsport deprecatedFeedIntegrationServiceMotorsport,
             ICache cache,
             ILoggingService logger)
         {
             _motorsportLegacyFeedService = motorsportLegacyFeedService;
-            _deprecatedFeedIntegrationService = deprecatedFeedIntegrationService;
+            _deprecatedFeedIntegrationServiceMotorsport = deprecatedFeedIntegrationServiceMotorsport;
             _cache = cache;
             _logger = logger;
         }
@@ -66,6 +68,12 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
                 Map<List<Races>>(
                     (await _motorsportLegacyFeedService.GetSchedules(category, currentValue))
                         .MotorsportRaceEvents ?? new List<MotorsportRaceEvent>());
+
+            foreach (var race in scheduleFromService)
+            {
+                var deprecatedArticlesAndVideosEntity = await _deprecatedFeedIntegrationServiceMotorsport.GetArticlesAndVideos(race.EventId, race.Date);
+                Mapper.Map<DeprecatedArticlesAndVideosEntity, Races>(deprecatedArticlesAndVideosEntity, race);
+            }
 
             PersistToCache(key, scheduleFromService);
 
@@ -158,12 +166,12 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         /// </summary>
         [HttpGet, HttpHead]
         [Route("{category}/results/{eventId:int}")]
-        [ResponseType(typeof(IEnumerable<Models.Motorsport.ResultMotorsport>))]
-        public async Task<IEnumerable<Models.Motorsport.ResultMotorsport>> GetResults(string category, int eventId)
+        [ResponseType(typeof(IEnumerable<ResultMotorsport>))]
+        public async Task<IEnumerable<ResultMotorsport>> GetResults(string category, int eventId)
         {
             var key = CacheKeyNamespacePrefixForFeed + $"motorsport/{category}/results/{eventId}";
 
-            var resultsFromCache = await GetFromCacheAsync<IEnumerable<Models.Motorsport.ResultMotorsport>>(key);
+            var resultsFromCache = await GetFromCacheAsync<IEnumerable<ResultMotorsport>>(key);
             if (resultsFromCache != null)
                 return resultsFromCache;
 

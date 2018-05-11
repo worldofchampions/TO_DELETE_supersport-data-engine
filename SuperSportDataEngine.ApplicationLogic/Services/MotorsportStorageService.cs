@@ -467,13 +467,11 @@
             {
                 var teamInRepo =
                     _publicSportDataUnitOfWork.MotortsportTeams.FirstOrDefault(t =>
-                        t.ProviderTeamId == result.owner.ownerId
-                        && t.MotorsportLeague.Id == league.Id);
+                        t.ProviderTeamId == result.owner.ownerId && t.MotorsportLeague.Id == league.Id);
 
                 if (teamInRepo != null)
                     eventResultInRepo.MotorsportTeam = teamInRepo;
             }
-
 
             if (result.laps?.completed != null)
             {
@@ -529,8 +527,7 @@
             {
                 var teamInRepo =
                     _publicSportDataUnitOfWork.MotortsportTeams.FirstOrDefault(t =>
-                        t.ProviderTeamId == result.owner.ownerId
-                        && t.MotorsportLeague.Id == league.Id);
+                        t.ProviderTeamId == result.owner.ownerId && t.MotorsportLeague.Id == league.Id);
 
                 if (teamInRepo != null)
                     motorsportRaceResult.MotorsportTeam = teamInRepo;

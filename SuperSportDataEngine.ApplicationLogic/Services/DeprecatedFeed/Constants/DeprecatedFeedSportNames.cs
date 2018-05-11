@@ -1,13 +1,5 @@
-﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces
+﻿namespace SuperSportDataEngine.ApplicationLogic.Services.DeprecatedFeed.Constants
 {
-    using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
-    using System.Threading.Tasks;
-
-    public interface IDeprecatedFeedIntegrationService
-    {
-        Task<DeprecatedArticlesAndVideosEntity> GetArticlesAndVideos(string sportName, int legacyFixtureId);
-    }
-
     /// <summary>
     /// String constants for sport names to be passed for Deprecated Feed Integration Article/Video calls.
     /// </summary>
