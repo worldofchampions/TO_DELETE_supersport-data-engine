@@ -268,6 +268,10 @@
     <Compile Include="Migrations\201804170525526_Rugby_Added_Venue_Name_Cms_Override.Designer.cs">
       <DependentUpon>201804170525526_Rugby_Added_Venue_Name_Cms_Override.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201804260942030_Motorsport_Add_IsDisabledInbound_For_Races.cs" />
+    <Compile Include="Migrations\201804260942030_Motorsport_Add_IsDisabledInbound_For_Races.Designer.cs">
+      <DependentUpon>201804260942030_Motorsport_Add_IsDisabledInbound_For_Races.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Seed\Motorsport\SeedMotorsportCurrentSeasons.cs" />
     <Compile Include="Migrations\Seed\Rugby\LogGroups\JuniorRugby\SeedRugbyLogGroupsForJuniorRugbyWorldCup2018.cs" />
@@ -452,6 +456,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201804170525526_Rugby_Added_Venue_Name_Cms_Override.resx">
       <DependentUpon>201804170525526_Rugby_Added_Venue_Name_Cms_Override.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201804260942030_Motorsport_Add_IsDisabledInbound_For_Races.resx">
+      <DependentUpon>201804260942030_Motorsport_Add_IsDisabledInbound_For_Races.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
