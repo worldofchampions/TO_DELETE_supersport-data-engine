@@ -60,7 +60,8 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                 new RugbyTournament {Slug = "super-rugby",ProviderTournamentId = 181},
                 new RugbyTournament {Slug = "top14",ProviderTournamentId = 241},
                 new RugbyTournament {Slug = "england",ProviderTournamentId = 201},
-                new RugbyTournament {Slug = "new-zealand",ProviderTournamentId = 101}
+                new RugbyTournament {Slug = "new-zealand",ProviderTournamentId = 101},
+                new RugbyTournament {Slug = "junior-rugby",ProviderTournamentId = 791}
             };
         }
     }

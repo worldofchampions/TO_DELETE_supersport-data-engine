@@ -15,23 +15,21 @@ namespace SuperSportDataEngine.Application.Service.Common.Hangfire.Filters
 {
     public class LogExceptionFilterAttribute : JobFilterAttribute, IElectStateFilter
     {
-        private IUnityContainer _container;
-        private ILoggingService _logger;
+        private readonly ILoggingService _logger;
 
         public LogExceptionFilterAttribute(IUnityContainer container)
         {
-            _container = container;
-            _logger = _container.Resolve<ILoggingService>();
+            _logger = container.Resolve<ILoggingService>();
         }
 
         public void OnStateElection(ElectStateContext context)
         {
-            var failedState = context.CandidateState as FailedState;
-            if (failedState != null)
+            if (context.CandidateState is FailedState failedState)
             {
                 _logger.Error(
                     "Job `{0}` has been failed due to an exception `{1}`",
                     context.BackgroundJob.Id,
+                    default(TimeSpan),
                     failedState.Exception);
             }
         }
