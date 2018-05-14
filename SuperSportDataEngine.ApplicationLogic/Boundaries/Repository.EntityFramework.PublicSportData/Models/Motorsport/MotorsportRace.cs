@@ -27,6 +27,9 @@
         /// <summary> A CMS driven value. </summary>
         public string RaceNameAbbreviationCmsOverride { get; set; }
 
+        /// <summary> A CMS driven value. </summary>
+        public bool IsDisabledInbound { get; set; }
+
         public virtual MotorsportLeague MotorsportLeague { get; set; }
 
         public DataProvider DataProvider { get; set; }
