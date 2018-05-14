@@ -13,7 +13,11 @@
 
         Task<MotorsportRaceEventResultsEntity> GetResultsForRaceEventId(string category, int eventId);
 
+        Task<MotorsportRaceEventResultsEntity> GetResultsForRaceEventId(string category, int eventId, bool completedEventsOnly);
+
         Task<MotorsportRaceEventResultsEntity> GetLatestResult(string category);
+
+        Task<MotorsportRaceEventResultsEntity> GetLatestResult(string category, bool completedEventsOnly);
 
         Task<MotorsportDriverStandingsEntity> GetDriverStandings(string category);
 
