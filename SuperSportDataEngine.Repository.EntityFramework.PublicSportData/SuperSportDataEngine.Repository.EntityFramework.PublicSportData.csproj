@@ -270,6 +270,7 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Seed\Motorsport\SeedMotorsportCurrentSeasons.cs" />
+    <Compile Include="Migrations\Seed\Rugby\LogGroups\JuniorRugby\SeedRugbyLogGroupsForJuniorRugbyWorldCup2018.cs" />
     <Compile Include="Migrations\Seed\Rugby\LogGroups\Sevens\2018\Round10Paris.cs" />
     <Compile Include="Migrations\Seed\Rugby\LogGroups\Sevens\2018\Round09London.cs" />
     <Compile Include="Migrations\Seed\Rugby\LogGroups\Sevens\2018\Round08Singapore.cs" />
