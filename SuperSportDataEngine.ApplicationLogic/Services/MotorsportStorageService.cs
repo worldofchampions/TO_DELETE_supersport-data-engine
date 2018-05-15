@@ -336,6 +336,11 @@
 
         private void UpdateGridEntryInRepo(MotorsportRaceEventGrid raceEventGridInRepo, Result providerGridEntry)
         {
+            if (providerGridEntry.carPosition != null)
+            {
+                raceEventGridInRepo.GridPosition = providerGridEntry.carPosition.startingPosition;
+            }
+
             var qualifyingRuns = providerGridEntry.qualifying?.qualifyingRuns;
             if (qualifyingRuns == null) return;
 
@@ -344,7 +349,6 @@
 
             foreach (var run in qualifyingRuns)
             {
-
                 var bestRunTime = new TimeSpan(0, 0, bestQualifyingRun.time.minutes, bestQualifyingRun.time.seconds,
                     bestQualifyingRun.time.milliseconds);
 
@@ -356,17 +360,9 @@
                 }
             }
 
-            if (bestQualifyingRun != null)
-            {
-                raceEventGridInRepo.QualifyingTimeMinutes = bestQualifyingRun.time.minutes;
-                raceEventGridInRepo.QualifyingTimeSeconds = bestQualifyingRun.time.seconds;
-                raceEventGridInRepo.QualifyingTimeMilliseconds = bestQualifyingRun.time.milliseconds;
-            }
-
-            if (providerGridEntry.carPosition != null)
-            {
-                raceEventGridInRepo.GridPosition = providerGridEntry.carPosition.startingPosition;
-            }
+            raceEventGridInRepo.QualifyingTimeMinutes = bestQualifyingRun.time.minutes;
+            raceEventGridInRepo.QualifyingTimeSeconds = bestQualifyingRun.time.seconds;
+            raceEventGridInRepo.QualifyingTimeMilliseconds = bestQualifyingRun.time.milliseconds;
 
             _publicSportDataUnitOfWork.MotorsportRaceEventGrids.Update(raceEventGridInRepo);
         }
