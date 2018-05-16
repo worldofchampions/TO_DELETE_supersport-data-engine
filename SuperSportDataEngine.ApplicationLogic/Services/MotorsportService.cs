@@ -283,5 +283,27 @@
 
             return await Task.FromResult(schedulerTrackingEvent);
         }
+
+        public async Task<IEnumerable<MotorsportRaceEvent>> GetPreLiveEventsForActiveLeagues(int numberOfHoursBeforeEventStarts)
+        {
+            try
+            {
+                var events =
+                   (await _publicSportDataUnitOfWork.MotorsportRaceEvents.WhereAsync(e => e.MotorsportRace.MotorsportLeague.IsEnabled)).ToList()
+                    .Where(e => e.StartDateTimeUtc != null &&
+                    e.StartDateTimeUtc.Value.Subtract(DateTimeOffset.Now).TotalHours >= 0 &&
+                    e.StartDateTimeUtc.Value.Subtract(DateTimeOffset.Now).TotalHours <= numberOfHoursBeforeEventStarts);
+
+                return events;
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+
+                return null;
+
+            }
+        }
+
     }
 }

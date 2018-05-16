@@ -233,6 +233,32 @@
             }
         }
 
+        public async Task IngestRaceEventGrids(MotorsportRaceEvent motorsportRaceEvent, int ingestSleepInSeconds, int pollingDurationInMinutes)
+        {
+            while (true)
+            {
+                var league = motorsportRaceEvent.MotorsportRace.MotorsportLeague;
+
+                var season = motorsportRaceEvent.MotorsportSeason;
+
+                var race = motorsportRaceEvent.MotorsportRace;
+
+                var raceGrid =
+                    _statsMotorsportIngestService.IngestRaceGrid(league.ProviderSlug, season.ProviderSeasonId, race.ProviderRaceId);
+
+                await _motorsportStorageService.PersistGridInRepository(raceGrid, motorsportRaceEvent, CancellationToken.None);
+
+                await _mongoDbMotorsportRepository.Save(raceGrid);
+
+                PauseIngest(ingestSleepInSeconds);
+
+                if (await ShouldStopResultsPollingForEvent(motorsportRaceEvent, pollingDurationInMinutes))
+                {
+                    break;
+                } 
+            }
+        }
+
         public async Task IngestHistoricRaceEvents(CancellationToken cancellationToken)
         {
             var motorLeagues = await _motorsportService.GetActiveLeagues();
@@ -328,13 +354,13 @@
 
                         foreach (var raceEvent in raceEvents)
                         {
-                            var raceResults =
+                            var raceGrid =
                                 _statsMotorsportIngestService.IngestRaceGrid(league.ProviderSlug, season.ProviderSeasonId,
                                     race.ProviderRaceId);
 
-                            await _motorsportStorageService.PersistGridInRepository(raceResults, raceEvent, cancellationToken);
+                            await _motorsportStorageService.PersistGridInRepository(raceGrid, raceEvent, cancellationToken);
 
-                            await _mongoDbMotorsportRepository.Save(raceResults);
+                            await _mongoDbMotorsportRepository.Save(raceGrid);
                         }
                     }
                 }

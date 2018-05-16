@@ -40,6 +40,8 @@
 
         public async Task DoWorkAsync()
         {
+            await CreateChildJobsForPreRaceData();
+
             await CreateChildJobsForLiveData();
 
             await CreateChildJobsForPostLiveData();
@@ -48,6 +50,23 @@
 
             await DeleteChildJobsForPostLiveData();
 
+        }
+
+        private async Task CreateChildJobsForPreRaceData()
+        {
+            var hours =
+               int.Parse(ConfigurationManager.AppSettings["MotorsportChildJob_RaceEventGrid_TimeToStartJobBeforeEventStartsInHours"]);
+
+            var raceEvents = (await _motorsportService.GetPreLiveEventsForActiveLeagues(hours)).ToList();
+
+            foreach (var raceEvent in raceEvents)
+            {
+                if (raceEvent == null) continue;
+
+                UpdateJobDefinitionForRaceGrid(raceEvent);
+            }
+
+            await _systemSportDataUnitOfWork.SaveChangesAsync();
         }
 
         private async Task CreateChildJobsForLiveData()
@@ -221,6 +240,47 @@
             _recurringJobManager.Trigger(jobId);
         }
 
+        private void UpdateJobDefinitionForRaceGrid(MotorsportRaceEvent raceEvent)
+        {
+            var schedulerEvent =
+                _systemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.FirstOrDefault(e =>
+                    e.MotorsportRaceEventId == raceEvent.Id);
+
+            if (schedulerEvent == null
+                || schedulerEvent.SchedulerStateForMotorsportRaceEventPolling == SchedulerStateForMotorsportRaceEventPolling.PreLivePolling
+                || schedulerEvent.SchedulerStateForMotorsportRaceEventPolling == SchedulerStateForMotorsportRaceEventPolling.LivePolling
+                || schedulerEvent.SchedulerStateForMotorsportRaceEventPolling == SchedulerStateForMotorsportRaceEventPolling.PostLivePolling
+                || schedulerEvent.SchedulerStateForMotorsportRaceEventPolling == SchedulerStateForMotorsportRaceEventPolling.PollingFinished) return;
+
+            var jobId =
+                ConfigurationManager.AppSettings["MotorsportChildJob_RaceEventGrid_JobIdPrefix"] + raceEvent.MotorsportRace.MotorsportLeague.Name;
+
+            var jobCronExpression = ConfigurationManager.AppSettings["MotorsportChildJob_RaceEventGrid_JobCronExpression"];
+
+            var threadSleepPollingInSeconds =
+                int.Parse(ConfigurationManager.AppSettings["MotorsportChildJob_RaceEventGrid_ThreadSleepInSeconds"]);
+
+            var pollingDurationInMinutes =
+                int.Parse(ConfigurationManager.AppSettings["MotorsportChildJob_RaceEventGrid_PollingDurationInMinutes"]);
+
+            var jobOptions = new RecurringJobOptions { TimeZone = TimeZoneInfo.Local, QueueName = HangfireQueueConfiguration.HighPriority };
+
+            _recurringJobManager.AddOrUpdate(
+                jobId,
+                Job.FromExpression(() =>
+                    _motorsportIngestWorkerService.IngestRaceEventGrids(raceEvent, threadSleepPollingInSeconds, pollingDurationInMinutes)),
+                jobCronExpression,
+                jobOptions);
+
+            schedulerEvent.SchedulerStateForMotorsportRaceEventPolling =
+                SchedulerStateForMotorsportRaceEventPolling.PreLivePolling;
+
+            _systemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.Update(schedulerEvent);
+
+            _recurringJobManager.Trigger(jobId);
+
+        }
+
         private async Task DeleteChildJobsForLiveData()
         {
             var currentLeagues = await _motorsportService.GetActiveLeagues();
@@ -302,12 +362,12 @@
 
                     if (raceEvent == null) continue;
 
-                    var jobId = 
+                    var jobId =
                         ConfigurationManager.AppSettings["MotorsportChildJob_DriverStandings_JobIdPrefix"] + raceEvent.MotorsportRace.MotorsportLeague.Name;
 
                     _recurringJobManager.RemoveIfExists(jobId);
 
-                    jobId = 
+                    jobId =
                         ConfigurationManager.AppSettings["MotorsportChildJob_TeamStandings_JobIdPrefix"] + raceEvent.MotorsportRace.MotorsportLeague.Name;
 
                     _recurringJobManager.RemoveIfExists(jobId);
