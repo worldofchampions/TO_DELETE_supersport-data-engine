@@ -186,6 +186,8 @@
 
                     foreach (var race in motorsportRaces)
                     {
+                        if (race.IsDisabledInbound) continue;
+
                         var motorsportRaceEvents = await _motorsportService.GetEventsForRace(race.Id, season.Id);
 
                         if (motorsportRaceEvents == null) continue;
@@ -249,6 +251,8 @@
                     {
                         foreach (var race in leagueRaces)
                         {
+                            if (race.IsDisabledInbound) continue;
+
                             var providerResponse =
                                 _statsMotorsportIngestService.IngestRaceEventsForLeague(
                                     league.ProviderSlug, season.ProviderSeasonId, race.ProviderRaceId);
@@ -284,6 +288,8 @@
 
                         foreach (var race in leagueRaces)
                         {
+                            if (race.IsDisabledInbound) continue;
+
                             var providerResponse =
                                 _statsMotorsportIngestService.IngestRaceEventsForLeague(league.ProviderSlug, season.ProviderSeasonId, race.ProviderRaceId);
 
@@ -314,6 +320,8 @@
 
                     foreach (var race in motorsportRaces)
                     {
+                        if (race.IsDisabledInbound) continue;
+
                         var raceEvents = await _motorsportService.GetEventsForRace(race.Id, season.Id);
 
                         if (raceEvents == null) continue;
@@ -374,6 +382,8 @@
 
                     foreach (var race in motorsportRaces)
                     {
+                        if (race.IsDisabledInbound) continue;
+
                         var motorsportRaceEvents = await _motorsportService.GetEventsForRace(race.Id, season.Id);
 
                         if (motorsportRaceEvents == null) continue;
@@ -552,7 +562,10 @@
 
                         foreach (var race in motorsportRaces)
                         {
+                            if (race.IsDisabledInbound) continue;
+
                             var motorsportRaceEvents = await _motorsportService.GetEventsForRace(race.Id, season.Id);
+
                             if (motorsportRaceEvents == null) continue;
 
                             foreach (var raceEvent in motorsportRaceEvents)
