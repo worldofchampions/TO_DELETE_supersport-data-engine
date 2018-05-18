@@ -1,10 +1,9 @@
-﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
-
-namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models
+﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models
 {
     using System;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Base;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
 
     public class SchedulerTrackingMotorsportRaceEvent : BaseModel
     {
@@ -19,8 +18,15 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFram
 
         public MotorsportRaceEventStatus MotorsportRaceEventStatus { get; set; }
 
+        public SchedulerStateForMotorsportRaceEventGridPolling SchedulerStateForMotorsportRaceEventGridPolling { get; set; }
+
+        public SchedulerStateForMotorsportRaceEventLivePolling SchedulerStateForMotorsportRaceEventLivePolling { get; set; }
+
+        public SchedulerStateForMotorsportRaceEventResultsPolling SchedulerStateForMotorsportRaceEventResultsPolling { get; set; }
+
+        public SchedulerStateForMotorsportRaceEventStandingsPolling SchedulerStateForMotorsportRaceEventStandingsPolling { get; set; }
+
         public SchedulerStateForMotorsportRaceEventPolling SchedulerStateForMotorsportRaceEventPolling { get; set; }
 
-        public bool IsJobRunning { get; set; }
     }
 }

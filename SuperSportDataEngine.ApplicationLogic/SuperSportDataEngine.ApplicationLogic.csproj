@@ -152,6 +152,10 @@
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyTeam.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyTournament.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\Models\RugbyVenue.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\Motorsport\Enums\SchedulerStateForMotorsportRaceEventGridPolling.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\Motorsport\Enums\SchedulerStateForMotorsportRaceEventLivePolling.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\Motorsport\Enums\SchedulerStateForMotorsportRaceEventResultsPolling.cs" />
+    <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\Motorsport\Enums\SchedulerStateForMotorsportRaceEventStandingsPolling.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\Motorsport\SchedulerTrackingMotorsportRaceEvent.cs" />
     <Compile Include="Boundaries\Repository.MongoDb.PayloadData\Interfaces\IMongoDbMotorsportRepository.cs" />
     <Compile Include="Constants\Providers\MotorsportStatsConstants.cs" />
