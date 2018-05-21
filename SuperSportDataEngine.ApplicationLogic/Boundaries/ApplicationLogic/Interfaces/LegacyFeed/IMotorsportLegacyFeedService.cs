@@ -10,6 +10,7 @@
         Task<MotorsportRaceEventGridEntity> GetGridForRaceEventId(string category, int eventId);
 
         Task<MotorsportRaceEventGridEntity> GetLatestGrid(string category);
+        Task<MotorsportRaceEventGridEntity> GetLatestGrid(string category, bool completedEventsOnly);
 
         Task<MotorsportRaceEventResultsEntity> GetResultsForRaceEventId(string category, int eventId);
 
