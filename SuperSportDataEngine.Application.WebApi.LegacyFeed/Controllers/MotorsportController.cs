@@ -94,20 +94,9 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             if (gridFromCache != null)
                 return gridFromCache;
 
-            var completedEventsOnly = bool.Parse(ConfigurationManager.AppSettings["Motorsport.Grid.ShowForCompletedGridEventsOnly"]);
-
-            MotorsportGrid gridFromService;
-
-            if (completedEventsOnly)
-            {
-                gridFromService = Map<MotorsportGrid>(
+            var gridFromService =
+                Map<MotorsportGrid>(
                     (await _motorsportLegacyFeedService.GetLatestGrid(category)));
-            }
-            else
-            {
-                gridFromService = Map<MotorsportGrid>(
-                    (await _motorsportLegacyFeedService.GetLatestGrid(category)));
-            }
 
             PersistToCache(key, gridFromService);
 
