@@ -483,7 +483,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
 
             if (tournamentId != null && _season != null && rugbySeasonEntity != null)
             {
-                var seasons = _publicSportDataUnitOfWork.RugbySeasons.Where(tournament => tournament.RugbyTournament.Id == tournamentId);
+                var seasons = _publicSportDataUnitOfWork.RugbySeasons.Where(season => season.RugbyTournament.Id == tournamentId);
 
                 foreach (var season in seasons)
                 {
