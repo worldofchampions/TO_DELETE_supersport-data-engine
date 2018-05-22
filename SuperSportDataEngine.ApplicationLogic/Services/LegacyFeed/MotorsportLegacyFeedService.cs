@@ -1,10 +1,9 @@
-﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
-
-namespace SuperSportDataEngine.ApplicationLogic.Services.LegacyFeed
+﻿namespace SuperSportDataEngine.ApplicationLogic.Services.LegacyFeed
 {
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces.LegacyFeed;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
     using SuperSportDataEngine.ApplicationLogic.Entities.Legacy.Motorsport;
     using System;
     using System.Collections.Generic;
@@ -60,7 +59,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.LegacyFeed
                     r.LegacyRaceEventId == eventId &&
                     r.MotorsportSeason.MotorsportLeague.Slug.Equals(category));
 
-            var grid = new MotorsportRaceEventGridEntity()
+            var grid = new MotorsportRaceEventGridEntity
             {
                 MotorsportRaceEventGrids = new List<MotorsportRaceEventGrid>(),
                 MotorsportRaceEvent = raceEvent
@@ -68,7 +67,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.LegacyFeed
 
             var group =
                     _publicSportDataUnitOfWork.MotorsportRaceEventGrids
-                    .Where(g => g.MotorsportRaceEvent.LegacyRaceEventId == eventId)
+                    .Where(g => g.MotorsportRaceEvent.LegacyRaceEventId == eventId && g.GridPosition != 0)
                     .OrderByDescending(g => g.MotorsportRaceEvent.StartDateTimeUtc)
                     .GroupBy(g => g.MotorsportRaceEvent.Id)
                     .FirstOrDefault();
@@ -98,7 +97,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.LegacyFeed
 
             var group =
                 _publicSportDataUnitOfWork.MotorsportRaceEventGrids
-                    .Where(g => g.MotorsportRaceEvent.LegacyRaceEventId == raceEvent.LegacyRaceEventId)
+                    .Where(g => g.MotorsportRaceEvent.LegacyRaceEventId == raceEvent.LegacyRaceEventId && g.GridPosition != 0)
                     .OrderByDescending(g => g.MotorsportRaceEvent.StartDateTimeUtc)
                     .GroupBy(g => g.MotorsportRaceEvent.Id)
                     .FirstOrDefault();
@@ -111,35 +110,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.LegacyFeed
 
             return await Task.FromResult(grid);
         }
-
+        
         public async Task<MotorsportRaceEventResultsEntity> GetResultsForRaceEventId(string category, int eventId)
-        {
-            var raceEvent = _publicSportDataUnitOfWork.MotorsportRaceEvents
-                .FirstOrDefault(r =>
-                    r.LegacyRaceEventId == eventId &&
-                    r.MotorsportSeason.MotorsportLeague.Slug.Equals(category));
-
-            var results = new MotorsportRaceEventResultsEntity()
-            {
-                MotorsportRaceEventResults = new List<MotorsportRaceEventResult>(),
-                MotorsportRaceEvent = raceEvent
-            };
-
-            var group =
-                _publicSportDataUnitOfWork.MotorsportRaceEventResults
-                    .Where(g => g.MotorsportRaceEvent.LegacyRaceEventId == eventId && g.Position != 0)
-                    .OrderByDescending(g => g.MotorsportRaceEvent.StartDateTimeUtc)
-                    .GroupBy(g => g.MotorsportRaceEvent.Id)
-                    .FirstOrDefault();
-
-            if (group != null)
-                results.MotorsportRaceEventResults =
-                    group.ToList().OrderBy(g => g.Position).ToList();
-
-            return await Task.FromResult(results);
-        }
-
-        public async Task<MotorsportRaceEventResultsEntity> GetResultsForRaceEventId(string category, int eventId, bool completedEventsOnly)
         {
             var raceEvent =
                 _publicSportDataUnitOfWork.MotorsportRaceEvents.FirstOrDefault(r =>
@@ -152,7 +124,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.LegacyFeed
                 MotorsportRaceEvent = raceEvent
             };
 
-            if (raceEvent == null || (completedEventsOnly && raceEvent.MotorsportRaceEventStatus != MotorsportRaceEventStatus.Result))
+            if (raceEvent == null || raceEvent.MotorsportRaceEventStatus != MotorsportRaceEventStatus.Result)
             {
                 return await Task.FromResult(results);
             }
@@ -183,39 +155,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.LegacyFeed
                 MotorsportRaceEvent = raceEvent
             };
 
-            if (raceEvent == null)
-                return results;
-
-            var group =
-                _publicSportDataUnitOfWork.MotorsportRaceEventResults
-                    .Where(g => g.MotorsportRaceEvent.LegacyRaceEventId == raceEvent.LegacyRaceEventId && g.Position != 0)
-                    .OrderByDescending(g => g.MotorsportRaceEvent.StartDateTimeUtc)
-                    .GroupBy(g => g.MotorsportRaceEvent.Id)
-                    .FirstOrDefault();
-
-            if (group != null)
-                results.MotorsportRaceEventResults =
-                    group.ToList()
-                        .OrderBy(g => g.Position)
-                        .ToList();
-
-            return await Task.FromResult(results);
-        }
-
-        public async Task<MotorsportRaceEventResultsEntity> GetLatestResult(string category, bool completedEventsOnly)
-        {
-            var raceEvent = _publicSportDataUnitOfWork.MotorsportRaceEvents
-                .FirstOrDefault(r =>
-                    r.IsCurrent &&
-                    r.MotorsportSeason.MotorsportLeague.Slug.Equals(category));
-
-            var results = new MotorsportRaceEventResultsEntity()
-            {
-                MotorsportRaceEventResults = new List<MotorsportRaceEventResult>(),
-                MotorsportRaceEvent = raceEvent
-            };
-
-            if (raceEvent == null || completedEventsOnly && raceEvent.MotorsportRaceEventStatus != MotorsportRaceEventStatus.Result)
+            if (raceEvent == null || raceEvent.MotorsportRaceEventStatus != MotorsportRaceEventStatus.Result)
             {
                 return await Task.FromResult(results);
             }
