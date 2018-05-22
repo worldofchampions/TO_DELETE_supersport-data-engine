@@ -563,15 +563,16 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         /// Return 406 if update doesn't succeed and a 500 error response if something failed while doing it
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="tournamentId"></param>
         /// <param name="rugbyseasonEntity"></param>
         /// <returns></returns>
         [ActionName("seasons")]
         [HttpPut]
-        public async Task<HttpResponseMessage> PutSeason(Guid id, [FromBody] RugbySeasonEntity rugbyseasonEntity)
+        public async Task<HttpResponseMessage> PutSeason(Guid id, Guid tournamentId, [FromBody] RugbySeasonEntity rugbyseasonEntity)
         {
             try
             {
-                var season = await _rugbyService.UpdateSeason(id, rugbyseasonEntity);
+                var season = await _rugbyService.UpdateSeason(id, tournamentId, rugbyseasonEntity);
 
                 if (season)
                 {

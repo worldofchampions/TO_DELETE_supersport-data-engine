@@ -27,7 +27,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.CmsLogic.Interfaces
 
         Task<bool> UpdateTournament(Guid tournamentId, RugbyTournamentEntity rugbyTournamentEntity);
         Task<bool> UpdateFixture(Guid fixtureId, RugbyFixtureEntity rugbyFixtureEntity);
-        Task<bool> UpdateSeason(Guid seasonId, RugbySeasonEntity rugbySeasonEntity);
+        Task<bool> UpdateSeason(Guid seasonId, Guid tournamentId, RugbySeasonEntity rugbySeasonEntity);
         Task<bool> UpdateTeam(Guid teamId, RugbyTeamEntity rugbyTeamEntity);
         Task<bool> UpdatePlayer(Guid playerId, RugbyPlayerEntity rugbyPlayerEntity);
         Task<bool> UpdateVenue(Guid id, RugbyVenueEntity rugbyVenueEntity);
