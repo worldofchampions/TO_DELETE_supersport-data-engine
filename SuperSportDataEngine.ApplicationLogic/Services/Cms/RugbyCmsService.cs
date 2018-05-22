@@ -240,7 +240,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
         {
             var tournamentFixtures = (PagedResultsEntity<RugbyFixtureEntity>)null;
 
-            var tourFixtures = (await _publicSportDataUnitOfWork.RugbyFixtures.WhereAsync(t => t.RugbyTournament.Id == tournamentId)).OrderBy(f => f.StartDateTime).ToList();
+            var tourFixtures = (await _publicSportDataUnitOfWork.RugbyFixtures.WhereAsync(t => t.RugbyTournament.Id == tournamentId)).ToList();
 
             if (status != null)
                 status = status.ToLower().Replace(" ", String.Empty);
@@ -250,43 +250,43 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
                 case "results":
                     if (seasonId != null) {
                         tourFixtures = tourFixtures.Where(fixture => fixture?.RugbySeason?.Id == seasonId
-                                                            && fixture?.RugbyFixtureStatus == RugbyFixtureStatus.Result).ToList();
+                                                            && fixture?.RugbyFixtureStatus == RugbyFixtureStatus.Result).OrderByDescending(f => f.StartDateTime).ToList();
                     }
                     else {
                         tourFixtures = tourFixtures.Where(fixture => fixture?.RugbySeason?.IsCurrent == true
-                                                            && fixture?.RugbyFixtureStatus == RugbyFixtureStatus.Result).ToList();
+                                                            && fixture?.RugbyFixtureStatus == RugbyFixtureStatus.Result).OrderByDescending(f => f.StartDateTime).ToList();
                     }
                     break;
                 case "comingup":
                     if (seasonId != null) {
                         tourFixtures = tourFixtures.Where(fixture => fixture?.RugbySeason?.Id == seasonId
-                                                            && fixture?.StartDateTime >= DateTime.UtcNow).ToList();
+                                                            && fixture?.StartDateTime >= DateTime.UtcNow).OrderBy(f => f.StartDateTime).ToList();
                     }
                     else {
                         tourFixtures = tourFixtures.Where(fixture => fixture?.RugbySeason?.IsCurrent == true
-                                                            && fixture?.StartDateTime >= DateTime.UtcNow).ToList();
+                                                            && fixture?.StartDateTime >= DateTime.UtcNow).OrderBy(f => f.StartDateTime).ToList();
                     }
                     break;
                 case "today":
                     if (seasonId != null) {
                         tourFixtures = tourFixtures.Where(fixture => fixture?.RugbySeason?.Id == seasonId
                                                             && fixture?.StartDateTime >= DateTimer.StartOfDay(DateTime.UtcNow)
-                                                            && fixture?.StartDateTime <= DateTimer.EndOfDay(DateTime.UtcNow)).ToList();
+                                                            && fixture?.StartDateTime <= DateTimer.EndOfDay(DateTime.UtcNow)).OrderBy(f => f.StartDateTime).ToList();
                     }
                     else {
                         tourFixtures = tourFixtures.Where(fixture => fixture?.RugbySeason?.IsCurrent == true
                                                             && fixture?.StartDateTime >= DateTimer.StartOfDay(DateTime.UtcNow)
-                                                            && fixture?.StartDateTime <= DateTimer.EndOfDay(DateTime.UtcNow)).ToList();
+                                                            && fixture?.StartDateTime <= DateTimer.EndOfDay(DateTime.UtcNow)).OrderBy(f => f.StartDateTime).ToList();
                     }
                     break;
                 default:
                     if (seasonId != null) {
                         tourFixtures = tourFixtures.Where(fixture => fixture?.RugbySeason?.Id != null
-                                                            && fixture?.RugbySeason?.Id == seasonId).ToList();
+                                                            && fixture?.RugbySeason?.Id == seasonId).OrderBy(f => f.StartDateTime).ToList();
                     }
                     else {
                         tourFixtures = tourFixtures.Where(fixture => fixture?.RugbySeason?.Id != null
-                                                            && fixture?.RugbySeason?.IsCurrent == true).ToList();
+                                                            && fixture?.RugbySeason?.IsCurrent == true).OrderBy(f => f.StartDateTime).ToList();
                     }
                     break;
             }   
