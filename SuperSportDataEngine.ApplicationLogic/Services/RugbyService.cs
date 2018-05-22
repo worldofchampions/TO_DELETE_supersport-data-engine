@@ -434,7 +434,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                         t.RugbySeason.IsCurrent &&
                         t.RoundNumber == (t.RugbySeason.CurrentRoundNumberCmsOverride ?? t.RugbySeason.CurrentRoundNumber) &&
                         t.RugbyLogGroup.IsCoreGroup)
-                    .OrderBy(g => g.RugbyLogGroup.ProviderLogGroupId).ThenBy(t => t.LogPosition);
+                    .OrderBy(g => g.RugbyLogGroup.GroupName).ThenBy(t => t.LogPosition);
 
                 return await Task.FromResult(logs.ToList());
             }
