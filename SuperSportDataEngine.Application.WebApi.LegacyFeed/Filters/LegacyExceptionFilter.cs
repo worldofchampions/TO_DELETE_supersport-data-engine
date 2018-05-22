@@ -1,6 +1,8 @@
 ﻿using SuperSportDataEngine.Common.Logging;
+using System;
 using System.Net;
 using System.Net.Http;
+using System.Web;
 using System.Web.Http.Filters;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters
@@ -33,7 +35,19 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters
         {
             var loggerService = context.ActionContext.Request.GetDependencyScope().GetService(typeof(ILoggingService)) as ILoggingService;
 
-            loggerService?.Fatal("LegacyException." + context.Exception.Message, context.Exception.Message + context.Exception.StackTrace);
+            var requestUriString = context.Request.RequestUri.ToString();
+            var indexOf = requestUriString.IndexOf("?", StringComparison.Ordinal);
+            var uri = requestUriString.Substring(0, indexOf == -1 ? requestUriString.Length : indexOf);
+
+            var queryDictionary = HttpUtility.ParseQueryString(context.Request.RequestUri.Query);
+            var authKey = queryDictionary.Get("auth")?.Substring(0, 5);
+
+            loggerService?.Fatal(
+                "LegacyException." + context.Exception.Message,
+                "URL: " + Environment.NewLine + uri + "  with auth key = " + authKey + "   " +
+                "Message: " + Environment.NewLine + context.Exception.Message + "  " +
+                "StackTrace: " + Environment.NewLine + context.Exception.StackTrace + "  " +
+                "Inner Exception " + Environment.NewLine + context.Exception.InnerException);
         }
     }
 }
