@@ -110,35 +110,8 @@
 
             return await Task.FromResult(grid);
         }
-
+        
         public async Task<MotorsportRaceEventResultsEntity> GetResultsForRaceEventId(string category, int eventId)
-        {
-            var raceEvent = _publicSportDataUnitOfWork.MotorsportRaceEvents
-                .FirstOrDefault(r =>
-                    r.LegacyRaceEventId == eventId &&
-                    r.MotorsportSeason.MotorsportLeague.Slug.Equals(category));
-
-            var results = new MotorsportRaceEventResultsEntity()
-            {
-                MotorsportRaceEventResults = new List<MotorsportRaceEventResult>(),
-                MotorsportRaceEvent = raceEvent
-            };
-
-            var group =
-                _publicSportDataUnitOfWork.MotorsportRaceEventResults
-                    .Where(g => g.MotorsportRaceEvent.LegacyRaceEventId == eventId && g.Position != 0)
-                    .OrderByDescending(g => g.MotorsportRaceEvent.StartDateTimeUtc)
-                    .GroupBy(g => g.MotorsportRaceEvent.Id)
-                    .FirstOrDefault();
-
-            if (group != null)
-                results.MotorsportRaceEventResults =
-                    group.ToList().OrderBy(g => g.Position).ToList();
-
-            return await Task.FromResult(results);
-        }
-
-        public async Task<MotorsportRaceEventResultsEntity> GetResultsForRaceEventId(string category, int eventId, bool completedEventsOnly)
         {
             var raceEvent =
                 _publicSportDataUnitOfWork.MotorsportRaceEvents.FirstOrDefault(r =>
@@ -151,7 +124,7 @@
                 MotorsportRaceEvent = raceEvent
             };
 
-            if (raceEvent == null || (completedEventsOnly && raceEvent.MotorsportRaceEventStatus != MotorsportRaceEventStatus.Result))
+            if (raceEvent == null || raceEvent.MotorsportRaceEventStatus != MotorsportRaceEventStatus.Result)
             {
                 return await Task.FromResult(results);
             }
@@ -182,39 +155,7 @@
                 MotorsportRaceEvent = raceEvent
             };
 
-            if (raceEvent == null)
-                return results;
-
-            var group =
-                _publicSportDataUnitOfWork.MotorsportRaceEventResults
-                    .Where(g => g.MotorsportRaceEvent.LegacyRaceEventId == raceEvent.LegacyRaceEventId && g.Position != 0)
-                    .OrderByDescending(g => g.MotorsportRaceEvent.StartDateTimeUtc)
-                    .GroupBy(g => g.MotorsportRaceEvent.Id)
-                    .FirstOrDefault();
-
-            if (group != null)
-                results.MotorsportRaceEventResults =
-                    group.ToList()
-                        .OrderBy(g => g.Position)
-                        .ToList();
-
-            return await Task.FromResult(results);
-        }
-
-        public async Task<MotorsportRaceEventResultsEntity> GetLatestResult(string category, bool completedEventsOnly)
-        {
-            var raceEvent = _publicSportDataUnitOfWork.MotorsportRaceEvents
-                .FirstOrDefault(r =>
-                    r.IsCurrent &&
-                    r.MotorsportSeason.MotorsportLeague.Slug.Equals(category));
-
-            var results = new MotorsportRaceEventResultsEntity()
-            {
-                MotorsportRaceEventResults = new List<MotorsportRaceEventResult>(),
-                MotorsportRaceEvent = raceEvent
-            };
-
-            if (raceEvent == null || completedEventsOnly && raceEvent.MotorsportRaceEventStatus != MotorsportRaceEventStatus.Result)
+            if (raceEvent == null || raceEvent.MotorsportRaceEventStatus != MotorsportRaceEventStatus.Result)
             {
                 return await Task.FromResult(results);
             }
