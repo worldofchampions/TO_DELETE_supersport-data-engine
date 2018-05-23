@@ -226,7 +226,46 @@
 
                 PauseIngest(threadSleepInSeconds);
 
-                if (await ShouldStopResultsPollingForEvent(motorsportRaceEvent, pollingDurationInMinutes))
+                if (await ShouldStopPolling(motorsportRaceEvent, pollingDurationInMinutes))
+                {
+                    break;
+                }
+            }
+        }
+
+        public async Task IngestRaceEventsForLeague(MotorsportRaceEvent motorsportRaceEvent, int threadSleepInSeconds, int pollingDurationInMinutes)
+        {
+            var league = motorsportRaceEvent.MotorsportRace.MotorsportLeague;
+
+            if (league.ProviderSlug is null) return;
+
+            var season = motorsportRaceEvent.MotorsportSeason;
+
+            if (season is null) return;
+
+            var leagueRaces = (await _motorsportService.GetRacesForLeague(league.Id))?.ToList();
+
+            if (leagueRaces is null) return;
+
+            while (true)
+            {
+                foreach (var race in leagueRaces)
+                {
+                    if (race.IsDisabledInbound) continue;
+
+                    var providerResponse =
+                        _statsMotorsportIngestService.IngestRaceEventsForLeague(league.ProviderSlug,
+                            season.ProviderSeasonId, race.ProviderRaceId);
+
+                    await
+                        _motorsportStorageService.PersistRaceEventsInRepository(providerResponse, race, season, CancellationToken.None);
+
+                    await _mongoDbMotorsportRepository.Save(providerResponse);
+                }
+
+                PauseIngest(threadSleepInSeconds);
+
+                if (await ShouldStopPolling(motorsportRaceEvent, pollingDurationInMinutes))
                 {
                     break;
                 }
@@ -252,10 +291,10 @@
 
                 PauseIngest(ingestSleepInSeconds);
 
-                if (await ShouldStopResultsPollingForEvent(motorsportRaceEvent, pollingDurationInMinutes))
+                if (await ShouldStopPolling(motorsportRaceEvent, pollingDurationInMinutes))
                 {
                     break;
-                } 
+                }
             }
         }
 
@@ -502,7 +541,7 @@
 
                 await _mongoDbMotorsportRepository.Save(providerResponse);
 
-                if (await ShouldStopPollingForStandings(raceEvent, pollingDurationInMinutes))
+                if (await ShouldStopPolling(raceEvent, pollingDurationInMinutes))
                 {
                     break;
                 }
@@ -533,7 +572,7 @@
 
                 PauseIngest(pollingTimeInSeconds);
 
-                if (await ShouldStopPollingForStandings(raceEvent, pollingDurationInMinutes))
+                if (await ShouldStopPolling(raceEvent, pollingDurationInMinutes))
                 {
                     break;
                 }
@@ -624,7 +663,29 @@
             return schedulerTrackingEvent?.EndedDateTimeUtc != null && schedulerTrackingEvent.MotorsportRaceEventStatus == MotorsportRaceEventStatus.Result;
         }
 
-        private async Task<bool> ShouldStopResultsPollingForEvent(MotorsportRaceEvent raceEvent, int pollingDurationInMinutes)
+        //private async Task<bool> ShouldStopResultsPollingForEvent(MotorsportRaceEvent raceEvent, int pollingDurationInMinutes)
+        //{
+        //    var schedulerTrackingEvent = await _motorsportService.GetSchedulerTrackingEvent(raceEvent);
+
+        //    if (schedulerTrackingEvent.EndedDateTimeUtc == null) return true;
+
+        //    var timeDiff = DateTimeOffset.UtcNow.Subtract(schedulerTrackingEvent.EndedDateTimeUtc.Value).TotalMinutes;
+
+        //    return timeDiff >= pollingDurationInMinutes;
+        //}
+
+        //private async Task<bool> ShouldStopPollingForStandings(MotorsportRaceEvent raceEvent, int pollingDurationInMinutes)
+        //{
+        //    var schedulerTrackingEvent = await _motorsportService.GetSchedulerTrackingEvent(raceEvent);
+
+        //    if (schedulerTrackingEvent.EndedDateTimeUtc == null) return true;
+
+        //    var timeDiff = DateTimeOffset.UtcNow.Subtract(schedulerTrackingEvent.EndedDateTimeUtc.Value).TotalMinutes;
+
+        //    return timeDiff >= pollingDurationInMinutes;
+        //}
+
+        private async Task<bool> ShouldStopPolling(MotorsportRaceEvent raceEvent, int pollingDurationInMinutes)
         {
             var schedulerTrackingEvent = await _motorsportService.GetSchedulerTrackingEvent(raceEvent);
 
@@ -635,15 +696,5 @@
             return timeDiff >= pollingDurationInMinutes;
         }
 
-        private async Task<bool> ShouldStopPollingForStandings(MotorsportRaceEvent raceEvent, int pollingDurationInMinutes)
-        {
-            var schedulerTrackingEvent = await _motorsportService.GetSchedulerTrackingEvent(raceEvent);
-
-            if (schedulerTrackingEvent.EndedDateTimeUtc == null) return true;
-
-            var timeDiff = DateTimeOffset.UtcNow.Subtract(schedulerTrackingEvent.EndedDateTimeUtc.Value).TotalMinutes;
-
-            return timeDiff >= pollingDurationInMinutes;
-        }
     }
 }
