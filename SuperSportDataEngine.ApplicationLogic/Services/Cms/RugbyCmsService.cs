@@ -473,29 +473,35 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
         /// Updates season table and only accepts values => IsCurrent, CurrentRoundNumber
         /// </summary>
         /// <param name="seasonId"></param>
+        /// <param name="tournamentId"></param>
         /// <param name="rugbySeasonEntity"></param>
         /// <returns></returns>
-        public async Task<bool> UpdateSeason(Guid id, RugbySeasonEntity rugbySeasonEntity)
+        public async Task<bool> UpdateSeason(Guid id, Guid tournamentId, RugbySeasonEntity rugbySeasonEntity)
         {
             var success = false;
+            var _season = _publicSportDataUnitOfWork.RugbySeasons.FirstOrDefault(season => season.Id == id);
 
-            if (rugbySeasonEntity != null)
+            if (tournamentId != null && _season != null && rugbySeasonEntity != null)
             {
-                var rugbySeason = (await Task.FromResult(_publicSportDataUnitOfWork.RugbySeasons.FirstOrDefault(
-                                                            season => season.Id == id)));
+                var seasons = _publicSportDataUnitOfWork.RugbySeasons.Where(season => season.RugbyTournament.Id == tournamentId);
 
-                if (rugbySeason != null)
+                foreach (var season in seasons)
                 {
-                    /** Only accept these values below **/
-                    rugbySeason.IsCurrent = rugbySeasonEntity.IsCurrent;
-                    rugbySeason.CurrentRoundNumber = rugbySeasonEntity.CurrentRoundNumber;
-                    rugbySeason.CurrentRoundNumberCmsOverride = rugbySeasonEntity.CurrentRoundNumberCmsOverride;
+                    if (season.Id == id)
+                    {
+                        /** Only accept these values below **/
+                        season.IsCurrent = rugbySeasonEntity.IsCurrent;
+                        season.CurrentRoundNumber = rugbySeasonEntity.CurrentRoundNumber;
+                        season.CurrentRoundNumberCmsOverride = rugbySeasonEntity.CurrentRoundNumberCmsOverride;
+                    }
+                    else
+                        season.IsCurrent = false;
 
-                    _publicSportDataUnitOfWork.RugbySeasons.Update(rugbySeason);
-                    await _publicSportDataUnitOfWork.SaveChangesAsync();
-                    success = true;
+                    _publicSportDataUnitOfWork.RugbySeasons.Update(season);
                 }
 
+                await _publicSportDataUnitOfWork.SaveChangesAsync();
+                success = true;
             }
             return success;
         }
