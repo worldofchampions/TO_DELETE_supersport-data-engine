@@ -48,6 +48,10 @@
             MotorsportRaceEvent raceEvent,
             MotorsportLeague league);
 
+        Task PersistLiveResultsInRepository(
+            MotorsportEntitiesResponse response,
+            MotorsportRaceEvent raceEvent);
+
         Task PersistGridInRepository(
             MotorsportEntitiesResponse response,
             MotorsportRaceEvent raceEvent,

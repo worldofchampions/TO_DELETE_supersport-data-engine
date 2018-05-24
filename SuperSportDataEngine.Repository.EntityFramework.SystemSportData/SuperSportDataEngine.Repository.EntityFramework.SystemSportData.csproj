@@ -139,6 +139,22 @@
     <Compile Include="Migrations\201803091218233_Initial_Motorsport_Migration.Designer.cs">
       <DependentUpon>201803091218233_Initial_Motorsport_Migration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201804260714382_Motorsport_RaceEvents_Tracking_Table.cs" />
+    <Compile Include="Migrations\201804260714382_Motorsport_RaceEvents_Tracking_Table.Designer.cs">
+      <DependentUpon>201804260714382_Motorsport_RaceEvents_Tracking_Table.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201805070800258_Motorsport_Add_SchedulerTrackingState.cs" />
+    <Compile Include="Migrations\201805070800258_Motorsport_Add_SchedulerTrackingState.Designer.cs">
+      <DependentUpon>201805070800258_Motorsport_Add_SchedulerTrackingState.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201805181337212_Motorsport_Update_SchedulerTrackingState_Table.cs" />
+    <Compile Include="Migrations\201805181337212_Motorsport_Update_SchedulerTrackingState_Table.Designer.cs">
+      <DependentUpon>201805181337212_Motorsport_Update_SchedulerTrackingState_Table.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201805210800110_Motorsport_Update_SchedulerTrackingState_Table_2.cs" />
+    <Compile Include="Migrations\201805210800110_Motorsport_Update_SchedulerTrackingState_Table_2.Designer.cs">
+      <DependentUpon>201805210800110_Motorsport_Update_SchedulerTrackingState_Table_2.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Seed\SeedSchedulingDashboardUsers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -200,6 +216,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201803091218233_Initial_Motorsport_Migration.resx">
       <DependentUpon>201803091218233_Initial_Motorsport_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201804260714382_Motorsport_RaceEvents_Tracking_Table.resx">
+      <DependentUpon>201804260714382_Motorsport_RaceEvents_Tracking_Table.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201805070800258_Motorsport_Add_SchedulerTrackingState.resx">
+      <DependentUpon>201805070800258_Motorsport_Add_SchedulerTrackingState.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201805181337212_Motorsport_Update_SchedulerTrackingState_Table.resx">
+      <DependentUpon>201805181337212_Motorsport_Update_SchedulerTrackingState_Table.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201805210800110_Motorsport_Update_SchedulerTrackingState_Table_2.resx">
+      <DependentUpon>201805210800110_Motorsport_Update_SchedulerTrackingState_Table_2.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
