@@ -10,6 +10,13 @@ namespace SuperSportDataEngine.Repository.EntityFramework.SystemSportData.Contex
     {
         internal static void ApplyFluentApiConfigurations(DbModelBuilder modelBuilder)
         {
+            ApplyRugbyConfigurations(modelBuilder);
+
+            ApplyMotorSportConfigurations(modelBuilder);
+        }
+
+        private static void ApplyRugbyConfigurations(DbModelBuilder modelBuilder)
+        {
             modelBuilder.Entity<LegacyAccessItem>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
 
             modelBuilder.Entity<LegacyAuthFeedConsumer>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
@@ -25,13 +32,13 @@ namespace SuperSportDataEngine.Repository.EntityFramework.SystemSportData.Contex
             modelBuilder.Entity<SchedulerTrackingRugbyTournament>().HasKey(x => new { x.TournamentId, x.SeasonId });
 
             modelBuilder.Entity<SchedulerDashboardUser>().HasKey(x => new { x.Username });
-
-            ApplyMotorSportConfigurations(modelBuilder);
         }
 
         private static void ApplyMotorSportConfigurations(DbModelBuilder modelBuilder)
         {
             modelBuilder.Entity<SchedulerTrackingMotorsportSeason>().HasKey(x => new { x.SeasonId, x.LeagueId });
+
+            modelBuilder.Entity<SchedulerTrackingMotorsportRaceEvent>().HasKey(x => new { x.MotorsportRaceEventId, x.MotorsportLeagueId });
         }
     }
 }
