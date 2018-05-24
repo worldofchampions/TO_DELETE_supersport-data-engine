@@ -163,14 +163,24 @@
                 {
                     if (raceEvent == null) continue;
 
+                    var schedulerEvent =
+                        _systemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.FirstOrDefault(e =>
+                            e.MotorsportRaceEventId == raceEvent.Id);
+
+                    if (schedulerEvent == null) continue;
+
+                    schedulerEvent.SchedulerStateForMotorsportRaceEventLivePolling =
+                        SchedulerStateForMotorsportRaceEventLivePolling.Completed;
+
                     var jobId = ConfigurationManager.AppSettings["Motorsport_LiveRaceJob_JobIdPrefix"] +
                                 raceEvent.MotorsportRace.RaceName + "→" + raceEvent.LegacyRaceEventId;
 
                     _recurringJobManager.RemoveIfExists(jobId);
 
                 }
-            }
 
+                await _systemSportDataUnitOfWork.SaveChangesAsync();
+            }
         }
 
         private async Task DeleteChildJobsForRaceResultsData()
