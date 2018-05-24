@@ -64,6 +64,34 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             return null;
         }
 
+        /// <summary>
+        /// Updates league table and only accepts this value => NameCmsOverride
+        /// </summary>
+        /// <param name="leagueId"></param>
+        /// <param name="motorsportLeagueEntity"></param>
+        /// <returns></returns>
+        public async Task<bool> UpdateLeague(Guid id, MotorsportLeagueEntity motorsportLeagueEntity)
+        {
+            var success = false;
+
+            if (motorsportLeagueEntity != null)
+            {
+                var motorsportLeague = (await Task.FromResult(_publicSportDataUnitOfWork.MotorsportLeagues.FirstOrDefault(
+                                                            league => league.Id == id)));
+
+                if (motorsportLeague != null)
+                {
+                    motorsportLeague.NameCmsOverride = !String.IsNullOrEmpty(motorsportLeagueEntity.NameCmsOverride?.Trim()) ? motorsportLeagueEntity.NameCmsOverride : null;
+
+                    _publicSportDataUnitOfWork.MotorsportLeagues.Update(motorsportLeague);
+                    await _publicSportDataUnitOfWork.SaveChangesAsync();
+                    success = true;
+                }
+
+            }
+            return success;
+        }
+
         protected async Task<PagedResultsEntity<TReturn>> CreatePagedResults<T, TReturn>(IEnumerable<T> queryable, int pageIndex, int pageSize, string abpath, string query)
         {
             var skipAmount = pageSize * (pageIndex - 1);

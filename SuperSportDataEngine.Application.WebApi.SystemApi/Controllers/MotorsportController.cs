@@ -1,5 +1,6 @@
 ﻿using SuperSportDataEngine.Application.WebApi.SystemApi.Authentication;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.CmsLogic.Interfaces;
+using SuperSportDataEngine.ApplicationLogic.Entities.SystemAPI.Motorsport;
 using SuperSportDataEngine.Common.Logging;
 using System;
 using System.Diagnostics;
@@ -54,13 +55,13 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         {
             try
             {
-                var tournaments = await _motorsportService.GetAllLeagues(pageIndex, pageSize, path, query);
-                return Request.CreateResponse(HttpStatusCode.OK, tournaments);
+                var leagues = await _motorsportService.GetAllLeagues(pageIndex, pageSize, path, query);
+                return Request.CreateResponse(HttpStatusCode.OK, leagues);
             }
             catch (Exception exception)
             {
                 LogException(exception);
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while retrieving tournaments !");
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while retrieving leagues !");
             }
         }
 
@@ -93,6 +94,37 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while processing league !");
             }
 
+        }
+
+        /// <summary>
+        /// Update league
+        /// Return 406 if update doesn't succeed and a 500 error response if something failed while doing it
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="motorsportLeagueEntity"></param>
+        /// <returns></returns>
+        [ActionName("leagues")]
+        [HttpPut]
+        public async Task<HttpResponseMessage> PutLeague(Guid id, [FromBody] MotorsportLeagueEntity motorsportLeagueEntity)
+        {
+            try
+            {
+                var league = await _motorsportService.UpdateLeague(id, motorsportLeagueEntity);
+
+                if (league)
+                {
+                    return Request.CreateResponse(HttpStatusCode.NoContent, "League was updated successfully");
+                }
+                else
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.NotAcceptable, "League could not be updated");
+                }
+            }
+            catch (Exception exception)
+            {
+                LogException(exception);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while updating league !");
+            }
         }
 
         protected async void LogException(Exception exception)

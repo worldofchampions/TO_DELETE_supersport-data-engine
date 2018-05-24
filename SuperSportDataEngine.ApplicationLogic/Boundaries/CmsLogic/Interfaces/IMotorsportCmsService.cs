@@ -11,6 +11,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.CmsLogic.Interfaces
 
         Task<MotorsportLeagueEntity> GetLeagueById(Guid leagueId);
 
-        //Task<bool> UpdateLeague(Guid leagueId, MotorsportLeagueEntity motorsportLeagueEntity);
+        Task<bool> UpdateLeague(Guid leagueId, MotorsportLeagueEntity motorsportLeagueEntity);
     }
 }
