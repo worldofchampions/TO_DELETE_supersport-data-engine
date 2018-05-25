@@ -108,6 +108,7 @@
             if (applicationScope == ApplicationScope.WebApiSystemApi)
             {
                 container.RegisterType<IRugbyCmsService, RugbyCmsService>(new HierarchicalLifetimeManager());
+                container.RegisterType<IMotorsportCmsService, MotorsportCmsService>(new HierarchicalLifetimeManager());
             }
 
             if (applicationScope == ApplicationScope.WebApiLegacyFeed)
