@@ -303,7 +303,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
 
         [Route("api/Rugby/tournament/{tournamentId:guid}/fixtures")]
         [HttpGet]
-        public async Task<HttpResponseMessage> GetAllFixturesForTournament(Guid tournamentId, int pageIndex, int pageSize, bool overrideToggle, Guid? seasonId = null, string query = null, string status = null)
+        public async Task<HttpResponseMessage> GetAllFixturesForTournament(Guid tournamentId, int pageIndex, int pageSize, bool overrideToggle = false, Guid? seasonId = null, string query = null, string status = null)
         {
             try
             {
