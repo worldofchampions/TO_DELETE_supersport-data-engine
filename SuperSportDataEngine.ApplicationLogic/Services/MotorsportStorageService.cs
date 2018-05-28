@@ -370,7 +370,7 @@
         public async Task PersistGridInRepository(
             MotorsportEntitiesResponse response,
             MotorsportRaceEvent raceEvent,
-            CancellationToken cancellationToken)
+            MotorsportLeague league)
         {
             var gridFromProviderResponse = ExtractRaceGridFromProviderResponse(response);
             if (gridFromProviderResponse is null) return;
@@ -386,18 +386,18 @@
 
                 if (gridInRepo is null)
                 {
-                    AddNewGridEntryToRepo(providerGridEntry, raceEvent);
+                    AddNewGridEntryToRepo(providerGridEntry, raceEvent, league);
                 }
                 else
                 {
-                    UpdateGridEntryInRepo(gridInRepo, providerGridEntry);
+                    UpdateGridEntryInRepo(gridInRepo, providerGridEntry, league);
                 }
             }
 
             await _publicSportDataUnitOfWork.SaveChangesAsync();
         }
 
-        private void UpdateGridEntryInRepo(MotorsportRaceEventGrid raceEventGridInRepo, Result providerGridEntry)
+        private void UpdateGridEntryInRepo(MotorsportRaceEventGrid raceEventGridInRepo, Result providerGridEntry, MotorsportLeague league)
         {
             if (providerGridEntry.carPosition != null)
             {
@@ -423,14 +423,27 @@
                 }
             }
 
-            raceEventGridInRepo.QualifyingTimeMinutes = bestQualifyingRun.time.minutes;
-            raceEventGridInRepo.QualifyingTimeSeconds = bestQualifyingRun.time.seconds;
-            raceEventGridInRepo.QualifyingTimeMilliseconds = bestQualifyingRun.time.milliseconds;
+            if (bestQualifyingRun.time != null)
+            {
+                raceEventGridInRepo.QualifyingTimeMinutes = bestQualifyingRun.time.minutes;
+                raceEventGridInRepo.QualifyingTimeSeconds = bestQualifyingRun.time.seconds;
+                raceEventGridInRepo.QualifyingTimeMilliseconds = bestQualifyingRun.time.milliseconds;
+            }
+
+            if (providerGridEntry.owner != null)
+            {
+                var teamInRepo =
+                    _publicSportDataUnitOfWork.MotortsportTeams.FirstOrDefault(t =>
+                        t.ProviderTeamId == providerGridEntry.owner.ownerId && t.MotorsportLeague.Id == league.Id);
+
+                if (teamInRepo != null)
+                    raceEventGridInRepo.MotorsportTeam = teamInRepo;
+            }
 
             _publicSportDataUnitOfWork.MotorsportRaceEventGrids.Update(raceEventGridInRepo);
         }
 
-        private void AddNewGridEntryToRepo(Result providerGridEntry, MotorsportRaceEvent raceEvent)
+        private void AddNewGridEntryToRepo(Result providerGridEntry, MotorsportRaceEvent raceEvent, MotorsportLeague league)
         {
             var driverInRepo =
                 _publicSportDataUnitOfWork.MotorsportDrivers.FirstOrDefault(d => d.ProviderDriverId == providerGridEntry.player.playerId);
@@ -452,7 +465,8 @@
             if (providerGridEntry.owner != null)
             {
                 var teamInRepo =
-                    _publicSportDataUnitOfWork.MotortsportTeams.FirstOrDefault(d => d.ProviderTeamId == providerGridEntry.owner.ownerId);
+                    _publicSportDataUnitOfWork.MotortsportTeams.FirstOrDefault(d =>
+                    d.ProviderTeamId == providerGridEntry.owner.ownerId && d.MotorsportLeague.Id == league.Id);
 
                 newGridEntry.MotorsportTeam = teamInRepo;
             }
@@ -476,7 +490,7 @@
                     }
                 }
 
-                if (bestQualifyingRun != null)
+                if (bestQualifyingRun?.time != null)
                 {
                     newGridEntry.QualifyingTimeMinutes = bestQualifyingRun.time.minutes;
                     newGridEntry.QualifyingTimeSeconds = bestQualifyingRun.time.seconds;

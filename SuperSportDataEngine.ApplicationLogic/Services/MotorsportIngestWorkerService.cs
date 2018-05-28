@@ -285,7 +285,7 @@
                 var raceGrid =
                     _statsMotorsportIngestService.IngestRaceGrid(league.ProviderSlug, season.ProviderSeasonId, race.ProviderRaceId);
 
-                await _motorsportStorageService.PersistGridInRepository(raceGrid, motorsportRaceEvent, CancellationToken.None);
+                await _motorsportStorageService.PersistGridInRepository(raceGrid, motorsportRaceEvent, league);
 
                 await _mongoDbMotorsportRepository.Save(raceGrid);
 
@@ -397,7 +397,7 @@
                                 _statsMotorsportIngestService.IngestRaceGrid(league.ProviderSlug, season.ProviderSeasonId,
                                     race.ProviderRaceId);
 
-                            await _motorsportStorageService.PersistGridInRepository(raceGrid, raceEvent, cancellationToken);
+                            await _motorsportStorageService.PersistGridInRepository(raceGrid, raceEvent, league);
 
                             await _mongoDbMotorsportRepository.Save(raceGrid);
                         }
@@ -639,7 +639,7 @@
                                     _statsMotorsportIngestService.IngestRaceGrid(league.ProviderSlug, season.ProviderSeasonId,
                                         race.ProviderRaceId);
 
-                                await _motorsportStorageService.PersistGridInRepository(providerResponse, raceEvent, cancellationToken);
+                                await _motorsportStorageService.PersistGridInRepository(providerResponse, raceEvent, league);
 
                                 await _mongoDbMotorsportRepository.Save(providerResponse);
                             }
@@ -662,12 +662,12 @@
 
             return schedulerTrackingEvent?.EndedDateTimeUtc != null && schedulerTrackingEvent.MotorsportRaceEventStatus == MotorsportRaceEventStatus.Result;
         }
-
+        
         private async Task<bool> ShouldStopPolling(MotorsportRaceEvent raceEvent, int pollingDurationInMinutes)
         {
             var schedulerTrackingEvent = await _motorsportService.GetSchedulerTrackingEvent(raceEvent);
 
-            if (schedulerTrackingEvent.EndedDateTimeUtc == null) return true;
+            if (schedulerTrackingEvent.EndedDateTimeUtc == null) return false;
 
             var timeDiff = DateTimeOffset.UtcNow.Subtract(schedulerTrackingEvent.EndedDateTimeUtc.Value).TotalMinutes;
 

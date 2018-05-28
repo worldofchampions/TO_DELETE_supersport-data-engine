@@ -55,7 +55,7 @@
         Task PersistGridInRepository(
             MotorsportEntitiesResponse response,
             MotorsportRaceEvent raceEvent,
-            CancellationToken cancellationToken);
+            MotorsportLeague league);
     }
 
 }
