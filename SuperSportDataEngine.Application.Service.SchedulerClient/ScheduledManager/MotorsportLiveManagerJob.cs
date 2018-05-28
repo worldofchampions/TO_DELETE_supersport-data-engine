@@ -260,7 +260,7 @@
 
             foreach (var league in currentLeagues)
             {
-                var schedulerTrackingEvents = await GetSchedulerTrackingEventsToDeleteGridChildJobsFor(league);
+                var schedulerTrackingEvents = (await GetSchedulerTrackingEventsToDeleteGridChildJobsFor(league)).ToList();
 
                 foreach (var schedulerTrackingEvent in schedulerTrackingEvents)
                 {
@@ -272,7 +272,8 @@
                     if (raceEvent == null) continue;
 
                     var jobId =
-                        ConfigurationManager.AppSettings["MotorsportChildJob_RaceEventGrid_JobIdPrefix"] + raceEvent.MotorsportRace.MotorsportLeague.Name;
+                        ConfigurationManager.AppSettings["MotorsportChildJob_RaceEventGrid_JobIdPrefix"] +
+                        raceEvent.MotorsportRace.MotorsportLeague.Name + "→" + raceEvent.MotorsportRace.RaceName;
 
                     _recurringJobManager.RemoveIfExists(jobId);
 
