@@ -1,6 +1,5 @@
 ﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Motorsport
 {
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
     using System;
     using System.Collections.Generic;
 
