@@ -1,7 +1,7 @@
 ﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Motorsport
 {
     using AutoMapper;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Motorsport;
     using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
 
     public class LegacyMotorsportScheduleArticlesAndVideosMapperProfile : Profile
