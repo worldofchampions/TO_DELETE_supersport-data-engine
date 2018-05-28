@@ -662,34 +662,12 @@
 
             return schedulerTrackingEvent?.EndedDateTimeUtc != null && schedulerTrackingEvent.MotorsportRaceEventStatus == MotorsportRaceEventStatus.Result;
         }
-
-        //private async Task<bool> ShouldStopResultsPollingForEvent(MotorsportRaceEvent raceEvent, int pollingDurationInMinutes)
-        //{
-        //    var schedulerTrackingEvent = await _motorsportService.GetSchedulerTrackingEvent(raceEvent);
-
-        //    if (schedulerTrackingEvent.EndedDateTimeUtc == null) return true;
-
-        //    var timeDiff = DateTimeOffset.UtcNow.Subtract(schedulerTrackingEvent.EndedDateTimeUtc.Value).TotalMinutes;
-
-        //    return timeDiff >= pollingDurationInMinutes;
-        //}
-
-        //private async Task<bool> ShouldStopPollingForStandings(MotorsportRaceEvent raceEvent, int pollingDurationInMinutes)
-        //{
-        //    var schedulerTrackingEvent = await _motorsportService.GetSchedulerTrackingEvent(raceEvent);
-
-        //    if (schedulerTrackingEvent.EndedDateTimeUtc == null) return true;
-
-        //    var timeDiff = DateTimeOffset.UtcNow.Subtract(schedulerTrackingEvent.EndedDateTimeUtc.Value).TotalMinutes;
-
-        //    return timeDiff >= pollingDurationInMinutes;
-        //}
-
+        
         private async Task<bool> ShouldStopPolling(MotorsportRaceEvent raceEvent, int pollingDurationInMinutes)
         {
             var schedulerTrackingEvent = await _motorsportService.GetSchedulerTrackingEvent(raceEvent);
 
-            if (schedulerTrackingEvent.EndedDateTimeUtc == null) return true;
+            if (schedulerTrackingEvent.EndedDateTimeUtc == null) return false;
 
             var timeDiff = DateTimeOffset.UtcNow.Subtract(schedulerTrackingEvent.EndedDateTimeUtc.Value).TotalMinutes;
 
