@@ -113,6 +113,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
 
             if (!String.IsNullOrEmpty(query))
             {
+                if (query.ToLower().Contains("springbok"))
+                    query = "South Africa";
+
                 teams = await CreatePagedResults<RugbyTeam, RugbyTeamEntity>(
                                     _publicSportDataUnitOfWork.RugbyTeams.Where(q => q.Name.Contains(query)
                                                         || q.NameCmsOverride.Contains(query)
