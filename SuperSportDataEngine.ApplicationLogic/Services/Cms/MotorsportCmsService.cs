@@ -35,7 +35,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             if (!String.IsNullOrEmpty(query))
             {
                 leagues = await CreatePagedResults<MotorsportLeague, MotorsportLeagueEntity>(
-                                    _publicSportDataUnitOfWork.MotorsportLeagues.Where(cond => cond.IsEnabled).Where(q => q.Name.Contains(query)
+                                    _publicSportDataUnitOfWork.MotorsportLeagues.Where(q => q.IsEnabled && q.Name.Contains(query)
                                                         || q.NameCmsOverride.Contains(query)).OrderBy(league => league.Slug), pageIndex, pageSize, abpath, query);
             }
             else
