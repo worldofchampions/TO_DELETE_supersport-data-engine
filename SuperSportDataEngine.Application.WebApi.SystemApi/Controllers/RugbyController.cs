@@ -281,14 +281,17 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         /// Get paginated list of rugby tournament fixtures and return a 500 error response if something failed while doing it
         /// </summary>
         /// <param name="tournamentId"></param>
-        /// <param name="seasonId">
-        /// SeasonId for fixture
-        /// </param>
         /// <param name="pageIndex">
         /// Page number
         /// </param>
         /// <param name="pageSize">
         /// Size of records to be returned
+        /// </param>
+        /// <param name="seasonId">
+        /// SeasonId for fixture
+        /// </param>
+        /// <param name="overrideToggle">
+        /// Set this to true to return fixtures with CmsOverrideModeIsActive set to true
         /// </param>
         /// <param name="query">
         /// Search against fixtures team names
@@ -300,11 +303,11 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
 
         [Route("api/Rugby/tournament/{tournamentId:guid}/fixtures")]
         [HttpGet]
-        public async Task<HttpResponseMessage> GetAllFixturesForTournament(Guid tournamentId, int pageIndex, int pageSize, Guid? seasonId = null, string query = null, string status = null)
+        public async Task<HttpResponseMessage> GetAllFixturesForTournament(Guid tournamentId, int pageIndex, int pageSize, bool overrideToggle = false, Guid? seasonId = null, string query = null, string status = null)
         {
             try
             {
-                var tournamentFixtures = await _rugbyService.GetTournamentFixtures(tournamentId, seasonId, pageIndex, pageSize, path, query, status);
+                var tournamentFixtures = await _rugbyService.GetTournamentFixtures(tournamentId, seasonId, pageIndex, pageSize, path, overrideToggle, query, status);
                 return Request.CreateResponse(HttpStatusCode.OK, tournamentFixtures);
             }
             catch (Exception exception)
@@ -563,15 +566,16 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         /// Return 406 if update doesn't succeed and a 500 error response if something failed while doing it
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="tournamentId"></param>
         /// <param name="rugbyseasonEntity"></param>
         /// <returns></returns>
         [ActionName("seasons")]
         [HttpPut]
-        public async Task<HttpResponseMessage> PutSeason(Guid id, [FromBody] RugbySeasonEntity rugbyseasonEntity)
+        public async Task<HttpResponseMessage> PutSeason(Guid id, Guid tournamentId, [FromBody] RugbySeasonEntity rugbyseasonEntity)
         {
             try
             {
-                var season = await _rugbyService.UpdateSeason(id, rugbyseasonEntity);
+                var season = await _rugbyService.UpdateSeason(id, tournamentId, rugbyseasonEntity);
 
                 if (season)
                 {
