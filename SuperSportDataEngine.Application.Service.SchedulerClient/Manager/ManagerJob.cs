@@ -73,6 +73,8 @@
 
             _rugbyIngestWorkerService = _container.Resolve<IRugbyIngestWorkerService>();
 
+            _logger = _container.Resolve<ILoggingService>();
+
             _fixturesManagerJob =
                 new FixturesManagerJob(
                     _recurringJobManager,
