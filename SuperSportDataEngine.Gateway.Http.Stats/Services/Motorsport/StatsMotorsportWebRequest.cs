@@ -10,9 +10,9 @@
 
     public class StatsMotorsportMotorsportWebRequest : IStatsMotorsportWebRequest
     {
-        private readonly string _statsApiSharedSecret;// = "JDgQnhPVZQ";
-        private readonly string _statsApiKey;// = "ta3dprpc4sn79ecm2wg7tqbg";
-        private readonly string _statsApiBaseUrl; //= "http://api.stats.com";
+        private readonly string _statsApiSharedSecret;  // = "JDgQnhPVZQ";
+        private readonly string _statsApiKey;           // = "ta3dprpc4sn79ecm2wg7tqbg";
+        private readonly string _statsApiBaseUrl;       //= "http://api.stats.com";
 
         public StatsMotorsportMotorsportWebRequest(string statsApiBaseUrl, string statsApiKey, string statsApiSharedSecret)
         {

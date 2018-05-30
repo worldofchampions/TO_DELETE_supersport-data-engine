@@ -69,9 +69,13 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
                         if(motorEnabled)
                         _motorFixedScheduledJob.UpdateRecurringJobDefinitions();
                     }
-                    catch (Exception)
+                    catch (Exception exception)
                     {
-                        // ignored
+                        _logger?.Fatal(
+                            "LegacyException." + exception.Message,
+                            "Message: " + Environment.NewLine + exception.Message + "  " +
+                            "StackTrace: " + Environment.NewLine + exception.StackTrace + "  " +
+                            "Inner Exception " + Environment.NewLine + exception.InnerException);
                     }
 
                     Thread.Sleep(2000);
