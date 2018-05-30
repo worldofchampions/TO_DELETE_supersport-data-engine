@@ -66,6 +66,37 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         }
 
         /// <summary>
+        /// Get paginated list of motorsport league seasons and return a 500 error response if something failed while doing it
+        /// </summary>
+        /// <param name="leagueId"></param>
+        /// <param name="pageIndex">
+        /// Page number
+        /// </param>
+        /// <param name="pageSize">
+        /// Size of records to be returned
+        /// </param>
+        /// <param name="query">
+        /// Search against season name for leagueId
+        /// </param>
+        /// <returns></returns>
+
+        [Route("api/Motorsport/league/{leagueId:guid}/seasons")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> GetAllLeagueSeasons(Guid leagueId, int pageIndex, int pageSize, string query = null)
+        {
+            try
+            {
+                var leagueSeasons = await _motorsportService.GetSeasonsForLeague(leagueId, pageIndex, pageSize, path, query);
+                return Request.CreateResponse(HttpStatusCode.OK, leagueSeasons);
+            }
+            catch (Exception exception)
+            {
+                LogException(exception);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while retrieving seasons for league !");
+            }
+        }
+
+        /// <summary>
         /// Get motorsport league by league Id
         /// Return 404 if not found and a 500 error response if something failed while doing it
         /// </summary>
@@ -124,6 +155,38 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
             {
                 LogException(exception);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while updating league !");
+            }
+        }
+
+        /// <summary>
+        /// Update season
+        /// Return 406 if update doesn't succeed and a 500 error response if something failed while doing it
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="leagueId"></param>
+        /// <param name="motorsportseasonEntity"></param>
+        /// <returns></returns>
+        [ActionName("seasons")]
+        [HttpPut]
+        public async Task<HttpResponseMessage> PutSeason(Guid id, Guid leagueId, [FromBody] MotorsportSeasonEntity motorsportseasonEntity)
+        {
+            try
+            {
+                var season = await _motorsportService.UpdateSeason(id, leagueId, motorsportseasonEntity);
+
+                if (season)
+                {
+                    return Request.CreateResponse(HttpStatusCode.NoContent, "Season was updated successfully");
+                }
+                else
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.NotAcceptable, "Season could not be updated");
+                }
+            }
+            catch (Exception exception)
+            {
+                LogException(exception);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while updating season !");
             }
         }
 

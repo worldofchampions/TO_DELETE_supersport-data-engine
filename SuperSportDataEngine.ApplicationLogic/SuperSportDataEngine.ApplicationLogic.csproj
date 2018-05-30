@@ -194,6 +194,7 @@
     <Compile Include="Entities\Legacy\Mappers\LegacyAuthMappingProfile.cs" />
     <Compile Include="Entities\LogEntity.cs" />
     <Compile Include="Entities\SystemAPI\Motorsport\MotorsportLeagueEntity.cs" />
+    <Compile Include="Entities\SystemAPI\Motorsport\MotorsportSeasonEntity.cs" />
     <Compile Include="Entities\SystemAPI\PagedResultsEntity.cs" />
     <Compile Include="Entities\SystemAPI\RugbyFixtureEntity.cs" />
     <Compile Include="Entities\SystemAPI\RugbyPlayerEntity.cs" />
