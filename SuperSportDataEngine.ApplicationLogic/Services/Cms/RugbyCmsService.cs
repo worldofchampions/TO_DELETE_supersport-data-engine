@@ -543,8 +543,11 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
                         season.CurrentRoundNumber = rugbySeasonEntity.CurrentRoundNumber;
                         season.CurrentRoundNumberCmsOverride = rugbySeasonEntity.CurrentRoundNumberCmsOverride;
                     }
-                    else
+
+                    if (season.Id != id && rugbySeasonEntity.IsCurrent == true)
+                    {
                         season.IsCurrent = false;
+                    }
 
                     _publicSportDataUnitOfWork.RugbySeasons.Update(season);
                 }
