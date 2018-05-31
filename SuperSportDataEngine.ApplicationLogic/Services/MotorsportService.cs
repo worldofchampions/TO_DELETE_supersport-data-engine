@@ -103,7 +103,7 @@
 
         public async Task<MotorsportRaceEvent> GetLiveEventForLeague(Guid leagueId)
         {
-            var raceEvent = _publicSportDataUnitOfWork.MotorsportRaceEvents
+            var raceEvent = (await _publicSportDataUnitOfWork.MotorsportRaceEvents.AllAsync())
                 .Where(e => e.MotorsportRace.MotorsportLeague.Id == leagueId)
                 .FirstOrDefault(IsEventLive);
 
