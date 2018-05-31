@@ -321,9 +321,12 @@
                 await _publicSystemSportDataUnitOfWork.SaveChangesAsync();
             }
 
-            raceEvent.MotorsportRaceEventStatus = raceEventStatus;
+            var raceEve =  _publicSportDataUnitOfWork.MotorsportRaceEvents.FirstOrDefault(e =>
+                e.Id == raceEvent.Id);
 
-            _publicSportDataUnitOfWork.MotorsportRaceEvents.Update(raceEvent);
+            raceEve.MotorsportRaceEventStatus = raceEventStatus;
+
+            _publicSportDataUnitOfWork.MotorsportRaceEvents.Update(raceEve);
 
             await _publicSportDataUnitOfWork.SaveChangesAsync();
         }

@@ -103,7 +103,7 @@
 
         public async Task<MotorsportRaceEvent> GetLiveEventForLeague(Guid leagueId)
         {
-            var raceEvent = _publicSportDataUnitOfWork.MotorsportRaceEvents
+            var raceEvent = (await _publicSportDataUnitOfWork.MotorsportRaceEvents.AllAsync())
                 .Where(e => e.MotorsportRace.MotorsportLeague.Id == leagueId)
                 .FirstOrDefault(IsEventLive);
 
@@ -286,23 +286,26 @@
 
         public async Task<IEnumerable<MotorsportRaceEvent>> GetPreLiveEventsForActiveLeagues(int numberOfHoursBeforeEventStarts)
         {
-            try
+            var events =
+               (await _publicSportDataUnitOfWork.MotorsportRaceEvents.WhereAsync(e =>
+               e.MotorsportRace.MotorsportLeague.IsEnabled && e.IsCurrent)).ToList();
+
+            var results = new List<MotorsportRaceEvent>();
+
+            foreach (var raceEvent in events)
             {
-                var events =
-                   (await _publicSportDataUnitOfWork.MotorsportRaceEvents.WhereAsync(e => e.MotorsportRace.MotorsportLeague.IsEnabled)).ToList()
-                    .Where(e => e.StartDateTimeUtc != null &&
-                    e.StartDateTimeUtc.Value.Subtract(DateTimeOffset.Now).TotalHours >= 0 &&
-                    e.StartDateTimeUtc.Value.Subtract(DateTimeOffset.Now).TotalHours <= numberOfHoursBeforeEventStarts);
+                if (raceEvent.StartDateTimeUtc == null) continue;
 
-                return events;
+                var hoursBeforeEventStarts =
+                    Math.Round(raceEvent.StartDateTimeUtc.Value.Subtract(DateTime.UtcNow).TotalHours, MidpointRounding.AwayFromZero);
+
+                if ((int)hoursBeforeEventStarts <= numberOfHoursBeforeEventStarts && (int)hoursBeforeEventStarts >= 0)
+                {
+                    results.Add(raceEvent);
+                }
             }
-            catch (Exception exception)
-            {
-                Console.WriteLine(exception);
 
-                return null;
-
-            }
+            return results;
         }
 
     }

@@ -16,7 +16,11 @@ namespace SuperSportDataEngine.Repository.EntityFramework.SystemSportData.Migrat
                         StartDateTimeUtc = c.DateTimeOffset(precision: 7),
                         EndedDateTimeUtc = c.DateTimeOffset(precision: 7),
                         MotorsportRaceEventStatus = c.Int(nullable: false),
-                        IsJobRunning = c.Boolean(nullable: false),
+                        SchedulerStateForMotorsportRaceEventGridPolling = c.Int(nullable: false),
+                        SchedulerStateForMotorsportRaceEventLivePolling = c.Int(nullable: false),
+                        SchedulerStateForMotorsportRaceEventResultsPolling = c.Int(nullable: false),
+                        SchedulerStateForMotorsportRaceEventStandingsPolling = c.Int(nullable: false),
+                        SchedulerStateForMotorsportRaceEventCalendarPolling = c.Int(nullable: false),
                         TimestampCreated = c.DateTimeOffset(nullable: false, precision: 7),
                         TimestampUpdated = c.DateTimeOffset(nullable: false, precision: 7),
                     })

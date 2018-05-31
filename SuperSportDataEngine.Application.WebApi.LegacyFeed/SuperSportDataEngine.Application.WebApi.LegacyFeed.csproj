@@ -231,6 +231,7 @@
     <Compile Include="Helpers\AppSettings\SuperSportDataApplicationSettingsHelper.cs" />
     <Compile Include="Models\Mappers\LegacyGroupedLogMapperProfile.cs" />
     <Compile Include="Models\Mappers\Motorsport\LegacyMotorsportScheduleArticlesAndVideosMapperProfile.cs" />
+    <Compile Include="Models\Mappers\Motorsport\LegacyMotorsportScheduleWithResultsMapperProfile.cs" />
     <Compile Include="Models\Mappers\Rugby\LegacyRugbyMatchDetailsArticlesAndVideosMapperProfile.cs" />
     <Compile Include="Models\Mappers\LegacyMatchEventsMapperProfile.cs" />
     <Compile Include="Models\Mappers\LegacyMatchModelMapperProfile.cs" />
@@ -249,6 +250,7 @@
     <Compile Include="Models\Mappers\Motorsport\LegacyMotorsportTeamStandingsMapperProfile.cs" />
     <Compile Include="Models\Motorsport\MotorsportResult.cs" />
     <Compile Include="Models\Motorsport\MotorsportGrid.cs" />
+    <Compile Include="Models\Motorsport\RacesWithResults.cs" />
     <Compile Include="Models\Motorsport\Team.cs" />
     <Compile Include="Models\Rugby\GeneralResponse.cs" />
     <Compile Include="Models\Shared\AlternateCommentsModel.cs" />
@@ -257,7 +259,7 @@
     <Compile Include="Models\Shared\ChannelRegionsModel.cs" />
     <Compile Include="Models\Shared\ClubDetailsModel.cs" />
     <Compile Include="Models\Shared\ClubModel.cs" />
-    <Compile Include="Models\Shared\CommentModel.cs" />
+    <Compile Include="Models\Motorsport\CommentModel.cs" />
     <Compile Include="Models\Shared\ConfigurationModel.cs" />
     <Compile Include="Models\Cricket\CricketBattingStatisticsModel.cs" />
     <Compile Include="Models\Cricket\CricketBowlingStatisticsModel.cs" />
@@ -310,7 +312,7 @@
     <Compile Include="Models\Shared\PlayerProfileModel.cs" />
     <Compile Include="Models\Shared\PlayerStaticticModel.cs" />
     <Compile Include="Models\Shared\QualifyingCriteriaModel.cs" />
-    <Compile Include="Models\Shared\Races.cs" />
+    <Compile Include="Models\Motorsport\Races.cs" />
     <Compile Include="Models\Shared\RankingModel.cs" />
     <Compile Include="Models\Shared\ResultModel.cs" />
     <Compile Include="Models\Rugby\RugbyMatchDetailsModel.cs" />

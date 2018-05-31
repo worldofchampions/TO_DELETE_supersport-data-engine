@@ -26,8 +26,6 @@
 
         public SchedulerStateForMotorsportRaceEventStandingsPolling SchedulerStateForMotorsportRaceEventStandingsPolling { get; set; }
 
-        public SchedulerStateForMotorsportRaceEventPolling SchedulerStateForMotorsportRaceEventPolling { get; set; }
-
         public SchedulerStateForMotorsportRaceEventCalendarPolling SchedulerStateForMotorsportRaceEventCalendarPolling { get; set; }
     }
 }

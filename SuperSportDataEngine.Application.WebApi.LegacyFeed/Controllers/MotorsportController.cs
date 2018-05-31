@@ -1,17 +1,14 @@
-using System.Configuration;
-
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 {
-    using Filters;
-    using Models.Motorsport;
-    using Models.Shared;
-    using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces.LegacyFeed;
-    using ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-    using Common.Interfaces;
-    using Common.Logging;
     using AutoMapper;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Motorsport;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces.DeprecatedFeed;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces.LegacyFeed;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
     using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
+    using SuperSportDataEngine.Common.Interfaces;
+    using SuperSportDataEngine.Common.Logging;
     using System;
     using System.Collections.Generic;
     using System.Net;
@@ -81,7 +78,49 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         }
 
         /// <summary>
-        /// Endpoint 2.1: http://{host}/motorsport/{category}/grid
+        /// Endpoint 2.1: http://{host}/motorsport/{category}/scheduleWithResults
+        /// Endpoint 2.2: http://{host}/motorsport/{category}/scheduleWithResults?current=true
+        /// Endpoint 2.2: http://{host}/motorsport/{category}/scheduleWithResults?current=false
+        /// 
+        /// A compound schedule and results response endpoint for the SS mobi site.
+        /// </summary>
+        [HttpGet, HttpHead]
+        [Route("{category}/scheduleWithResults/{current?}")]
+        [ResponseType(typeof(IEnumerable<RacesWithResults>))]
+        public async Task<IEnumerable<RacesWithResults>> GetScheduleWithResults(string category, string current = null)
+        {
+            var currentValue = bool.Parse(current ?? "false");
+
+            var key = CacheKeyNamespacePrefixForFeed + $"motorsport/{category}/scheduleWithResults?current=" + currentValue;
+
+            var scheduleFromCache = await GetFromCacheAsync<IEnumerable<RacesWithResults>>(key);
+            if (scheduleFromCache != null)
+                return scheduleFromCache;
+
+            var scheduleFromService =
+                Map<List<RacesWithResults>>(
+                    (await _motorsportLegacyFeedService.GetSchedules(category, currentValue))
+                    .MotorsportRaceEvents ?? new List<MotorsportRaceEvent>());
+
+            foreach (var raceWithResults in scheduleFromService)
+            {
+                var deprecatedArticlesAndVideosEntity = await _deprecatedFeedIntegrationServiceMotorsport.GetArticlesAndVideos(raceWithResults.EventId, raceWithResults.Date);
+                Mapper.Map<DeprecatedArticlesAndVideosEntity, Races>(deprecatedArticlesAndVideosEntity, raceWithResults);
+
+                var resultsFromService = Map<List<Models.Motorsport.ResultMotorsport>>(
+                    (await _motorsportLegacyFeedService.GetResultsForRaceEventId(category, raceWithResults.EventId))
+                    .MotorsportRaceEventResults ?? new List<MotorsportRaceEventResult>());
+
+                raceWithResults.ResultMotorsport = resultsFromService;
+            }
+
+            PersistToCache(key, scheduleFromService);
+
+            return scheduleFromService;
+        }
+
+        /// <summary>
+        /// Endpoint 3.1: http://{host}/motorsport/{category}/grid
         /// </summary>
         [HttpGet, HttpHead]
         [Route("{category}/grid")]
@@ -104,7 +143,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         }
 
         /// <summary>
-        /// Endpoint 2.2: http://{host}/motorsport/{category}/grid/{eventId}
+        /// Endpoint 3.2: http://{host}/motorsport/{category}/grid/{eventId}
         /// </summary>
         [HttpGet, HttpHead]
         [Route("{category}/grid/{eventId:int}")]
@@ -128,7 +167,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         }
 
         /// <summary>
-        /// Endpoint 3.1: http://{host}/motorsport/{category}/results
+        /// Endpoint 4.1: http://{host}/motorsport/{category}/results
         /// </summary>
         [HttpGet, HttpHead]
         [Route("{category}/results")]
@@ -150,7 +189,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         }
 
         /// <summary>
-        /// Endpoint 3.2: http://{host}/motorsport/{category}/results/{eventId}
+        /// Endpoint 4.2: http://{host}/motorsport/{category}/results/{eventId}
         /// </summary>
         [HttpGet, HttpHead]
         [Route("{category}/results/{eventId:int}")]
@@ -162,7 +201,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             var resultsFromCache = await GetFromCacheAsync<IEnumerable<ResultMotorsport>>(key);
             if (resultsFromCache != null)
                 return resultsFromCache;
-            
+
             var resultsFromService = Map<List<Models.Motorsport.ResultMotorsport>>(
                 (await _motorsportLegacyFeedService.GetResultsForRaceEventId(category, eventId))
                 .MotorsportRaceEventResults ?? new List<MotorsportRaceEventResult>());
@@ -173,7 +212,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         }
 
         /// <summary>
-        /// Endpoint 4.1: http://{host}/motorsport/{category}/driverstandings
+        /// Endpoint 5.1: http://{host}/motorsport/{category}/driverstandings
         /// </summary>
         [HttpGet, HttpHead]
         [Route("{category}/driverstandings")]
@@ -193,7 +232,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         }
 
         /// <summary>
-        /// Endpoint 5.1 http://{host}/motorsport/{category}/teamstandings
+        /// Endpoint 6.1 http://{host}/motorsport/{category}/teamstandings
         /// </summary>
         [HttpGet, HttpHead]
         [Route("{category}/teamstandings")]
@@ -213,7 +252,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         }
 
         /// <summary>
-        /// Endpoint 6.1: http://{host}/motorsport/{category}/live
+        /// Endpoint 7.1: http://{host}/motorsport/{category}/live
         /// </summary>
         [HttpGet, HttpHead]
         [Route("{category}/live")]
@@ -230,7 +269,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         {
             try
             {
-                _cache?.Add(cacheKey, cacheData);
+                _cache?.Add(cacheKey, cacheData, TimeSpan.FromSeconds(60));
             }
             catch (Exception exception)
             {
