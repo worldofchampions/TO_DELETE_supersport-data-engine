@@ -69,14 +69,9 @@
 
             foreach (var league in currentLeagues)
             {
-                var raceEvents = await _motorsportService.GetEndedRaceEventsForLeague(league.Id);
+                var raceEvent = (await _motorsportService.GetEndedRaceEventsForLeague(league.Id)).FirstOrDefault();
 
-                foreach (var raceEvent in raceEvents)
-                {
-                    if (raceEvent == null) continue;
-
-                    UpdateChildJobDefinitionForStandingsData(raceEvent);
-                }
+                UpdateChildJobDefinitionForStandingsData(raceEvent);
 
                 await _systemSportDataUnitOfWork.SaveChangesAsync();
             }
@@ -87,14 +82,9 @@
             var numberOfHoursBeforeEventStarts =
                 int.Parse(ConfigurationManager.AppSettings["MotorsportChildJob_LeagueCalendar_TimeToStartJobBeforeEventStartsInHours"]);
 
-            var raceEvents = (await _motorsportService.GetPreLiveEventsForActiveLeagues(numberOfHoursBeforeEventStarts)).ToList();
+            var raceEvent = (await _motorsportService.GetPreLiveEventsForActiveLeagues(numberOfHoursBeforeEventStarts)).FirstOrDefault();
 
-            foreach (var raceEvent in raceEvents)
-            {
-                if (raceEvent == null) continue;
-
-                UpdateChildJobDefinitionForLeagueCalendar(raceEvent);
-            }
+            UpdateChildJobDefinitionForLeagueCalendar(raceEvent);
 
             await _systemSportDataUnitOfWork.SaveChangesAsync();
         }
@@ -330,7 +320,7 @@
             if (!ShouldUpdateChildJobForGridPolling(schedulerEvent)) return;
 
             var jobId =
-                ConfigurationManager.AppSettings["MotorsportChildJob_RaceEventGrid_JobIdPrefix"] + 
+                ConfigurationManager.AppSettings["MotorsportChildJob_RaceEventGrid_JobIdPrefix"] +
                 raceEvent.MotorsportRace.MotorsportLeague.Name + "→" + raceEvent.MotorsportRace.RaceName;
 
             var jobCronExpression = ConfigurationManager.AppSettings["MotorsportChildJob_RaceEventGrid_JobCronExpression"];
@@ -361,6 +351,8 @@
 
         private void UpdateChildJobDefinitionForLeagueCalendar(MotorsportRaceEvent raceEvent)
         {
+            if(raceEvent == null) return;
+
             var schedulerEvent =
                 _systemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.FirstOrDefault(e =>
                     e.MotorsportRaceEventId == raceEvent.Id);
@@ -473,6 +465,8 @@
 
         private void UpdateChildJobDefinitionForStandingsData(MotorsportRaceEvent raceEvent)
         {
+            if (raceEvent == null) return;
+
             var schedulerEvent =
                 _systemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.FirstOrDefault(e =>
                     e.MotorsportRaceEventId == raceEvent.Id &&
