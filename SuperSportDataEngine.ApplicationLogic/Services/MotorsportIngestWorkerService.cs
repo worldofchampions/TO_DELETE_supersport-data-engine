@@ -541,6 +541,8 @@
 
                 await _mongoDbMotorsportRepository.Save(providerResponse);
 
+                PauseIngest(pollingTimeInSeconds);
+
                 if (await ShouldStopPolling(raceEvent, pollingDurationInMinutes))
                 {
                     break;
@@ -662,7 +664,7 @@
 
             return schedulerTrackingEvent?.EndedDateTimeUtc != null && schedulerTrackingEvent.MotorsportRaceEventStatus == MotorsportRaceEventStatus.Result;
         }
-        
+
         private async Task<bool> ShouldStopPolling(MotorsportRaceEvent raceEvent, int pollingDurationInMinutes)
         {
             var schedulerTrackingEvent = await _motorsportService.GetSchedulerTrackingEvent(raceEvent);
