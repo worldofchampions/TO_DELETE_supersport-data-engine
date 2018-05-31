@@ -65,6 +65,9 @@
             _systemSportDataUnitOfWork = _container.Resolve<ISystemSportDataUnitOfWork>();
 
             _publicSportDataUnitOfWork = _container.Resolve<IPublicSportDataUnitOfWork>();
+
+            _logger = _container.Resolve<ILoggingService>();
+
         }
 
         private void ConfigureRugbyDependencies()
@@ -72,7 +75,7 @@
             _rugbyService = _container.Resolve<IRugbyService>();
 
             _rugbyIngestWorkerService = _container.Resolve<IRugbyIngestWorkerService>();
-
+            
             _fixturesManagerJob =
                 new FixturesManagerJob(
                     _recurringJobManager,
@@ -147,7 +150,11 @@
             }
             catch (Exception exception)
             {
-                Console.WriteLine(exception);
+                _logger?.Fatal(
+                    "LegacyException." + exception.Message,
+                    "Message: " + Environment.NewLine + exception.Message + "  " +
+                    "StackTrace: " + Environment.NewLine + exception.StackTrace + "  " +
+                    "Inner Exception " + Environment.NewLine + exception.InnerException);
             }
 
             _timer.Start();

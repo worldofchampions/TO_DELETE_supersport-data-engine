@@ -24,6 +24,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
                 cfg =>
                 {
                     cfg.CreateMap<MotorsportLeague, MotorsportLeagueEntity>();
+                    cfg.CreateMap<MotorsportSeason, MotorsportSeasonEntity>();
                 });
             iMapper = config.CreateMapper();
         }
@@ -35,7 +36,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             if (!String.IsNullOrEmpty(query))
             {
                 leagues = await CreatePagedResults<MotorsportLeague, MotorsportLeagueEntity>(
-                                    _publicSportDataUnitOfWork.MotorsportLeagues.Where(cond => cond.IsEnabled).Where(q => q.Name.Contains(query)
+                                    _publicSportDataUnitOfWork.MotorsportLeagues.Where(q => q.IsEnabled && q.Name.Contains(query)
                                                         || q.NameCmsOverride.Contains(query)).OrderBy(league => league.Slug), pageIndex, pageSize, abpath, query);
             }
             else
@@ -51,6 +52,30 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             return null;
         }
 
+        public async Task<PagedResultsEntity<MotorsportSeasonEntity>> GetSeasonsForLeague(Guid leagueId, int pageIndex, int pageSize, string abpath, string query = null)
+        {
+            var leagueSeasons = (PagedResultsEntity<MotorsportSeasonEntity>)null;
+
+            if (!String.IsNullOrEmpty(query))
+            {
+                leagueSeasons = await CreatePagedResults<MotorsportSeason, MotorsportSeasonEntity>(
+                                    _publicSportDataUnitOfWork.MotorsportSeasons.Where(q => q.MotorsportLeague.Id == leagueId && q.Name.Contains(query))
+                                                                                    .OrderByDescending(field => field.ProviderSeasonId), pageIndex, pageSize, abpath, query);
+            }
+            else
+            {
+                leagueSeasons = await CreatePagedResults<MotorsportSeason, MotorsportSeasonEntity>(_publicSportDataUnitOfWork.MotorsportSeasons.Where(
+                                                            season => season.MotorsportLeague.Id == leagueId)
+                                                            .OrderByDescending(field => field.ProviderSeasonId), pageIndex, pageSize, abpath, query);
+            }
+
+            if (leagueSeasons.Results.Any())
+            {
+                return leagueSeasons;
+            }
+            return null;
+        }
+
         public async Task<MotorsportLeagueEntity> GetLeagueById(Guid id)
         {
             var motorsportLeague = await Task.FromResult(_publicSportDataUnitOfWork.MotorsportLeagues.FirstOrDefault(
@@ -59,6 +84,19 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             if (motorsportLeague != null)
             {
                 return iMapper.Map<MotorsportLeague, MotorsportLeagueEntity>(motorsportLeague);
+            }
+
+            return null;
+        }
+
+        public async Task<MotorsportSeasonEntity> GetSeasonById(Guid id)
+        {
+            var motorsportSeason = await Task.FromResult(_publicSportDataUnitOfWork.MotorsportSeasons.FirstOrDefault(
+                                                        season => season.Id == id));
+
+            if (motorsportSeason != null)
+            {
+                return iMapper.Map<MotorsportSeason, MotorsportSeasonEntity>(motorsportSeason);
             }
 
             return null;
@@ -88,6 +126,43 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
                     success = true;
                 }
 
+            }
+            return success;
+        }
+
+        /// <summary>
+        /// Updates season table and only accepts IsCurrent value
+        /// </summary>
+        /// <param name="seasonId"></param>
+        /// <param name="leagueId"></param>
+        /// <param name="motorsportSeasonEntity"></param>
+        /// <returns></returns>
+        public async Task<bool> UpdateSeason(Guid id, Guid leagueId, MotorsportSeasonEntity motorsportSeasonEntity)
+        {
+            var success = false;
+            var _season = _publicSportDataUnitOfWork.MotorsportSeasons.FirstOrDefault(season => season.Id == id);
+
+            if (leagueId != null && _season != null && motorsportSeasonEntity != null)
+            {
+                var seasons = _publicSportDataUnitOfWork.MotorsportSeasons.Where(season => season.MotorsportLeague.Id == leagueId);
+
+                foreach (var season in seasons)
+                {
+                    if (season.Id == id)
+                    {
+                        season.IsCurrent = motorsportSeasonEntity.IsCurrent;
+                    }
+
+                    if (season.Id != id && motorsportSeasonEntity.IsCurrent == true)
+                    {
+                        season.IsCurrent = false;
+                    }
+
+                    _publicSportDataUnitOfWork.MotorsportSeasons.Update(season);
+                }
+
+                await _publicSportDataUnitOfWork.SaveChangesAsync();
+                success = true;
             }
             return success;
         }

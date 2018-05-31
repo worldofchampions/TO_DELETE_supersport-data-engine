@@ -10,11 +10,11 @@
 
     // TODO: Refactor implementation to use common mapping logic for LegacyMotorsportScheduleMapperProfile + LegacyMotorsportScheduleWithResultsMapperProfile classes.
     // This class is used by Reflection.
-    public class LegacyMotorsportScheduleMapperProfile : Profile
+    public class LegacyMotorsportScheduleWithResultsMapperProfile : Profile
     {
-        public LegacyMotorsportScheduleMapperProfile()
+        public LegacyMotorsportScheduleWithResultsMapperProfile()
         {
-            CreateMap<MotorsportRaceEvent, Races>()
+            CreateMap<MotorsportRaceEvent, RacesWithResults>()
                 .ForMember(dest => dest.Id, expression => expression.MapFrom(
                     src => src.LegacyRaceEventId))
 
