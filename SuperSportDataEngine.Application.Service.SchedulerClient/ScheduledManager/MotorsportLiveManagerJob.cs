@@ -263,7 +263,8 @@
 
                     var jobId =
                         ConfigurationManager.AppSettings["MotorsportChildJob_RaceEventGrid_JobIdPrefix"] +
-                        raceEvent.MotorsportRace.MotorsportLeague.Name + "→" + raceEvent.MotorsportRace.RaceName;
+                        raceEvent.MotorsportRace.MotorsportLeague.Name + "→" + raceEvent.MotorsportRace.RaceName
+                        + "→" + raceEvent.LegacyRaceEventId;
 
                     _recurringJobManager.RemoveIfExists(jobId);
 
@@ -321,7 +322,8 @@
 
             var jobId =
                 ConfigurationManager.AppSettings["MotorsportChildJob_RaceEventGrid_JobIdPrefix"] +
-                raceEvent.MotorsportRace.MotorsportLeague.Name + "→" + raceEvent.MotorsportRace.RaceName;
+                raceEvent.MotorsportRace.MotorsportLeague.Name + "→" + raceEvent.MotorsportRace.RaceName
+                + "→" + raceEvent.LegacyRaceEventId;
 
             var jobCronExpression = ConfigurationManager.AppSettings["MotorsportChildJob_RaceEventGrid_JobCronExpression"];
 
