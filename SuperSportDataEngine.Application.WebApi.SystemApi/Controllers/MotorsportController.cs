@@ -128,6 +128,37 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         }
 
         /// <summary>
+        /// Get motorsport season by league Id
+        /// Return 404 if not found and a 500 error response if something failed while doing it
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [ActionName("seasons")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> GetSeasonById(Guid id)
+        {
+            try
+            {
+                var season = await _motorsportService.GetSeasonById(id);
+
+                if (season != null)
+                {
+                    return Request.CreateResponse(HttpStatusCode.OK, season);
+                }
+                else
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Season Not Found");
+                }
+            }
+            catch (Exception exception)
+            {
+                LogException(exception);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while processing season !");
+            }
+
+        }
+
+        /// <summary>
         /// Update league
         /// Return 406 if update doesn't succeed and a 500 error response if something failed while doing it
         /// </summary>
