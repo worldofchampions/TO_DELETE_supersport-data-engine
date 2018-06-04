@@ -930,7 +930,7 @@
 
                 trackingMotorsportRaceEvent.StartDateTimeUtc = motorsportRaceEvent.StartDateTimeUtc;
 
-                if (motorsportRaceEvent.MotorsportRaceEventStatus == MotorsportRaceEventStatus.Result)
+                if (motorsportRaceEvent.MotorsportRaceEventStatus == MotorsportRaceEventStatus.Result && trackingMotorsportRaceEvent.EndedDateTimeUtc == null)
                 {
                     trackingMotorsportRaceEvent.EndedDateTimeUtc = DateTimeOffset.UtcNow;
                 }
