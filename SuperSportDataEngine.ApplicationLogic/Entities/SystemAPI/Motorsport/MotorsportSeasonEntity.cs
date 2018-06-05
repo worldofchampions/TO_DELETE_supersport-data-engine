@@ -19,7 +19,5 @@ namespace SuperSportDataEngine.ApplicationLogic.Entities.SystemAPI.Motorsport
         public bool IsCurrent { get; set; }
 
         public DataProvider DataProvider { get; set; }
-
-        public virtual MotorsportLeague MotorsportLeague { get; set; }
     }
 }
