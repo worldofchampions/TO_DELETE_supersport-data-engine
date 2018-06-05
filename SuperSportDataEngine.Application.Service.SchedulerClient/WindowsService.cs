@@ -62,12 +62,12 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
                     try
                     {
                         var rugbyEnabled = bool.Parse(ConfigurationManager.AppSettings["RugbyIngestEnabled"]);
-                        if(rugbyEnabled)
+                        if (rugbyEnabled)
                             _fixedManagerJob.UpdateRecurringJobDefinitions();
 
                         var motorEnabled = bool.Parse(ConfigurationManager.AppSettings["MotorsportIngestEnabled"]);
-                        if(motorEnabled)
-                        _motorFixedScheduledJob.UpdateRecurringJobDefinitions();
+                        if (motorEnabled)
+                            _motorFixedScheduledJob.UpdateRecurringJobDefinitions();
                     }
                     catch (Exception exception)
                     {
@@ -102,7 +102,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
             // Runs on QA, Staging and Production.
 #if (!DEBUG)
             var monitorApi = JobStorage.Current.GetMonitoringApi();
-            var processingJobs = monitorApi.ProcessingJobs(0, (int) monitorApi.ProcessingCount());
+            var processingJobs = monitorApi.ProcessingJobs(0, (int)monitorApi.ProcessingCount());
 
             foreach (var job in processingJobs)
             {
@@ -111,7 +111,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
 
                 var timespanDuration = DateTime.UtcNow - job.Value.StartedAt;
                 var jobName = monitorApi.JobDetails(job.Key).Properties["RecurringJobId"];
-                
+
                 var key = "HangfireJobProcessingTime." + jobName;
 
                 var warningThresholdInMinutes =
@@ -119,10 +119,25 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
                 var errorThresholdInMinutes =
                     int.Parse(ConfigurationManager.AppSettings["ErrorThresholdForJobsTakingTooLongInMinutes"]);
 
+                if (jobName.ToLower().Contains("motorsport"))
+                {
+                    warningThresholdInMinutes =
+                        int.Parse(ConfigurationManager.AppSettings["MotorsportWarningThresholdForJobsTakingTooLongInMinutes"]);
+
+                    errorThresholdInMinutes =
+                        int.Parse(ConfigurationManager.AppSettings["MotorsportErrorThresholdForJobsTakingTooLongInMinutes"]);
+                }
+
                 if (timespanDuration > TimeSpan.FromMinutes(errorThresholdInMinutes))
-                    _logger.Error(key, jobName + "is taking too long to process. Error threshold is " + errorThresholdInMinutes + "minutes. Taking " + timespanDuration.Value.TotalMinutes + " minutes.");
+                {
+                    _logger.Error(key, jobName + "is taking too long to process. Error threshold is " +
+                        errorThresholdInMinutes + "minutes. Taking " + timespanDuration.Value.TotalMinutes + " minutes.");
+                }
                 else if (timespanDuration > TimeSpan.FromMinutes(warningThresholdInMinutes))
-                    _logger.Warn(key, jobName + "is taking too long to process. Warning threshold is " + warningThresholdInMinutes + "minutes. Taking " + timespanDuration.Value.TotalMinutes + " minutes.");
+                {
+                    _logger.Warn(key, jobName + "is taking too long to process. Warning threshold is " +
+                        warningThresholdInMinutes + "minutes. Taking " + timespanDuration.Value.TotalMinutes + " minutes.");
+                }
             }
 
             _timer.Start();
