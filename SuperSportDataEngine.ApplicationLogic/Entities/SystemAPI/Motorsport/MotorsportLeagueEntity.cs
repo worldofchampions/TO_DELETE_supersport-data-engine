@@ -14,7 +14,5 @@ namespace SuperSportDataEngine.ApplicationLogic.Entities.SystemAPI.Motorsport
         public string ProviderSlug { get; set; }
         public bool IsEnabled { get; set; }
         public DataProvider DataProvider { get; set; }
-
-        public MotorsportSportType MotorsportSportType { get; set; }
     }
 }
