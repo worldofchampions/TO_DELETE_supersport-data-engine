@@ -66,6 +66,36 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         }
 
         /// <summary>
+        /// Get paginated list of motorsport teams and return a 500 error response if something failed while doing it
+        /// </summary>
+        /// <param name="pageIndex">
+        /// Page number
+        /// </param>
+        /// <param name="pageSize">
+        /// Size of records to be returned
+        /// </param>
+        /// <param name="query">
+        /// Search against team name
+        /// </param>
+        /// <returns></returns>
+
+        [ActionName("teams")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> GetAllTeams(int pageIndex, int pageSize, string query = null)
+        {
+            try
+            {
+                var teams = await _motorsportService.GetAllTeams(pageIndex, pageSize, path, query);
+                return Request.CreateResponse(HttpStatusCode.OK, teams);
+            }
+            catch (Exception exception)
+            {
+                LogException(exception);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while retrieving teams !");
+            }
+        }
+
+        /// <summary>
         /// Get paginated list of motorsport league seasons and return a 500 error response if something failed while doing it
         /// </summary>
         /// <param name="leagueId"></param>
@@ -159,6 +189,37 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         }
 
         /// <summary>
+        /// Get single team retrieved by team Id
+        /// Return 404 if not found and a 500 error response if something failed while doing it
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [ActionName("teams")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> GetTeamById(Guid id)
+        {
+            try
+            {
+                var team = await _motorsportService.GetTeamById(id);
+
+                if (team != null)
+                {
+                    return Request.CreateResponse(HttpStatusCode.OK, team);
+                }
+                else
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Team Not Found");
+                }
+            }
+            catch (Exception exception)
+            {
+                LogException(exception);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while processing team !");
+            }
+
+        }
+
+        /// <summary>
         /// Update league
         /// Return 406 if update doesn't succeed and a 500 error response if something failed while doing it
         /// </summary>
@@ -219,6 +280,38 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
                 LogException(exception);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while updating season !");
             }
+        }
+
+        /// <summary>
+        /// Update Team
+        /// Return 406 if update doesn't succeed and a 500 error response if something failed while doing it
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="motorsportTeamEntity"></param>
+        /// <returns></returns>
+        [ActionName("teams")]
+        [HttpPut]
+        public async Task<HttpResponseMessage> PutTeam(Guid id, [FromBody] MotorsportTeamEntity motorsportTeamEntity)
+        {
+            try
+            {
+                var team = await _motorsportService.UpdateTeam(id, motorsportTeamEntity);
+
+                if (team)
+                {
+                    return Request.CreateResponse(HttpStatusCode.NoContent, "Team was updated successfully");
+                }
+                else
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.NotAcceptable, "Team could not be updated");
+                }
+            }
+            catch (Exception exception)
+            {
+                LogException(exception);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while updating team !");
+            }
+
         }
 
         protected async void LogException(Exception exception)
