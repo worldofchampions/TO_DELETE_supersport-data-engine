@@ -14,8 +14,10 @@
 
                 // For Away team
                 .ForMember(dest => dest.AwayTeam, expression => expression.MapFrom(
-                    src => src.TeamAIsHomeTeam ?
-                    (src.TeamB.NameCmsOverride ?? src.TeamB.Name) : (src.TeamA.NameCmsOverride ?? src.TeamA.Name)))
+                    src => GetAwayTeam(src)))
+
+                .ForMember(dest => dest.IsPlaceholderAwayTeam, expression => expression.MapFrom(
+                    src => GetAwayTeam(src) == "TBC"))
 
                 .ForMember(dest => dest.AwayTeamId, expression => expression.MapFrom(
                     src => src.TeamAIsHomeTeam ? src.TeamB.LegacyTeamId : src.TeamA.LegacyTeamId))
@@ -25,11 +27,13 @@
 
                 // For Home team
                 .ForMember(dest => dest.HomeTeam, expression => expression.MapFrom(
-                    src => src.TeamAIsHomeTeam ?
-                    (src.TeamA.NameCmsOverride ?? src.TeamA.Name) : (src.TeamB.NameCmsOverride ?? src.TeamB.Name)))
+                    src => GeHomeTeam(src)))
 
                 .ForMember(dest => dest.HomeTeamId, expression => expression.MapFrom(
                     src => src.TeamAIsHomeTeam ? src.TeamA.LegacyTeamId : src.TeamB.LegacyTeamId))
+
+                .ForMember(dest => dest.IsPlaceholderHomeTeam, expression => expression.MapFrom(
+                    src => GeHomeTeam(src) == "TBC"))
 
                 .ForMember(dest => dest.HomeTeamScore, expression => expression.MapFrom(
                     src => (src.TeamAIsHomeTeam ? src.TeamAScore : src.TeamBScore) ?? LegacyFeedConstants.DefaultScoreForStartedGame))
@@ -70,6 +74,20 @@
 
                 // Ignore elements not used even by legacy feed
                 .ForAllOtherMembers(dest => dest.Ignore());
+        }
+
+        private static string GeHomeTeam(RugbyFixture fixture)
+        {
+            return fixture.TeamAIsHomeTeam
+                ? (fixture.TeamA.NameCmsOverride ?? fixture.TeamA.Name)
+                : (fixture.TeamB.NameCmsOverride ?? fixture.TeamB.Name);
+        }
+
+        private static string GetAwayTeam(RugbyFixture fixture)
+        {
+            return fixture.TeamAIsHomeTeam
+                ? (fixture.TeamB.NameCmsOverride ?? fixture.TeamB.Name)
+                : (fixture.TeamA.NameCmsOverride ?? fixture.TeamA.Name);
         }
     }
 }

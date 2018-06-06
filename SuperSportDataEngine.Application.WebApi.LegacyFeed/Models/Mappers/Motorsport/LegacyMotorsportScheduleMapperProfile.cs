@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.WebPages;
-using AutoMapper;
-using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-
-namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Motorsport
+﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Motorsport
 {
+    using AutoMapper;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Motorsport;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+    using System;
+    using System.Collections.Generic;
+    using System.Web.WebPages;
+
+    // TODO: Refactor implementation to use common mapping logic for LegacyMotorsportScheduleMapperProfile + LegacyMotorsportScheduleWithResultsMapperProfile classes.
     // This class is used by Reflection.
     public class LegacyMotorsportScheduleMapperProfile : Profile
     {
@@ -47,7 +47,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Moto
 
                 .ForMember(dest => dest.Date, expression => expression.MapFrom(
                     src => src.StartDateTimeUtc != null
-                        ? ((DateTimeOffset) src.StartDateTimeUtc).ToLocalTime().ToString("s")
+                        ? ((DateTimeOffset)src.StartDateTimeUtc).ToLocalTime().ToString("s")
                         : ""))
 
                 // [TODO] This value is set to the minimum date time because we do not get it from the provider.
@@ -56,7 +56,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Moto
                 .ForMember(dest => dest.winner, expression => expression.MapFrom(src =>
                     src.RaceEventWinner != null && src.RaceEventWinner.FullNameCmsOverride != null ? src.RaceEventWinner.FullNameCmsOverride :
                     GetFullName(src.RaceEventWinner != null ? src.RaceEventWinner.FirstName : null,
-                                src.RaceEventWinner != null ? src.RaceEventWinner.LastName : null)) )
+                                src.RaceEventWinner != null ? src.RaceEventWinner.LastName : null)))
 
                 .ForMember(dest => dest.Videos, expression => expression.UseValue(new List<MatchVideoModel>()))
                 .ForMember(dest => dest.LiveVideos, expression => expression.UseValue(new List<MatchLiveVideoModel>()))

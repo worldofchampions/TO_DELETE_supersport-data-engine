@@ -1,43 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
-
-namespace SuperSportDataEngine.Tests.Common.Repositories.Test
+﻿namespace SuperSportDataEngine.Tests.Common.Repositories.Test
 {
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
+
     public class TestSystemSportDataUnitOfWork : ISystemSportDataUnitOfWork
     {
         public IBaseEntityFrameworkRepository<SchedulerDashboardUser> SchedulerDashboardUsers { get; set; }
         public IBaseEntityFrameworkRepository<LegacyAuthFeedConsumer> LegacyAuthFeedConsumers { get; set; }
         public IBaseEntityFrameworkRepository<LegacyZoneSite> LegacyZoneSites { get; set; }
-        public IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> SchedulerTrackingRugbyFixtures
-        {
-            get;
-            set;
-        }
-
+        public IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> SchedulerTrackingRugbyFixtures { get; set; }
         public IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> SchedulerTrackingRugbySeasons { get; set; }
-        public IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> SchedulerTrackingRugbyTournaments
-        {
-            get;
-            set;
-        }
-
+        public IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> SchedulerTrackingRugbyTournaments { get; set; }
         public IBaseEntityFrameworkRepository<SchedulerTrackingMotorsportSeason> SchedulerTrackingMotorsportSeasons { get; }
-        public IBaseEntityFrameworkRepository<SchedulerTrackingMotorsportRace> SchedulerTrackingMotorsportRaces
-        {
-            get;
-            set;
-        }
+        public IBaseEntityFrameworkRepository<SchedulerTrackingMotorsportRaceEvent> SchedulerTrackingMotorsportRaceEvents { get; set; }
 
         public TestSystemSportDataUnitOfWork()
         {
-            SchedulerDashboardUsers = new TestEntityFrameworkRepository<SchedulerDashboardUser>(new List<SchedulerDashboardUser>());        
+            SchedulerDashboardUsers = new TestEntityFrameworkRepository<SchedulerDashboardUser>(new List<SchedulerDashboardUser>());
             SchedulerTrackingRugbyFixtures = new TestEntityFrameworkRepository<SchedulerTrackingRugbyFixture>(new List<SchedulerTrackingRugbyFixture>());
             LegacyAuthFeedConsumers = new TestEntityFrameworkRepository<LegacyAuthFeedConsumer>(new List<LegacyAuthFeedConsumer>());
             LegacyZoneSites = new TestEntityFrameworkRepository<LegacyZoneSite>(new List<LegacyZoneSite>());

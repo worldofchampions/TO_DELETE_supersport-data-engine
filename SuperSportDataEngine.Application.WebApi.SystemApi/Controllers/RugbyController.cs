@@ -186,6 +186,36 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         }
 
         /// <summary>
+        /// Get paginated list of rugby venues and return a 500 error response if something failed while doing it
+        /// </summary>
+        /// <param name="pageIndex">
+        /// Page number
+        /// </param>
+        /// <param name="pageSize">
+        /// Size of records to be returned
+        /// </param>
+        /// <param name="query">
+        /// Search against rugby venue name's
+        /// </param>
+        /// <returns></returns>
+
+        [ActionName("venues")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> GetAllVenues(int pageIndex, int pageSize, string query = null)
+        {
+            try
+            {
+                var venues = await _rugbyService.GetAllVenues(pageIndex, pageSize, path, query);
+                return Request.CreateResponse(HttpStatusCode.OK, venues);
+            }
+            catch (Exception exception)
+            {
+                LogException(exception);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while retrieving venues !");
+            }
+        }
+
+        /// <summary>
         /// Get paginated list of rugby tournament seasons and return a 500 error response if something failed while doing it
         /// </summary>
         /// <param name="tournamentId"></param>
@@ -257,18 +287,27 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         /// <param name="pageSize">
         /// Size of records to be returned
         /// </param>
+        /// <param name="seasonId">
+        /// SeasonId for fixture
+        /// </param>
+        /// <param name="overrideToggle">
+        /// Set this to true to return fixtures with CmsOverrideModeIsActive set to true
+        /// </param>
         /// <param name="query">
         /// Search against fixtures team names
+        /// </param>
+        /// <param name="status">
+        /// Specify game status E.g. Results, Today, Coming Up
         /// </param>
         /// <returns></returns>
 
         [Route("api/Rugby/tournament/{tournamentId:guid}/fixtures")]
         [HttpGet]
-        public async Task<HttpResponseMessage> GetAllFixturesForTournament(Guid tournamentId, int pageIndex, int pageSize, string query = null)
+        public async Task<HttpResponseMessage> GetAllFixturesForTournament(Guid tournamentId, int pageIndex, int pageSize, bool overrideToggle = false, Guid? seasonId = null, string query = null, string status = null)
         {
             try
             {
-                var tournamentFixtures = await _rugbyService.GetTournamentFixtures(tournamentId, pageIndex, pageSize, path, query);
+                var tournamentFixtures = await _rugbyService.GetTournamentFixtures(tournamentId, seasonId, pageIndex, pageSize, path, overrideToggle, query, status);
                 return Request.CreateResponse(HttpStatusCode.OK, tournamentFixtures);
             }
             catch (Exception exception)
@@ -431,6 +470,36 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         }
 
         /// <summary>
+        /// Get single venue retrieved by VenueId
+        /// Return 404 if not found and a 500 error response if something failed while doing it
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [ActionName("venues")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> GetVenueById(Guid id)
+        {
+            try
+            {
+                var venue = await _rugbyService.GetVenueById(id);
+
+                if (venue != null)
+                {
+                    return Request.CreateResponse(HttpStatusCode.OK, venue);
+                }
+                else
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Venue Not Found");
+                }
+            }
+            catch (Exception exception)
+            {
+                LogException(exception);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while processing venue !");
+            }
+        }
+
+        /// <summary>
         /// Update tournament
         /// Return 406 if update doesn't succeed and a 500 error response if something failed while doing it
         /// </summary>
@@ -497,15 +566,16 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         /// Return 406 if update doesn't succeed and a 500 error response if something failed while doing it
         /// </summary>
         /// <param name="id"></param>
+        /// <param name="tournamentId"></param>
         /// <param name="rugbyseasonEntity"></param>
         /// <returns></returns>
         [ActionName("seasons")]
         [HttpPut]
-        public async Task<HttpResponseMessage> PutSeason(Guid id, [FromBody] RugbySeasonEntity rugbyseasonEntity)
+        public async Task<HttpResponseMessage> PutSeason(Guid id, Guid tournamentId, [FromBody] RugbySeasonEntity rugbyseasonEntity)
         {
             try
             {
-                var season = await _rugbyService.UpdateSeason(id, rugbyseasonEntity);
+                var season = await _rugbyService.UpdateSeason(id, tournamentId, rugbyseasonEntity);
 
                 if (season)
                 {
@@ -584,6 +654,37 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
             {
                 LogException(exception);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while updating player !");
+            }
+        }
+
+        /// <summary>
+        /// Update Venue
+        /// Return 406 if update doesn't succeed and a 500 error response if something failed while doing it
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="rugbyVenueEntity"></param>
+        /// <returns></returns>
+        [ActionName("venues")]
+        [HttpPut]
+        public async Task<HttpResponseMessage> PutVenue(Guid id, [FromBody] RugbyVenueEntity rugbyVenueEntity)
+        {
+            try
+            {
+                var venue = await _rugbyService.UpdateVenue(id, rugbyVenueEntity);
+
+                if (venue)
+                {
+                    return Request.CreateResponse(HttpStatusCode.NoContent, "Venue was updated successfully");
+                }
+                else
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.NotAcceptable, "Venue could not be updated");
+                }
+            }
+            catch (Exception exception)
+            {
+                LogException(exception);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while updating venue !");
             }
         }
 

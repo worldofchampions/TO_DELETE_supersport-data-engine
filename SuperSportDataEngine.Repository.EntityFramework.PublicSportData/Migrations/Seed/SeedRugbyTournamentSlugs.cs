@@ -52,13 +52,16 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                 new RugbyTournament {Slug = "international",ProviderTournamentId = 810},
                 new RugbyTournament {Slug = "pro14",ProviderTournamentId = 293},
                 new RugbyTournament {Slug = "pro-d2",ProviderTournamentId = 242},
-                new RugbyTournament {Slug = "rugby-championship",ProviderTournamentId = 117},
+                new RugbyTournament {Slug = "national-rugby-championship",ProviderTournamentId = 117}, // National Rugby Championship
+                new RugbyTournament {Slug = "supersport-challenge",ProviderTournamentId = 165}, // Rugby Challenge
+                new RugbyTournament {Slug = "rugby-championship",ProviderTournamentId = 191}, // The Rugby Championship
                 new RugbyTournament {Slug = "sevens",ProviderTournamentId = 831},
                 new RugbyTournament {Slug = "six-nations",ProviderTournamentId = 301},
                 new RugbyTournament {Slug = "super-rugby",ProviderTournamentId = 181},
                 new RugbyTournament {Slug = "top14",ProviderTournamentId = 241},
                 new RugbyTournament {Slug = "england",ProviderTournamentId = 201},
-                new RugbyTournament {Slug = "new-zealand",ProviderTournamentId = 101}
+                new RugbyTournament {Slug = "new-zealand",ProviderTournamentId = 101},
+                new RugbyTournament {Slug = "junior-rugby",ProviderTournamentId = 791}
             };
         }
     }

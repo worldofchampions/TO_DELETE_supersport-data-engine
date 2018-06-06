@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2036
+VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperSportDataEngine.Application.Service.SchedulerClient", "SuperSportDataEngine.Application.Service.SchedulerClient\SuperSportDataEngine.Application.Service.SchedulerClient.csproj", "{73B00FC5-F746-4B2D-8B8B-075B22B41F8B}"
 EndProject
@@ -77,6 +77,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperSportDataEngine.Gateway.Http.DeprecatedFeed", "SuperSportDataEngine.Gateway.Http.DeprecatedFeed\SuperSportDataEngine.Gateway.Http.DeprecatedFeed.csproj", "{E1F85CF9-339F-47E2-99CA-AFB021210DBF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperSportDataEngine.Application.WebApi.LegacyFeed.Tests", "SuperSportDataEngine.Application.WebApi.LegacyFeed.Tests\SuperSportDataEngine.Application.WebApi.LegacyFeed.Tests.csproj", "{83D98E26-CFBD-4C45-B17F-9B32F86ABD36}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperSportDataEngine.Gateway.Http.Stats", "SuperSportDataEngine.Gateway.Http.Stats\SuperSportDataEngine.Gateway.Http.Stats.csproj", "{C3AEA7FF-D0A4-473A-8B49-AA52EF7058A6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -377,6 +379,16 @@ Global
 		{83D98E26-CFBD-4C45-B17F-9B32F86ABD36}.Release|Any CPU.Build.0 = Release|Any CPU
 		{83D98E26-CFBD-4C45-B17F-9B32F86ABD36}.Staging|Any CPU.ActiveCfg = Release|Any CPU
 		{83D98E26-CFBD-4C45-B17F-9B32F86ABD36}.Staging|Any CPU.Build.0 = Release|Any CPU
+		{C3AEA7FF-D0A4-473A-8B49-AA52EF7058A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3AEA7FF-D0A4-473A-8B49-AA52EF7058A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3AEA7FF-D0A4-473A-8B49-AA52EF7058A6}.Prod|Any CPU.ActiveCfg = Release|Any CPU
+		{C3AEA7FF-D0A4-473A-8B49-AA52EF7058A6}.Prod|Any CPU.Build.0 = Release|Any CPU
+		{C3AEA7FF-D0A4-473A-8B49-AA52EF7058A6}.QA|Any CPU.ActiveCfg = Release|Any CPU
+		{C3AEA7FF-D0A4-473A-8B49-AA52EF7058A6}.QA|Any CPU.Build.0 = Release|Any CPU
+		{C3AEA7FF-D0A4-473A-8B49-AA52EF7058A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3AEA7FF-D0A4-473A-8B49-AA52EF7058A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3AEA7FF-D0A4-473A-8B49-AA52EF7058A6}.Staging|Any CPU.ActiveCfg = Release|Any CPU
+		{C3AEA7FF-D0A4-473A-8B49-AA52EF7058A6}.Staging|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

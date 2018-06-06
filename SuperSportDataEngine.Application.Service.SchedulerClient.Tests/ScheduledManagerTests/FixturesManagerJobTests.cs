@@ -11,6 +11,7 @@ using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramewor
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
 using SuperSportDataEngine.ApplicationLogic.Services;
+using SuperSportDataEngine.Common.Logging;
 using SuperSportDataEngine.Tests.Common.Repositories.Test;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.ScheduledManagerTests
@@ -24,6 +25,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
         private TestSystemSportDataUnitOfWork _systemSportDataUnitOfWork;
         private TestPublicSportDataUnitOfWork _publicSportDataUnitOfWork;
         Mock<IRecurringJobManager> _mockRecurringJobManager;
+        private Mock<ILoggingService> _mockLogger;
 
         [SetUp]
         public void SetUp()
@@ -32,19 +34,21 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
             _mockRecurringJobManager = new Mock<IRecurringJobManager>();
             _systemSportDataUnitOfWork = new TestSystemSportDataUnitOfWork();
             _publicSportDataUnitOfWork = new TestPublicSportDataUnitOfWork();
+            _mockLogger = new Mock<ILoggingService>();
 
             _rugbyService = 
                 new RugbyService(
                     _publicSportDataUnitOfWork,
-                    _systemSportDataUnitOfWork);
+                    _systemSportDataUnitOfWork,
+                    _mockLogger.Object);
 
             _fixturesManagerJob =
                 new FixturesManagerJob(
                     _mockRecurringJobManager.Object,
                     _systemSportDataUnitOfWork,
                     _rugbyService,
-                    _mockRugbyIngestWorkerService.Object
-                    );
+                    _mockRugbyIngestWorkerService.Object,
+                    _mockLogger.Object);
         }
 
         [Test]

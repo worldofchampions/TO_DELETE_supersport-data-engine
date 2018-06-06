@@ -1,5 +1,4 @@
 ﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.CmsLogic.Interfaces;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
 using System;
 using AutoMapper;
@@ -9,6 +8,8 @@ using System.Threading.Tasks;
 using SuperSportDataEngine.ApplicationLogic.Entities.SystemAPI;
 using System.Text.RegularExpressions;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
+using SuperSportDataEngine.ApplicationLogic.Helpers;
 
 namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
 {
@@ -31,6 +32,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
                         .ForMember(dest => dest.TeamB, opt => opt.MapFrom(origin => origin.TeamB));
                     cfg.CreateMap<RugbySeason, RugbySeasonEntity>();
                     cfg.CreateMap<RugbyPlayer, RugbyPlayerEntity>();
+                    cfg.CreateMap<RugbyVenue, RugbyVenueEntity>();
                 });
             iMapper = config.CreateMapper();
         }
@@ -43,12 +45,12 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             {
                 tournaments = await CreatePagedResults<RugbyTournament, RugbyTournamentEntity>(
                                     _publicSportDataUnitOfWork.RugbyTournaments.Where(q => q.Name.Contains(query)
-                                                        || q.NameCmsOverride.Contains(query)), pageIndex, pageSize, abpath, query);
+                                                        || q.NameCmsOverride.Contains(query)).OrderBy(tournament => tournament.Name), pageIndex, pageSize, abpath, query);
             }
             else
             {
                 tournaments = await CreatePagedResults<RugbyTournament, RugbyTournamentEntity>(
-                                            _publicSportDataUnitOfWork.RugbyTournaments.All(), pageIndex, pageSize, abpath, query);
+                                            _publicSportDataUnitOfWork.RugbyTournaments.All().OrderBy(tournament => tournament.Name), pageIndex, pageSize, abpath, query);
             }
 
             if (tournaments.Results.Any())
@@ -111,15 +113,20 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
 
             if (!String.IsNullOrEmpty(query))
             {
+                if (query.ToLower().Contains("springbok"))
+                    query = "South Africa";
+
                 teams = await CreatePagedResults<RugbyTeam, RugbyTeamEntity>(
                                     _publicSportDataUnitOfWork.RugbyTeams.Where(q => q.Name.Contains(query)
                                                         || q.NameCmsOverride.Contains(query)
-                                                        || q.Abbreviation.Contains(query)), pageIndex, pageSize, abpath, query);
+                                                        || q.Abbreviation.Contains(query))
+                                                        .OrderBy(field => field.Name), pageIndex, pageSize, abpath, query);
             }
             else
             {
                 teams = await CreatePagedResults<RugbyTeam, RugbyTeamEntity>(
-                                    _publicSportDataUnitOfWork.RugbyTeams.All(), pageIndex, pageSize, abpath, query);
+                                    _publicSportDataUnitOfWork.RugbyTeams.All()
+                                                            .OrderBy(field => field.Name), pageIndex, pageSize, abpath, query);
             }
 
             if (teams.Results.Any())
@@ -139,17 +146,44 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
                                     _publicSportDataUnitOfWork.RugbyPlayers.Where(q => q.FirstName.Contains(query)
                                                            || q.LastName.Contains(query)
                                                            || q.FullName.Contains(query)
-                                                           || q.DisplayNameCmsOverride.Contains(query)), pageIndex, pageSize, abpath, query);
+                                                           || q.DisplayNameCmsOverride.Contains(query))
+                                                           .OrderBy(field => field.FullName), pageIndex, pageSize, abpath, query);
             }
             else
             {
                 players = await CreatePagedResults<RugbyPlayer, RugbyPlayerEntity>(
-                                    _publicSportDataUnitOfWork.RugbyPlayers.All(), pageIndex, pageSize, abpath, query);
+                                    _publicSportDataUnitOfWork.RugbyPlayers.All()
+                                                           .OrderBy(field => field.FullName), pageIndex, pageSize, abpath, query);
             }
 
             if (players.Results.Any())
             {
                 return players;
+            }
+            return null;
+        }
+
+        public async Task<PagedResultsEntity<RugbyVenueEntity>> GetAllVenues(int pageIndex, int pageSize, string abpath, string query = null)
+        {
+            var venues = (PagedResultsEntity<RugbyVenueEntity>)null;
+
+            if (!String.IsNullOrEmpty(query))
+            {
+                venues = await CreatePagedResults<RugbyVenue, RugbyVenueEntity>(
+                                    _publicSportDataUnitOfWork.RugbyVenues.Where(q => q.Name.Contains(query)
+                                                           || q.NameCmsOverride.Contains(query))
+                                                           .OrderBy(field => field.Name), pageIndex, pageSize, abpath, query);
+            }
+            else
+            {
+                venues = await CreatePagedResults<RugbyVenue, RugbyVenueEntity>(
+                                    _publicSportDataUnitOfWork.RugbyVenues.All()
+                                                           .OrderBy(field => field.Name), pageIndex, pageSize, abpath, query);
+            }
+
+            if (venues.Results.Any())
+            {
+                return venues;
             }
             return null;
         }
@@ -162,12 +196,14 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             {
                 tournamentSeasons = await CreatePagedResults<RugbySeason, RugbySeasonEntity>(
                                     _publicSportDataUnitOfWork.RugbySeasons.Where(q => q.Name.Contains(query)
-                                                                                    && q.RugbyTournament.Id == tournamentId), pageIndex, pageSize, abpath, query);
+                                                                                    && q.RugbyTournament.Id == tournamentId)
+                                                                                    .OrderByDescending(field => field.ProviderSeasonId), pageIndex, pageSize, abpath, query);
             }
             else
             {
                 tournamentSeasons = await CreatePagedResults<RugbySeason, RugbySeasonEntity>(_publicSportDataUnitOfWork.RugbySeasons.Where(
-                                                            season => season.RugbyTournament.Id == tournamentId), pageIndex, pageSize, abpath, query);
+                                                            season => season.RugbyTournament.Id == tournamentId)
+                                                            .OrderByDescending(field => field.ProviderSeasonId), pageIndex, pageSize, abpath, query);
             }
 
             if (tournamentSeasons.Results.Any())
@@ -203,37 +239,129 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             return null;
         }
 
-        public async Task<PagedResultsEntity<RugbyFixtureEntity>> GetTournamentFixtures(Guid tournamentId, int pageIndex, int pageSize, string abpath, string query = null)
+        public async Task<PagedResultsEntity<RugbyFixtureEntity>> GetTournamentFixtures(Guid tournamentId, Guid? seasonId, int pageIndex, int pageSize, string abpath, bool overrideToggle, string query = null, string status = null)
         {
             var tournamentFixtures = (PagedResultsEntity<RugbyFixtureEntity>)null;
 
+            var tourFixtures = (await _publicSportDataUnitOfWork.RugbyFixtures.WhereAsync(t => t.RugbyTournament.Id == tournamentId)).ToList();
+
+            if (status != null)
+                status = status.ToLower().Replace(" ", String.Empty);
+
+            switch (status)
+            {
+                case "results":
+                    tourFixtures = resultFixtures(seasonId, overrideToggle, tourFixtures);
+                    break;
+                case "comingup":
+                    tourFixtures = comingUpFixtures(seasonId, overrideToggle, tourFixtures);
+                    break;
+                case "today":
+                    tourFixtures = todayFixtures(seasonId, overrideToggle, tourFixtures);
+                    break;
+                default:
+                    if (seasonId != null) {
+                        tourFixtures = tourFixtures.Where(fixture => fixture?.RugbySeason?.Id != null
+                                                            && fixture?.RugbySeason?.Id == seasonId).OrderBy(f => f.StartDateTime).ToList();
+                    }
+                    else {
+                        tourFixtures = tourFixtures.Where(fixture => fixture?.RugbySeason?.Id != null
+                                                            && fixture?.RugbySeason?.IsCurrent == true).OrderBy(f => f.StartDateTime).ToList();
+                    }
+                    break;
+            }   
+
             if (!String.IsNullOrEmpty(query))
             {
-                tournamentFixtures = await CreatePagedResults<RugbyFixture, RugbyFixtureEntity>(
-                            _publicSportDataUnitOfWork.RugbyFixtures.Where(t =>
-                                    t.RugbyTournament.Id == tournamentId &&
-                                    t.RugbySeason != null &&
-                                    t.RugbySeason.IsCurrent).OrderBy(f => f.StartDateTime)
-                                    .Where(q => q.TeamA.Name.Contains(query)
-                                                        || q.TeamA.NameCmsOverride.Contains(query)
-                                                        || q.TeamB.Name.Contains(query)
-                                                        || q.TeamB.NameCmsOverride.Contains(query)), pageIndex, pageSize, abpath, query);
-            }
-            else
-            {
-                tournamentFixtures = await CreatePagedResults<RugbyFixture, RugbyFixtureEntity>(
-                            _publicSportDataUnitOfWork.RugbyFixtures.Where(t =>
-                                    t.RugbyTournament.Id == tournamentId &&
-                                    t.RugbySeason != null &&
-                                    t.RugbySeason.IsCurrent).OrderBy(f => f.StartDateTime), pageIndex, pageSize, abpath, query);
+                query = query.ToLower();
+                tourFixtures = tourFixtures.Where(q => (q.TeamA.Name != null && q.TeamA.Name.ToLower().Contains(query))
+                                                       || (q.TeamA.NameCmsOverride != null && q.TeamA.NameCmsOverride.ToLower().Contains(query))
+                                                       || (q.TeamB.Name != null && q.TeamB.Name.ToLower().Contains(query))
+                                                       || (q.TeamB.NameCmsOverride != null && q.TeamB.NameCmsOverride.ToLower().Contains(query))).ToList();
             }
 
+            tournamentFixtures = await CreatePagedResults<RugbyFixture, RugbyFixtureEntity>(tourFixtures, pageIndex, pageSize, abpath, query);
 
             if (tournamentFixtures.Results.Any())
             {
+                if (seasonId != null && tournamentFixtures.NextPageUrl != null)
+                    tournamentFixtures.NextPageUrl += $"&seasonId={seasonId}";
+
+                if (status != null && tournamentFixtures.NextPageUrl != null)
+                    tournamentFixtures.NextPageUrl += $"&status={status}";
+
                 return tournamentFixtures;
             }
             return null;
+        }
+
+        private static List<RugbyFixture> todayFixtures(Guid? seasonId, bool overrideToggle, List<RugbyFixture> tourFixtures)
+        {
+            if (seasonId != null && overrideToggle == true)
+            {
+                tourFixtures = tourFixtures.Where(fixture => fixture?.RugbySeason?.Id == seasonId
+                                                    && fixture.CmsOverrideModeIsActive == true
+                                                    && fixture?.StartDateTime >= DateTimer.StartOfDay(DateTime.UtcNow)
+                                                    && fixture?.StartDateTime <= DateTimer.EndOfDay(DateTime.UtcNow)).OrderBy(f => f.StartDateTime).ToList();
+            }
+            else if (seasonId != null)
+            {
+                tourFixtures = tourFixtures.Where(fixture => fixture?.RugbySeason?.Id == seasonId
+                                                    && fixture?.StartDateTime >= DateTimer.StartOfDay(DateTime.UtcNow)
+                                                    && fixture?.StartDateTime <= DateTimer.EndOfDay(DateTime.UtcNow)).OrderBy(f => f.StartDateTime).ToList();
+            }
+            else
+            {
+                tourFixtures = tourFixtures.Where(fixture => fixture?.RugbySeason?.IsCurrent == true
+                                                    && fixture?.StartDateTime >= DateTimer.StartOfDay(DateTime.UtcNow)
+                                                    && fixture?.StartDateTime <= DateTimer.EndOfDay(DateTime.UtcNow)).OrderBy(f => f.StartDateTime).ToList();
+            }
+
+            return tourFixtures;
+        }
+
+        private static List<RugbyFixture> comingUpFixtures(Guid? seasonId, bool overrideToggle, List<RugbyFixture> tourFixtures)
+        {
+            if (seasonId != null && overrideToggle == true)
+            {
+                tourFixtures = tourFixtures.Where(fixture => fixture?.RugbySeason?.Id == seasonId
+                                                    && fixture.CmsOverrideModeIsActive == true
+                                                    && fixture?.StartDateTime >= DateTime.UtcNow).OrderBy(f => f.StartDateTime).ToList();
+            }
+            else if (seasonId != null)
+            {
+                tourFixtures = tourFixtures.Where(fixture => fixture?.RugbySeason?.Id == seasonId
+                                                    && fixture?.StartDateTime >= DateTime.UtcNow).OrderBy(f => f.StartDateTime).ToList();
+            }
+            else
+            {
+                tourFixtures = tourFixtures.Where(fixture => fixture?.RugbySeason?.IsCurrent == true
+                                                    && fixture?.StartDateTime >= DateTime.UtcNow).OrderBy(f => f.StartDateTime).ToList();
+            }
+
+            return tourFixtures;
+        }
+
+        private static List<RugbyFixture> resultFixtures(Guid? seasonId, bool overrideToggle, List<RugbyFixture> tourFixtures)
+        {
+            if (seasonId != null && overrideToggle == true)
+            {
+                tourFixtures = tourFixtures.Where(fixture => fixture?.RugbySeason?.Id == seasonId
+                                                    && fixture.CmsOverrideModeIsActive == true
+                                                    && fixture?.RugbyFixtureStatus == RugbyFixtureStatus.Result).OrderByDescending(f => f.StartDateTime).ToList();
+            }
+            else if (seasonId != null)
+            {
+                tourFixtures = tourFixtures.Where(fixture => fixture?.RugbySeason?.Id == seasonId
+                                                    && fixture?.RugbyFixtureStatus == RugbyFixtureStatus.Result).OrderByDescending(f => f.StartDateTime).ToList();
+            }
+            else
+            {
+                tourFixtures = tourFixtures.Where(fixture => fixture?.RugbySeason?.IsCurrent == true
+                                                    && fixture?.RugbyFixtureStatus == RugbyFixtureStatus.Result).OrderByDescending(f => f.StartDateTime).ToList();
+            }
+
+            return tourFixtures;
         }
 
         public async Task<RugbyTournamentEntity> GetTournamentById(Guid id)
@@ -249,14 +377,17 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             return null;
         }
 
-        public async Task<RugbyFixtureEntity> GetFixtureById(Guid id)
+        public async Task<RugbyFixtureEntitySingle> GetFixtureById(Guid id)
         {
             var rugbyFixture = await Task.FromResult(_publicSportDataUnitOfWork.RugbyFixtures.FirstOrDefault(
                                                         fixture => fixture.Id == id));
 
             if (rugbyFixture != null)
             {
-                return iMapper.Map<RugbyFixture, RugbyFixtureEntity>(rugbyFixture);
+                return new RugbyFixtureEntitySingle
+                {
+                    Fixture = iMapper.Map<RugbyFixture, RugbyFixtureEntity>(rugbyFixture)
+                };
             }
 
             return null;
@@ -301,6 +432,19 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             return null;
         }
 
+        public async Task<RugbyVenueEntity> GetVenueById(Guid id)
+        {
+            var rugbyVenue = await Task.FromResult(_publicSportDataUnitOfWork.RugbyVenues.FirstOrDefault(
+                                                        venue => venue.Id == id));
+
+            if (rugbyVenue != null)
+            {
+                return iMapper.Map<RugbyVenue, RugbyVenueEntity>(rugbyVenue);
+            }
+
+            return null;
+        }
+
         /// <summary>
         /// Updates tournament table and only accepts values => NameCmsOverride, IsEnabled, IsLiveScored, Slug
         /// </summary>
@@ -318,7 +462,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
 
                 if (rugbyTournament != null)
                 {
-                    /** Only accept these values hard coded below **/
+                    /** Only accept these values below **/
                     rugbyTournament.NameCmsOverride = !String.IsNullOrEmpty(rugbyTournamentEntity.NameCmsOverride?.Trim()) ? rugbyTournamentEntity.NameCmsOverride : null;
                     rugbyTournament.IsEnabled = rugbyTournamentEntity.IsEnabled;
                     rugbyTournament.IsLiveScored = rugbyTournamentEntity.IsLiveScored;
@@ -350,11 +494,20 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
 
                 if (rugbyFixture != null)
                 {
-                    /** Only accept these values hard coded below **/
+                    /** Only accept these values below **/
                     rugbyFixture.IsDisabledInbound = rugbyFixtureEntity.IsDisabledInbound;
                     rugbyFixture.IsDisabledOutbound = rugbyFixtureEntity.IsDisabledOutbound;
                     rugbyFixture.IsLiveScored = rugbyFixtureEntity.IsLiveScored;
                     rugbyFixture.CmsOverrideModeIsActive = rugbyFixtureEntity.CmsOverrideModeIsActive;
+
+                    if (rugbyFixtureEntity.CmsOverrideModeIsActive == true)
+                    {
+                        rugbyFixture.TeamAScore = rugbyFixtureEntity.TeamAScore;
+                        rugbyFixture.TeamBScore = rugbyFixtureEntity.TeamBScore;
+                        rugbyFixture.StartDateTime = rugbyFixtureEntity.StartDateTime;
+                        rugbyFixture.RugbyFixtureStatus = rugbyFixtureEntity.RugbyFixtureStatus;
+                    }
+
 
                     _publicSportDataUnitOfWork.RugbyFixtures.Update(rugbyFixture);
                     await _publicSportDataUnitOfWork.SaveChangesAsync();
@@ -369,29 +522,38 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
         /// Updates season table and only accepts values => IsCurrent, CurrentRoundNumber
         /// </summary>
         /// <param name="seasonId"></param>
+        /// <param name="tournamentId"></param>
         /// <param name="rugbySeasonEntity"></param>
         /// <returns></returns>
-        public async Task<bool> UpdateSeason(Guid id, RugbySeasonEntity rugbySeasonEntity)
+        public async Task<bool> UpdateSeason(Guid id, Guid tournamentId, RugbySeasonEntity rugbySeasonEntity)
         {
             var success = false;
+            var _season = _publicSportDataUnitOfWork.RugbySeasons.FirstOrDefault(season => season.Id == id);
 
-            if (rugbySeasonEntity != null)
+            if (tournamentId != null && _season != null && rugbySeasonEntity != null)
             {
-                var rugbySeason = (await Task.FromResult(_publicSportDataUnitOfWork.RugbySeasons.FirstOrDefault(
-                                                            season => season.Id == id)));
+                var seasons = _publicSportDataUnitOfWork.RugbySeasons.Where(season => season.RugbyTournament.Id == tournamentId);
 
-                if (rugbySeason != null)
+                foreach (var season in seasons)
                 {
-                    /** Only accept these values hard coded below **/
-                    rugbySeason.IsCurrent = rugbySeasonEntity.IsCurrent;
-                    rugbySeason.CurrentRoundNumber = rugbySeasonEntity.CurrentRoundNumber;
-                    rugbySeason.CurrentRoundNumberCmsOverride = rugbySeasonEntity.CurrentRoundNumberCmsOverride;
+                    if (season.Id == id)
+                    {
+                        /** Only accept these values below **/
+                        season.IsCurrent = rugbySeasonEntity.IsCurrent;
+                        season.CurrentRoundNumber = rugbySeasonEntity.CurrentRoundNumber;
+                        season.CurrentRoundNumberCmsOverride = rugbySeasonEntity.CurrentRoundNumberCmsOverride;
+                    }
 
-                    _publicSportDataUnitOfWork.RugbySeasons.Update(rugbySeason);
-                    await _publicSportDataUnitOfWork.SaveChangesAsync();
-                    success = true;
+                    if (season.Id != id && rugbySeasonEntity.IsCurrent == true)
+                    {
+                        season.IsCurrent = false;
+                    }
+
+                    _publicSportDataUnitOfWork.RugbySeasons.Update(season);
                 }
 
+                await _publicSportDataUnitOfWork.SaveChangesAsync();
+                success = true;
             }
             return success;
         }
@@ -414,7 +576,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
 
                 if (rugbyTeam != null)
                 {
-                    /** Only accept these values hard coded below **/
                     rugbyTeam.NameCmsOverride = !String.IsNullOrEmpty(rugbyteamEntity.NameCmsOverride?.Trim()) ? rugbyteamEntity.NameCmsOverride : null;
 
                     _publicSportDataUnitOfWork.RugbyTeams.Update(rugbyTeam);
@@ -443,10 +604,37 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
 
                 if (rugbyPlayer != null)
                 {
-                    /** Only accept these values hard coded below **/
                     rugbyPlayer.DisplayNameCmsOverride = !String.IsNullOrEmpty(rugbyPlayerEntity.DisplayNameCmsOverride?.Trim()) ? rugbyPlayerEntity.DisplayNameCmsOverride : null;
 
                     _publicSportDataUnitOfWork.RugbyPlayers.Update(rugbyPlayer);
+                    await _publicSportDataUnitOfWork.SaveChangesAsync();
+                    success = true;
+                }
+
+            }
+            return success;
+        }
+
+        /// <summary>
+        /// Updates rugby venues table and only accepts values => NameCmsOverride
+        /// </summary>
+        /// <param name="venueId"></param>
+        /// <param name="rugbyVenueEntity"></param>
+        /// <returns></returns>
+        public async Task<bool> UpdateVenue(Guid id, RugbyVenueEntity rugbyVenueEntity)
+        {
+            var success = false;
+
+            if (rugbyVenueEntity != null)
+            {
+                var rugbyVenue = (await Task.FromResult(_publicSportDataUnitOfWork.RugbyVenues.FirstOrDefault(
+                                                            venue => venue.Id == id)));
+
+                if (rugbyVenue != null)
+                {
+                    rugbyVenue.NameCmsOverride = !String.IsNullOrEmpty(rugbyVenueEntity.NameCmsOverride?.Trim()) ? rugbyVenueEntity.NameCmsOverride : null;
+
+                    _publicSportDataUnitOfWork.RugbyVenues.Update(rugbyVenue);
                     await _publicSportDataUnitOfWork.SaveChangesAsync();
                     success = true;
                 }

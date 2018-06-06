@@ -25,12 +25,17 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         private readonly int _numberOfMinutesToCheckForInProgressFixtures;
 
+        private ILoggingService _logger;
+
         public RugbyService(
             IPublicSportDataUnitOfWork publicSportDataUnitOfWork,
-            ISystemSportDataUnitOfWork systemSportDataUnitOfWork)
+            ISystemSportDataUnitOfWork systemSportDataUnitOfWork,
+            ILoggingService logger)
         {
             _publicSportDataUnitOfWork = publicSportDataUnitOfWork;
             _systemSportDataUnitOfWork = systemSportDataUnitOfWork;
+
+            _logger = logger;
 
             _numberOfMinutesToCheckForInProgressFixtures =
                 int.Parse(ConfigurationManager.AppSettings["NumberOfMinutesToCheckForInProgressFixtures"] ?? "120");
@@ -264,17 +269,23 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<Guid> GetTournamentId(string tournamentSlug)
         {
-            var tournament = _publicSportDataUnitOfWork.RugbyTournaments.FirstOrDefault(f => f.Slug == tournamentSlug);
+            var tournament = await GetTournamentBySlug(tournamentSlug);
 
             if (tournament == null)
-                throw new Exception("Tournament slug does not exist.");
+            {
+                return await Task.FromResult(Guid.Empty);
+            }
 
             return await Task.FromResult(tournament.Id);
         }
 
         public async Task<RugbyTournament> GetTournamentBySlug(string tournamentSlug)
         {
-            return await Task.FromResult(_publicSportDataUnitOfWork.RugbyTournaments.FirstOrDefault(f => f.Slug.Equals(tournamentSlug, StringComparison.InvariantCultureIgnoreCase)));
+            var tournament =
+                await Task.FromResult(_publicSportDataUnitOfWork.RugbyTournaments.FirstOrDefault(f =>
+                    f.Slug.Equals(tournamentSlug, StringComparison.InvariantCultureIgnoreCase)));
+
+            return tournament;
         }
 
         public async Task<IEnumerable<RugbyFixture>> GetRecentResultsFixtures(int maxCount)
@@ -334,10 +345,12 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             var fixturesInResultsState = Enumerable.Empty<RugbyFixture>();
 
-            if (tournament != null)
+            if (tournament == null)
             {
-                fixturesInResultsState = await GetTournamentFixtures(tournament.Id, RugbyFixtureStatus.Result);
+                return fixturesInResultsState;
             }
+
+            fixturesInResultsState = await GetTournamentFixtures(tournament.Id, RugbyFixtureStatus.Result);
 
             if (!tournamentSlug.Equals("sevens")) return await Task.FromResult(fixturesInResultsState.ToList());
 
@@ -368,7 +381,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             return await Task.FromResult(fixtures.ToList());
         }
 
-        private static bool IsNationalTeamSlug(string slug)
+        public bool IsNationalTeamSlug(string slug)
         {
             var result = slug.Equals("springboks", StringComparison.CurrentCultureIgnoreCase);
 
@@ -405,9 +418,12 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<IEnumerable<RugbyGroupedLog>> GetGroupedLogs(string tournamentSlug)
         {
-            var tournament = await GetTournamentBySlug(tournamentSlug);
-
             var logs = Enumerable.Empty<RugbyGroupedLog>();
+
+            if (IsNationalTeamSlug(tournamentSlug))
+                return logs;
+
+            var tournament = await GetTournamentBySlug(tournamentSlug);
 
             if (tournament != null && tournament.HasLogs)
             {
@@ -418,7 +434,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                         t.RugbySeason.IsCurrent &&
                         t.RoundNumber == (t.RugbySeason.CurrentRoundNumberCmsOverride ?? t.RugbySeason.CurrentRoundNumber) &&
                         t.RugbyLogGroup.IsCoreGroup)
-                    .OrderBy(g => g.RugbyLogGroup.Id).ThenBy(t => t.LogPosition);
+                    .OrderBy(g => g.RugbyLogGroup.GroupName).ThenBy(t => t.LogPosition);
 
                 return await Task.FromResult(logs.ToList());
             }
@@ -428,9 +444,12 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<IEnumerable<RugbyFlatLog>> GetFlatLogs(string tournamentSlug)
         {
-            var tournament = await GetTournamentBySlug(tournamentSlug);
-
             var flatLogs = Enumerable.Empty<RugbyFlatLog>();
+
+            if (IsNationalTeamSlug(tournamentSlug))
+                return flatLogs;
+
+            var tournament = await GetTournamentBySlug(tournamentSlug);
 
             if (tournament != null && tournament.HasLogs)
             {

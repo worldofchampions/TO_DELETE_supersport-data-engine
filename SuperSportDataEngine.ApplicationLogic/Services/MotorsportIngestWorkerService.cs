@@ -1,16 +1,15 @@
 ﻿namespace SuperSportDataEngine.ApplicationLogic.Services
 {
+    using System;
     using System.Linq;
     using System.Threading;
     using System.Threading.Tasks;
     using SuperSportDataEngine.Common.Logging;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.Stats.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
-    using SuperSportDataEngine.Common.Logging;
 
     public class MotorsportIngestWorkerService : IMotorsportIngestWorkerService
     {
@@ -23,8 +22,8 @@
         public MotorsportIngestWorkerService(
             IStatsMotorsportIngestService statsMotorsportIngestService,
             ILoggingService loggingService,
-            IMotorsportService motorsportService, 
-            IMotorsportStorageService motorsportStorageService, 
+            IMotorsportService motorsportService,
+            IMotorsportStorageService motorsportStorageService,
             IMongoDbMotorsportRepository mongoDbMotorsportRepository)
         {
             _statsMotorsportIngestService = statsMotorsportIngestService;
@@ -33,7 +32,7 @@
             _motorsportStorageService = motorsportStorageService;
             _mongoDbMotorsportRepository = mongoDbMotorsportRepository;
         }
-        
+
         public async Task IngestLeagues(CancellationToken cancellationToken)
         {
             var leagues = _statsMotorsportIngestService.IngestLeagues();
@@ -187,6 +186,8 @@
 
                     foreach (var race in motorsportRaces)
                     {
+                        if (race.IsDisabledInbound) continue;
+
                         var motorsportRaceEvents = await _motorsportService.GetEventsForRace(race.Id, season.Id);
 
                         if (motorsportRaceEvents == null) continue;
@@ -197,11 +198,102 @@
                                 _statsMotorsportIngestService.IngestRaceResults(league.ProviderSlug, season.ProviderSeasonId,
                                     race.ProviderRaceId);
 
-                            await _motorsportStorageService.PersistResultsInRepository(providerResponse, raceEvent, cancellationToken);
+                            await _motorsportStorageService.PersistResultsInRepository(providerResponse, raceEvent, league);
 
                             await _mongoDbMotorsportRepository.Save(providerResponse);
                         }
                     }
+                }
+            }
+        }
+
+        public async Task IngestResultsForRaceEvent(MotorsportRaceEvent motorsportRaceEvent, int threadSleepInSeconds, int pollingDurationInMinutes)
+        {
+            while (true)
+            {
+                var league = motorsportRaceEvent.MotorsportRace.MotorsportLeague;
+
+                var season = motorsportRaceEvent.MotorsportSeason;
+
+                var race = motorsportRaceEvent.MotorsportRace;
+
+                var providerResponse =
+                    _statsMotorsportIngestService.IngestRaceResults(league.ProviderSlug, season.ProviderSeasonId, race.ProviderRaceId);
+
+                await _motorsportStorageService.PersistResultsInRepository(providerResponse, motorsportRaceEvent, league);
+
+                await _mongoDbMotorsportRepository.Save(providerResponse);
+
+                PauseIngest(threadSleepInSeconds);
+
+                if (await ShouldStopPolling(motorsportRaceEvent, pollingDurationInMinutes))
+                {
+                    break;
+                }
+            }
+        }
+
+        public async Task IngestRaceEventsForLeague(MotorsportRaceEvent motorsportRaceEvent, int threadSleepInSeconds, int pollingDurationInMinutes)
+        {
+            var league = motorsportRaceEvent.MotorsportRace.MotorsportLeague;
+
+            if (league.ProviderSlug is null) return;
+
+            var season = motorsportRaceEvent.MotorsportSeason;
+
+            if (season is null) return;
+
+            var leagueRaces = (await _motorsportService.GetRacesForLeague(league.Id))?.ToList();
+
+            if (leagueRaces is null) return;
+
+            while (true)
+            {
+                foreach (var race in leagueRaces)
+                {
+                    if (race.IsDisabledInbound) continue;
+
+                    var providerResponse =
+                        _statsMotorsportIngestService.IngestRaceEventsForLeague(league.ProviderSlug,
+                            season.ProviderSeasonId, race.ProviderRaceId);
+
+                    await
+                        _motorsportStorageService.PersistRaceEventsInRepository(providerResponse, race, season, CancellationToken.None);
+
+                    await _mongoDbMotorsportRepository.Save(providerResponse);
+                }
+
+                PauseIngest(threadSleepInSeconds);
+
+                if (await ShouldStopPolling(motorsportRaceEvent, pollingDurationInMinutes))
+                {
+                    break;
+                }
+            }
+        }
+
+        public async Task IngestRaceEventGrids(MotorsportRaceEvent motorsportRaceEvent, int ingestSleepInSeconds, int pollingDurationInMinutes)
+        {
+            while (true)
+            {
+                var league = motorsportRaceEvent.MotorsportRace.MotorsportLeague;
+
+                var season = motorsportRaceEvent.MotorsportSeason;
+
+                var race = motorsportRaceEvent.MotorsportRace;
+
+                var raceGrid =
+                    _statsMotorsportIngestService.IngestRaceGrid(league.ProviderSlug, season.ProviderSeasonId, race.ProviderRaceId);
+
+                await _motorsportStorageService.PersistGridInRepository(raceGrid, motorsportRaceEvent, league);
+
+                await _mongoDbMotorsportRepository.Save(raceGrid);
+
+                PauseIngest(ingestSleepInSeconds);
+
+                if (await ShouldStopPolling(motorsportRaceEvent, pollingDurationInMinutes))
+                {
+                    break;
                 }
             }
         }
@@ -224,6 +316,8 @@
                     {
                         foreach (var race in leagueRaces)
                         {
+                            if (race.IsDisabledInbound) continue;
+
                             var providerResponse =
                                 _statsMotorsportIngestService.IngestRaceEventsForLeague(
                                     league.ProviderSlug, season.ProviderSeasonId, race.ProviderRaceId);
@@ -259,13 +353,15 @@
 
                         foreach (var race in leagueRaces)
                         {
+                            if (race.IsDisabledInbound) continue;
+
                             var providerResponse =
                                 _statsMotorsportIngestService.IngestRaceEventsForLeague(league.ProviderSlug, season.ProviderSeasonId, race.ProviderRaceId);
 
                             await _motorsportStorageService.PersistRaceEventsInRepository(providerResponse, race, season, cancellationToken);
 
                             await _mongoDbMotorsportRepository.Save(providerResponse);
-                        } 
+                        }
                     }
                 }
             }
@@ -289,19 +385,21 @@
 
                     foreach (var race in motorsportRaces)
                     {
+                        if (race.IsDisabledInbound) continue;
+
                         var raceEvents = await _motorsportService.GetEventsForRace(race.Id, season.Id);
 
                         if (raceEvents == null) continue;
 
                         foreach (var raceEvent in raceEvents)
                         {
-                            var raceResults =
+                            var raceGrid =
                                 _statsMotorsportIngestService.IngestRaceGrid(league.ProviderSlug, season.ProviderSeasonId,
                                     race.ProviderRaceId);
 
-                            await _motorsportStorageService.PersistGridInRepository(raceResults, raceEvent, cancellationToken);
+                            await _motorsportStorageService.PersistGridInRepository(raceGrid, raceEvent, league);
 
-                            await _mongoDbMotorsportRepository.Save(raceResults);
+                            await _mongoDbMotorsportRepository.Save(raceGrid);
                         }
                     }
                 }
@@ -349,6 +447,8 @@
 
                     foreach (var race in motorsportRaces)
                     {
+                        if (race.IsDisabledInbound) continue;
+
                         var motorsportRaceEvents = await _motorsportService.GetEventsForRace(race.Id, season.Id);
 
                         if (motorsportRaceEvents == null) continue;
@@ -359,12 +459,44 @@
                                 _statsMotorsportIngestService.IngestRaceResults(league.ProviderSlug, season.ProviderSeasonId,
                                     race.ProviderRaceId);
 
-                            await _motorsportStorageService.PersistResultsInRepository(providerResponse, raceEvent, cancellationToken);
+                            await _motorsportStorageService.PersistResultsInRepository(providerResponse, raceEvent, league);
 
                             await _mongoDbMotorsportRepository.Save(providerResponse);
                         }
-                    } 
+                    }
                 }
+            }
+        }
+
+        public async Task IngestLiveRaceEventData(MotorsportRaceEvent raceEvent, int pollingTimeInSeconds, CancellationToken cancellationToken)
+        {
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                if (raceEvent?.MotorsportSeason != null)
+                {
+                    var providerSeasonId = raceEvent.MotorsportSeason.ProviderSeasonId;
+
+                    if (raceEvent.MotorsportRace.MotorsportLeague?.ProviderSlug != null)
+                    {
+                        var providerSlug = raceEvent.MotorsportRace.MotorsportLeague.ProviderSlug;
+
+                        var providerRaceId = raceEvent.MotorsportRace.ProviderRaceId;
+
+                        var providerResponse =
+                            _statsMotorsportIngestService.IngestRaceResults(providerSlug, providerSeasonId, providerRaceId);
+
+                        await _motorsportStorageService.PersistLiveResultsInRepository(providerResponse, raceEvent);
+
+                        await _mongoDbMotorsportRepository.Save(providerResponse);
+                    }
+                }
+
+                if (await ShouldStopLivePollingForEvent(raceEvent))
+                {
+                    break;
+                }
+
+                PauseIngest(pollingTimeInSeconds);
             }
         }
 
@@ -376,9 +508,9 @@
             {
                 foreach (var league in motorsportLeagues)
                 {
-                    if (league.ProviderSlug is null || league.MotorsportSportType == MotorsportSportType.Superbike) continue;
+                    if (league.ProviderSlug is null || !LeagueHasTeamStandings(league)) continue;
 
-                    var motorsportSeasons = 
+                    var motorsportSeasons =
                         (await _motorsportService.GetHistoricSeasonsForLeague(league.Id, true)).ToList();
 
                     foreach (var season in motorsportSeasons)
@@ -392,6 +524,66 @@
                     }
                 }
             }
+        }
+
+        public async Task IngestTeamStandingsForLeague(MotorsportRaceEvent raceEvent, int pollingTimeInSeconds, int pollingDurationInMinutes)
+        {
+            while (true)
+            {
+                var league = raceEvent.MotorsportRace.MotorsportLeague;
+
+                var season = await _motorsportService.GetCurrentSeasonForLeague(league.Id, CancellationToken.None);
+
+                var providerResponse =
+                    _statsMotorsportIngestService.IngestTeamStandings(league.ProviderSlug, season.ProviderSeasonId);
+
+                await _motorsportStorageService.PersistTeamStandingsInRepository(providerResponse, league, season, CancellationToken.None);
+
+                await _mongoDbMotorsportRepository.Save(providerResponse);
+
+                PauseIngest(pollingTimeInSeconds);
+
+                if (await ShouldStopPolling(raceEvent, pollingDurationInMinutes))
+                {
+                    break;
+                }
+            }
+        }
+
+        public async Task IngestDriverStandingsForLeague(MotorsportRaceEvent raceEvent, int pollingTimeInSeconds, int pollingDurationInMinutes)
+        {
+            while (true)
+            {
+                if (raceEvent?.MotorsportRace.MotorsportLeague != null)
+                {
+                    var league = raceEvent.MotorsportRace.MotorsportLeague;
+
+                    var season = await _motorsportService.GetCurrentSeasonForLeague(league.Id, CancellationToken.None);
+
+                    var providerResponse =
+                        _statsMotorsportIngestService.IngestDriverStandings(league.ProviderSlug, season.ProviderSeasonId);
+
+                    await _motorsportStorageService.PersistDriverStandingsInRepository(providerResponse, league, season, CancellationToken.None);
+
+                    await _mongoDbMotorsportRepository.Save(providerResponse);
+                }
+                else
+                {
+                    break;
+                }
+
+                PauseIngest(pollingTimeInSeconds);
+
+                if (await ShouldStopPolling(raceEvent, pollingDurationInMinutes))
+                {
+                    break;
+                }
+            }
+        }
+
+        private static bool LeagueHasTeamStandings(MotorsportLeague league)
+        {
+            return league.MotorsportSportType != MotorsportSportType.Superbike;
         }
 
         public async Task IngestHistoricDriverStandings(CancellationToken cancellationToken)
@@ -419,12 +611,6 @@
             }
         }
 
-        public async Task IngestLiveRaceEventData(MotorsportRace race, CancellationToken cancellationToken)
-        {
-            //TODO
-            await Task.FromResult(0);
-        }
-
         public async Task IngestHistoricEventsGrids(CancellationToken cancellationToken)
         {
             var activeLeagues = await _motorsportService.GetActiveLeagues();
@@ -443,7 +629,10 @@
 
                         foreach (var race in motorsportRaces)
                         {
+                            if (race.IsDisabledInbound) continue;
+
                             var motorsportRaceEvents = await _motorsportService.GetEventsForRace(race.Id, season.Id);
+
                             if (motorsportRaceEvents == null) continue;
 
                             foreach (var raceEvent in motorsportRaceEvents)
@@ -452,14 +641,40 @@
                                     _statsMotorsportIngestService.IngestRaceGrid(league.ProviderSlug, season.ProviderSeasonId,
                                         race.ProviderRaceId);
 
-                                await _motorsportStorageService.PersistGridInRepository(providerResponse, raceEvent, cancellationToken);
+                                await _motorsportStorageService.PersistGridInRepository(providerResponse, raceEvent, league);
 
                                 await _mongoDbMotorsportRepository.Save(providerResponse);
                             }
-                        } 
+                        }
                     }
                 }
             }
         }
+
+        private static void PauseIngest(int pauseTimeInSeconds)
+        {
+            var sleepTimeInMilliseconds = pauseTimeInSeconds * 1000;
+
+            Thread.Sleep(sleepTimeInMilliseconds);
+        }
+
+        private async Task<bool> ShouldStopLivePollingForEvent(MotorsportRaceEvent raceEvent)
+        {
+            var schedulerTrackingEvent = await _motorsportService.GetSchedulerTrackingEvent(raceEvent);
+
+            return schedulerTrackingEvent?.EndedDateTimeUtc != null && schedulerTrackingEvent.MotorsportRaceEventStatus == MotorsportRaceEventStatus.Result;
+        }
+
+        private async Task<bool> ShouldStopPolling(MotorsportRaceEvent raceEvent, int pollingDurationInMinutes)
+        {
+            var schedulerTrackingEvent = await _motorsportService.GetSchedulerTrackingEvent(raceEvent);
+
+            if (schedulerTrackingEvent.EndedDateTimeUtc == null) return false;
+
+            var timeDiff = DateTimeOffset.UtcNow.Subtract(schedulerTrackingEvent.EndedDateTimeUtc.Value).TotalMinutes;
+
+            return timeDiff >= pollingDurationInMinutes;
+        }
+
     }
 }

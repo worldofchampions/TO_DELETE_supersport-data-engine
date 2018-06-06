@@ -14,6 +14,10 @@
 
         public int MatchID { get; set; }
 
+        public bool IsPlaceholderTeamA { get; set; }
+
+        public bool IsPlaceholderTeamB { get; set; }
+
         public string TeamAName { get; set; }
 
         public string TeamBName { get; set; }
@@ -104,6 +108,9 @@
 
         public Boolean Postponed { get; set; }
 
+        /// <summary>
+        /// Time at which the match ends.
+        /// </summary>
         public DateTimeOffset MatchTime { get; set; }
     }
 }

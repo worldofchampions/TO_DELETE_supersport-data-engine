@@ -1,19 +1,19 @@
-﻿using SuperSportDataEngine.Common.Interfaces;
-
-namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
+﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 {
     using AutoMapper;
-    using Filters;
-    using Helpers.Extensions;
-    using Models.Mappers;
-    using Models.News;
-    using Models.Rugby;
-    using Models.Shared;
-    using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-    using ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
-    using ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-    using ApplicationLogic.Entities.Legacy;
-    using Common.Logging;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Helpers.Extensions;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.News;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby;
+    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces.DeprecatedFeed;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+    using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
+    using SuperSportDataEngine.Common.Interfaces;
+    using SuperSportDataEngine.Common.Logging;
     using System;
     using System.Collections.Generic;
     using System.Configuration;
@@ -21,15 +21,17 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
     using System.Threading.Tasks;
     using System.Web.Http;
     using System.Web.Http.Description;
+    using WebGrease.Css.Extensions;
 
     /// <summary>
     /// LegacyFeed Rugby Endpoints
     /// </summary>
     [LegacyExceptionFilter]
     [RoutePrefix("rugby")]
+    [LogUserAgentFilter]
     public class RugbyController : ApiController
     {
-        private readonly IDeprecatedFeedIntegrationService _deprecatedFeedIntegrationService;
+        private readonly IDeprecatedFeedIntegrationServiceRugby _deprecatedFeedIntegrationServiceRugby;
         private readonly IRugbyService _rugbyService;
         private readonly ICache _cache;
         private readonly ILoggingService _logger;
@@ -38,11 +40,11 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 
         public RugbyController(
             IRugbyService rugbyService,
-            IDeprecatedFeedIntegrationService deprecatedFeedIntegrationService,
+            IDeprecatedFeedIntegrationServiceRugby deprecatedFeedIntegrationServiceRugby,
             ICache cache,
             ILoggingService logger)
         {
-            _deprecatedFeedIntegrationService = deprecatedFeedIntegrationService;
+            _deprecatedFeedIntegrationServiceRugby = deprecatedFeedIntegrationServiceRugby;
             _rugbyService = rugbyService;
             _cache = cache;
             _logger = logger;
@@ -53,6 +55,11 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         [ResponseType(typeof(IEnumerable<RugbyPointsScorerModel>))]
         public async Task<IHttpActionResult> GetTournamentTryScorers(string category, int recordsCount = 0)
         {
+            if (_rugbyService.IsNationalTeamSlug(category))
+            {
+                return Ok(Enumerable.Empty<RugbyPointsScorerModel>());
+            }
+
             if (recordsCount == 0)
             {
                 recordsCount = int.Parse(ConfigurationManager.AppSettings["MaxResponseCount.TryScorers"]);
@@ -86,6 +93,11 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         [ResponseType(typeof(IEnumerable<RugbyPointsScorerModel>))]
         public async Task<IHttpActionResult> GetTournamentScorers(string category, int recordsCount = 0)
         {
+            if (_rugbyService.IsNationalTeamSlug(category))
+            {
+                return Ok(Enumerable.Empty<RugbyPointsScorerModel>());
+            }
+
             if (recordsCount == 0)
             {
                 recordsCount = int.Parse(ConfigurationManager.AppSettings["MaxResponseCount.TryScorers"]);
@@ -143,7 +155,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             {
                 response.Events.AssignOrderingIds();
 
-                var deprecatedArticlesAndVideosEntity = await _deprecatedFeedIntegrationService.GetArticlesAndVideos(DeprecatedFeedSportNames.Rugby, id);
+                var deprecatedArticlesAndVideosEntity = await _deprecatedFeedIntegrationServiceRugby.GetArticlesAndVideos(id, response.KickoffDateTime);
                 response = Mapper.Map<DeprecatedArticlesAndVideosEntity, RugbyMatchDetails>(deprecatedArticlesAndVideosEntity, response);
 
                 PersistToCache(cacheKey, response);
@@ -436,6 +448,11 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         [ResponseType(typeof(List<Log>))]
         public async Task<IHttpActionResult> GetLogs(string category, string groupName = null)
         {
+            if (_rugbyService.IsNationalTeamSlug(category))
+            {
+                return Ok(Enumerable.Empty<Log>());
+            }
+
             const string flatLogsCacheKeyPrefix = "FLATLOGS:";
             var flatLogsCacheKey = flatLogsCacheKeyPrefix + $"rugby/flatLogs/{category}";
 
@@ -523,12 +540,50 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 
             var groupedLogsCache = rugbyGroupedLogs.Select(Mapper.Map<Log>).ToList();
 
+            // Dynamically calculate the qualifier indicator
+            // to append to the team names.
+            if (category.ToLower() == "super-rugby")
+            {
+                groupedLogsCache = AddQualifiersToTeams(groupedLogsCache);
+            }
+
             PersistToCache(groupedLogsCacheKey, groupedLogsCache);
 
             if (groupName != null)
                 groupedLogsCache = groupedLogsCache.Where(g => String.Equals(g.GroupName, groupName, StringComparison.CurrentCultureIgnoreCase)).ToList();
 
             return Ok(groupedLogsCache);
+        }
+
+        private static List<Log> AddQualifiersToTeams(List<Log> groupedLogsCache)
+        {
+            var overallStandingsLogs = groupedLogsCache.Where(l =>
+                l.GroupName.ToLower().Contains("overall"));
+
+            var conferenceLogs = groupedLogsCache.Where(l =>
+                !l.GroupName.ToLower().Contains("overall"));
+
+            // Update the team names in the overall standings
+            // With the following rules:
+            //   1. Position 1-3: indicated with “(Q)”, denoting the 3 winners from each conference.
+            var standingsLogs = overallStandingsLogs as IList<Log> ?? overallStandingsLogs.ToList();
+
+            standingsLogs.Take(3).ForEach(
+                log => log.Team = log.Team + " (Q)");
+
+            //  2. Position 4: indicated with “(WC)”, denoting the home wild card position.
+            standingsLogs.Skip(3).Take(1).ForEach(
+                log => log.Team = log.Team + " (WC)");
+
+            //  3. Position 5-8: indicated with “(wc)”, denoting the remaining wild card positions.
+            standingsLogs.Skip(4).Take(4).ForEach(
+                log => log.Team = log.Team + " (wc)");
+
+            // Now that all the overall standings team names have been updated.
+            // Update the conference's team's name's to what the overall standings name is.
+            conferenceLogs.ForEach(log => log.Team = standingsLogs.FirstOrDefault(l => l.TeamID == log.TeamID)?.Team);
+
+            return groupedLogsCache;
         }
 
         // [TODO] Refactor this method out of this class and into a base class that has the cache.

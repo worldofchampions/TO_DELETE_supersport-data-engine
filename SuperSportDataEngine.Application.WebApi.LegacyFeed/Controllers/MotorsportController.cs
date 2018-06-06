@@ -1,11 +1,12 @@
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 {
+    using AutoMapper;
     using SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters;
     using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Motorsport;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces.DeprecatedFeed;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces.LegacyFeed;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+    using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
     using SuperSportDataEngine.Common.Interfaces;
     using SuperSportDataEngine.Common.Logging;
     using System;
@@ -24,7 +25,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
     public class MotorsportController : ApiController
     {
         private readonly IMotorsportLegacyFeedService _motorsportLegacyFeedService;
-        private readonly IDeprecatedFeedIntegrationService _deprecatedFeedIntegrationService;
+        private readonly IDeprecatedFeedIntegrationServiceMotorsport _deprecatedFeedIntegrationServiceMotorsport;
         private readonly ICache _cache;
         private readonly ILoggingService _logger;
 
@@ -32,12 +33,12 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 
         public MotorsportController(
             IMotorsportLegacyFeedService motorsportLegacyFeedService,
-            IDeprecatedFeedIntegrationService deprecatedFeedIntegrationService,
+            IDeprecatedFeedIntegrationServiceMotorsport deprecatedFeedIntegrationServiceMotorsport,
             ICache cache,
             ILoggingService logger)
         {
             _motorsportLegacyFeedService = motorsportLegacyFeedService;
-            _deprecatedFeedIntegrationService = deprecatedFeedIntegrationService;
+            _deprecatedFeedIntegrationServiceMotorsport = deprecatedFeedIntegrationServiceMotorsport;
             _cache = cache;
             _logger = logger;
         }
@@ -65,13 +66,61 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
                     (await _motorsportLegacyFeedService.GetSchedules(category, currentValue))
                         .MotorsportRaceEvents ?? new List<MotorsportRaceEvent>());
 
+            foreach (var race in scheduleFromService)
+            {
+                var deprecatedArticlesAndVideosEntity = await _deprecatedFeedIntegrationServiceMotorsport.GetArticlesAndVideos(race.EventId, race.Date);
+                Mapper.Map<DeprecatedArticlesAndVideosEntity, Races>(deprecatedArticlesAndVideosEntity, race);
+            }
+
             PersistToCache(key, scheduleFromService);
 
             return scheduleFromService;
         }
 
         /// <summary>
-        /// Endpoint 2.1: http://{host}/motorsport/{category}/grid
+        /// Endpoint 2.1: http://{host}/motorsport/{category}/scheduleWithResults
+        /// Endpoint 2.2: http://{host}/motorsport/{category}/scheduleWithResults?current=true
+        /// Endpoint 2.2: http://{host}/motorsport/{category}/scheduleWithResults?current=false
+        /// 
+        /// A compound schedule and results response endpoint for the SS mobi site.
+        /// </summary>
+        [HttpGet, HttpHead]
+        [Route("{category}/scheduleWithResults/{current?}")]
+        [ResponseType(typeof(IEnumerable<RacesWithResults>))]
+        public async Task<IEnumerable<RacesWithResults>> GetScheduleWithResults(string category, string current = null)
+        {
+            var currentValue = bool.Parse(current ?? "false");
+
+            var key = CacheKeyNamespacePrefixForFeed + $"motorsport/{category}/scheduleWithResults?current=" + currentValue;
+
+            var scheduleFromCache = await GetFromCacheAsync<IEnumerable<RacesWithResults>>(key);
+            if (scheduleFromCache != null)
+                return scheduleFromCache;
+
+            var scheduleFromService =
+                Map<List<RacesWithResults>>(
+                    (await _motorsportLegacyFeedService.GetSchedules(category, currentValue))
+                    .MotorsportRaceEvents ?? new List<MotorsportRaceEvent>());
+
+            foreach (var raceWithResults in scheduleFromService)
+            {
+                var deprecatedArticlesAndVideosEntity = await _deprecatedFeedIntegrationServiceMotorsport.GetArticlesAndVideos(raceWithResults.EventId, raceWithResults.Date);
+                Mapper.Map<DeprecatedArticlesAndVideosEntity, Races>(deprecatedArticlesAndVideosEntity, raceWithResults);
+
+                var resultsFromService = Map<List<Models.Motorsport.ResultMotorsport>>(
+                    (await _motorsportLegacyFeedService.GetResultsForRaceEventId(category, raceWithResults.EventId))
+                    .MotorsportRaceEventResults ?? new List<MotorsportRaceEventResult>());
+
+                raceWithResults.ResultMotorsport = resultsFromService;
+            }
+
+            PersistToCache(key, scheduleFromService);
+
+            return scheduleFromService;
+        }
+
+        /// <summary>
+        /// Endpoint 3.1: http://{host}/motorsport/{category}/grid
         /// </summary>
         [HttpGet, HttpHead]
         [Route("{category}/grid")]
@@ -94,7 +143,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         }
 
         /// <summary>
-        /// Endpoint 2.2: http://{host}/motorsport/{category}/grid/{eventId}
+        /// Endpoint 3.2: http://{host}/motorsport/{category}/grid/{eventId}
         /// </summary>
         [HttpGet, HttpHead]
         [Route("{category}/grid/{eventId:int}")]
@@ -118,7 +167,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         }
 
         /// <summary>
-        /// Endpoint 3.1: http://{host}/motorsport/{category}/results
+        /// Endpoint 4.1: http://{host}/motorsport/{category}/results
         /// </summary>
         [HttpGet, HttpHead]
         [Route("{category}/results")]
@@ -131,9 +180,8 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             if (resultsFromCache != null)
                 return resultsFromCache;
 
-            var resultsFromService =
-                Map<MotorsportResult>(
-                    (await _motorsportLegacyFeedService.GetLatestResult(category)));
+            var resultsFromService = Map<MotorsportResult>(
+                (await _motorsportLegacyFeedService.GetLatestResult(category)));
 
             PersistToCache(key, resultsFromService);
 
@@ -141,23 +189,22 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         }
 
         /// <summary>
-        /// Endpoint 3.2: http://{host}/motorsport/{category}/results/{eventId}
+        /// Endpoint 4.2: http://{host}/motorsport/{category}/results/{eventId}
         /// </summary>
         [HttpGet, HttpHead]
         [Route("{category}/results/{eventId:int}")]
-        [ResponseType(typeof(IEnumerable<Models.Motorsport.ResultMotorsport>))]
-        public async Task<IEnumerable<Models.Motorsport.ResultMotorsport>> GetResults(string category, int eventId)
+        [ResponseType(typeof(IEnumerable<ResultMotorsport>))]
+        public async Task<IEnumerable<ResultMotorsport>> GetResults(string category, int eventId)
         {
             var key = CacheKeyNamespacePrefixForFeed + $"motorsport/{category}/results/{eventId}";
 
-            var resultsFromCache = await GetFromCacheAsync<IEnumerable<Models.Motorsport.ResultMotorsport>>(key);
+            var resultsFromCache = await GetFromCacheAsync<IEnumerable<ResultMotorsport>>(key);
             if (resultsFromCache != null)
                 return resultsFromCache;
 
-            var resultsFromService =
-                Map<List<Models.Motorsport.ResultMotorsport>>(
-                    (await _motorsportLegacyFeedService.GetResultsForRaceEventId(category, eventId))
-                    .MotorsportRaceEventResults ?? new List<MotorsportRaceEventResult>());
+            var resultsFromService = Map<List<Models.Motorsport.ResultMotorsport>>(
+                (await _motorsportLegacyFeedService.GetResultsForRaceEventId(category, eventId))
+                .MotorsportRaceEventResults ?? new List<MotorsportRaceEventResult>());
 
             PersistToCache(key, resultsFromService);
 
@@ -165,7 +212,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         }
 
         /// <summary>
-        /// Endpoint 4.1: http://{host}/motorsport/{category}/driverstandings
+        /// Endpoint 5.1: http://{host}/motorsport/{category}/driverstandings
         /// </summary>
         [HttpGet, HttpHead]
         [Route("{category}/driverstandings")]
@@ -185,7 +232,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         }
 
         /// <summary>
-        /// Endpoint 5.1 http://{host}/motorsport/{category}/teamstandings
+        /// Endpoint 6.1 http://{host}/motorsport/{category}/teamstandings
         /// </summary>
         [HttpGet, HttpHead]
         [Route("{category}/teamstandings")]
@@ -205,7 +252,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         }
 
         /// <summary>
-        /// Endpoint 6.1: http://{host}/motorsport/{category}/live
+        /// Endpoint 7.1: http://{host}/motorsport/{category}/live
         /// </summary>
         [HttpGet, HttpHead]
         [Route("{category}/live")]
@@ -222,7 +269,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         {
             try
             {
-                _cache?.Add(cacheKey, cacheData);
+                _cache?.Add(cacheKey, cacheData, TimeSpan.FromSeconds(60));
             }
             catch (Exception exception)
             {

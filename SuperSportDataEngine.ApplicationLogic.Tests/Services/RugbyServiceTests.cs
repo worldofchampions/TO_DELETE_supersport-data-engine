@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Moq;
 using NUnit.Framework;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
 using SuperSportDataEngine.ApplicationLogic.Services;
+using SuperSportDataEngine.Common.Logging;
 using SuperSportDataEngine.Tests.Common.Repositories.Test;
 
 namespace SuperSportDataEngine.ApplicationLogic.Tests.Services
@@ -19,18 +21,20 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests.Services
         private TestPublicSportDataUnitOfWork _publicSportDataUnitOfWork;
         private TestSystemSportDataUnitOfWork _systemSportDataUnitOfWork;
         private RugbyService _rugbyService;
+        private Mock<ILoggingService> _mockLogger;
 
         [SetUp]
         public void Setup()
         {
             _publicSportDataUnitOfWork = new TestPublicSportDataUnitOfWork();
             _systemSportDataUnitOfWork = new TestSystemSportDataUnitOfWork();
+            _mockLogger = new Mock<ILoggingService>();
 
             _rugbyService = 
                 new RugbyService(
                     _publicSportDataUnitOfWork,
-                    _systemSportDataUnitOfWork);
-
+                    _systemSportDataUnitOfWork,
+                    _mockLogger.Object);
         }
 
         [Test]

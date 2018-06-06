@@ -18,7 +18,10 @@
                 .ForMember(dest => dest.MatchStatisticsTeamA, exp => exp.MapFrom(src => src.TeamAMatchStatistics))
 
                 .ForMember(dest => dest.TeamAName, exp => exp.MapFrom(
-                    src => src.RugbyFixture.TeamA.NameCmsOverride ?? src.RugbyFixture.TeamA.Name))
+                    src => GetTeamAName(src)))
+
+                .ForMember(dest => dest.IsPlaceholderTeamA, exp => exp.MapFrom(
+                    src => GetTeamAName(src) == "TBC"))
 
                 .ForMember(dest => dest.TeamAShortName, src => src.UseValue(LegacyFeedConstants.EmptyTeamName))
 
@@ -40,7 +43,10 @@
                 .ForMember(dest => dest.MatchStatisticsTeamB, exp => exp.MapFrom(src => src.TeamBMatchStatistics))
 
                 .ForMember(dest => dest.TeamBName, exp => exp.MapFrom(
-                    src => src.RugbyFixture.TeamB.NameCmsOverride ?? src.RugbyFixture.TeamB.Name))
+                    src => GetTeamBName(src)))
+
+                .ForMember(dest => dest.IsPlaceholderTeamB, exp => exp.MapFrom(
+                    src => GetTeamBName(src) == "TBC"))
 
                  .ForMember(dest => dest.TeamBShortName, src => src.UseValue(LegacyFeedConstants.EmptyTeamName))
 
@@ -74,7 +80,9 @@
 
                 .ForMember(dest => dest.LeagueUrlName, exp => exp.MapFrom(src => src.RugbyFixture.RugbyTournament.Slug))
 
-                .ForMember(dest => dest.Location, exp => exp.MapFrom(src => src.RugbyFixture.RugbyVenue.Name))
+                .ForMember(dest => dest.Location, expression => expression.MapFrom(
+                    src => src.RugbyFixture.RugbyVenue == null ?
+                        "TBC" : (src.RugbyFixture.RugbyVenue.NameCmsOverride ?? src.RugbyFixture.RugbyVenue.Name)))
 
                 .ForMember(dest => dest.MatchCompleted, exp => exp.MapFrom(
                     src => src.RugbyFixture.RugbyFixtureStatus == RugbyFixtureStatus.Result))
@@ -104,6 +112,16 @@
                 .ForMember(dest => dest.Preview, src => src.UseValue(string.Empty))
 
                 .ForAllOtherMembers(dest => dest.Ignore());
+        }
+
+        private static string GetTeamBName(RugbyMatchDetailsEntity src)
+        {
+            return src.RugbyFixture.TeamB.NameCmsOverride ?? src.RugbyFixture.TeamB.Name;
+        }
+
+        private static string GetTeamAName(RugbyMatchDetailsEntity src)
+        {
+            return src.RugbyFixture.TeamA.NameCmsOverride ?? src.RugbyFixture.TeamA.Name;
         }
     }
 }

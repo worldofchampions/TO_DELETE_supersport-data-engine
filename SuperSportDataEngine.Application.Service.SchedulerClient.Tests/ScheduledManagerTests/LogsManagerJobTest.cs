@@ -43,7 +43,8 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
 
             _rugbyService = new RugbyService(
                 _publicSportDataUnitOfWork, 
-                _systemSportDataUnitOfWork);
+                _systemSportDataUnitOfWork,
+                _mockLogger.Object);
 
             _rugbyIngestWorkerService = 
                 new RugbyIngestWorkerService(
