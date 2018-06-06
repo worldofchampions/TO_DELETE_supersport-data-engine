@@ -25,6 +25,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
                 {
                     cfg.CreateMap<MotorsportLeague, MotorsportLeagueEntity>();
                     cfg.CreateMap<MotorsportSeason, MotorsportSeasonEntity>();
+                    cfg.CreateMap<MotorsportTeam, MotorsportTeamEntity>();
                 });
             iMapper = config.CreateMapper();
         }
@@ -48,6 +49,31 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             if (leagues.Results.Any())
             {
                 return leagues;
+            }
+            return null;
+        }
+
+        public async Task<PagedResultsEntity<MotorsportTeamEntity>> GetAllTeams(int pageIndex, int pageSize, string abpath, string query = null)
+        {
+            var teams = (PagedResultsEntity<MotorsportTeamEntity>)null;
+
+            if (!String.IsNullOrEmpty(query))
+            {
+                teams = await CreatePagedResults<MotorsportTeam, MotorsportTeamEntity>(
+                                    _publicSportDataUnitOfWork.MotortsportTeams.Where(q => q.Name.Contains(query)
+                                                        || q.NameCmsOverride.Contains(query))
+                                                        .OrderBy(field => field.Name), pageIndex, pageSize, abpath, query);
+            }
+            else
+            {
+                teams = await CreatePagedResults<MotorsportTeam, MotorsportTeamEntity>(
+                                    _publicSportDataUnitOfWork.MotortsportTeams.All()
+                                                            .OrderBy(field => field.Name), pageIndex, pageSize, abpath, query);
+            }
+
+            if (teams.Results.Any())
+            {
+                return teams;
             }
             return null;
         }
@@ -97,6 +123,19 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             if (motorsportSeason != null)
             {
                 return iMapper.Map<MotorsportSeason, MotorsportSeasonEntity>(motorsportSeason);
+            }
+
+            return null;
+        }
+
+        public async Task<MotorsportTeamEntity> GetTeamById(Guid id)
+        {
+            var motorsportTeam = await Task.FromResult(_publicSportDataUnitOfWork.MotortsportTeams.FirstOrDefault(
+                                                        team => team.Id == id));
+
+            if (motorsportTeam != null)
+            {
+                return iMapper.Map<MotorsportTeam, MotorsportTeamEntity>(motorsportTeam);
             }
 
             return null;
@@ -163,6 +202,33 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
 
                 await _publicSportDataUnitOfWork.SaveChangesAsync();
                 success = true;
+            }
+            return success;
+        }
+
+        /// <summary>
+        /// Updates motorsport teams table and only accepts values => NameCmsOverride
+        /// </summary>
+        /// <param name="teamId"></param>
+        /// <param name="rugbyteamEntity"></param>
+        /// <returns></returns>
+        public async Task<bool> UpdateTeam(Guid id, MotorsportTeamEntity motorsportteamEntity)
+        {
+            var success = false;
+
+            if (motorsportteamEntity != null)
+            {
+                var motorsportTeam = (await Task.FromResult(_publicSportDataUnitOfWork.MotortsportTeams.FirstOrDefault(
+                                                            team => team.Id == id)));
+
+                if (motorsportTeam != null)
+                {
+                    motorsportTeam.NameCmsOverride = !String.IsNullOrEmpty(motorsportteamEntity.NameCmsOverride?.Trim()) ? motorsportteamEntity.NameCmsOverride : null;
+
+                    _publicSportDataUnitOfWork.MotortsportTeams.Update(motorsportTeam);
+                    await _publicSportDataUnitOfWork.SaveChangesAsync();
+                    success = true;
+                }
             }
             return success;
         }
