@@ -127,6 +127,37 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         }
 
         /// <summary>
+        /// Get paginated list of motorsport league races and return a 500 error response if something failed while doing it
+        /// </summary>
+        /// <param name="leagueId"></param>
+        /// <param name="pageIndex">
+        /// Page number
+        /// </param>
+        /// <param name="pageSize">
+        /// Size of records to be returned
+        /// </param>
+        /// <param name="query">
+        /// Search against race name for leagueId
+        /// </param>
+        /// <returns></returns>
+
+        [Route("api/Motorsport/league/{leagueId:guid}/races")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> GetAllLeagueRaces(Guid leagueId, int pageIndex, int pageSize, string query = null)
+        {
+            try
+            {
+                var leagueRaces = await _motorsportService.GetRacesForLeague(leagueId, pageIndex, pageSize, path, query);
+                return Request.CreateResponse(HttpStatusCode.OK, leagueRaces);
+            }
+            catch (Exception exception)
+            {
+                LogException(exception);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while retrieving races for league !");
+            }
+        }
+
+        /// <summary>
         /// Get motorsport league by league Id
         /// Return 404 if not found and a 500 error response if something failed while doing it
         /// </summary>
@@ -220,6 +251,36 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         }
 
         /// <summary>
+        /// Get single race retrieved by race Id
+        /// Return 404 if not found and a 500 error response if something failed while doing it
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [ActionName("races")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> GetRaceById(Guid id)
+        {
+            try
+            {
+                var race = await _motorsportService.GetRaceById(id);
+
+                if (race != null)
+                {
+                    return Request.CreateResponse(HttpStatusCode.OK, race);
+                }
+                else
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Race Not Found");
+                }
+            }
+            catch (Exception exception)
+            {
+                LogException(exception);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while processing race !");
+            }
+        }
+
+        /// <summary>
         /// Update league
         /// Return 406 if update doesn't succeed and a 500 error response if something failed while doing it
         /// </summary>
@@ -310,6 +371,38 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
             {
                 LogException(exception);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while updating team !");
+            }
+
+        }
+
+        /// <summary>
+        /// Update Race
+        /// Return 406 if update doesn't succeed and a 500 error response if something failed while doing it
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="motorsportRaceEntity"></param>
+        /// <returns></returns>
+        [ActionName("races")]
+        [HttpPut]
+        public async Task<HttpResponseMessage> PutRace(Guid id, [FromBody] MotorsportRaceEntity motorsportRaceEntity)
+        {
+            try
+            {
+                var race = await _motorsportService.UpdateRace(id, motorsportRaceEntity);
+
+                if (race)
+                {
+                    return Request.CreateResponse(HttpStatusCode.NoContent, "Race was updated successfully");
+                }
+                else
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.NotAcceptable, "Race could not be updated");
+                }
+            }
+            catch (Exception exception)
+            {
+                LogException(exception);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while updating race !");
             }
 
         }
