@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces
+﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces
 {
     using System.Threading;
     using System.Threading.Tasks;
@@ -12,12 +10,12 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Inte
         Task IngestSeasons(CancellationToken cancellationToken);
         Task IngestDriversForActiveLeagues(CancellationToken cancellationToken);
         Task IngestTeamsForActiveLeagues(CancellationToken cancellationToken);
-        Task IngestDriverStandingsForActiveLeagues(CancellationToken cancellationToken);
-        Task IngestTeamStandingsForActiveLeagues(CancellationToken cancellationToken);
+        Task IngestDriverStandingsForRecentlyEndedRaces(int numberOfDaysEnded);
+        Task IngestTeamStandingsForRecentlyEndedRaces(int numberOfDaysEnded);
         Task IngestRacesForActiveLeagues(CancellationToken cancellationToken);
-        Task IngestResultsForActiveLeagues(CancellationToken cancellationToken);
         Task IngestRacesEvents(CancellationToken cancellationToken);
-        Task IngestRacesEventsGrids(CancellationToken cancellationToken);
+        Task IngestResultsForRecentlyEndendRaces(int numberOfDaysEnded);
+        Task IngestRacesEventGridForRecentlyEndedRaces(int numberOfDaysEnded);
         Task IngestHistoricRaces(CancellationToken cancellationToken);
         Task IngestHistoricRaceEvents(CancellationToken cancellationToken);
         Task IngestHistoricEventsGrids(CancellationToken cancellationToken);

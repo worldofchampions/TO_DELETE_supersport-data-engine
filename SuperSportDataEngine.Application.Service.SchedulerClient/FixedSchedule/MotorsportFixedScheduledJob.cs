@@ -139,9 +139,12 @@
 
         private void UpdateRecurringJobDefinition_RaceEventsGrids()
         {
+            var numberOfDaysEventsEnded =
+                int.Parse(ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_ActiveLeaguesRaceEventsGrids_NumberOfDaysRaceEventEnded"]);
+
             _recurringJobManager.AddOrUpdate(
                 ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_ActiveLeaguesRaceEventsGrids_JobId"],
-                Job.FromExpression(() => _container.Resolve<IMotorsportIngestWorkerService>().IngestRacesEventsGrids(CancellationToken.None)),
+                Job.FromExpression(() => _container.Resolve<IMotorsportIngestWorkerService>().IngestRacesEventGridForRecentlyEndedRaces(numberOfDaysEventsEnded)),
                 ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_ActiveLeaguesRaceEventsGrids_JobCronExpression"],
                 new RecurringJobOptions
                 {
@@ -152,9 +155,12 @@
 
         private void UpdateRecurringJobDefinition_RaceEventsResults()
         {
+            var numberOfDaysEventsEnded =
+                int.Parse(ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_RaceEventsResults_NumberOfDaysRaceEventEnded"]);
+
             _recurringJobManager.AddOrUpdate(
                 ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_RaceEventsResults_JobId"],
-                Job.FromExpression(() => _container.Resolve<IMotorsportIngestWorkerService>().IngestResultsForActiveLeagues(CancellationToken.None)),
+                Job.FromExpression(() => _container.Resolve<IMotorsportIngestWorkerService>().IngestResultsForRecentlyEndendRaces(numberOfDaysEventsEnded)),
                 ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_RaceEventsResults_JobCronExpression"],
                 new RecurringJobOptions
                 {
@@ -165,9 +171,13 @@
 
         private void UpdateRecurringJobDefinition_DriverStandings()
         {
+            var numberOfDaysEventsEnded =
+                int.Parse(ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_DriverStandings_NumberOfDaysRaceEventEnded"]);
+
             _recurringJobManager.AddOrUpdate(
                 ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_DriverStandings_JobId"],
-                Job.FromExpression(() => _container.Resolve<IMotorsportIngestWorkerService>().IngestDriverStandingsForActiveLeagues(CancellationToken.None)),
+                Job.FromExpression(() =>
+                _container.Resolve<IMotorsportIngestWorkerService>().IngestDriverStandingsForRecentlyEndedRaces(numberOfDaysEventsEnded)),
                 ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_DriverStandings_JobCronExpression"],
                 new RecurringJobOptions
                 {
@@ -178,9 +188,12 @@
 
         private void UpdateRecurringJobDefinition_TeamStandings()
         {
+            var numberOfDays = int.Parse(ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_Teams_JobId"]);
+
             _recurringJobManager.AddOrUpdate(
                 ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_TeamStandings_JobId"],
-                Job.FromExpression(() => _container.Resolve<IMotorsportIngestWorkerService>().IngestTeamStandingsForActiveLeagues(CancellationToken.None)),
+                Job.FromExpression(() =>
+                _container.Resolve<IMotorsportIngestWorkerService>().IngestTeamStandingsForRecentlyEndedRaces(numberOfDays)),
                 ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_TeamStandings_JobCronExpression"],
                 new RecurringJobOptions
                 {

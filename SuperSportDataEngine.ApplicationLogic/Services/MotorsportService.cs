@@ -308,5 +308,35 @@
             return results;
         }
 
+        public async Task<IEnumerable<MotorsportLeague>> GetLeaguesForRaceEventsRecentlyEndend(int numberOfPastDays)
+        {
+            var results = _systemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.Where(e => 
+                    e.MotorsportRaceEventStatus == MotorsportRaceEventStatus.Result)
+                    .ToList().Where(e => IsEventRecentlyEnded(e, numberOfPastDays));
+
+            var leagues = new List<MotorsportLeague>();
+
+            foreach (var result in results)
+            {
+                var raceEvent = 
+                    _publicSportDataUnitOfWork.MotorsportRaceEvents.FirstOrDefault(e => e.Id == result.MotorsportRaceEventId);
+
+                if(leagues.Contains(raceEvent.MotorsportRace.MotorsportLeague)) continue;
+
+                leagues.Add(raceEvent.MotorsportRace.MotorsportLeague);
+            }
+
+            return await Task.FromResult(leagues);
+        }
+
+        private static bool IsEventRecentlyEnded(SchedulerTrackingMotorsportRaceEvent schedulerTrackingEvent, int numberOfDays)
+        {
+            if (schedulerTrackingEvent.EndedDateTimeUtc == null) return false;
+
+            var timeDiff = DateTimeOffset.UtcNow.Subtract(schedulerTrackingEvent.EndedDateTimeUtc.Value).TotalDays;
+
+            return timeDiff >= numberOfDays;
+        }
+
     }
 }
