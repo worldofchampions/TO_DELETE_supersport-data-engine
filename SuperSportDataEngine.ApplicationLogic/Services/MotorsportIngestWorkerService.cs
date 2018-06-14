@@ -96,9 +96,9 @@
             }
         }
 
-        public async Task IngestDriverStandingsForRecentlyEndedRaces(int numberOfDaysEnded)
+        public async Task IngestDriverStandingsForRecentlyEndedRaces(int numberOfHoursAnEventEnded)
         {
-            var motorsportLeagues = await _motorsportService.GetLeaguesForRaceEventsRecentlyEndend(numberOfDaysEnded);
+            var motorsportLeagues = await _motorsportService.GetLeaguesForRaceEventsRecentlyEndend(numberOfHoursAnEventEnded);
 
             if (motorsportLeagues != null)
             {
@@ -120,9 +120,9 @@
             }
         }
 
-        public async Task IngestTeamStandingsForRecentlyEndedRaces(int numberOfDaysEnded)
+        public async Task IngestTeamStandingsForRecentlyEndedRaces(int numberOfHoursAnEventEnded)
         {
-            var leagues = await _motorsportService.GetLeaguesForRaceEventsRecentlyEndend(numberOfDaysEnded);
+            var leagues = await _motorsportService.GetLeaguesForRaceEventsRecentlyEndend(numberOfHoursAnEventEnded);
 
             if (leagues != null)
             {
@@ -170,9 +170,9 @@
             }
         }
 
-        public async Task IngestResultsForRecentlyEndendRaces(int numberOfDays)
+        public async Task IngestResultsForRecentlyEndendRaces(int numberOfHoursAnEventEnded)
         {
-            var motorsportLeagues = await _motorsportService.GetLeaguesForRaceEventsRecentlyEndend(numberOfDays);
+            var motorsportLeagues = await _motorsportService.GetLeaguesForRaceEventsRecentlyEndend(numberOfHoursAnEventEnded);
 
             if (motorsportLeagues != null)
             {
@@ -369,10 +369,10 @@
             }
         }
 
-        public async Task IngestRacesEventGridForRecentlyEndedRaces(int numberOfDaysEnded)
+        public async Task IngestRacesEventGridForRecentlyEndedRaces(int numberOfHoursAnEventEnded)
         {
             var motorsportLeagues = 
-                await _motorsportService.GetLeaguesForRaceEventsRecentlyEndend(numberOfDaysEnded);
+                await _motorsportService.GetLeaguesForRaceEventsRecentlyEndend(numberOfHoursAnEventEnded);
 
             if (motorsportLeagues != null)
             {

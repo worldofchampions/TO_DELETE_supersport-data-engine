@@ -10,12 +10,12 @@
         Task IngestSeasons(CancellationToken cancellationToken);
         Task IngestDriversForActiveLeagues(CancellationToken cancellationToken);
         Task IngestTeamsForActiveLeagues(CancellationToken cancellationToken);
-        Task IngestDriverStandingsForRecentlyEndedRaces(int numberOfDaysEnded);
-        Task IngestTeamStandingsForRecentlyEndedRaces(int numberOfDaysEnded);
+        Task IngestDriverStandingsForRecentlyEndedRaces(int numberOfHoursAnEventEnded);
+        Task IngestTeamStandingsForRecentlyEndedRaces(int numberOfHoursAnEventEnded);
         Task IngestRacesForActiveLeagues(CancellationToken cancellationToken);
         Task IngestRacesEvents(CancellationToken cancellationToken);
-        Task IngestResultsForRecentlyEndendRaces(int numberOfDaysEnded);
-        Task IngestRacesEventGridForRecentlyEndedRaces(int numberOfDaysEnded);
+        Task IngestResultsForRecentlyEndendRaces(int numberOfHoursAnEventEnded);
+        Task IngestRacesEventGridForRecentlyEndedRaces(int numberOfHoursAnEventEnded);
         Task IngestHistoricRaces(CancellationToken cancellationToken);
         Task IngestHistoricRaceEvents(CancellationToken cancellationToken);
         Task IngestHistoricEventsGrids(CancellationToken cancellationToken);

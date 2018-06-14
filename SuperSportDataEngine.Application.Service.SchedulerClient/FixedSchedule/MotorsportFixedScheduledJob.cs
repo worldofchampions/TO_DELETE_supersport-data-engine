@@ -155,51 +155,159 @@
 
         private void UpdateRecurringJobDefinition_RaceEventsResults()
         {
-            var numberOfDaysEventsEnded =
-                int.Parse(ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_RaceEventsResults_NumberOfDaysRaceEventEnded"]);
+            ScheduleNightlyRecurringJobForRaceEventResults();
 
-            _recurringJobManager.AddOrUpdate(
-                ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_RaceEventsResults_JobId"],
-                Job.FromExpression(() => _container.Resolve<IMotorsportIngestWorkerService>().IngestResultsForRecentlyEndendRaces(numberOfDaysEventsEnded)),
-                ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_RaceEventsResults_JobCronExpression"],
-                new RecurringJobOptions
-                {
-                    TimeZone = TimeZoneInfo.Local,
-                    QueueName = HangfireQueueConfiguration.NormalPriority
-                });
+            ScheduleTimeConfiguredRecurringJobForRaceEventResults();
         }
 
         private void UpdateRecurringJobDefinition_DriverStandings()
         {
-            var numberOfDaysEventsEnded =
-                int.Parse(ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_DriverStandings_NumberOfDaysRaceEventEnded"]);
+            ScheduleNightlyRecurringJobForDriverStandings();
 
-            _recurringJobManager.AddOrUpdate(
-                ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_DriverStandings_JobId"],
-                Job.FromExpression(() =>
-                _container.Resolve<IMotorsportIngestWorkerService>().IngestDriverStandingsForRecentlyEndedRaces(numberOfDaysEventsEnded)),
-                ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_DriverStandings_JobCronExpression"],
-                new RecurringJobOptions
-                {
-                    TimeZone = TimeZoneInfo.Local,
-                    QueueName = HangfireQueueConfiguration.NormalPriority
-                });
+            ScheduleTimeConfiguredRecurringJobForDriverStandings();
         }
-
+        
         private void UpdateRecurringJobDefinition_TeamStandings()
         {
-            var numberOfDays = int.Parse(ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_Teams_JobId"]);
+            ScheduleNightlyRecurringJobForTeamStandings();
+
+            ScheduleTimeConfiguredRecurringJobForTeamStandings();
+        }
+
+        private void ScheduleTimeConfiguredRecurringJobForTeamStandings()
+        {
+            var hoursAnEventEnded =
+                int.Parse(ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_TeamStandings_Minutely_NumberOfHoursRaceEventEnded"]);
+
+            var recurringJobId = ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_TeamStandings_Minutely_JobId"];
+
+            var cronExpression = ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_TeamStandings_Minutely_JobCronExpression"];
+
+            var recurringJobOptions = new RecurringJobOptions
+            {
+                TimeZone = TimeZoneInfo.Local,
+                QueueName = HangfireQueueConfiguration.NormalPriority
+            };
 
             _recurringJobManager.AddOrUpdate(
-                ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_TeamStandings_JobId"],
+                recurringJobId,
                 Job.FromExpression(() =>
-                _container.Resolve<IMotorsportIngestWorkerService>().IngestTeamStandingsForRecentlyEndedRaces(numberOfDays)),
-                ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_TeamStandings_JobCronExpression"],
-                new RecurringJobOptions
-                {
-                    TimeZone = TimeZoneInfo.Local,
-                    QueueName = HangfireQueueConfiguration.NormalPriority
-                });
+                    _container.Resolve<IMotorsportIngestWorkerService>().IngestTeamStandingsForRecentlyEndedRaces(hoursAnEventEnded)),
+                cronExpression,
+                recurringJobOptions);
+        }
+
+        private void ScheduleNightlyRecurringJobForTeamStandings()
+        {
+            var hoursAnEventEnded =
+                int.Parse(ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_TeamStandings_NumberOfHoursRaceEventEnded"]);
+
+            var recurringJobId = ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_TeamStandings_JobId"];
+
+            var cronExpression = ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_TeamStandings_JobCronExpression"];
+
+            var recurringJobOptions = new RecurringJobOptions
+            {
+                TimeZone = TimeZoneInfo.Local,
+                QueueName = HangfireQueueConfiguration.NormalPriority
+            };
+
+            _recurringJobManager.AddOrUpdate(
+                recurringJobId,
+                Job.FromExpression(() =>
+                _container.Resolve<IMotorsportIngestWorkerService>().IngestTeamStandingsForRecentlyEndedRaces(hoursAnEventEnded)),
+                cronExpression,
+                recurringJobOptions);
+        }
+
+        private void ScheduleTimeConfiguredRecurringJobForDriverStandings()
+        {
+            var hoursAnEventEnded =
+                int.Parse(ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_DriverStandings_Minutely_NumberOfHoursRaceEventEnded"]);
+
+            var recurringJobId = ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_DriverStandings_Minutely_JobId"];
+
+            var cronExpression = ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_DriverStandings_Minutely_JobCronExpression"];
+
+            var recurringJobOptions = new RecurringJobOptions
+            {
+                TimeZone = TimeZoneInfo.Local,
+                QueueName = HangfireQueueConfiguration.NormalPriority
+            };
+
+            _recurringJobManager.AddOrUpdate(
+                recurringJobId,
+                Job.FromExpression(() =>
+                    _container.Resolve<IMotorsportIngestWorkerService>().IngestDriverStandingsForRecentlyEndedRaces(hoursAnEventEnded)),
+                cronExpression,
+                recurringJobOptions);
+        }
+
+        private void ScheduleNightlyRecurringJobForDriverStandings()
+        {
+            var hoursAnEventEnded =
+                int.Parse(ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_DriverStandings_NumberOfHoursRaceEventEnded"]);
+
+            var recurringJobId = ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_DriverStandings_JobId"];
+
+            var cronExpression = ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_DriverStandings_JobCronExpression"];
+
+            var recurringJobOptions = new RecurringJobOptions
+            {
+                TimeZone = TimeZoneInfo.Local,
+                QueueName = HangfireQueueConfiguration.NormalPriority
+            };
+
+            _recurringJobManager.AddOrUpdate(
+                recurringJobId,
+                Job.FromExpression(() =>
+                _container.Resolve<IMotorsportIngestWorkerService>().IngestDriverStandingsForRecentlyEndedRaces(hoursAnEventEnded)),
+                cronExpression,
+                recurringJobOptions);
+        }
+
+        private void ScheduleTimeConfiguredRecurringJobForRaceEventResults()
+        {
+            var numberOfDaysEventsEnded =
+                int.Parse(ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_RaceEventsResults_Minutely_NumberOfHoursRaceEventEnded"]);
+
+            var recurringJobId = ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_RaceEventsResults_Minutely_JobId"];
+
+            var cronExpression = ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_RaceEventsResults_Minutely_JobCronExpression"];
+
+            var recurringJobOptions = new RecurringJobOptions
+            {
+                TimeZone = TimeZoneInfo.Local,
+                QueueName = HangfireQueueConfiguration.NormalPriority
+            };
+
+            _recurringJobManager.AddOrUpdate(
+                recurringJobId,
+                Job.FromExpression(() => _container.Resolve<IMotorsportIngestWorkerService>().IngestResultsForRecentlyEndendRaces(numberOfDaysEventsEnded)),
+                cronExpression,
+                recurringJobOptions);
+        }
+
+        private void ScheduleNightlyRecurringJobForRaceEventResults()
+        {
+            var numberOfDaysEventsEnded =
+                int.Parse(ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_RaceEventsResults_NumberOfHoursRaceEventEnded"]);
+
+            var recurringJobId = ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_RaceEventsResults_JobId"];
+
+            var cronExpression = ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_RaceEventsResults_JobCronExpression"];
+
+            var recurringJobOptions = new RecurringJobOptions
+            {
+                TimeZone = TimeZoneInfo.Local,
+                QueueName = HangfireQueueConfiguration.NormalPriority
+            };
+
+            _recurringJobManager.AddOrUpdate(
+                recurringJobId,
+                Job.FromExpression(() => _container.Resolve<IMotorsportIngestWorkerService>().IngestResultsForRecentlyEndendRaces(numberOfDaysEventsEnded)),
+                cronExpression,
+                recurringJobOptions);
         }
 
         private void CreateManualJobDefinition_HistoricRaceEventsGrid()

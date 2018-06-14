@@ -308,11 +308,11 @@
             return results;
         }
 
-        public async Task<IEnumerable<MotorsportLeague>> GetLeaguesForRaceEventsRecentlyEndend(int numberOfPastDays)
+        public async Task<IEnumerable<MotorsportLeague>> GetLeaguesForRaceEventsRecentlyEndend(int numberOfHoursAnEventEnded)
         {
             var results = _systemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.Where(e => 
                     e.MotorsportRaceEventStatus == MotorsportRaceEventStatus.Result)
-                    .ToList().Where(e => IsEventRecentlyEnded(e, numberOfPastDays));
+                    .ToList().Where(e => IsEventRecentlyEnded(e, numberOfHoursAnEventEnded));
 
             var leagues = new List<MotorsportLeague>();
 
@@ -329,13 +329,13 @@
             return await Task.FromResult(leagues);
         }
 
-        private static bool IsEventRecentlyEnded(SchedulerTrackingMotorsportRaceEvent schedulerTrackingEvent, int numberOfDays)
+        private static bool IsEventRecentlyEnded(SchedulerTrackingMotorsportRaceEvent schedulerTrackingEvent, int numberOfDaysHoursAnEventEnded)
         {
             if (schedulerTrackingEvent.EndedDateTimeUtc == null) return false;
 
-            var timeDiff = DateTimeOffset.UtcNow.Subtract(schedulerTrackingEvent.EndedDateTimeUtc.Value).TotalDays;
+            var timeDiff = DateTimeOffset.UtcNow.Subtract(schedulerTrackingEvent.EndedDateTimeUtc.Value).TotalHours;
 
-            return timeDiff >= numberOfDays;
+            return timeDiff >= numberOfDaysHoursAnEventEnded;
         }
 
     }
