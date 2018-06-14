@@ -27,6 +27,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
                     cfg.CreateMap<MotorsportSeason, MotorsportSeasonEntity>();
                     cfg.CreateMap<MotorsportTeam, MotorsportTeamEntity>();
                     cfg.CreateMap<MotorsportRace, MotorsportRaceEntity>();
+                    cfg.CreateMap<MotorsportDriver, MotorsportDriverEntity>();
                 });
             iMapper = config.CreateMapper();
         }
@@ -131,6 +132,33 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             return null;
         }
 
+        public async Task<PagedResultsEntity<MotorsportDriverEntity>> GetDriversForLeague(Guid leagueId, int pageIndex, int pageSize, string abpath, string query = null)
+        {
+            var leagueDrivers = (PagedResultsEntity<MotorsportDriverEntity>)null;
+
+            if (!String.IsNullOrEmpty(query))
+            {
+                leagueDrivers = await CreatePagedResults<MotorsportDriver, MotorsportDriverEntity>(
+                                    _publicSportDataUnitOfWork.MotorsportDrivers.Where(q => q.MotorsportLeague.Id == leagueId
+                                                                                    && q.FirstName.Contains(query)
+                                                                                    || q.LastName.Contains(query)
+                                                                                    || q.FullNameCmsOverride.Contains(query))
+                                                                                    .OrderBy(field => field.FirstName), pageIndex, pageSize, abpath, query);
+            }
+            else
+            {
+                leagueDrivers = await CreatePagedResults<MotorsportDriver, MotorsportDriverEntity>(_publicSportDataUnitOfWork.MotorsportDrivers.Where(
+                                                            race => race.MotorsportLeague.Id == leagueId)
+                                                            .OrderBy(field => field.FirstName), pageIndex, pageSize, abpath, query);
+            }
+
+            if (leagueDrivers.Results.Any())
+            {
+                return leagueDrivers;
+            }
+            return null;
+        }
+
         public async Task<MotorsportLeagueEntity> GetLeagueById(Guid id)
         {
             var motorsportLeague = await Task.FromResult(_publicSportDataUnitOfWork.MotorsportLeagues.FirstOrDefault(
@@ -178,6 +206,19 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             if (motorsportRace != null)
             {
                 return iMapper.Map<MotorsportRace, MotorsportRaceEntity>(motorsportRace);
+            }
+
+            return null;
+        }
+
+        public async Task<MotorsportDriverEntity> GetDriverById(Guid id)
+        {
+            var motorsportDriver = await Task.FromResult(_publicSportDataUnitOfWork.MotorsportDrivers.FirstOrDefault(
+                                                        driver => driver.Id == id));
+
+            if (motorsportDriver != null)
+            {
+                return iMapper.Map<MotorsportDriver, MotorsportDriverEntity>(motorsportDriver);
             }
 
             return null;
@@ -297,6 +338,33 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
                     motorsportRace.IsDisabledInbound = motorsportRaceEntity.IsDisabledInbound;
 
                     _publicSportDataUnitOfWork.MotorsportRaces.Update(motorsportRace);
+                    await _publicSportDataUnitOfWork.SaveChangesAsync();
+                    success = true;
+                }
+            }
+            return success;
+        }
+
+        /// <summary>
+        /// Updates motorsport drivers table and only accepts values => FullNameCmsOverride
+        /// </summary>
+        /// <param name="driverId"></param>
+        /// <param name="motorsportDriverEntity"></param>
+        /// <returns></returns>
+        public async Task<bool> UpdateDriver(Guid id, MotorsportDriverEntity motorsportDriverEntity)
+        {
+            var success = false;
+
+            if (motorsportDriverEntity != null)
+            {
+                var motorsportDriver = (await Task.FromResult(_publicSportDataUnitOfWork.MotorsportDrivers.FirstOrDefault(
+                                                            driver => driver.Id == id)));
+
+                if (motorsportDriver != null)
+                {
+                    motorsportDriver.FullNameCmsOverride = !String.IsNullOrEmpty(motorsportDriverEntity.FullNameCmsOverride?.Trim()) ? motorsportDriverEntity.FullNameCmsOverride : null;
+
+                    _publicSportDataUnitOfWork.MotorsportDrivers.Update(motorsportDriver);
                     await _publicSportDataUnitOfWork.SaveChangesAsync();
                     success = true;
                 }
