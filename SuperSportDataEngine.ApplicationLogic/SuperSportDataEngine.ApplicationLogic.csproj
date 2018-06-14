@@ -198,6 +198,7 @@
     <Compile Include="Entities\Legacy\Mappers\LegacyAuthFeedConsumerMapper.cs" />
     <Compile Include="Entities\Legacy\Mappers\LegacyAuthMappingProfile.cs" />
     <Compile Include="Entities\LogEntity.cs" />
+    <Compile Include="Entities\SystemAPI\Motorsport\MotorsportDriverEntity.cs" />
     <Compile Include="Entities\SystemAPI\Motorsport\MotorsportLeagueEntity.cs" />
     <Compile Include="Entities\SystemAPI\Motorsport\MotorsportRaceEntity.cs" />
     <Compile Include="Entities\SystemAPI\Motorsport\MotorsportSeasonEntity.cs" />

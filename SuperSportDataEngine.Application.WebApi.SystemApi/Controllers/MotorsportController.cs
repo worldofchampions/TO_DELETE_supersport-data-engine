@@ -158,6 +158,37 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         }
 
         /// <summary>
+        /// Get paginated list of motorsport league drivers and return a 500 error response if something failed while doing it
+        /// </summary>
+        /// <param name="leagueId"></param>
+        /// <param name="pageIndex">
+        /// Page number
+        /// </param>
+        /// <param name="pageSize">
+        /// Size of records to be returned
+        /// </param>
+        /// <param name="query">
+        /// Search against driver name for leagueId
+        /// </param>
+        /// <returns></returns>
+
+        [Route("api/Motorsport/league/{leagueId:guid}/drivers")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> GetAllLeagueDrivers(Guid leagueId, int pageIndex, int pageSize, string query = null)
+        {
+            try
+            {
+                var leagueDrivers = await _motorsportService.GetDriversForLeague(leagueId, pageIndex, pageSize, path, query);
+                return Request.CreateResponse(HttpStatusCode.OK, leagueDrivers);
+            }
+            catch (Exception exception)
+            {
+                LogException(exception);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while retrieving drivers for league !");
+            }
+        }
+
+        /// <summary>
         /// Get motorsport league by league Id
         /// Return 404 if not found and a 500 error response if something failed while doing it
         /// </summary>
@@ -277,6 +308,36 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
             {
                 LogException(exception);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while processing race !");
+            }
+        }
+
+        /// <summary>
+        /// Get single driver retrieved by driver Id
+        /// Return 404 if not found and a 500 error response if something failed while doing it
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [ActionName("drivers")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> GetDriverById(Guid id)
+        {
+            try
+            {
+                var driver = await _motorsportService.GetDriverById(id);
+
+                if (driver != null)
+                {
+                    return Request.CreateResponse(HttpStatusCode.OK, driver);
+                }
+                else
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Driver Not Found");
+                }
+            }
+            catch (Exception exception)
+            {
+                LogException(exception);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while processing driver !");
             }
         }
 
@@ -403,6 +464,38 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
             {
                 LogException(exception);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while updating race !");
+            }
+
+        }
+
+        /// <summary>
+        /// Update Driver
+        /// Return 406 if update doesn't succeed and a 500 error response if something failed while doing it
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="motorsportDriverEntity"></param>
+        /// <returns></returns>
+        [ActionName("drivers")]
+        [HttpPut]
+        public async Task<HttpResponseMessage> PutDriver(Guid id, [FromBody] MotorsportDriverEntity motorsportDriverEntity)
+        {
+            try
+            {
+                var driver = await _motorsportService.UpdateDriver(id, motorsportDriverEntity);
+
+                if (driver)
+                {
+                    return Request.CreateResponse(HttpStatusCode.NoContent, "Driver was updated successfully");
+                }
+                else
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.NotAcceptable, "Driver could not be updated");
+                }
+            }
+            catch (Exception exception)
+            {
+                LogException(exception);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while updating driver !");
             }
 
         }
