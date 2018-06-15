@@ -329,13 +329,13 @@
             return await Task.FromResult(leagues);
         }
 
-        private static bool IsEventRecentlyEnded(SchedulerTrackingMotorsportRaceEvent schedulerTrackingEvent, int numberOfDaysHoursAnEventEnded)
+        private static bool IsEventRecentlyEnded(SchedulerTrackingMotorsportRaceEvent schedulerTrackingEvent, int numberOfHoursAnEventEnded)
         {
             if (schedulerTrackingEvent.EndedDateTimeUtc == null) return false;
 
             var timeDiff = DateTimeOffset.UtcNow.Subtract(schedulerTrackingEvent.EndedDateTimeUtc.Value).TotalHours;
 
-            return timeDiff >= numberOfDaysHoursAnEventEnded;
+            return timeDiff >= numberOfHoursAnEventEnded;
         }
 
     }
