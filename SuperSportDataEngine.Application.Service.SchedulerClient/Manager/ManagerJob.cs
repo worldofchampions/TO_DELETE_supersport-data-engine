@@ -89,7 +89,8 @@
                 _recurringJobManager,
                 _rugbyService,
                 _rugbyIngestWorkerService,
-                _systemSportDataUnitOfWork);
+                _systemSportDataUnitOfWork,
+                _logger);
 
             _logsManagerJob =
                 new LogsManagerJob(
@@ -113,7 +114,12 @@
             _motorsportIngestWorkerService = _container.Resolve<IMotorsportIngestWorkerService>();
 
             _motorsportLiveManagerJob =
-                new MotorsportLiveManagerJob(_recurringJobManager, _motorsportService, _motorsportIngestWorkerService, _systemSportDataUnitOfWork, _publicSportDataUnitOfWork);
+                new MotorsportLiveManagerJob(
+                    _recurringJobManager, 
+                    _motorsportService, 
+                    _motorsportIngestWorkerService, 
+                    _systemSportDataUnitOfWork, 
+                    _publicSportDataUnitOfWork);
         }
 
         private void ConfigureTimer()
