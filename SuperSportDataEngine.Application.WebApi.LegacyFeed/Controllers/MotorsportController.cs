@@ -22,6 +22,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
     /// </summary>
     [LegacyExceptionFilter]
     [RoutePrefix("motorsport")]
+    [LogUserAgentFilter(serviceType: typeof(IMotorsportLegacyFeedService))]
     public class MotorsportController : ApiController
     {
         private readonly IMotorsportLegacyFeedService _motorsportLegacyFeedService;
