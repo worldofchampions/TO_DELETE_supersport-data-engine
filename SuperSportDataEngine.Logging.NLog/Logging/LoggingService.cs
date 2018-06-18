@@ -89,13 +89,16 @@ namespace SuperSportDataEngine.Logging.NLog.Logging
                     Environment.MachineName +
                     Environment.NewLine +
                     logEvent.Message;
+
+                Log(typeof(LoggingService), logEvent);
             }
             catch (Exception)
             {
                 // ignored
+                // If an exception happens here 
+                // we cannot really do
+                // anything else.
             }
-
-            Log(typeof(LoggingService), logEvent);
         }
 
         public async Task Error(string key, string format, TimeSpan ttlTimeSpan = default(TimeSpan), params object[] args)
