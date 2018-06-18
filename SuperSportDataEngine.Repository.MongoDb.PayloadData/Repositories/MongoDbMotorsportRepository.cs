@@ -49,14 +49,20 @@
 #endif
                     return;
                 }
-            }
-            catch (System.Exception)
-            {
-            }
 
-            // Add to the collection.
-            var collection = db.GetCollection<ApiResult>("motorsport_entities");
-            await collection.InsertOneAsync(data.apiResults[0]);
+                // Add to the collection.
+                var collection = db.GetCollection<ApiResult>("motorsport_entities");
+                await collection.InsertOneAsync(data.apiResults[0]);
+            }
+            catch (System.Exception exception)
+            {
+                await _logger.Warn(
+                    "MongoDbSave.Motorsport",
+                    "Cannot save data to MongoDB. " +
+                     "Message: \n" + exception.Message +
+                    "StackTrace: \n" + exception.StackTrace +
+                    "Inner Exception \n" + exception.InnerException);
+            }
         }
 
         public async Task Save(MotorsportEntitiesResponse leagues) => await Save(data: leagues);

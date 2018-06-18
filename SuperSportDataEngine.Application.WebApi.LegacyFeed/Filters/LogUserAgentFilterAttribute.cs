@@ -12,9 +12,16 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters
 {
     public class LogUserAgentFilterAttribute : ActionFilterAttribute
     {
+        private Type _serviceType;
+
+        public LogUserAgentFilterAttribute(Type serviceType)
+        {
+            _serviceType = serviceType;
+        }
+
         public override async Task OnActionExecutingAsync(HttpActionContext context, CancellationToken cancellationToken)
         {
-            if (!(context.Request.GetDependencyScope().GetService(typeof(IRugbyService)) is IRugbyService rugbyService))
+            if (!(context.Request.GetDependencyScope().GetService(_serviceType) is ISportFeedService service))
                 return;
 
             var controllerParameters = context.ActionArguments;
@@ -28,8 +35,8 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters
                 return;
 
             var isInvalidSlug = 
-                await rugbyService.GetTournamentId(category) == Guid.Empty &&
-                !rugbyService.IsNationalTeamSlug(category);
+                    await service.IsCategoryInvalid(
+                        category);
 
             var userAgent = context.Request.Headers.UserAgent;
             var queryDictionary = HttpUtility.ParseQueryString(context.Request.RequestUri.Query);
@@ -43,7 +50,8 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters
                 await logger.Warn("InvalidSlugName.UserAgent." + category,
                     "Invalid tournament slug =\"" + category + "\". Request coming " +
                     "from User Agent = " + userAgent + 
-                    " with Auth Key = " + authKey,
+                    " with Auth Key = " + authKey + 
+                    " accessing Local path = " + context.Request.RequestUri.LocalPath,
                     TimeSpan.FromDays(7));
             }
         }
