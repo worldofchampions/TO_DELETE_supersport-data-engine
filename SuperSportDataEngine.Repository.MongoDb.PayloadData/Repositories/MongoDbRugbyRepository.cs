@@ -45,15 +45,20 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 #endif
                     return;
                 }
-            }
-            catch (System.Exception)
-            {
-                // ignored
-            }
 
-            // Add to the collection.
-            var collection = db.GetCollection<T>(collectionName);
-            await collection.InsertOneAsync(data);
+                // Add to the collection.
+                var collection = db.GetCollection<T>(collectionName);
+                await collection.InsertOneAsync(data);
+            }
+            catch (System.Exception exception)
+            {
+                await _logger.Warn(
+                    "MongoDbSave.Rugby", 
+                    "Cannot save data to MongoDB. " +
+                     "Message: \n" + exception.Message +
+                    "StackTrace: \n" + exception.StackTrace +
+                    "Inner Exception \n" + exception.InnerException);
+            }
         }
 
         public void SaveEntities(RugbyEntitiesResponse entitiesResponse) => Save(entitiesResponse, "entities");
