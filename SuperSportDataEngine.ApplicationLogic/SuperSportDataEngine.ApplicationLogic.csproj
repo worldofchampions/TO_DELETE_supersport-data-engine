@@ -201,6 +201,8 @@
     <Compile Include="Entities\SystemAPI\Motorsport\MotorsportDriverEntity.cs" />
     <Compile Include="Entities\SystemAPI\Motorsport\MotorsportLeagueEntity.cs" />
     <Compile Include="Entities\SystemAPI\Motorsport\MotorsportRaceEntity.cs" />
+    <Compile Include="Entities\SystemAPI\Motorsport\MotorsportRaceEventEntity.cs" />
+    <Compile Include="Entities\SystemAPI\Motorsport\MotorsportRaceEventEntitySingle.cs" />
     <Compile Include="Entities\SystemAPI\Motorsport\MotorsportSeasonEntity.cs" />
     <Compile Include="Entities\SystemAPI\Motorsport\MotorsportTeamEntity.cs" />
     <Compile Include="Entities\SystemAPI\PagedResultsEntity.cs" />
