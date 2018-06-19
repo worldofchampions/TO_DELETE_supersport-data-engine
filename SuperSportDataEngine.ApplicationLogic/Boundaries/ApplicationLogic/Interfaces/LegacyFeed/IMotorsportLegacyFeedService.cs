@@ -3,7 +3,7 @@
     using SuperSportDataEngine.ApplicationLogic.Entities.Legacy.Motorsport;
     using System.Threading.Tasks;
 
-    public interface IMotorsportLegacyFeedService
+    public interface IMotorsportLegacyFeedService : ISportFeedService
     {
         Task<MotorsportScheduleEntity> GetSchedules(string category, bool current);
 

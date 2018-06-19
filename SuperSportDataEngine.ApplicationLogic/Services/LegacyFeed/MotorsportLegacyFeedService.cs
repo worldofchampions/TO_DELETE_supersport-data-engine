@@ -226,5 +226,12 @@
                s.MotorsportLeague.Slug.Equals(category) &&
                s.IsCurrent));
         }
+
+        public async Task<bool> IsCategoryInvalid(string category)
+        {
+            return await Task.FromResult(
+                _publicSportDataUnitOfWork.MotorsportLeagues.FirstOrDefault(l =>
+                    l.Slug == category) == null);
+        }
     }
 }

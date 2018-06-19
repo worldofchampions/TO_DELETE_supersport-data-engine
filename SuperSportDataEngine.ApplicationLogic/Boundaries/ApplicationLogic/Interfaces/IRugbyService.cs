@@ -10,7 +10,7 @@ using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
 
 namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces
 {
-    public interface IRugbyService
+    public interface IRugbyService : ISportFeedService
     {
         Task<IEnumerable<RugbyFlatLog>> GetFlatLogs(string tournamentSlug);
         Task<IEnumerable<RugbyTournament>> GetActiveTournaments();

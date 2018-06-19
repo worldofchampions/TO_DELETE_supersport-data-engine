@@ -86,6 +86,7 @@
     <Compile Include="Boundaries\ApplicationLogic\Interfaces\IMotorsportStorageService.cs" />
     <Compile Include="Boundaries\ApplicationLogic\Interfaces\IRugbyIngestWorkerService.cs" />
     <Compile Include="Boundaries\ApplicationLogic\Interfaces\ISchedulerClientService.cs" />
+    <Compile Include="Boundaries\ApplicationLogic\Interfaces\ISportFeedService.cs" />
     <Compile Include="Boundaries\CmsLogic\Interfaces\IMotorsportCmsService.cs" />
     <Compile Include="Boundaries\CmsLogic\Interfaces\IRugbyCmsService.cs" />
     <Compile Include="Boundaries\ApplicationLogic\Interfaces\LegacyFeed\IMotorsportLegacyFeedService.cs" />

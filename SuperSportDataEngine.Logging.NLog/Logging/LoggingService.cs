@@ -56,7 +56,7 @@ namespace SuperSportDataEngine.Logging.NLog.Logging
 
             if (Cache == null)
             {
-                WriteLog(typeof(LoggingService), logEvent);
+                await WriteLog(typeof(LoggingService), logEvent);
             }
             else
             {
@@ -70,18 +70,18 @@ namespace SuperSportDataEngine.Logging.NLog.Logging
                                 TimeSpan.FromMinutes(_cacheTtlInMinutes) :
                                 ttlTimeSpan);
 
-                        WriteLog(typeof(LoggingService), logEvent);
+                        await WriteLog(typeof(LoggingService), logEvent);
                     }
                 }
                 catch (Exception)
                 {
                     // Ignore the exception and log it anyways?
-                    WriteLog(typeof(LoggingService), logEvent);
+                    await WriteLog(typeof(LoggingService), logEvent);
                 }
             }
         }
 
-        private void WriteLog(Type type, LogEventInfo logEvent)
+        private async Task WriteLog(Type type, LogEventInfo logEvent)
         {
             try
             {
@@ -89,13 +89,24 @@ namespace SuperSportDataEngine.Logging.NLog.Logging
                     Environment.MachineName +
                     Environment.NewLine +
                     logEvent.Message;
-            }
-            catch (Exception)
-            {
-                // ignored
-            }
 
-            Log(typeof(LoggingService), logEvent);
+                Log(typeof(LoggingService), logEvent);
+            }
+            catch (Exception exception)
+            {
+                try
+                {
+                    await Info("LoggingException", "An exception occurred while logging. " +
+                        "Message: \n" + exception.Message +
+                        "StackTrace: \n" + exception.StackTrace +
+                        "Inner Exception \n" + exception.InnerException);
+                }
+                catch (Exception)
+                {
+                    //ignored
+                    // Now there's nothing we can do.
+                }
+            }
         }
 
         public async Task Error(string key, string format, TimeSpan ttlTimeSpan = default(TimeSpan), params object[] args)
