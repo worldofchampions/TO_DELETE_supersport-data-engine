@@ -44,6 +44,24 @@
             CreateManualJobDefinition_HistoricRaceEventsResults();
             CreateManualJobDefinition_HistoricTeamStandings();
             CreateManualJobDefinition_HistoricDriverStandings();
+
+            UpdateRecurringJobDefinition_CleanupSchedulerTrackingTable();
+        }
+
+        private void UpdateRecurringJobDefinition_CleanupSchedulerTrackingTable()
+        {
+            var eventsAgeInDays =
+                int.Parse(ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_Cleanup_Monthly_EventsAgeInDays"]);
+
+            _recurringJobManager.AddOrUpdate(
+                ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_Cleanup_Monthly_JobId"],
+                Job.FromExpression(() => _container.Resolve<IMotorsportService>().CleanupSchedulerTrackingTable(eventsAgeInDays)),
+                ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_Cleanup_Monthly_JobCronExpression"],
+                new RecurringJobOptions
+                {
+                    TimeZone = TimeZoneInfo.Local,
+                    QueueName = HangfireQueueConfiguration.NormalPriority
+                });
         }
 
         private void UpdateRecurringJobDefinition_SetCurrentRaceEvents()

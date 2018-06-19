@@ -329,6 +329,23 @@
             return await Task.FromResult(leagues);
         }
 
+        public async Task CleanupSchedulerTrackingTable(int eventAgeInDays)
+        {
+            var numberOfHoursAnEventEnded = eventAgeInDays * 24;
+
+            var events = 
+                (await _systemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.WhereAsync(e =>
+                e.MotorsportRaceEventStatus == MotorsportRaceEventStatus.Result))
+                .ToList().Where(e => IsEventRecentlyEnded(e, numberOfHoursAnEventEnded));
+
+            foreach (var raceEvent in events)
+            {
+                _systemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.Delete(raceEvent);
+            }
+
+            await _systemSportDataUnitOfWork.SaveChangesAsync();
+        }
+
         private static bool IsEventRecentlyEnded(SchedulerTrackingMotorsportRaceEvent schedulerTrackingEvent, int numberOfHoursAnEventEnded)
         {
             if (schedulerTrackingEvent.EndedDateTimeUtc == null) return false;
