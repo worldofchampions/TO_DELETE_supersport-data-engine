@@ -190,6 +190,9 @@
 
         private void CheckIfRequestTakingTooLong(WebRequest request, DateTime requestTime, DateTime responseTime)
         {
+            if (request == null)
+                return;
+
             var durationMilliseconds = (responseTime - requestTime).TotalMilliseconds;
 
             if (durationMilliseconds > _requestDurationWarningMilliseconds)

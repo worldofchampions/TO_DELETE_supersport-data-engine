@@ -29,12 +29,14 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
             IRecurringJobManager recurringJobManager,
             IRugbyService rugbyService,
             IRugbyIngestWorkerService rugbyIngestWorkerService,
-            ISystemSportDataUnitOfWork systemSportDataUnitOfWork)
+            ISystemSportDataUnitOfWork systemSportDataUnitOfWork,
+            ILoggingService logger)
         {
             _recurringJobManager = recurringJobManager;
             _rugbyService = rugbyService;
             _rugbyIngestWorkerService = rugbyIngestWorkerService;
             _systemSportDataUnitOfWork = systemSportDataUnitOfWork;
+            _logger = logger;
         }
 
         public async Task DoWorkAsync()
