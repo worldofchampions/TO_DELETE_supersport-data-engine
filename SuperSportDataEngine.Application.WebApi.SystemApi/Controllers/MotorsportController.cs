@@ -189,6 +189,43 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         }
 
         /// <summary>
+        /// Get paginated list of motorsport race events and return a 500 error response if something failed while doing it
+        /// </summary>
+        /// <param name="raceId"></param>
+        /// <param name="pageIndex">
+        /// Page number
+        /// </param>
+        /// <param name="pageSize">
+        /// Size of records to be returned
+        /// </param>
+        /// <param name="seasonId">
+        /// SeasonId for race event
+        /// </param>
+        /// <param name="query">
+        /// Search against race events CircuitName, CountryName, CityName
+        /// </param>
+        /// <param name="status">
+        /// Specify game status E.g. Results, Today, Coming Up
+        /// </param>
+        /// <returns></returns>
+
+        [Route("api/Motorsport/race/{raceId:guid}/events")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> GetAllFixturesForTournament(Guid raceId, int pageIndex, int pageSize, Guid? seasonId = null, string query = null, string status = null)
+        {
+            try
+            {
+                var raceEvents = await _motorsportService.GetRaceEvents(raceId, seasonId, pageIndex, pageSize, path, query, status);
+                return Request.CreateResponse(HttpStatusCode.OK, raceEvents);
+            }
+            catch (Exception exception)
+            {
+                LogException(exception);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while retrieving race events !");
+            }
+        }
+
+        /// <summary>
         /// Get motorsport league by league Id
         /// Return 404 if not found and a 500 error response if something failed while doing it
         /// </summary>
@@ -338,6 +375,36 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
             {
                 LogException(exception);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while processing driver !");
+            }
+        }
+
+        /// <summary>
+        /// Get single race event retrieved by raceEvent Id
+        /// Return 404 if not found and a 500 error response if something failed while doing it
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [ActionName("raceevents")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> GetRaceEventById(Guid id)
+        {
+            try
+            {
+                var raceEvent = await _motorsportService.GetRaceEventById(id);
+
+                if (raceEvent != null)
+                {
+                    return Request.CreateResponse(HttpStatusCode.OK, raceEvent);
+                }
+                else
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.NotFound, "Race Event Not Found");
+                }
+            }
+            catch (Exception exception)
+            {
+                LogException(exception);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while processing race event !");
             }
         }
 
@@ -497,7 +564,37 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
                 LogException(exception);
                 return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while updating driver !");
             }
+        }
 
+        /// <summary>
+        /// Update RaceEvent
+        /// Return 406 if update doesn't succeed and a 500 error response if something failed while doing it
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="motorsportRaceEventEntity"></param>
+        /// <returns></returns>
+        [ActionName("raceevents")]
+        [HttpPut]
+        public async Task<HttpResponseMessage> PutRaceEvent(Guid id, [FromBody] MotorsportRaceEventEntity motorsportRaceEventEntity)
+        {
+            try
+            {
+                var driver = await _motorsportService.UpdateRaceEvent(id, motorsportRaceEventEntity);
+
+                if (driver)
+                {
+                    return Request.CreateResponse(HttpStatusCode.NoContent, "Race Event was updated successfully");
+                }
+                else
+                {
+                    return Request.CreateErrorResponse(HttpStatusCode.NotAcceptable, "Race Event could not be updated");
+                }
+            }
+            catch (Exception exception)
+            {
+                LogException(exception);
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, "Error occurred while updating race event !");
+            }
         }
 
         protected async void LogException(Exception exception)
