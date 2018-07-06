@@ -27,19 +27,19 @@
         private async Task Save<T>(T data)
             where T : MotorsportEntitiesResponse
         {
-            if (data == null)
-                return;
-
-            // Get the Mongo DB.
-            var db = _mongoClient.GetDatabase(_mongoDatabaseName);
-            if (db == null)
-            {
-                await _logger.Error("MongoDbIsNull", "Mongo db object is null.");
-                return;
-            }
-
             try
             {
+                if (data == null)
+                    return;
+
+                // Get the Mongo DB.
+                var db = _mongoClient.GetDatabase(_mongoDatabaseName);
+                if (db == null)
+                {
+                    await _logger.Error("MongoDbIsNull", "Mongo db object is null.");
+                    return;
+                }
+
                 bool isMongoLive = db.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
 
                 if (!isMongoLive)
