@@ -26,16 +26,16 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 
         private async void Save<T>(T data, string collectionName)
         {
-            // Get the Mongo DB.
-            var db = _mongoClient.GetDatabase(_mongoDatabaseName);
-            if (db == null)
-            {
-                await _logger.Error("MongoDbIsNull", "Mongo db object is null.");
-                return;
-            }
-
             try
             {
+                // Get the Mongo DB.
+                var db = _mongoClient.GetDatabase(_mongoDatabaseName);
+                if (db == null)
+                {
+                    await _logger.Error("MongoDbIsNull", "Mongo db object is null.");
+                    return;
+                }
+
                 var isMongoLive = db.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
 
                 if (!isMongoLive)

@@ -25,5 +25,6 @@
         Task<SchedulerTrackingMotorsportRaceEvent> GetSchedulerTrackingEvent(MotorsportRaceEvent raceEvent);
         Task<IEnumerable<MotorsportRaceEvent>> GetPreLiveEventsForActiveLeagues(int numberOfHoursBeforeEventStarts);
         Task<IEnumerable<MotorsportLeague>> GetLeaguesForRaceEventsRecentlyEndend(int numberOfHoursAnEventEnded);
+        Task CleanupSchedulerTrackingTable(int numberOfDaysAnEventEnded);
     }
 }
