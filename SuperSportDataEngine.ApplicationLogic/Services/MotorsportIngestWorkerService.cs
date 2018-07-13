@@ -285,7 +285,8 @@
                 var race = motorsportRaceEvent.MotorsportRace;
 
                 var raceGrid =
-                    _statsMotorsportIngestService.IngestRaceGrid(league.ProviderSlug, season.ProviderSeasonId, race.ProviderRaceId);
+                    _statsMotorsportIngestService.IngestRaceGrid(league.ProviderSlug, season.ProviderSeasonId,
+                        race.ProviderRaceId);
 
                 await _motorsportStorageService.PersistGridInRepository(raceGrid, motorsportRaceEvent, league);
 
@@ -293,7 +294,7 @@
 
                 PauseIngest(ingestSleepInSeconds);
 
-                if (await ShouldStopPolling(motorsportRaceEvent, pollingDurationInMinutes))
+                if(await ShouldStopPolling(motorsportRaceEvent, pollingDurationInMinutes, "GRID_JOB"))
                 {
                     break;
                 }
@@ -674,9 +675,32 @@
 
             if (schedulerTrackingEvent.EndedDateTimeUtc == null) return false;
 
-            var timeDiff = DateTimeOffset.UtcNow.Subtract(schedulerTrackingEvent.EndedDateTimeUtc.Value).TotalMinutes;
+            var endedTimeDiff = DateTimeOffset.UtcNow.Subtract(schedulerTrackingEvent.EndedDateTimeUtc.Value).TotalMinutes;
 
-            return timeDiff >= pollingDurationInMinutes;
+            return endedTimeDiff >= pollingDurationInMinutes;
+        }
+
+        //TODO: @Thobani REMOVE THIS TEMP DEBUG METHOD
+        private async Task<bool> ShouldStopPolling(MotorsportRaceEvent raceEvent, int pollingDurationInMinutes, string jobName)
+        {
+            var schedulerTrackingEvent = await _motorsportService.GetSchedulerTrackingEvent(raceEvent);
+
+            if (schedulerTrackingEvent.EndedDateTimeUtc == null) return false;
+
+            var endedTimeDiff = DateTimeOffset.UtcNow.Subtract(schedulerTrackingEvent.EndedDateTimeUtc.Value).TotalMinutes;
+
+            if (schedulerTrackingEvent.StartDateTimeUtc != null)
+            {
+                var startTimeDiffInHours =
+                    DateTimeOffset.UtcNow.Subtract(schedulerTrackingEvent.StartDateTimeUtc.Value).TotalHours;
+
+                if (startTimeDiffInHours >= 5)
+                await
+                    _loggingService.Info($"GRID_JOB: {raceEvent.MotorsportRace.RaceName}",
+                        $"Ended time: {schedulerTrackingEvent.EndedDateTimeUtc.Value}");
+            }
+
+            return endedTimeDiff >= pollingDurationInMinutes;
         }
 
     }
