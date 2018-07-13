@@ -276,7 +276,7 @@
 
         public async Task IngestRaceEventGrids(MotorsportRaceEvent motorsportRaceEvent, int ingestSleepInSeconds, int pollingDurationInMinutes)
         {
-            do
+            while (true)
             {
                 var league = motorsportRaceEvent.MotorsportRace.MotorsportLeague;
 
@@ -293,8 +293,12 @@
                 await _mongoDbMotorsportRepository.Save(raceGrid);
 
                 PauseIngest(ingestSleepInSeconds);
+
+                if(await ShouldStopPolling(motorsportRaceEvent, pollingDurationInMinutes, "GRID_JOB"))
+                {
+                    break;
+                }
             }
-            while (await ShouldStopPolling(motorsportRaceEvent, pollingDurationInMinutes, "GRID_JOB"));
         }
 
         public async Task IngestHistoricRaceEvents(CancellationToken cancellationToken)
