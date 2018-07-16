@@ -13,6 +13,8 @@
     
     int from, perPage;
 
+    var filter = Query("filter");
+
     int.TryParse(Query("from"), out from);
     int.TryParse(Query("count"), out perPage);
 
@@ -23,8 +25,9 @@
 	    var storageConnection = connection as JobStorageConnection;
 	    if (storageConnection != null)
 	    {
-	        pager = new Pager(from, perPage, storageConnection.GetRecurringJobCount());
-	        recurringJobs = storageConnection.GetRecurringJobs(pager.FromRecord, pager.FromRecord + pager.RecordsPerPage - 1);
+	        var monitor = Storage.GetMonitoringApi();
+	        pager = new Pager(from, perPage, storageConnection.GetRecurringJobCount(), filter, DefaultRecordsPerPage);
+	        recurringJobs = storageConnection.GetRecurringJobs(pager.FromRecord, pager.FromRecord + pager.RecordsPerPage - 1, filter);
 	    }
 	    else
 	    {
@@ -68,6 +71,11 @@
                     {
                         @: @Html.PerPageSelector(pager)
                     }
+                    
+                  @if (true)
+                  {
+                      @Html.Filter(pager)
+                  }
                 </div>
 
                 <div class="table-responsive">
@@ -118,11 +126,6 @@
                         </tbody>
                     </table>
                 </div>
-
-                @if (pager != null)
-                {
-                    @: @Html.Paginator(pager)
-                }
             </div>
         }
     </div>

@@ -51,9 +51,9 @@ namespace Hangfire.SqlServer
 
         public override void Commit()
         {
-            _storage.UseTransaction(_dedicatedConnectionFunc(), (connection, transaction) =>
+            _storage.UseTransaction((connection, transaction) =>
             {
-                var commandBatch = new SqlCommandBatch(preferBatching: _storage.CommandBatchMaxTimeout.HasValue);
+                var commandBatch = new SqlCommandBatch(preferBatching: _storage.CommandTimeout.HasValue);
 
                 foreach (var lockedResource in _lockedResources)
                 {
@@ -70,7 +70,7 @@ namespace Hangfire.SqlServer
                 commandBatch.Connection = connection;
                 commandBatch.Transaction = transaction;
                 commandBatch.CommandTimeout = _storage.CommandTimeout;
-                commandBatch.CommandBatchMaxTimeout = _storage.CommandBatchMaxTimeout;
+                commandBatch.CommandBatchMaxTimeout = _storage.CommandTimeout;
 
                 commandBatch.ExecuteNonQuery();
 

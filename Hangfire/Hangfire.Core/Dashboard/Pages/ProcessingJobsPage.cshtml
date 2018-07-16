@@ -13,10 +13,11 @@
 
     int.TryParse(Query("from"), out from);
     int.TryParse(Query("count"), out perPage);
+    var filter = Query("filter");
 
     var monitor = Storage.GetMonitoringApi();
-    var pager = new Pager(from, perPage, monitor.ProcessingCount());
-    var processingJobs = monitor.ProcessingJobs(pager.FromRecord, pager.RecordsPerPage);
+    var pager = new Pager(from, perPage, monitor.ProcessingCount(filter), filter, DefaultRecordsPerPage);
+    var processingJobs = monitor.ProcessingJobs(pager.FromRecord, pager.RecordsPerPage, filter);
     var servers = monitor.Servers();
     var storageConnection = Storage.GetConnection() as JobStorageConnection;
     var recurringJobs = storageConnection.GetRecurringJobs();
