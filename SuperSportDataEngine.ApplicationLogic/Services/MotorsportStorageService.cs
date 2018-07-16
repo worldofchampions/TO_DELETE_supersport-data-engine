@@ -1264,7 +1264,7 @@
             return players;
         }
 
-        private static IEnumerable<Team> ExtractTeamStandingsFromProviderResponse(MotorsportEntitiesResponse response)
+        private IEnumerable<Team> ExtractTeamStandingsFromProviderResponse(MotorsportEntitiesResponse response)
         {
             if (response != null && response.recordCount <= 0)
                 return null;
@@ -1275,6 +1275,34 @@
                 ?.season
                 ?.standings
                 ?.teams;
+
+            var teamsResolved = ResolveDuplicateTeamIds(teams);
+
+            return teamsResolved;
+        }
+
+        private  IEnumerable<Team> ResolveDuplicateTeamIds(ICollection<Team> teams)
+        {
+            var duplicateTeamsIds = teams.GroupBy(x => x.teamId)
+                .Where(group => group.Count() > 1)
+                .Select(group => group.Key).ToList();
+
+            foreach (var duplicateTeamId in duplicateTeamsIds)
+            {
+                var dupicateTeams = teams.Where(t => t.teamId == duplicateTeamId).ToList();
+
+                foreach (var dupicateTeam in dupicateTeams)
+                {
+                    var teamInDb =
+                        _publicSportDataUnitOfWork.MotortsportTeams.FirstOrDefault(t =>
+                            t.ProviderTeamId == duplicateTeamId && t.Name.ToLower().Equals(dupicateTeam.name.ToLower()));
+
+                    if (teamInDb == null)
+                    {
+                        teams.Remove(dupicateTeam);
+                    }
+                }
+            }
 
             return teams;
         }
