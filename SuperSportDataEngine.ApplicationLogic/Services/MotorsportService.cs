@@ -279,7 +279,7 @@
         {
             // Note: Using .FirstOrDefault() does not return the updated database set
             var schedulerTrackingEvent =
-                (await _systemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.WhereAsync(e =>
+                (await _systemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.WhereAsyncAsNoTracking(e =>
                     e.MotorsportRaceEventId == raceEvent.Id)).Single();
 
             return schedulerTrackingEvent;
