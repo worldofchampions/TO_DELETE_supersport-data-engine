@@ -294,7 +294,7 @@
 
                 PauseIngest(ingestSleepInSeconds);
 
-                if(await ShouldStopPolling(motorsportRaceEvent, pollingDurationInMinutes, "GRID_JOB"))
+                if (await ShouldStopPolling(motorsportRaceEvent, pollingDurationInMinutes, "GRID_JOB"))
                 {
                     break;
                 }
@@ -372,7 +372,7 @@
 
         public async Task IngestRacesEventGridForRecentlyEndedRaces(int numberOfHoursAnEventEnded)
         {
-            var motorsportLeagues = 
+            var motorsportLeagues =
                 await _motorsportService.GetLeaguesForRaceEventsRecentlyEndend(numberOfHoursAnEventEnded);
 
             if (motorsportLeagues != null)
@@ -689,16 +689,8 @@
 
             var endedTimeDiff = DateTimeOffset.UtcNow.Subtract(schedulerTrackingEvent.EndedDateTimeUtc.Value).TotalMinutes;
 
-            if (schedulerTrackingEvent.StartDateTimeUtc != null)
-            {
-                var startTimeDiffInHours =
-                    DateTimeOffset.UtcNow.Subtract(schedulerTrackingEvent.StartDateTimeUtc.Value).TotalHours;
-
-                if (startTimeDiffInHours >= 5)
-                await
-                    _loggingService.Info($"GRID_JOB: {raceEvent.MotorsportRace.RaceName}",
-                        $"Ended time: {schedulerTrackingEvent.EndedDateTimeUtc.Value}");
-            }
+            await 
+                _loggingService.Info($"GRID_JOB: {raceEvent.MotorsportRace.RaceName}", $"Ended time: {schedulerTrackingEvent.EndedDateTimeUtc.Value}");
 
             return endedTimeDiff >= pollingDurationInMinutes;
         }
