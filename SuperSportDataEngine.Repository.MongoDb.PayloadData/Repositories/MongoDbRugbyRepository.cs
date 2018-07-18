@@ -26,16 +26,16 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 
         private async void Save<T>(T data, string collectionName)
         {
-            // Get the Mongo DB.
-            var db = _mongoClient.GetDatabase(_mongoDatabaseName);
-            if (db == null)
-            {
-                await _logger.Error("MongoDbIsNull", "Mongo db object is null.");
-                return;
-            }
-
             try
             {
+                // Get the Mongo DB.
+                var db = _mongoClient.GetDatabase(_mongoDatabaseName);
+                if (db == null)
+                {
+                    await _logger.Error("MongoDbIsNull", "Mongo db object is null.");
+                    return;
+                }
+
                 var isMongoLive = db.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
 
                 if (!isMongoLive)
@@ -45,15 +45,20 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 #endif
                     return;
                 }
-            }
-            catch (System.Exception)
-            {
-                // ignored
-            }
 
-            // Add to the collection.
-            var collection = db.GetCollection<T>(collectionName);
-            await collection.InsertOneAsync(data);
+                // Add to the collection.
+                var collection = db.GetCollection<T>(collectionName);
+                await collection.InsertOneAsync(data);
+            }
+            catch (System.Exception exception)
+            {
+                await _logger.Warn(
+                    "MongoDbSave.Rugby", 
+                    "Cannot save data to MongoDB. " +
+                     "Message: \n" + exception.Message +
+                    "StackTrace: \n" + exception.StackTrace +
+                    "Inner Exception \n" + exception.InnerException);
+            }
         }
 
         public void SaveEntities(RugbyEntitiesResponse entitiesResponse) => Save(entitiesResponse, "entities");

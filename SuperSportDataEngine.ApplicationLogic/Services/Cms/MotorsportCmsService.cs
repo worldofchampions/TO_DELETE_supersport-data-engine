@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.CmsLogic.Interfaces;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
 using SuperSportDataEngine.ApplicationLogic.Entities.SystemAPI;
 using SuperSportDataEngine.ApplicationLogic.Entities.SystemAPI.Motorsport;
+using SuperSportDataEngine.ApplicationLogic.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +28,9 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
                     cfg.CreateMap<MotorsportLeague, MotorsportLeagueEntity>();
                     cfg.CreateMap<MotorsportSeason, MotorsportSeasonEntity>();
                     cfg.CreateMap<MotorsportTeam, MotorsportTeamEntity>();
+                    cfg.CreateMap<MotorsportRace, MotorsportRaceEntity>();
+                    cfg.CreateMap<MotorsportDriver, MotorsportDriverEntity>();
+                    cfg.CreateMap<MotorsportRaceEvent, MotorsportRaceEventEntity>();
                 });
             iMapper = config.CreateMapper();
         }
@@ -102,6 +107,168 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             return null;
         }
 
+        public async Task<PagedResultsEntity<MotorsportRaceEntity>> GetRacesForLeague(Guid leagueId, int pageIndex, int pageSize, string abpath, string query = null)
+        {
+            var leagueRaces = (PagedResultsEntity<MotorsportRaceEntity>)null;
+
+            if (!String.IsNullOrEmpty(query))
+            {
+                leagueRaces = await CreatePagedResults<MotorsportRace, MotorsportRaceEntity>(
+                                    _publicSportDataUnitOfWork.MotorsportRaces.Where(q => q.MotorsportLeague.Id == leagueId
+                                                                                    && q.RaceName.Contains(query)
+                                                                                    || q.RaceNameCmsOverride.Contains(query)
+                                                                                    || q.RaceNameAbbreviation.Contains(query)
+                                                                                    || q.RaceNameAbbreviationCmsOverride.Contains(query))
+                                                                                    .OrderBy(field => field.RaceName), pageIndex, pageSize, abpath, query);
+            }
+            else
+            {
+                leagueRaces = await CreatePagedResults<MotorsportRace, MotorsportRaceEntity>(_publicSportDataUnitOfWork.MotorsportRaces.Where(
+                                                            race => race.MotorsportLeague.Id == leagueId)
+                                                            .OrderBy(field => field.RaceName), pageIndex, pageSize, abpath, query);
+            }
+
+            if (leagueRaces.Results.Any())
+            {
+                return leagueRaces;
+            }
+            return null;
+        }
+
+        public async Task<PagedResultsEntity<MotorsportDriverEntity>> GetDriversForLeague(Guid leagueId, int pageIndex, int pageSize, string abpath, string query = null)
+        {
+            var leagueDrivers = (PagedResultsEntity<MotorsportDriverEntity>)null;
+
+            if (!String.IsNullOrEmpty(query))
+            {
+                leagueDrivers = await CreatePagedResults<MotorsportDriver, MotorsportDriverEntity>(
+                                    _publicSportDataUnitOfWork.MotorsportDrivers.Where(q => q.MotorsportLeague.Id == leagueId
+                                                                                    && q.FirstName.Contains(query)
+                                                                                    || q.LastName.Contains(query)
+                                                                                    || q.FullNameCmsOverride.Contains(query))
+                                                                                    .OrderBy(field => field.FirstName), pageIndex, pageSize, abpath, query);
+            }
+            else
+            {
+                leagueDrivers = await CreatePagedResults<MotorsportDriver, MotorsportDriverEntity>(_publicSportDataUnitOfWork.MotorsportDrivers.Where(
+                                                            race => race.MotorsportLeague.Id == leagueId)
+                                                            .OrderBy(field => field.FirstName), pageIndex, pageSize, abpath, query);
+            }
+
+            if (leagueDrivers.Results.Any())
+            {
+                return leagueDrivers;
+            }
+            return null;
+        }
+
+        public async Task<PagedResultsEntity<MotorsportRaceEventEntity>> GetRaceEvents(Guid raceId, Guid? seasonId, int pageIndex, int pageSize, string abpath, string query = null, string status = null)
+        {
+            var finalRaceEvents = (PagedResultsEntity<MotorsportRaceEventEntity>)null;
+
+            var raceEvents = (await _publicSportDataUnitOfWork.MotorsportRaceEvents.WhereAsync(t => t.MotorsportRace.Id == raceId)).ToList();
+
+            if (status != null)
+                status = status.ToLower().Replace(" ", String.Empty);
+
+            switch (status)
+            {
+                case "results":
+                    raceEvents = resultRaceEvents(seasonId, raceEvents);
+                    break;
+                case "comingup":
+                    raceEvents = comingUpRaceEvents(seasonId, raceEvents);
+                    break;
+                case "today":
+                    raceEvents = todayRaceEvents(seasonId, raceEvents);
+                    break;
+                default:
+                    if (seasonId != null)
+                    {
+                        raceEvents = raceEvents.Where(raceEvent => raceEvent?.MotorsportSeason?.Id != null
+                                                            && raceEvent?.MotorsportSeason?.Id == seasonId).OrderBy(f => f.StartDateTimeUtc).ToList();
+                    }
+                    else
+                    {
+                        raceEvents = raceEvents.Where(raceEvent => raceEvent?.MotorsportSeason?.Id != null
+                                                            && raceEvent?.MotorsportSeason?.IsCurrent == true).OrderBy(f => f.StartDateTimeUtc).ToList();
+                    }
+                    break;
+            }
+
+            if (!String.IsNullOrEmpty(query))
+            {
+                query = query.ToLower();
+                raceEvents = raceEvents.Where(q => q.CountryName.ToLower().Contains(query)
+                                                       ||  q.CircuitName.ToLower().Contains(query)
+                                                       ||  q.CityName.ToLower().Contains(query)).ToList();
+            }
+
+            finalRaceEvents = await CreatePagedResults<MotorsportRaceEvent, MotorsportRaceEventEntity>(raceEvents, pageIndex, pageSize, abpath, query);
+
+            if (finalRaceEvents.Results.Any())
+            {
+                if (seasonId != null && finalRaceEvents.NextPageUrl != null)
+                    finalRaceEvents.NextPageUrl += $"&seasonId={seasonId}";
+
+                if (status != null && finalRaceEvents.NextPageUrl != null)
+                    finalRaceEvents.NextPageUrl += $"&status={status}";
+
+                return finalRaceEvents;
+            }
+            return null;
+        }
+
+        private static List<MotorsportRaceEvent> todayRaceEvents(Guid? seasonId, List<MotorsportRaceEvent> raceEvents)
+        {
+            if (seasonId != null)
+            {
+                raceEvents = raceEvents.Where(raceEvent => raceEvent?.MotorsportSeason?.Id == seasonId
+                                                    && raceEvent?.StartDateTimeUtc >= DateTimer.StartOfDay(DateTime.UtcNow)
+                                                    && raceEvent?.StartDateTimeUtc <= DateTimer.EndOfDay(DateTime.UtcNow)).OrderBy(f => f.StartDateTimeUtc).ToList();
+            }
+            else
+            {
+                raceEvents = raceEvents.Where(raceEvent => raceEvent?.MotorsportSeason?.IsCurrent == true
+                                                    && raceEvent?.StartDateTimeUtc >= DateTimer.StartOfDay(DateTime.UtcNow)
+                                                    && raceEvent?.StartDateTimeUtc <= DateTimer.EndOfDay(DateTime.UtcNow)).OrderBy(f => f.StartDateTimeUtc).ToList();
+            }
+
+            return raceEvents;
+        }
+
+        private static List<MotorsportRaceEvent> comingUpRaceEvents(Guid? seasonId, List<MotorsportRaceEvent> raceEvents)
+        {
+            if (seasonId != null)
+            {
+                raceEvents = raceEvents.Where(raceEvent => raceEvent?.MotorsportSeason?.Id == seasonId
+                                                    && raceEvent?.StartDateTimeUtc >= DateTime.UtcNow).OrderBy(r => r.StartDateTimeUtc).ToList();
+            }
+            else
+            {
+                raceEvents = raceEvents.Where(raceEvent => raceEvent?.MotorsportSeason?.IsCurrent == true
+                                                    && raceEvent?.StartDateTimeUtc >= DateTime.UtcNow).OrderBy(r => r.StartDateTimeUtc).ToList();
+            }
+
+            return raceEvents;
+        }
+
+        private static List<MotorsportRaceEvent> resultRaceEvents(Guid? seasonId, List<MotorsportRaceEvent> raceEvents)
+        {
+            if (seasonId != null)
+            {
+                raceEvents = raceEvents.Where(raceEvent => raceEvent?.MotorsportSeason?.Id == seasonId
+                                                    && raceEvent?.MotorsportRaceEventStatus == MotorsportRaceEventStatus.Result).OrderByDescending(f => f.StartDateTimeUtc).ToList();
+            }
+            else
+            {
+                raceEvents = raceEvents.Where(raceEvent => raceEvent?.MotorsportSeason?.IsCurrent == true
+                                                    && raceEvent?.MotorsportRaceEventStatus == MotorsportRaceEventStatus.Result).OrderByDescending(f => f.StartDateTimeUtc).ToList();
+            }
+
+            return raceEvents;
+        }
+
         public async Task<MotorsportLeagueEntity> GetLeagueById(Guid id)
         {
             var motorsportLeague = await Task.FromResult(_publicSportDataUnitOfWork.MotorsportLeagues.FirstOrDefault(
@@ -136,6 +303,48 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             if (motorsportTeam != null)
             {
                 return iMapper.Map<MotorsportTeam, MotorsportTeamEntity>(motorsportTeam);
+            }
+
+            return null;
+        }
+
+        public async Task<MotorsportRaceEntity> GetRaceById(Guid id)
+        {
+            var motorsportRace = await Task.FromResult(_publicSportDataUnitOfWork.MotorsportRaces.FirstOrDefault(
+                                                        race => race.Id == id));
+
+            if (motorsportRace != null)
+            {
+                return iMapper.Map<MotorsportRace, MotorsportRaceEntity>(motorsportRace);
+            }
+
+            return null;
+        }
+
+        public async Task<MotorsportDriverEntity> GetDriverById(Guid id)
+        {
+            var motorsportDriver = await Task.FromResult(_publicSportDataUnitOfWork.MotorsportDrivers.FirstOrDefault(
+                                                        driver => driver.Id == id));
+
+            if (motorsportDriver != null)
+            {
+                return iMapper.Map<MotorsportDriver, MotorsportDriverEntity>(motorsportDriver);
+            }
+
+            return null;
+        }
+
+        public async Task<MotorsportRaceEventEntitySingle> GetRaceEventById(Guid id)
+        {
+            var motorsportRaceEvent = await Task.FromResult(_publicSportDataUnitOfWork.MotorsportRaceEvents.FirstOrDefault(
+                                                        raceEvent => raceEvent.Id == id));
+
+            if (motorsportRaceEvent != null)
+            {
+                return new MotorsportRaceEventEntitySingle
+                {
+                    RaceEvent = iMapper.Map<MotorsportRaceEvent, MotorsportRaceEventEntity>(motorsportRaceEvent)
+                };
             }
 
             return null;
@@ -226,6 +435,89 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
                     motorsportTeam.NameCmsOverride = !String.IsNullOrEmpty(motorsportteamEntity.NameCmsOverride?.Trim()) ? motorsportteamEntity.NameCmsOverride : null;
 
                     _publicSportDataUnitOfWork.MotortsportTeams.Update(motorsportTeam);
+                    await _publicSportDataUnitOfWork.SaveChangesAsync();
+                    success = true;
+                }
+            }
+            return success;
+        }
+
+        /// <summary>
+        /// Updates motorsport races table and only accepts values => NameCmsOverride
+        /// </summary>
+        /// <param name="raceId"></param>
+        /// <param name="motorsportRaceEntity"></param>
+        /// <returns></returns>
+        public async Task<bool> UpdateRace(Guid id, MotorsportRaceEntity motorsportRaceEntity)
+        {
+            var success = false;
+
+            if (motorsportRaceEntity != null)
+            {
+                var motorsportRace = (await Task.FromResult(_publicSportDataUnitOfWork.MotorsportRaces.FirstOrDefault(
+                                                            race => race.Id == id)));
+
+                if (motorsportRace != null)
+                {
+                    motorsportRace.RaceNameCmsOverride = !String.IsNullOrEmpty(motorsportRaceEntity.RaceNameCmsOverride?.Trim()) ? motorsportRaceEntity.RaceNameCmsOverride : null;
+                    motorsportRace.RaceNameAbbreviationCmsOverride = !String.IsNullOrEmpty(motorsportRaceEntity.RaceNameAbbreviationCmsOverride?.Trim()) ? motorsportRaceEntity.RaceNameAbbreviationCmsOverride : null;
+                    motorsportRace.IsDisabledInbound = motorsportRaceEntity.IsDisabledInbound;
+
+                    _publicSportDataUnitOfWork.MotorsportRaces.Update(motorsportRace);
+                    await _publicSportDataUnitOfWork.SaveChangesAsync();
+                    success = true;
+                }
+            }
+            return success;
+        }
+
+        /// <summary>
+        /// Updates motorsport drivers table and only accepts values => FullNameCmsOverride
+        /// </summary>
+        /// <param name="driverId"></param>
+        /// <param name="motorsportDriverEntity"></param>
+        /// <returns></returns>
+        public async Task<bool> UpdateDriver(Guid id, MotorsportDriverEntity motorsportDriverEntity)
+        {
+            var success = false;
+
+            if (motorsportDriverEntity != null)
+            {
+                var motorsportDriver = (await Task.FromResult(_publicSportDataUnitOfWork.MotorsportDrivers.FirstOrDefault(
+                                                            driver => driver.Id == id)));
+
+                if (motorsportDriver != null)
+                {
+                    motorsportDriver.FullNameCmsOverride = !String.IsNullOrEmpty(motorsportDriverEntity.FullNameCmsOverride?.Trim()) ? motorsportDriverEntity.FullNameCmsOverride : null;
+
+                    _publicSportDataUnitOfWork.MotorsportDrivers.Update(motorsportDriver);
+                    await _publicSportDataUnitOfWork.SaveChangesAsync();
+                    success = true;
+                }
+            }
+            return success;
+        }
+
+        /// <summary>
+        /// Updates motorsport race events table and only accepts values => IsLiveScored
+        /// </summary>
+        /// <param name="driverId"></param>
+        /// <param name="motorsportRaceEventEntity"></param>
+        /// <returns></returns>
+        public async Task<bool> UpdateRaceEvent(Guid id, MotorsportRaceEventEntity motorsportRaceEventEntity)
+        {
+            var success = false;
+
+            if (motorsportRaceEventEntity != null)
+            {
+                var motorsportRaceEvent = (await Task.FromResult(_publicSportDataUnitOfWork.MotorsportRaceEvents.FirstOrDefault(
+                                                            raceEvent => raceEvent.Id == id)));
+
+                if (motorsportRaceEvent != null)
+                {
+                    motorsportRaceEvent.IsLiveScored = motorsportRaceEventEntity.IsLiveScored;
+
+                    _publicSportDataUnitOfWork.MotorsportRaceEvents.Update(motorsportRaceEvent);
                     await _publicSportDataUnitOfWork.SaveChangesAsync();
                     success = true;
                 }

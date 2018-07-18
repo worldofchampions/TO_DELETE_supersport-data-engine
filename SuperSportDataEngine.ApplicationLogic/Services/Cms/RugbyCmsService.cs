@@ -213,32 +213,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Services.Cms
             return null;
         }
 
-        public async Task<PagedResultsEntity<RugbyFixtureEntity>> GetFixturesForTournamentSeason(Guid seasonId, int pageIndex, int pageSize, string abpath, string query = null)
-        {
-            var tournamentSeasonFixtures = (PagedResultsEntity<RugbyFixtureEntity>)null;
-
-            if (!String.IsNullOrEmpty(query))
-            {
-                tournamentSeasonFixtures = await CreatePagedResults<RugbyFixture, RugbyFixtureEntity>(
-                                    _publicSportDataUnitOfWork.RugbyFixtures.Where(fixture => fixture.RugbySeason.Id == seasonId)
-                                                        .Where(q => q.TeamA.Name.Contains(query)
-                                                        || q.TeamA.NameCmsOverride.Contains(query)
-                                                        || q.TeamB.Name.Contains(query)
-                                                        || q.TeamB.NameCmsOverride.Contains(query)), pageIndex, pageSize, abpath, query);
-            }
-            else
-            {
-                tournamentSeasonFixtures = await CreatePagedResults<RugbyFixture, RugbyFixtureEntity>(_publicSportDataUnitOfWork.RugbyFixtures.Where(
-                                                            fixture => fixture.RugbySeason.Id == seasonId), pageIndex, pageSize, abpath, query);
-            }
-
-            if (tournamentSeasonFixtures.Results.Any())
-            {
-                return tournamentSeasonFixtures;
-            }
-            return null;
-        }
-
         public async Task<PagedResultsEntity<RugbyFixtureEntity>> GetTournamentFixtures(Guid tournamentId, Guid? seasonId, int pageIndex, int pageSize, string abpath, bool overrideToggle, string query = null, string status = null)
         {
             var tournamentFixtures = (PagedResultsEntity<RugbyFixtureEntity>)null;

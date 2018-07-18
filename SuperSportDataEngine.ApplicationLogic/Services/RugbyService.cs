@@ -736,5 +736,12 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
             return players;
         }
+
+        public async Task<bool> IsCategoryInvalid(string category)
+        {
+            return
+               await GetTournamentId(category) == Guid.Empty &&
+                !IsNationalTeamSlug(category);
+        }
     }
 }

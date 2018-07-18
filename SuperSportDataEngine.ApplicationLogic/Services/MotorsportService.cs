@@ -277,11 +277,12 @@
 
         public async Task<SchedulerTrackingMotorsportRaceEvent> GetSchedulerTrackingEvent(MotorsportRaceEvent raceEvent)
         {
+            // Note: Using .FirstOrDefault() does not return the updated database set
             var schedulerTrackingEvent =
-                _systemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.FirstOrDefault(e =>
-                    e.MotorsportRaceEventId == raceEvent.Id);
+                (await _systemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.WhereAsync(e =>
+                    e.MotorsportRaceEventId == raceEvent.Id)).Single();
 
-            return await Task.FromResult(schedulerTrackingEvent);
+            return schedulerTrackingEvent;
         }
 
         public async Task<IEnumerable<MotorsportRaceEvent>> GetPreLiveEventsForActiveLeagues(int numberOfHoursBeforeEventStarts)
@@ -306,6 +307,53 @@
             }
 
             return results;
+        }
+
+        public async Task<IEnumerable<MotorsportLeague>> GetLeaguesForRaceEventsRecentlyEndend(int numberOfHoursAnEventEnded)
+        {
+            var results = _systemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.Where(e =>
+                    e.MotorsportRaceEventStatus == MotorsportRaceEventStatus.Result)
+                    .ToList().Where(e => IsEventRecentlyEnded(e, numberOfHoursAnEventEnded));
+
+            var leagues = new List<MotorsportLeague>();
+
+            foreach (var result in results)
+            {
+                var raceEvent =
+                    _publicSportDataUnitOfWork.MotorsportRaceEvents.FirstOrDefault(e => e.Id == result.MotorsportRaceEventId);
+
+                if (leagues.Contains(raceEvent.MotorsportRace.MotorsportLeague)) continue;
+
+                leagues.Add(raceEvent.MotorsportRace.MotorsportLeague);
+            }
+
+            return await Task.FromResult(leagues);
+        }
+
+        public async Task CleanupSchedulerTrackingTable(int eventAgeInDays)
+        {
+            var numberOfHoursAnEventEnded = eventAgeInDays * 24;
+
+            var events = 
+                (await _systemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.WhereAsync(e =>
+                e.MotorsportRaceEventStatus == MotorsportRaceEventStatus.Result))
+                .ToList().Where(e => IsEventRecentlyEnded(e, numberOfHoursAnEventEnded));
+
+            foreach (var raceEvent in events)
+            {
+                _systemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.Delete(raceEvent);
+            }
+
+            await _systemSportDataUnitOfWork.SaveChangesAsync();
+        }
+
+        private static bool IsEventRecentlyEnded(SchedulerTrackingMotorsportRaceEvent schedulerTrackingEvent, int numberOfHoursAnEventEnded)
+        {
+            if (schedulerTrackingEvent.EndedDateTimeUtc == null) return false;
+
+            var timeDiff = DateTimeOffset.UtcNow.Subtract(schedulerTrackingEvent.EndedDateTimeUtc.Value).TotalHours;
+
+            return timeDiff >= numberOfHoursAnEventEnded;
         }
 
     }

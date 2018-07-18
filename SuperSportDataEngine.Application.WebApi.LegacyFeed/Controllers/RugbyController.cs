@@ -28,7 +28,7 @@
     /// </summary>
     [LegacyExceptionFilter]
     [RoutePrefix("rugby")]
-    [LogUserAgentFilter]
+    [LogUserAgentFilter(serviceType: typeof(IRugbyService))]
     public class RugbyController : ApiController
     {
         private readonly IDeprecatedFeedIntegrationServiceRugby _deprecatedFeedIntegrationServiceRugby;
