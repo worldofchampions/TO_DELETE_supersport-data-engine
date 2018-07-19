@@ -36,5 +36,8 @@
         IEnumerable<T> WhereIncludeLocal(Expression<Func<T, bool>> predicate);
 
         T FirstOrDefault(Expression<Func<T, bool>> predicate);
+
+        Task<IEnumerable<T>> WhereAsyncAsNoTracking(Expression<Func<T, bool>> predicate);
+
     }
 }

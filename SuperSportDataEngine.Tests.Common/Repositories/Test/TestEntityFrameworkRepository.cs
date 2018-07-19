@@ -104,5 +104,11 @@ namespace SuperSportDataEngine.Tests.Common.Repositories.Test
         {
             return _items.AsQueryable().FirstOrDefault(predicate);
         }
+
+        public Task<IEnumerable<T>> WhereAsyncAsNoTracking(Expression<Func<T, bool>> predicate)
+        {
+            return Task.FromResult<IEnumerable<T>>(_items.AsQueryable().Where(predicate));
+        }
+       
     }
 }
