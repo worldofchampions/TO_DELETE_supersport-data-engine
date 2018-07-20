@@ -1,8 +1,9 @@
-﻿namespace SuperSportDataEngine.Application.Service.SchedulerIngestServer
+﻿using Unity;
+
+namespace SuperSportDataEngine.Application.Service.SchedulerIngestServer
 {
-    using Microsoft.Practices.Unity;
-    using SuperSportDataEngine.Application.Container;
-    using SuperSportDataEngine.Application.Container.Enums;
+    using Container;
+    using Container.Enums;
     using Topshelf;
 
     internal class Program

@@ -1,6 +1,7 @@
-﻿namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
+﻿using Unity;
+
+namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
 {
-    using Microsoft.Practices.Unity;
     using System;
     using System.Timers;
     using System.Threading.Tasks;
@@ -10,9 +11,9 @@
     using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using ApplicationLogic.Services;
     using System.Configuration;
-    using SuperSportDataEngine.Application.Container.Enums;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
+    using Container.Enums;
+    using ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
+    using ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
     using SuperSportDataEngine.Common.Logging;
 
     internal class ManagerJob

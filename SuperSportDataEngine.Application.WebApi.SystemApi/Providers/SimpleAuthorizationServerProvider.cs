@@ -19,17 +19,16 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Providers
     {
         public override async Task ValidateClientAuthentication(OAuthValidateClientAuthenticationContext context)
         {
-            context.Validated();
+            await Task.FromResult(context.Validated());
         }
 
         public override async Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
         {
-
             context.OwinContext.Response.Headers.Add("Access-Control-Allow-Origin", new[] { "*" });
 
-            using (AuthService _service = new AuthService())
+            using (var service = new AuthService())
             {
-                IdentityUser user = await _service.FindUser(context.UserName, context.Password);
+                var user = await service.FindUser(context.UserName, context.Password);
 
                 if (user == null)
                 {
@@ -43,7 +42,6 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Providers
             identity.AddClaim(new Claim("role", "user"));
 
             context.Validated(identity);
-
         }
     }
 }

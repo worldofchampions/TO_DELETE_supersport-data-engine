@@ -1,15 +1,8 @@
-﻿using Hangfire.Client;
-using Hangfire.Common;
-using Hangfire.Server;
+﻿using Hangfire.Common;
 using Hangfire.States;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Hangfire.Storage;
 using SuperSportDataEngine.Common.Logging;
-using Microsoft.Practices.Unity;
+using Unity;
 
 namespace SuperSportDataEngine.Application.Service.Common.Hangfire.Filters
 {

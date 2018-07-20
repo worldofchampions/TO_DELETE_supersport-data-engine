@@ -1,18 +1,17 @@
-﻿using System.Timers;
-using SuperSportDataEngine.Common.Logging;
+﻿using SuperSportDataEngine.Common.Logging;
+using Unity;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient
 {
     using Hangfire;
     using Microsoft.Owin.Hosting;
-    using Microsoft.Practices.Unity;
-    using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
-    using SuperSportDataEngine.Application.Service.Common.Hangfire.Filters;
-    using SuperSportDataEngine.Application.Service.Common.Interfaces;
-    using SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule;
+    using Common.Hangfire.Configuration;
+    using Common.Hangfire.Filters;
+    using Common.Interfaces;
+    using FixedSchedule;
     using System.Configuration;
     using System.Threading;
-    using SuperSportDataEngine.Application.Service.SchedulerClient.Manager;
+    using Manager;
     using System.Threading.Tasks;
     using System;
 

@@ -1,5 +1,4 @@
-﻿using SuperSportDataEngine.Application.Container.Enums;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
+﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
 
@@ -7,8 +6,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
 {
     using Hangfire;
     using Hangfire.Common;
-    using Microsoft.Practices.Unity;
-    using Container;
     using Common.Hangfire.Configuration;
     using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using ApplicationLogic.Services;

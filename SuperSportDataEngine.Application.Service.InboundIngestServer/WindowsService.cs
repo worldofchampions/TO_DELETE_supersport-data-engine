@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.Application.Service.InboundIngestServer
+﻿using Unity;
+
+namespace SuperSportDataEngine.Application.Service.InboundIngestServer
 {
     using Microsoft.Practices.Unity;
     using SuperSportDataEngine.Application.Service.Common.Interfaces;

@@ -1,10 +1,10 @@
-﻿using Microsoft.Practices.Unity;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Web.Http.Controllers;
 using System.Web.Http.Dependencies;
+using Unity;
 
-namespace SuperSportDataEngine.Application.WebApi.SystemApi.App_Start
+namespace SuperSportDataEngine.Application.WebApi.SystemApi
 {
     public class UnityDependencyScope : IDependencyScope
     {

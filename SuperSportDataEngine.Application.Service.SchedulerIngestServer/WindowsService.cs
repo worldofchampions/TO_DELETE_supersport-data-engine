@@ -1,23 +1,22 @@
-﻿using System.Threading.Tasks;
-using SuperSportDataEngine.Common.Logging;
-
-namespace SuperSportDataEngine.Application.Service.SchedulerIngestServer
+﻿namespace SuperSportDataEngine.Application.Service.SchedulerIngestServer
 {
     using Hangfire;
     using Hangfire.Logging;
-    using Microsoft.Practices.Unity;
     using Common.Hangfire.Configuration;
     using Common.Hangfire.Filters;
     using Common.Interfaces;
     using System;
     using System.Configuration;
+    using System.Threading.Tasks;
+    using SuperSportDataEngine.Common.Logging;
+    using Unity;
 
     internal class WindowsService : IWindowsServiceContract
     {
         private readonly UnityContainer _container;
         private BackgroundJobServer _jobServer;
         private ILoggingService _logger;
-        private int _concurrentJobTimeoutInSeconds;
+        private readonly int _concurrentJobTimeoutInSeconds;
 
         public WindowsService(UnityContainer container)
         {

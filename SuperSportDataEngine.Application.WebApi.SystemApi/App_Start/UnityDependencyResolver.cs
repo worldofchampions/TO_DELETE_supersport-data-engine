@@ -1,8 +1,8 @@
-﻿using Microsoft.Practices.Unity;
+﻿using System.Web.Http.Dependencies;
 using SuperSportDataEngine.Application.Container;
-using System.Web.Http.Dependencies;
+using Unity;
 
-namespace SuperSportDataEngine.Application.WebApi.SystemApi.App_Start
+namespace SuperSportDataEngine.Application.WebApi.SystemApi
 {
     public class UnityDependencyResolver : UnityDependencyScope, IDependencyResolver
     {

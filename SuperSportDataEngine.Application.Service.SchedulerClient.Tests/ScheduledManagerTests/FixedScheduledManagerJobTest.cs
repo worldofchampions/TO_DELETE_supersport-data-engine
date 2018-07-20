@@ -1,14 +1,14 @@
 ﻿using Moq;
 using Hangfire;
 using SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule;
-using Microsoft.Practices.Unity;
 using SuperSportDataEngine.ApplicationLogic.Services;
 using NUnit.Framework;
 using Hangfire.Common;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
 using SuperSportDataEngine.Common.Logging;
 using SuperSportDataEngine.Logging.NLog.Logging;
-using System;
+using Unity;
+using Unity.Injection;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.ScheduledManagerTests
 {

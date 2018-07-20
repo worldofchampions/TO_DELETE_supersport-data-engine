@@ -5,10 +5,10 @@
     using System.Threading;
     using Hangfire;
     using Hangfire.Common;
-    using Microsoft.Practices.Unity;
-    using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+    using Common.Hangfire.Configuration;
+    using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using SuperSportDataEngine.Common.Logging;
+    using Unity;
 
     public class MotorsportFixedScheduledJob
     {

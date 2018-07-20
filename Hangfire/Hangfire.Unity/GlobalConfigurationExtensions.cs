@@ -1,6 +1,6 @@
 ﻿using System;
-using Microsoft.Practices.Unity;
 using Hangfire.Annotations;
+using Unity;
 
 namespace Hangfire
 {

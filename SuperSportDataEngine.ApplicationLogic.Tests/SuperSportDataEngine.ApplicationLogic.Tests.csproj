@@ -97,9 +97,6 @@
     <Compile Include="Services\RugbyServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\SuperSportDataEngine.ApplicationLogic\SuperSportDataEngine.ApplicationLogic.csproj">
       <Project>{f420939c-b6a6-4c3a-975e-e30e654c4a90}</Project>
       <Name>SuperSportDataEngine.ApplicationLogic</Name>
@@ -112,6 +109,9 @@
       <Project>{65e69b64-f50a-477a-a355-f2b681ed6314}</Project>
       <Name>SuperSportDataEngine.Tests.Common</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
