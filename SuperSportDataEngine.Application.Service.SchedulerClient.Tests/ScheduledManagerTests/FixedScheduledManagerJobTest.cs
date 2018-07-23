@@ -50,16 +50,16 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
             // Mock the Unity container and set the dependencies to the mocked objects.
             var container = new UnityContainer();
 
-            container.RegisterType<ILoggingService, LoggingService>(
+            container.RegisterType<ILoggingService>(
                 new InjectionFactory((x) => mockLogger.Object));
 
-            container.RegisterType<IRugbyIngestWorkerService, RugbyIngestWorkerService>(
+            container.RegisterType<IRugbyIngestWorkerService>(
                 new InjectionFactory((x) => mockIngestWorkerService.Object));
 
-            container.RegisterType<IRecurringJobManager, RecurringJobManager>(
+            container.RegisterType<IRecurringJobManager>(
                 new InjectionFactory((x) => mockRecurringJobManager.Object));
 
-            container.RegisterType<IRugbyService, RugbyService>(
+            container.RegisterType<IRugbyService>(
                 new InjectionFactory((x) => mockRugbyService.Object));
 
             // Create the object to invoke method on.
