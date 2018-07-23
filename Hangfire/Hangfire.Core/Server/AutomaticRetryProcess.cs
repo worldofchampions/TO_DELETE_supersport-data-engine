@@ -70,10 +70,8 @@ namespace Hangfire.Server
                     var nextTry = DelayCallback(i);
                     var logLevel = GetLogLevel(i);
 
-                    // Logging this under info.
-                    // This will show in log files and not MSFTTeams.
                     _logger.Log(
-                        LogLevel.Info,
+                        logLevel,
                         // ReSharper disable once AccessToModifiedClosure
                         () => $"Error occurred during execution of '{_innerProcess}' process. Execution will be retried (attempt #{i + 1}) in {nextTry} seconds.",
                         ex);

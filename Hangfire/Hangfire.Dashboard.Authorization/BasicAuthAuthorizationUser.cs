@@ -44,10 +44,10 @@ namespace Hangfire.Dashboard
         public bool Validate(string login, string password, bool loginCaseSensitive)
         {
             if (String.IsNullOrWhiteSpace(login) == true)
-                throw new ArgumentNullException(nameof(login));
+                throw new ArgumentNullException("login");
 
             if (String.IsNullOrWhiteSpace(password) == true)
-                throw new ArgumentNullException(nameof(password));
+                throw new ArgumentNullException("password");
 
             if (login.Equals(Login, loginCaseSensitive ? StringComparison.InvariantCulture : StringComparison.InvariantCultureIgnoreCase) == true)
             {

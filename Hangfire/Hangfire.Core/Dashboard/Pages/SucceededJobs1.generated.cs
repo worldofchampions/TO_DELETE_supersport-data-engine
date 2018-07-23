@@ -361,12 +361,12 @@ WriteLiteral("</em>\r\n                                        </td>\r\n");
             #line default
             #line hidden
 WriteLiteral("                                        <td class=\"word-break\">\r\n                " +
-"                          ");
+"                            ");
 
 
             
             #line 88 "..\..\Dashboard\Pages\SucceededJobs.cshtml"
-                                     Write(Html.JobNameLink(job.Key, monitor.JobDetails(job.Key).Properties["RecurringJobId"], job.Value.Job));
+                                       Write(Html.JobNameLink(job.Key, job.Value.Job));
 
             
             #line default

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -9,41 +9,11 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Hangfire</RootNamespace>
     <AssemblyName>Hangfire.Core</AssemblyName>
-    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <TargetFrameworkProfile />
     <NuGetPackageImportStamp>4b9d9bff</NuGetPackageImportStamp>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'QA|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\QA</OutputPath>
-    <DefineConstants>TRACE;NETFULL</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Staging|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Staging</OutputPath>
-    <DefineConstants>TRACE;NETFULL</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Prod|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Prod</OutputPath>
-    <DefineConstants>TRACE;NETFULL</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -73,6 +43,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5">
+      <HintPath>..\..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
@@ -89,6 +62,7 @@
     <Compile Include="BackgroundJobServer.cs" />
     <Compile Include="BackgroundJobServerOptions.cs" />
     <Compile Include="Client\CoreBackgroundJobFactory.cs" />
+    <Compile Include="Common\MethodInfoExtensions.cs" />
     <Compile Include="Dashboard\Content\resx\Strings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -421,6 +395,7 @@
     <Compile Include="JobActivator.cs" />
     <Compile Include="Server\BackgroundJobPerformer.cs" />
     <Compile Include="BackgroundJobClient.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Common\JobHelper.cs" />
     <Compile Include="States\IStateHandler.cs" />
     <Compile Include="States\ProcessingState.cs" />
@@ -444,6 +419,7 @@
     <EmbeddedResource Include="Dashboard\Content\fonts\glyphicons-halflings-regular.woff" />
     <EmbeddedResource Include="Dashboard\Content\fonts\glyphicons-halflings-regular.woff2" />
     <Compile Include="BackgroundJob.Instance.cs" />
+    <EmbeddedResource Include="Dashboard\Content\resx\Strings.zh-TW.resx" />
     <EmbeddedResource Include="Dashboard\Content\resx\Strings.zh.resx" />
     <EmbeddedResource Include="Dashboard\Content\resx\Strings.es.resx" />
     <EmbeddedResource Include="Dashboard\Content\resx\Strings.resx">
@@ -540,6 +516,7 @@
       <Generator>RazorGenerator</Generator>
       <LastGenOutput>_PerPageSelector.generated.cs</LastGenOutput>
     </None>
+    <None Include="Hangfire.Core.project.json" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

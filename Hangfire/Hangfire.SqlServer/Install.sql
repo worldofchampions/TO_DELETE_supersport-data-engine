@@ -15,6 +15,7 @@
 -- License along with Hangfire. If not, see <http://www.gnu.org/licenses/>.
 
 SET NOCOUNT ON
+SET XACT_ABORT ON
 DECLARE @TARGET_SCHEMA_VERSION INT;
 SET @TARGET_SCHEMA_VERSION = 5;
 
@@ -71,8 +72,8 @@ BEGIN
     -- Create job tables
     CREATE TABLE [$(HangFireSchema)].[Job] (
         [Id] [int] IDENTITY(1,1) NOT NULL,
-		    [StateId] [int] NULL,
-		    [StateName] [nvarchar](20) NULL, -- To speed-up queries.
+		[StateId] [int] NULL,
+		[StateName] [nvarchar](20) NULL, -- To speed-up queries.
         [InvocationData] [nvarchar](max) NOT NULL,
         [Arguments] [nvarchar](max) NOT NULL,
         [CreatedAt] [datetime] NOT NULL,
@@ -90,8 +91,8 @@ BEGIN
     CREATE TABLE [$(HangFireSchema)].[State] (
         [Id] [int] IDENTITY(1,1) NOT NULL,
         [JobId] [int] NOT NULL,
-		    [Name] [nvarchar](20) NOT NULL,
-		    [Reason] [nvarchar](300) NULL,
+		[Name] [nvarchar](20) NOT NULL,
+		[Reason] [nvarchar](100) NULL,
         [CreatedAt] [datetime] NOT NULL,
         [Data] [nvarchar](max) NULL,
             
@@ -171,7 +172,7 @@ BEGIN
         
     CREATE TABLE [$(HangFireSchema)].[Hash](
         [Id] [int] IDENTITY(1,1) NOT NULL,
-        [Key] [nvarchar](300) NOT NULL,
+        [Key] [nvarchar](100) NOT NULL,
         [Name] [nvarchar](40) NOT NULL,
         [StringValue] [nvarchar](max) NULL,
         [IntValue] [int] NULL,
@@ -189,7 +190,7 @@ BEGIN
         
     CREATE TABLE [$(HangFireSchema)].[List](
         [Id] [int] IDENTITY(1,1) NOT NULL,
-        [Key] [nvarchar](300) NOT NULL,
+        [Key] [nvarchar](100) NOT NULL,
         [Value] [nvarchar](max) NULL,
         [ExpireAt] [datetime] NULL,
             
@@ -199,7 +200,7 @@ BEGIN
         
     CREATE TABLE [$(HangFireSchema)].[Set](
         [Id] [int] IDENTITY(1,1) NOT NULL,
-        [Key] [nvarchar](300) NOT NULL,
+        [Key] [nvarchar](100) NOT NULL,
         [Score] [float] NOT NULL,
         [Value] [nvarchar](256) NOT NULL,
         [ExpireAt] [datetime] NULL,
@@ -216,7 +217,7 @@ BEGIN
         
     CREATE TABLE [$(HangFireSchema)].[Value](
         [Id] [int] IDENTITY(1,1) NOT NULL,
-        [Key] [nvarchar](300) NOT NULL,
+        [Key] [nvarchar](100) NOT NULL,
         [StringValue] [nvarchar](max) NULL,
         [IntValue] [int] NULL,
         [ExpireAt] [datetime] NULL,
@@ -234,7 +235,7 @@ BEGIN
 
 	CREATE TABLE [$(HangFireSchema)].[Counter](
 		[Id] [int] IDENTITY(1,1) NOT NULL,
-		[Key] [nvarchar](300) NOT NULL,
+		[Key] [nvarchar](100) NOT NULL,
 		[Value] [tinyint] NOT NULL,
 		[ExpireAt] [datetime] NULL,
 
@@ -282,8 +283,8 @@ BEGIN
 
 	CREATE TABLE [$(HangFireSchema)].[Hash](
 		[Id] [int] IDENTITY(1,1) NOT NULL,
-		[Key] [nvarchar](300) NOT NULL,
-		[Field] [nvarchar](300) NOT NULL,
+		[Key] [nvarchar](100) NOT NULL,
+		[Field] [nvarchar](100) NOT NULL,
 		[Value] [nvarchar](max) NULL,
 		[ExpireAt] [datetime2](7) NULL,
 		
@@ -306,7 +307,7 @@ BEGIN
 
 	CREATE TABLE [$(HangFireSchema)].[AggregatedCounter] (
 		[Id] [int] IDENTITY(1,1) NOT NULL,
-		[Key] [nvarchar](300) NOT NULL,
+		[Key] [nvarchar](100) NOT NULL,
 		[Value] [bigint] NOT NULL,
 		[ExpireAt] [datetime] NULL,
 
@@ -367,7 +368,7 @@ BEGIN
 	ALTER TABLE [$(HangFireSchema)].[Server] DROP CONSTRAINT [PK_HangFire_Server]
     PRINT 'Dropped constraint [PK_HangFire_Server] to modify the [HangFire].[Server].[Id] column';
 
-	ALTER TABLE [$(HangFireSchema)].[Server] ALTER COLUMN [Id] NVARCHAR (300) NOT NULL;
+	ALTER TABLE [$(HangFireSchema)].[Server] ALTER COLUMN [Id] NVARCHAR (100) NOT NULL;
 	PRINT 'Modified [$(HangFireSchema)].[Server].[Id] length to 100';
 
 	ALTER TABLE [$(HangFireSchema)].[Server] ADD  CONSTRAINT [PK_HangFire_Server] PRIMARY KEY CLUSTERED
