@@ -31,7 +31,7 @@ namespace Hangfire.Dashboard.Pages
         {
 
 
-WriteLiteral("\r\n");
+WriteLiteral("\n");
 
 
 
@@ -44,7 +44,7 @@ WriteLiteral("\r\n");
             
             #line default
             #line hidden
-WriteLiteral("    <ul class=\"nav navbar-nav\">\r\n");
+WriteLiteral("    <ul class=\"nav navbar-nav\">\n");
 
 
             
@@ -69,7 +69,7 @@ WriteLiteral("            <li class=\"");
             
             #line default
             #line hidden
-WriteLiteral("\">\r\n                <a href=\"");
+WriteLiteral("\">\n                <a href=\"");
 
 
             
@@ -79,7 +79,7 @@ WriteLiteral("\">\r\n                <a href=\"");
             
             #line default
             #line hidden
-WriteLiteral("\">\r\n                    ");
+WriteLiteral("\">\n                    ");
 
 
             
@@ -89,7 +89,7 @@ WriteLiteral("\">\r\n                    ");
             
             #line default
             #line hidden
-WriteLiteral("\r\n\r\n");
+WriteLiteral("\n\n");
 
 
             
@@ -115,7 +115,7 @@ WriteLiteral("\r\n\r\n");
             
             #line default
             #line hidden
-WriteLiteral("                </a>\r\n            </li>\r\n");
+WriteLiteral("                </a>\n            </li>\n");
 
 
             
@@ -125,7 +125,7 @@ WriteLiteral("                </a>\r\n            </li>\r\n");
             
             #line default
             #line hidden
-WriteLiteral("    </ul>\r\n");
+WriteLiteral("    </ul>\n");
 
 
             

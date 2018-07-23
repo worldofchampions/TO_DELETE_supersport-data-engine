@@ -60,7 +60,7 @@ namespace Hangfire.Dashboard.Pages
         {
 
 
-WriteLiteral("\r\n");
+WriteLiteral("\n");
 
 
 
@@ -69,7 +69,7 @@ WriteLiteral("\r\n");
 
 
 
-WriteLiteral("<!DOCTYPE html>\r\n<html lang=\"");
+WriteLiteral("<!DOCTYPE html>\n<html lang=\"");
 
 
             
@@ -79,7 +79,7 @@ WriteLiteral("<!DOCTYPE html>\r\n<html lang=\"");
             
             #line default
             #line hidden
-WriteLiteral("\">\r\n<head>\r\n    <title>");
+WriteLiteral("\">\n<head>\n    <title>");
 
 
             
@@ -89,9 +89,9 @@ WriteLiteral("\">\r\n<head>\r\n    <title>");
             
             #line default
             #line hidden
-WriteLiteral(" - Hangfire</title>\r\n    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\r\n " +
-"   <meta charset=\"utf-8\">\r\n    <meta name=\"viewport\" content=\"width=device-width" +
-", initial-scale=1.0\">\r\n");
+WriteLiteral(" - Hangfire</title>\n    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n   " +
+" <meta charset=\"utf-8\">\n    <meta name=\"viewport\" content=\"width=device-width, i" +
+"nitial-scale=1.0\">\n");
 
 
             
@@ -136,8 +136,8 @@ WriteLiteral(@""">
             
             #line default
             #line hidden
-WriteLiteral("\">Hangfire Dashboard</a>\r\n                    </div>\r\n                    <div cl" +
-"ass=\"collapse navbar-collapse\">\r\n                        ");
+WriteLiteral("\">Hangfire Dashboard</a>\n                    </div>\n                    <div clas" +
+"s=\"collapse navbar-collapse\">\n                        ");
 
 
             
@@ -147,7 +147,7 @@ WriteLiteral("\">Hangfire Dashboard</a>\r\n                    </div>\r\n       
             
             #line default
             #line hidden
-WriteLiteral("\r\n");
+WriteLiteral("\n");
 
 
             
@@ -157,8 +157,8 @@ WriteLiteral("\r\n");
             
             #line default
             #line hidden
-WriteLiteral("                            <ul class=\"nav navbar-nav navbar-right\">\r\n           " +
-"                     <li>\r\n                                    <a href=\"");
+WriteLiteral("                            <ul class=\"nav navbar-nav navbar-right\">\n            " +
+"                    <li>\n                                    <a href=\"");
 
 
             
@@ -168,8 +168,8 @@ WriteLiteral("                            <ul class=\"nav navbar-nav navbar-righ
             
             #line default
             #line hidden
-WriteLiteral("\">\r\n                                        <span class=\"glyphicon glyphicon-log-" +
-"out\"></span>\r\n                                        ");
+WriteLiteral("\">\n                                        <span class=\"glyphicon glyphicon-log-o" +
+"ut\"></span>\n                                        ");
 
 
             
@@ -179,8 +179,8 @@ WriteLiteral("\">\r\n                                        <span class=\"glyph
             
             #line default
             #line hidden
-WriteLiteral("\r\n                                    </a>\r\n                                </li>" +
-"\r\n                            </ul>\r\n");
+WriteLiteral("\n                                    </a>\n                                </li>\n " +
+"                           </ul>\n");
 
 
             
@@ -190,10 +190,9 @@ WriteLiteral("\r\n                                    </a>\r\n                  
             
             #line default
             #line hidden
-WriteLiteral("                    </div>\r\n                    <!--/.nav-collapse -->\r\n         " +
-"       </div>\r\n            </div>\r\n\r\n            <!-- Begin page content -->\r\n  " +
-"          <div class=\"container\" style=\"margin-bottom: 20px;\">\r\n                " +
-"");
+WriteLiteral("                    </div>\n                    <!--/.nav-collapse -->\n           " +
+"     </div>\n            </div>\n\n            <!-- Begin page content -->\n        " +
+"    <div class=\"container\" style=\"margin-bottom: 20px;\">\n                ");
 
 
             
@@ -221,7 +220,7 @@ WriteLiteral(@"
             
             #line default
             #line hidden
-WriteLiteral("\r\n                        </a>\r\n                    </li>\r\n");
+WriteLiteral("\n                        </a>\n                    </li>\n");
 
 
             
@@ -241,7 +240,7 @@ WriteLiteral("                    <li>");
             
             #line default
             #line hidden
-WriteLiteral("</li>\r\n");
+WriteLiteral("</li>\n");
 
 
             
@@ -271,7 +270,7 @@ WriteLiteral(" ");
             
             #line default
             #line hidden
-WriteLiteral("</li>\r\n                    <li>");
+WriteLiteral("</li>\n                    <li>");
 
 
             
@@ -281,8 +280,8 @@ WriteLiteral("</li>\r\n                    <li>");
             
             #line default
             #line hidden
-WriteLiteral("</li>\r\n                </ul>\r\n            </div>\r\n        </div>\r\n        \r\n     " +
-"   <div id=\"hangfireConfig\"\r\n             data-pollinterval=\"");
+WriteLiteral("</li>\n                </ul>\n            </div>\n        </div>\n        \n        <d" +
+"iv id=\"hangfireConfig\"\n             data-pollinterval=\"");
 
 
             
@@ -292,7 +291,7 @@ WriteLiteral("</li>\r\n                </ul>\r\n            </div>\r\n        </
             
             #line default
             #line hidden
-WriteLiteral("\"\r\n             data-pollurl=\"");
+WriteLiteral("\"\n             data-pollurl=\"");
 
 
             
@@ -302,7 +301,7 @@ WriteLiteral("\"\r\n             data-pollurl=\"");
             
             #line default
             #line hidden
-WriteLiteral("\">\r\n        </div>\r\n\r\n        <script src=\"");
+WriteLiteral("\">\n        </div>\n\n        <script src=\"");
 
 
             
@@ -312,7 +311,7 @@ WriteLiteral("\">\r\n        </div>\r\n\r\n        <script src=\"");
             
             #line default
             #line hidden
-WriteLiteral("\"></script>\r\n    </body>\r\n</html>\r\n");
+WriteLiteral("\"></script>\n    </body>\n</html>\n");
 
 
         }

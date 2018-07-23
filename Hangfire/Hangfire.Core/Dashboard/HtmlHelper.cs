@@ -172,6 +172,11 @@ namespace Hangfire.Dashboard
             return Raw($"<a class=\"job-method\" href=\"{_page.Url.JobDetails(jobId)}\">{HtmlEncode(JobName(job))}</a>");
         }
 
+        public NonEscapedString JobNameLink(string jobId, string jobName, Job job)
+        {
+            return Raw($"<a class=\"job-method\" href=\"{_page.Url.JobDetails(jobId)}\">{HtmlEncode(jobName)}</a>");
+        }
+
         public NonEscapedString RelativeTime(DateTime value)
         {
             return Raw($"<span data-moment=\"{JobHelper.ToTimestamp(value)}\">{value}</span>");

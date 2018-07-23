@@ -31,11 +31,11 @@ namespace Hangfire.Dashboard.Pages
         {
 
 
-WriteLiteral("\r\n");
+WriteLiteral("\n");
 
 
 
-WriteLiteral("\r\n<ol class=\"breadcrumb\">\r\n    <li><a href=\"");
+WriteLiteral("\n<ol class=\"breadcrumb\">\n    <li><a href=\"");
 
 
             
@@ -45,7 +45,7 @@ WriteLiteral("\r\n<ol class=\"breadcrumb\">\r\n    <li><a href=\"");
             
             #line default
             #line hidden
-WriteLiteral("\"><span class=\"glyphicon glyphicon-home\"></span></a></li>\r\n");
+WriteLiteral("\"><span class=\"glyphicon glyphicon-home\"></span></a></li>\n");
 
 
             
@@ -76,7 +76,7 @@ WriteLiteral("\">");
             
             #line default
             #line hidden
-WriteLiteral("</a></li>\r\n");
+WriteLiteral("</a></li>\n");
 
 
             
@@ -96,7 +96,7 @@ WriteLiteral("    <li class=\"active\">");
             
             #line default
             #line hidden
-WriteLiteral("</li>\r\n</ol>");
+WriteLiteral("</li>\n</ol>");
 
 
         }

@@ -37,7 +37,7 @@ namespace Hangfire.Dashboard.Pages
         {
 
 
-WriteLiteral("\r\n");
+WriteLiteral("\n");
 
 
 
@@ -74,7 +74,7 @@ WriteLiteral(" ");
             
             #line default
             #line hidden
-WriteLiteral("\">\r\n    <div class=\"metric-body\" data-metric=\"");
+WriteLiteral("\">\n    <div class=\"metric-body\" data-metric=\"");
 
 
             
@@ -84,7 +84,7 @@ WriteLiteral("\">\r\n    <div class=\"metric-body\" data-metric=\"");
             
             #line default
             #line hidden
-WriteLiteral("\">\r\n        ");
+WriteLiteral("\">\n        ");
 
 
             
@@ -94,7 +94,7 @@ WriteLiteral("\">\r\n        ");
             
             #line default
             #line hidden
-WriteLiteral("\r\n    </div>\r\n    <div class=\"metric-description\">\r\n        ");
+WriteLiteral("\n    </div>\n    <div class=\"metric-description\">\n        ");
 
 
             
@@ -104,7 +104,7 @@ WriteLiteral("\r\n    </div>\r\n    <div class=\"metric-description\">\r\n      
             
             #line default
             #line hidden
-WriteLiteral("\r\n    </div>\r\n</div>");
+WriteLiteral("\n    </div>\n</div>");
 
 
         }

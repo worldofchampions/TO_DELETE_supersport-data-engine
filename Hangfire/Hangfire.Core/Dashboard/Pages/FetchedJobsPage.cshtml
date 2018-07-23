@@ -87,7 +87,7 @@
                                     }
                                 </td>
                                 <td class="min-width">
-                                    @Html.JobIdLink(job.Key)
+                                  @Html.JobNameLink(job.Key, monitor.JobDetails(job.Key).Properties["RecurringJobId"], job.Value?.Job)
                                 </td>
                                 @if (job.Value == null)
                                 {

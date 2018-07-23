@@ -59,7 +59,7 @@ namespace Hangfire.Dashboard.Pages
         {
 
 
-WriteLiteral("\r\n");
+WriteLiteral("\n");
 
 
 
@@ -94,8 +94,7 @@ WriteLiteral("\r\n");
             
             #line default
             #line hidden
-WriteLiteral("\r\n<div class=\"row\">\r\n    <div class=\"col-md-12\">\r\n        <h1 class=\"page-header\"" +
-">");
+WriteLiteral("\n<div class=\"row\">\n    <div class=\"col-md-12\">\n        <h1 class=\"page-header\">");
 
 
             
@@ -105,7 +104,7 @@ WriteLiteral("\r\n<div class=\"row\">\r\n    <div class=\"col-md-12\">\r\n      
             
             #line default
             #line hidden
-WriteLiteral("</h1>\r\n");
+WriteLiteral("</h1>\n");
 
 
             
@@ -116,7 +115,7 @@ WriteLiteral("</h1>\r\n");
             
             #line default
             #line hidden
-WriteLiteral("            <div class=\"row\">\r\n");
+WriteLiteral("            <div class=\"row\">\n");
 
 
             
@@ -127,7 +126,7 @@ WriteLiteral("            <div class=\"row\">\r\n");
             
             #line default
             #line hidden
-WriteLiteral("                    <div class=\"col-md-2\">\r\n                        ");
+WriteLiteral("                    <div class=\"col-md-2\">\n                        ");
 
 
             
@@ -137,7 +136,7 @@ WriteLiteral("                    <div class=\"col-md-2\">\r\n                  
             
             #line default
             #line hidden
-WriteLiteral("\r\n                    </div>\r\n");
+WriteLiteral("\n                    </div>\n");
 
 
             
@@ -147,7 +146,7 @@ WriteLiteral("\r\n                    </div>\r\n");
             
             #line default
             #line hidden
-WriteLiteral("            </div>\r\n");
+WriteLiteral("            </div>\n");
 
 
             
@@ -167,7 +166,7 @@ WriteLiteral("        <h3>");
             
             #line default
             #line hidden
-WriteLiteral("</h3>\r\n        <div id=\"realtimeGraph\" data-succeeded=\"");
+WriteLiteral("</h3>\n        <div id=\"realtimeGraph\" data-succeeded=\"");
 
 
             
@@ -187,7 +186,7 @@ WriteLiteral("\" data-failed=\"");
             
             #line default
             #line hidden
-WriteLiteral("\"\r\n             data-succeeded-string=\"");
+WriteLiteral("\"\n             data-succeeded-string=\"");
 
 
             
@@ -197,7 +196,7 @@ WriteLiteral("\"\r\n             data-succeeded-string=\"");
             
             #line default
             #line hidden
-WriteLiteral("\"\r\n             data-failed-string=\"");
+WriteLiteral("\"\n             data-failed-string=\"");
 
 
             
@@ -235,7 +234,7 @@ WriteLiteral("\">");
             
             #line default
             #line hidden
-WriteLiteral("</a>\r\n                <a href=\"?period=week\" class=\"btn btn-sm btn-default ");
+WriteLiteral("</a>\n                <a href=\"?period=week\" class=\"btn btn-sm btn-default ");
 
 
             
@@ -255,7 +254,7 @@ WriteLiteral("\">");
             
             #line default
             #line hidden
-WriteLiteral("</a>\r\n            </div>\r\n            ");
+WriteLiteral("</a>\n            </div>\n            ");
 
 
             
@@ -265,7 +264,7 @@ WriteLiteral("</a>\r\n            </div>\r\n            ");
             
             #line default
             #line hidden
-WriteLiteral("\r\n        </h3>\r\n\r\n");
+WriteLiteral("\n        </h3>\n\n");
 
 
             
@@ -276,7 +275,7 @@ WriteLiteral("\r\n        </h3>\r\n\r\n");
             
             #line default
             #line hidden
-WriteLiteral("            <div id=\"historyGraph\"\r\n                 data-succeeded=\"");
+WriteLiteral("            <div id=\"historyGraph\"\n                 data-succeeded=\"");
 
 
             
@@ -286,7 +285,7 @@ WriteLiteral("            <div id=\"historyGraph\"\r\n                 data-succ
             
             #line default
             #line hidden
-WriteLiteral("\"\r\n                 data-failed=\"");
+WriteLiteral("\"\n                 data-failed=\"");
 
 
             
@@ -296,7 +295,7 @@ WriteLiteral("\"\r\n                 data-failed=\"");
             
             #line default
             #line hidden
-WriteLiteral("\"\r\n                 data-succeeded-string=\"");
+WriteLiteral("\"\n                 data-succeeded-string=\"");
 
 
             
@@ -306,7 +305,7 @@ WriteLiteral("\"\r\n                 data-succeeded-string=\"");
             
             #line default
             #line hidden
-WriteLiteral("\"\r\n                 data-failed-string=\"");
+WriteLiteral("\"\n                 data-failed-string=\"");
 
 
             
@@ -316,7 +315,7 @@ WriteLiteral("\"\r\n                 data-failed-string=\"");
             
             #line default
             #line hidden
-WriteLiteral("\">\r\n            </div>\r\n");
+WriteLiteral("\">\n            </div>\n");
 
 
             
@@ -326,7 +325,7 @@ WriteLiteral("\">\r\n            </div>\r\n");
             
             #line default
             #line hidden
-WriteLiteral("    </div>\r\n</div>");
+WriteLiteral("    </div>\n</div>");
 
 
         }

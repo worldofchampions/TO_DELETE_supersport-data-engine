@@ -31,11 +31,11 @@ namespace Hangfire.Dashboard.Pages
         {
 
 
-WriteLiteral("\r\n");
+WriteLiteral("\n");
 
 
 
-WriteLiteral("\r\n    <div class=\"btn-group pull-right paginator\">\r\n");
+WriteLiteral("\n    <div class=\"btn-group pull-right paginator\">\n");
 
 
             
@@ -56,7 +56,7 @@ WriteLiteral("            <a class=\"btn btn-sm btn-default ");
             
             #line default
             #line hidden
-WriteLiteral("\" \r\n                   href=\"");
+WriteLiteral("\" \n                   href=\"");
 
 
             
@@ -76,7 +76,7 @@ WriteLiteral("\">");
             
             #line default
             #line hidden
-WriteLiteral("</a>    \r\n");
+WriteLiteral("</a>    \n");
 
 
             
@@ -86,8 +86,8 @@ WriteLiteral("</a>    \r\n");
             
             #line default
             #line hidden
-WriteLiteral("    </div>\r\n    <div class=\"btn-toolbar-spacer pull-right\"></div>\r\n    <div class" +
-"=\"btn-toolbar-label btn-toolbar-label-sm pull-right\">\r\n        ");
+WriteLiteral("    </div>\n    <div class=\"btn-toolbar-spacer pull-right\"></div>\n    <div class=\"" +
+"btn-toolbar-label btn-toolbar-label-sm pull-right\">\n        ");
 
 
             
@@ -97,7 +97,7 @@ WriteLiteral("    </div>\r\n    <div class=\"btn-toolbar-spacer pull-right\"></d
             
             #line default
             #line hidden
-WriteLiteral(":\r\n    </div>\r\n");
+WriteLiteral(":\n    </div>\n");
 
 
         }

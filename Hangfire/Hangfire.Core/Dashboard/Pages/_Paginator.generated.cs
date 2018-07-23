@@ -37,14 +37,14 @@ namespace Hangfire.Dashboard.Pages
         {
 
 
-WriteLiteral("\r\n");
+WriteLiteral("\n");
 
 
 
-WriteLiteral("\r\n");
+WriteLiteral("\n");
 
 
-WriteLiteral("<div class=\"btn-toolbar\">\r\n");
+WriteLiteral("<div class=\"btn-toolbar\">\n");
 
 
             
@@ -55,7 +55,7 @@ WriteLiteral("<div class=\"btn-toolbar\">\r\n");
             
             #line default
             #line hidden
-WriteLiteral("        <div class=\"btn-group paginator\">\r\n");
+WriteLiteral("        <div class=\"btn-group paginator\">\n");
 
 
             
@@ -89,7 +89,7 @@ WriteLiteral("\" class=\"btn btn-default ");
             
             #line default
             #line hidden
-WriteLiteral("\">\r\n                            ");
+WriteLiteral("\">\n                            ");
 
 
             
@@ -99,7 +99,7 @@ WriteLiteral("\">\r\n                            ");
             
             #line default
             #line hidden
-WriteLiteral("  \r\n                        </a>\r\n");
+WriteLiteral("  \n                        </a>\n");
 
 
             
@@ -130,7 +130,7 @@ WriteLiteral("\" class=\"btn btn-default ");
             
             #line default
             #line hidden
-WriteLiteral("\">\r\n                            ");
+WriteLiteral("\">\n                            ");
 
 
             
@@ -140,7 +140,7 @@ WriteLiteral("\">\r\n                            ");
             
             #line default
             #line hidden
-WriteLiteral("\r\n                        </a>\r\n");
+WriteLiteral("\n                        </a>\n");
 
 
             
@@ -171,7 +171,7 @@ WriteLiteral("\" class=\"btn btn-default ");
             
             #line default
             #line hidden
-WriteLiteral("\">\r\n                            ");
+WriteLiteral("\">\n                            ");
 
 
             
@@ -181,7 +181,7 @@ WriteLiteral("\">\r\n                            ");
             
             #line default
             #line hidden
-WriteLiteral("\r\n                        </a>\r\n");
+WriteLiteral("\n                        </a>\n");
 
 
             
@@ -192,8 +192,8 @@ WriteLiteral("\r\n                        </a>\r\n");
             
             #line default
             #line hidden
-WriteLiteral("                        <a href=\"#\" class=\"btn btn-default disabled\">\r\n          " +
-"                  …\r\n                        </a>\r\n");
+WriteLiteral("                        <a href=\"#\" class=\"btn btn-default disabled\">\n           " +
+"                 …\n                        </a>\n");
 
 
             
@@ -205,11 +205,11 @@ WriteLiteral("                        <a href=\"#\" class=\"btn btn-default disa
             
             #line default
             #line hidden
-WriteLiteral("        </div>\r\n");
+WriteLiteral("        </div>\n");
 
 
 
-WriteLiteral("        <div class=\"btn-toolbar-spacer\"></div>\r\n");
+WriteLiteral("        <div class=\"btn-toolbar-spacer\"></div>\n");
 
 
             
@@ -219,7 +219,7 @@ WriteLiteral("        <div class=\"btn-toolbar-spacer\"></div>\r\n");
             
             #line default
             #line hidden
-WriteLiteral("\r\n    <div class=\"btn-toolbar-label\">\r\n        ");
+WriteLiteral("\n    <div class=\"btn-toolbar-label\">\n        ");
 
 
             
@@ -239,7 +239,7 @@ WriteLiteral(": ");
             
             #line default
             #line hidden
-WriteLiteral("\r\n    </div>\r\n</div>\r\n");
+WriteLiteral("\n    </div>\n</div>\n");
 
 
         }

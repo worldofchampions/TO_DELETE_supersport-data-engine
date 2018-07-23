@@ -76,7 +76,7 @@
                                     }
                                 </td>
                                 <td class="min-width">
-                                    @Html.JobIdLink(job.Key)
+                                    @Html.JobNameLink(job.Key, monitor.JobDetails(job.Key).Properties["RecurringJobId"], job.Value.Job)
                                     @if (!job.Value.InScheduledState)
                                     {
                                         <span title="@Strings.Common_JobStateChanged_Text" class="glyphicon glyphicon-question-sign"></span>

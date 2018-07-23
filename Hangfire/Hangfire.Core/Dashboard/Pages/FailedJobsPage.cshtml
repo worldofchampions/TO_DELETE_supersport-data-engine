@@ -95,7 +95,7 @@
                                     </td>
                                     <td>
                                         <div class="word-break">
-                                            @Html.JobNameLink(job.Key, job.Value.Job)
+                                          @Html.JobNameLink(job.Key, monitor.JobDetails(job.Key).Properties["RecurringJobId"], job.Value.Job)
                                         </div>
                                         @if (!String.IsNullOrEmpty(job.Value.ExceptionMessage))
                                         {

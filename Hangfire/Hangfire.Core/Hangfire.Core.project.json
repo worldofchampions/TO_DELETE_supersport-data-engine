@@ -2,7 +2,7 @@
   "dependencies": {
     "CronExpressionDescriptor": "2.5.0",
     "LibLog": "1.5.0",
-    "Microsoft.Owin": "3.0.1",
+    "Microsoft.Owin": "4.0.0",
     "MoreLinq.Source.MoreEnumerable.Pairwise": "1.0.1",
     "ncrontab": "3.1.0",
     "Newtonsoft.Json": "11.0.2",
@@ -14,6 +14,6 @@
     "win": {}
   },
   "frameworks": {
-    "net45": {}
+    "net47": {}
   }
 }

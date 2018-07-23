@@ -31,7 +31,7 @@ namespace Hangfire.Dashboard.Pages
         {
 
 
-WriteLiteral("\r\n");
+WriteLiteral("\n");
 
 
 
@@ -44,7 +44,7 @@ WriteLiteral("\r\n");
             
             #line default
             #line hidden
-WriteLiteral("    <div id=\"stats\" class=\"list-group\">\r\n");
+WriteLiteral("    <div id=\"stats\" class=\"list-group\">\n");
 
 
             
@@ -76,7 +76,7 @@ WriteLiteral("\" class=\"list-group-item ");
             
             #line default
             #line hidden
-WriteLiteral("\">\r\n                ");
+WriteLiteral("\">\n                ");
 
 
             
@@ -86,7 +86,7 @@ WriteLiteral("\">\r\n                ");
             
             #line default
             #line hidden
-WriteLiteral("\r\n                <span class=\"pull-right\">\r\n");
+WriteLiteral("\n                <span class=\"pull-right\">\n");
 
 
             
@@ -112,7 +112,7 @@ WriteLiteral("\r\n                <span class=\"pull-right\">\r\n");
             
             #line default
             #line hidden
-WriteLiteral("                </span>\r\n            </a>\r\n");
+WriteLiteral("                </span>\n            </a>\n");
 
 
             
@@ -122,7 +122,7 @@ WriteLiteral("                </span>\r\n            </a>\r\n");
             
             #line default
             #line hidden
-WriteLiteral("    </div>\r\n");
+WriteLiteral("    </div>\n");
 
 
             

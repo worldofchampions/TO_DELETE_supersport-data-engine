@@ -48,7 +48,7 @@ namespace Hangfire.Dashboard.Pages
         {
 
 
-WriteLiteral("\r\n");
+WriteLiteral("\n");
 
 
 
@@ -68,7 +68,7 @@ WriteLiteral("\r\n");
             
             #line default
             #line hidden
-WriteLiteral("\r\n<div class=\"row\">\r\n    <div class=\"col-md-3\">\r\n        ");
+WriteLiteral("\n<div class=\"row\">\n    <div class=\"col-md-3\">\n        ");
 
 
             
@@ -78,7 +78,7 @@ WriteLiteral("\r\n<div class=\"row\">\r\n    <div class=\"col-md-3\">\r\n       
             
             #line default
             #line hidden
-WriteLiteral("\r\n    </div>\r\n    <div class=\"col-md-9\">\r\n        <h1 class=\"page-header\">");
+WriteLiteral("\n    </div>\n    <div class=\"col-md-9\">\n        <h1 class=\"page-header\">");
 
 
             
@@ -88,7 +88,7 @@ WriteLiteral("\r\n    </div>\r\n    <div class=\"col-md-9\">\r\n        <h1 clas
             
             #line default
             #line hidden
-WriteLiteral("</h1>\r\n\r\n");
+WriteLiteral("</h1>\n\n");
 
 
             
@@ -99,7 +99,7 @@ WriteLiteral("</h1>\r\n\r\n");
             
             #line default
             #line hidden
-WriteLiteral("            <div class=\"alert alert-warning\">\r\n                ");
+WriteLiteral("            <div class=\"alert alert-warning\">\n                ");
 
 
             
@@ -109,7 +109,7 @@ WriteLiteral("            <div class=\"alert alert-warning\">\r\n               
             
             #line default
             #line hidden
-WriteLiteral("\r\n            </div>\r\n");
+WriteLiteral("\n            </div>\n");
 
 
             
@@ -121,9 +121,9 @@ WriteLiteral("\r\n            </div>\r\n");
             
             #line default
             #line hidden
-WriteLiteral("            <div class=\"table-responsive\">\r\n                <table class=\"table t" +
-"able-striped\">\r\n                    <thead>\r\n                        <tr>\r\n     " +
-"                       <th style=\"min-width: 200px;\">");
+WriteLiteral("            <div class=\"table-responsive\">\n                <table class=\"table ta" +
+"ble-striped\">\n                    <thead>\n                        <tr>\n         " +
+"                   <th style=\"min-width: 200px;\">");
 
 
             
@@ -133,7 +133,7 @@ WriteLiteral("            <div class=\"table-responsive\">\r\n                <t
             
             #line default
             #line hidden
-WriteLiteral("</th>\r\n                            <th>");
+WriteLiteral("</th>\n                            <th>");
 
 
             
@@ -143,7 +143,7 @@ WriteLiteral("</th>\r\n                            <th>");
             
             #line default
             #line hidden
-WriteLiteral("</th>\r\n                            <th>");
+WriteLiteral("</th>\n                            <th>");
 
 
             
@@ -153,7 +153,7 @@ WriteLiteral("</th>\r\n                            <th>");
             
             #line default
             #line hidden
-WriteLiteral("</th>\r\n                            <th>");
+WriteLiteral("</th>\n                            <th>");
 
 
             
@@ -163,8 +163,8 @@ WriteLiteral("</th>\r\n                            <th>");
             
             #line default
             #line hidden
-WriteLiteral("</th>\r\n                        </tr>\r\n                    </thead>\r\n             " +
-"       <tbody>\r\n");
+WriteLiteral("</th>\n                        </tr>\n                    </thead>\n                " +
+"    <tbody>\n");
 
 
             
@@ -175,7 +175,7 @@ WriteLiteral("</th>\r\n                        </tr>\r\n                    </th
             
             #line default
             #line hidden
-WriteLiteral("                            <tr>\r\n                                <td>");
+WriteLiteral("                            <tr>\n                                <td>");
 
 
             
@@ -185,7 +185,7 @@ WriteLiteral("                            <tr>\r\n                              
             
             #line default
             #line hidden
-WriteLiteral("</td>\r\n                                <td>");
+WriteLiteral("</td>\n                                <td>");
 
 
             
@@ -195,7 +195,7 @@ WriteLiteral("</td>\r\n                                <td>");
             
             #line default
             #line hidden
-WriteLiteral("</td>\r\n                                <td>\r\n");
+WriteLiteral("</td>\n                                <td>\n");
 
 
             
@@ -216,7 +216,7 @@ WriteLiteral("                                        <a href=\"");
             
             #line default
             #line hidden
-WriteLiteral("\">\r\n                                            ");
+WriteLiteral("\">\n                                            ");
 
 
             
@@ -226,7 +226,7 @@ WriteLiteral("\">\r\n                                            ");
             
             #line default
             #line hidden
-WriteLiteral("\r\n                                        </a>\r\n");
+WriteLiteral("\n                                        </a>\n");
 
 
             
@@ -248,7 +248,7 @@ WriteLiteral("                                        <em>");
             
             #line default
             #line hidden
-WriteLiteral("</em>\r\n");
+WriteLiteral("</em>\n");
 
 
             
@@ -258,7 +258,7 @@ WriteLiteral("</em>\r\n");
             
             #line default
             #line hidden
-WriteLiteral("                                </td>\r\n                                <td>\r\n");
+WriteLiteral("                                </td>\n                                <td>\n");
 
 
             
@@ -269,8 +269,8 @@ WriteLiteral("                                </td>\r\n                         
             
             #line default
             #line hidden
-WriteLiteral("                                        <em>\r\n                                   " +
-"         ");
+WriteLiteral("                                        <em>\n                                    " +
+"        ");
 
 
             
@@ -280,7 +280,7 @@ WriteLiteral("                                        <em>\r\n                  
             
             #line default
             #line hidden
-WriteLiteral("\r\n                                        </em>\r\n");
+WriteLiteral("\n                                        </em>\n");
 
 
             
@@ -305,8 +305,7 @@ WriteLiteral(@"                                        <table class=""table tabl
             
             #line default
             #line hidden
-WriteLiteral("</th>\r\n                                                    <th class=\"min-width\">" +
-"");
+WriteLiteral("</th>\n                                                    <th class=\"min-width\">");
 
 
             
@@ -316,7 +315,7 @@ WriteLiteral("</th>\r\n                                                    <th c
             
             #line default
             #line hidden
-WriteLiteral("</th>\r\n                                                    <th>");
+WriteLiteral("</th>\n                                                    <th>");
 
 
             
@@ -326,8 +325,8 @@ WriteLiteral("</th>\r\n                                                    <th>"
             
             #line default
             #line hidden
-WriteLiteral("</th>\r\n                                                    <th class=\"align-right" +
-" min-width\">");
+WriteLiteral("</th>\n                                                    <th class=\"align-right " +
+"min-width\">");
 
 
             
@@ -337,9 +336,9 @@ WriteLiteral("</th>\r\n                                                    <th c
             
             #line default
             #line hidden
-WriteLiteral("</th>\r\n                                                </tr>\r\n                   " +
-"                         </thead>\r\n                                            <" +
-"tbody>\r\n");
+WriteLiteral("</th>\n                                                </tr>\n                     " +
+"                       </thead>\n                                            <tbo" +
+"dy>\n");
 
 
             
@@ -360,8 +359,8 @@ WriteLiteral("                                                    <tr class=\"")
             
             #line default
             #line hidden
-WriteLiteral("\">\r\n                                                        <td class=\"min-width\"" +
-">\r\n                                                            ");
+WriteLiteral("\">\n                                                        <td class=\"min-width\">" +
+"\n                                                            ");
 
 
             
@@ -371,7 +370,7 @@ WriteLiteral("\">\r\n                                                        <td
             
             #line default
             #line hidden
-WriteLiteral("\r\n");
+WriteLiteral("\n");
 
 
             
@@ -392,7 +391,7 @@ WriteLiteral("                                                                <s
             
             #line default
             #line hidden
-WriteLiteral("\" class=\"glyphicon glyphicon-question-sign\"></span>\r\n");
+WriteLiteral("\" class=\"glyphicon glyphicon-question-sign\"></span>\n");
 
 
             
@@ -402,7 +401,7 @@ WriteLiteral("\" class=\"glyphicon glyphicon-question-sign\"></span>\r\n");
             
             #line default
             #line hidden
-WriteLiteral("                                                        </td>\r\n");
+WriteLiteral("                                                        </td>\n");
 
 
             
@@ -423,7 +422,7 @@ WriteLiteral("                                                            <td co
             
             #line default
             #line hidden
-WriteLiteral("</em></td>\r\n");
+WriteLiteral("</em></td>\n");
 
 
             
@@ -436,7 +435,7 @@ WriteLiteral("</em></td>\r\n");
             #line default
             #line hidden
 WriteLiteral("                                                            <td class=\"min-width\"" +
-">\r\n                                                                ");
+">\n                                                                ");
 
 
             
@@ -446,12 +445,12 @@ WriteLiteral("                                                            <td cl
             
             #line default
             #line hidden
-WriteLiteral("\r\n                                                            </td>\r\n");
+WriteLiteral("\n                                                            </td>\n");
 
 
 
 WriteLiteral("                                                            <td class=\"word-break" +
-"\">\r\n                                                                ");
+"\">\n                                                                ");
 
 
             
@@ -461,12 +460,12 @@ WriteLiteral("                                                            <td cl
             
             #line default
             #line hidden
-WriteLiteral("\r\n                                                            </td>\r\n");
+WriteLiteral("\n                                                            </td>\n");
 
 
 
 WriteLiteral("                                                            <td class=\"align-righ" +
-"t min-width\">\r\n");
+"t min-width\">\n");
 
 
             
@@ -504,7 +503,7 @@ WriteLiteral("                                                                  
             
             #line default
             #line hidden
-WriteLiteral("</em>\r\n");
+WriteLiteral("</em>\n");
 
 
             
@@ -514,7 +513,7 @@ WriteLiteral("</em>\r\n");
             
             #line default
             #line hidden
-WriteLiteral("                                                            </td>\r\n");
+WriteLiteral("                                                            </td>\n");
 
 
             
@@ -524,7 +523,7 @@ WriteLiteral("                                                            </td>\
             
             #line default
             #line hidden
-WriteLiteral("                                                    </tr>\r\n");
+WriteLiteral("                                                    </tr>\n");
 
 
             
@@ -534,8 +533,8 @@ WriteLiteral("                                                    </tr>\r\n");
             
             #line default
             #line hidden
-WriteLiteral("                                            </tbody>\r\n                           " +
-"             </table>\r\n");
+WriteLiteral("                                            </tbody>\n                            " +
+"            </table>\n");
 
 
             
@@ -545,7 +544,7 @@ WriteLiteral("                                            </tbody>\r\n          
             
             #line default
             #line hidden
-WriteLiteral("                                </td>\r\n                            </tr>\r\n");
+WriteLiteral("                                </td>\n                            </tr>\n");
 
 
             
@@ -555,7 +554,7 @@ WriteLiteral("                                </td>\r\n                         
             
             #line default
             #line hidden
-WriteLiteral("                    </tbody>\r\n                </table>\r\n            </div>\r\n");
+WriteLiteral("                    </tbody>\n                </table>\n            </div>\n");
 
 
             
@@ -565,7 +564,7 @@ WriteLiteral("                    </tbody>\r\n                </table>\r\n      
             
             #line default
             #line hidden
-WriteLiteral("    </div>\r\n</div>");
+WriteLiteral("    </div>\n</div>");
 
 
         }
