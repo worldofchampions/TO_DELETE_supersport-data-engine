@@ -1,5 +1,5 @@
 // This file is part of Hangfire.
-// Copyright © 2013-2014 Sergey Odinokov.
+// Copyright ? 2013-2014 Sergey Odinokov.
 // 
 // Hangfire is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as 
@@ -61,10 +61,9 @@ namespace Hangfire.SqlServer
         public SqlServerStorage(string nameOrConnectionString, SqlServerStorageOptions options)
         {
             if (nameOrConnectionString == null) throw new ArgumentNullException(nameof(nameOrConnectionString));
-            if (options == null) throw new ArgumentNullException(nameof(options));
 
             _connectionString = GetConnectionString(nameOrConnectionString);
-            _options = options;
+            _options = options ?? throw new ArgumentNullException(nameof(options));
 
             Initialize();
         }
@@ -86,11 +85,8 @@ namespace Hangfire.SqlServer
         /// </summary>
         public SqlServerStorage([NotNull] DbConnection existingConnection, [NotNull] SqlServerStorageOptions options)
         {
-            if (existingConnection == null) throw new ArgumentNullException(nameof(existingConnection));
-            if (options == null) throw new ArgumentNullException(nameof(options));
-
-            _existingConnection = existingConnection;
-            _options = options;
+            _existingConnection = existingConnection ?? throw new ArgumentNullException(nameof(existingConnection));
+            _options = options ?? throw new ArgumentNullException(nameof(options));
 
             Initialize();
         }
@@ -99,7 +95,6 @@ namespace Hangfire.SqlServer
 
         internal string SchemaName => _options.SchemaName;
         internal int? CommandTimeout => _options.CommandTimeout.HasValue ? (int)_options.CommandTimeout.Value.TotalSeconds : (int?)null;
-        internal int? CommandBatchMaxTimeout => _options.CommandBatchMaxTimeout.HasValue ? (int)_options.CommandBatchMaxTimeout.Value.TotalSeconds : (int?)null;
         internal TimeSpan? SlidingInvisibilityTimeout => _options.SlidingInvisibilityTimeout;
 
         public override IMonitoringApi GetMonitoringApi()
@@ -169,51 +164,45 @@ namespace Hangfire.SqlServer
             }
         }
 
-        internal void UseConnection(DbConnection dedicatedConnection, [InstantHandle] Action<DbConnection> action)
+        internal void UseConnection([InstantHandle] Action<DbConnection> action)
         {
-            UseConnection(dedicatedConnection, connection =>
+            UseConnection(connection =>
             {
                 action(connection);
                 return true;
             });
         }
 
-        internal T UseConnection<T>(DbConnection dedicatedConnection, [InstantHandle] Func<DbConnection, T> func)
+        internal T UseConnection<T>([InstantHandle] Func<DbConnection, T> func)
         {
             DbConnection connection = null;
 
             try
             {
-                connection = dedicatedConnection ?? CreateAndOpenConnection();
+                connection = CreateAndOpenConnection();
                 return func(connection);
             }
             finally
             {
-                if (dedicatedConnection == null)
-                {
-                    ReleaseConnection(connection);
-                }
+                ReleaseConnection(connection);
             }
         }
 
-        internal void UseTransaction(DbConnection dedicatedConnection, [InstantHandle] Action<DbConnection, DbTransaction> action)
+        internal void UseTransaction([InstantHandle] Action<DbConnection, DbTransaction> action)
         {
-            UseTransaction(dedicatedConnection, (connection, transaction) =>
+            UseTransaction((connection, transaction) =>
             {
                 action(connection, transaction);
                 return true;
             }, null);
         }
-        
-        internal T UseTransaction<T>(
-            DbConnection dedicatedConnection,
-            [InstantHandle] Func<DbConnection, DbTransaction, T> func, 
-            IsolationLevel? isolationLevel)
+
+        internal T UseTransaction<T>([InstantHandle] Func<DbConnection, DbTransaction, T> func, IsolationLevel? isolationLevel)
         {
 #if NETFULL
             using (var transaction = CreateTransaction(isolationLevel ?? _options.TransactionIsolationLevel))
             {
-                var result = UseConnection(dedicatedConnection, connection =>
+                var result = UseConnection(connection =>
                 {
                     connection.EnlistTransaction(Transaction.Current);
                     return func(connection, null);
@@ -224,7 +213,7 @@ namespace Hangfire.SqlServer
                 return result;
             }
 #else
-            return UseConnection(dedicatedConnection, connection =>
+            return UseConnection(connection =>
             {
                 using (var transaction = connection.BeginTransaction(isolationLevel ?? IsolationLevel.ReadCommitted))
                 {
@@ -239,12 +228,13 @@ namespace Hangfire.SqlServer
 
         internal DbConnection CreateAndOpenConnection()
         {
-            var connection = _existingConnection ?? new SqlConnection(_connectionString);
-
-            if (connection.State == ConnectionState.Closed)
+            if (_existingConnection != null)
             {
-                connection.Open();
+                return _existingConnection;
             }
+
+            var connection = new SqlConnection(_connectionString);
+            connection.Open();
 
             return connection;
         }
@@ -266,7 +256,7 @@ namespace Hangfire.SqlServer
         {
             if (_options.PrepareSchemaIfNecessary)
             {
-                UseConnection(null, connection =>
+                UseConnection(connection =>
                 {
                     SqlServerObjectsInstaller.Install(connection, _options.SchemaName);
                 });
@@ -331,7 +321,7 @@ namespace Hangfire.SqlServer
                 var sqlStorage = page.Storage as SqlServerStorage;
                 if (sqlStorage == null) return new Metric("???");
 
-                return sqlStorage.UseConnection(null, connection =>
+                return sqlStorage.UseConnection(connection =>
                 {
                     var sqlQuery = @"
 select count(*) from sys.sysprocesses
@@ -341,7 +331,7 @@ where dbid = db_id(@name) and status != 'background' and status != 'sleeping'";
                         .Query<int>(sqlQuery, new { name = connection.Database })
                         .Single();
 
-                    return new Metric(value);
+                    return new Metric(value.ToString("N0"));
                 });
             });
 
@@ -353,7 +343,7 @@ where dbid = db_id(@name) and status != 'background' and status != 'sleeping'";
                 var sqlStorage = page.Storage as SqlServerStorage;
                 if (sqlStorage == null) return new Metric("???");
 
-                return sqlStorage.UseConnection(null, connection =>
+                return sqlStorage.UseConnection(connection =>
                 {
                     var sqlQuery = @"
 select count(*) from sys.sysprocesses
@@ -363,7 +353,7 @@ where dbid = db_id(@name) and status != 'background'";
                         .Query<int>(sqlQuery, new { name = connection.Database })
                         .Single();
 
-                    return new Metric(value);
+                    return new Metric(value.ToString("N0"));
                 });
             });
     }

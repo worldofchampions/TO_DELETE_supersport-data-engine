@@ -24,14 +24,11 @@ namespace Hangfire.SqlServer
             [NotNull] string jobId,
             [NotNull] string queue)
         {
-            if (storage == null) throw new ArgumentNullException(nameof(storage));
-            if (jobId == null) throw new ArgumentNullException(nameof(jobId));
-            if (queue == null) throw new ArgumentNullException(nameof(queue));
-            _storage = storage;
+            _storage = storage ?? throw new ArgumentNullException(nameof(storage));
 
             Id = id;
-            JobId = jobId;
-            Queue = queue;
+            JobId = jobId ?? throw new ArgumentNullException(nameof(jobId));
+            Queue = queue ?? throw new ArgumentNullException(nameof(queue));
 
             if (storage.SlidingInvisibilityTimeout.HasValue)
             {
@@ -49,7 +46,7 @@ namespace Hangfire.SqlServer
         {
             lock (_syncRoot)
             {
-                _storage.UseConnection(null, connection =>
+                _storage.UseConnection(connection =>
                 {
                     connection.Execute(
                         $"delete from {_storage.SchemaName}.JobQueue where Id = @id",
@@ -65,7 +62,7 @@ namespace Hangfire.SqlServer
         {
             lock (_syncRoot)
             {
-                _storage.UseConnection(null, connection =>
+                _storage.UseConnection(connection =>
                 {
                     connection.Execute(
                         $"update {_storage.SchemaName}.JobQueue set FetchedAt = null where Id = @id",
@@ -101,7 +98,7 @@ namespace Hangfire.SqlServer
 
                 try
                 {
-                    _storage.UseConnection(null, connection =>
+                    _storage.UseConnection(connection =>
                     {
                         connection.Execute(
                             $"update {_storage.SchemaName}.JobQueue set FetchedAt = getutcdate() where Id = @id",

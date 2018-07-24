@@ -523,4 +523,13 @@
   <data name="HomePage_GraphHover_Succeeded" xml:space="preserve">
     <value>Succeeded</value>
   </data>
+  <data name="Common_Arguments" xml:space="preserve">
+    <value>Arguments</value>
+  </data>
+  <data name="PerPageSelector_All" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="SqlServerJobQueue_Dequeue_Queue_array_must_be_non_empty_" xml:space="preserve">
+    <value>Queue array must be non-empty.</value>
+  </data>
 </root>

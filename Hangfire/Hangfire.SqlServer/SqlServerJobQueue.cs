@@ -22,6 +22,7 @@ using System.Linq;
 using System.Threading;
 using Dapper;
 using Hangfire.Annotations;
+using Hangfire.Dashboard.Resources;
 using Hangfire.Storage;
 
 // ReSharper disable RedundantAnonymousTypePropertyName
@@ -40,18 +41,15 @@ namespace Hangfire.SqlServer
 
         public SqlServerJobQueue([NotNull] SqlServerStorage storage, SqlServerStorageOptions options)
         {
-            if (storage == null) throw new ArgumentNullException(nameof(storage));
-            if (options == null) throw new ArgumentNullException(nameof(options));
-
-            _storage = storage;
-            _options = options;
+            _storage = storage ?? throw new ArgumentNullException(nameof(storage));
+            _options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
         [NotNull]
         public IFetchedJob Dequeue(string[] queues, CancellationToken cancellationToken)
         {
             if (queues == null) throw new ArgumentNullException(nameof(queues));
-            if (queues.Length == 0) throw new ArgumentException("Queue array must be non-empty.", nameof(queues));
+            if (queues.Length == 0) throw new ArgumentException(Strings.SqlServerJobQueue_Dequeue_Queue_array_must_be_non_empty_, nameof(queues));
 
             if (_options.SlidingInvisibilityTimeout.HasValue)
             {
@@ -82,7 +80,7 @@ $@"insert into [{_storage.SchemaName}].JobQueue (JobId, Queue) values (@jobId, @
         private SqlServerTimeoutJob DequeueUsingSlidingInvisibilityTimeout(string[] queues, CancellationToken cancellationToken)
         {
             if (queues == null) throw new ArgumentNullException(nameof(queues));
-            if (queues.Length == 0) throw new ArgumentException("Queue array must be non-empty.", nameof(queues));
+            if (queues.Length == 0) throw new ArgumentException(Strings.SqlServerJobQueue_Dequeue_Queue_array_must_be_non_empty_, nameof(queues));
 
             FetchedJob fetchedJob = null;
 
@@ -99,7 +97,7 @@ where Queue in @queues and
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                _storage.UseConnection(null, connection =>
+                _storage.UseConnection(connection =>
                 {
                     fetchedJob = connection
                         .Query<FetchedJob>(

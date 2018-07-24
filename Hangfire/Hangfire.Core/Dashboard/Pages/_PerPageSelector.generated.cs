@@ -31,37 +31,37 @@ namespace Hangfire.Dashboard.Pages
         {
 
 
-WriteLiteral("\n");
+WriteLiteral("\r\n");
 
 
 
-WriteLiteral("\n    <div class=\"btn-group pull-right paginator\">\n");
+WriteLiteral("<div class=\"pull-right\">\r\n  <div class=\"btn-group pull-right paginator\">\r\n");
 
 
             
             #line 6 "..\..\Dashboard\Pages\_PerPageSelector.cshtml"
-         foreach (var count in new[] { 10, 20, 50, 100, 500 })
-        {
+     foreach (var count in new[] { 10, 20, 50, 100, 500, int.MaxValue })
+    {
 
             
             #line default
             #line hidden
-WriteLiteral("            <a class=\"btn btn-sm btn-default ");
+WriteLiteral("      <a class=\"btn btn-sm btn-default ");
 
 
             
             #line 8 "..\..\Dashboard\Pages\_PerPageSelector.cshtml"
-                                         Write(count == _pager.RecordsPerPage ? "active" : null);
+                                   Write(count == _pager.RecordsPerPage ? "active" : null);
 
             
             #line default
             #line hidden
-WriteLiteral("\" \n                   href=\"");
+WriteLiteral("\"\r\n         href=\"");
 
 
             
             #line 9 "..\..\Dashboard\Pages\_PerPageSelector.cshtml"
-                    Write(_pager.RecordsPerPageUrl(count));
+          Write(_pager.RecordsPerPageUrl(count));
 
             
             #line default
@@ -71,33 +71,33 @@ WriteLiteral("\">");
 
             
             #line 9 "..\..\Dashboard\Pages\_PerPageSelector.cshtml"
-                                                      Write(count);
+                                             Write(count == int.MaxValue ? Strings.PerPageSelector_All : count.ToString());
 
             
             #line default
             #line hidden
-WriteLiteral("</a>    \n");
+WriteLiteral("</a>\r\n");
 
 
             
             #line 10 "..\..\Dashboard\Pages\_PerPageSelector.cshtml"
-        }
+      }
 
             
             #line default
             #line hidden
-WriteLiteral("    </div>\n    <div class=\"btn-toolbar-spacer pull-right\"></div>\n    <div class=\"" +
-"btn-toolbar-label btn-toolbar-label-sm pull-right\">\n        ");
+WriteLiteral("  </div>\r\n  <div class=\"btn-toolbar-spacer pull-right\"></div>\r\n  <div class=\"btn-" +
+"toolbar-label btn-toolbar-label-sm pull-right\">\r\n    ");
 
 
             
             #line 14 "..\..\Dashboard\Pages\_PerPageSelector.cshtml"
-   Write(Strings.PerPageSelector_ItemsPerPage);
+Write(Strings.PerPageSelector_ItemsPerPage);
 
             
             #line default
             #line hidden
-WriteLiteral(":\n    </div>\n");
+WriteLiteral(":\r\n  </div>\r\n</div>");
 
 
         }

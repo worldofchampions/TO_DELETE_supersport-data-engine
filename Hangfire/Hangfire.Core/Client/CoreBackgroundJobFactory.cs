@@ -28,8 +28,7 @@ namespace Hangfire.Client
 
         public CoreBackgroundJobFactory([NotNull] IStateMachine stateMachine)
         {
-            if (stateMachine == null) throw new ArgumentNullException(nameof(stateMachine));
-            _stateMachine = stateMachine;
+            _stateMachine = stateMachine ?? throw new ArgumentNullException(nameof(stateMachine));
         }
 
         public BackgroundJob Create(CreateContext context)

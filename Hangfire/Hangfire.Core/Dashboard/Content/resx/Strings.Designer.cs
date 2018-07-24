@@ -115,6 +115,15 @@ namespace Hangfire.Dashboard.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Arguments.
+        /// </summary>
+        public static string Common_Arguments {
+            get {
+                return ResourceManager.GetString("Common_Arguments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Can not find the target method..
         /// </summary>
         public static string Common_CannotFindTargetMethod {
@@ -881,6 +890,15 @@ namespace Hangfire.Dashboard.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to All.
+        /// </summary>
+        public static string PerPageSelector_All {
+            get {
+                return ResourceManager.GetString("PerPageSelector_All", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Items per page.
         /// </summary>
         public static string PerPageSelector_ItemsPerPage {
@@ -1201,6 +1219,15 @@ namespace Hangfire.Dashboard.Resources {
         public static string ServersPage_Title {
             get {
                 return ResourceManager.GetString("ServersPage_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Queue array must be non-empty..
+        /// </summary>
+        public static string SqlServerJobQueue_Dequeue_Queue_array_must_be_non_empty_ {
+            get {
+                return ResourceManager.GetString("SqlServerJobQueue_Dequeue_Queue_array_must_be_non_empty_", resourceCulture);
             }
         }
         

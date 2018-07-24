@@ -111,15 +111,19 @@ WriteLiteral("    <link rel=\"stylesheet\" href=\"");
             
             #line default
             #line hidden
-WriteLiteral(@""">
-</head>
-    <body>
-        <!-- Wrap all page content here -->
-        <div id=""wrap"">
+WriteLiteral("\">\n</head>\n    <body>\n        <!-- Wrap all page content here -->\n        <div id" +
+"=\"wrap\">\n\n            <!-- Fixed navbar -->\n            <div class=\"navbar navba" +
+"r-default navbar-fixed-top\">\n              <div class=\"");
 
-            <!-- Fixed navbar -->
-            <div class=""navbar navbar-default navbar-fixed-top"">
-                <div class=""container"">
+
+            
+            #line 25 "..\..\Dashboard\Pages\LayoutPage.cshtml"
+                      Write(UseFullWidth ? "container-fluid" : "container");
+
+            
+            #line default
+            #line hidden
+WriteLiteral(@""">
                     <div class=""navbar-header"">
                         <button type=""button"" class=""navbar-toggle"" data-toggle=""collapse"" data-target="".navbar-collapse"">
                             <span class=""icon-bar""></span>
@@ -192,7 +196,17 @@ WriteLiteral("\n                                    </a>\n                      
             #line hidden
 WriteLiteral("                    </div>\n                    <!--/.nav-collapse -->\n           " +
 "     </div>\n            </div>\n\n            <!-- Begin page content -->\n        " +
-"    <div class=\"container\" style=\"margin-bottom: 20px;\">\n                ");
+"  <div class=\"");
+
+
+            
+            #line 52 "..\..\Dashboard\Pages\LayoutPage.cshtml"
+                  Write(UseFullWidth ? "container-fluid" : "container");
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\" style=\"margin-bottom: 20px;\">\n                ");
 
 
             
@@ -202,15 +216,20 @@ WriteLiteral("                    </div>\n                    <!--/.nav-collapse
             
             #line default
             #line hidden
-WriteLiteral(@"
-            </div>
-        </div>
+WriteLiteral("\n            </div>\n        </div>\n\n        <div id=\"footer\">\n          <div clas" +
+"s=\"");
 
-        <div id=""footer"">
-            <div class=""container"">
-                <ul class=""list-inline credit"">
-                    <li>
-                        <a href=""https://www.hangfire.io/"" target=""_blank"" rel=""noopener noreferrer"">Hangfire ");
+
+            
+            #line 58 "..\..\Dashboard\Pages\LayoutPage.cshtml"
+                  Write(UseFullWidth ? "container-fluid" : "container");
+
+            
+            #line default
+            #line hidden
+WriteLiteral("\">\n                <ul class=\"list-inline credit\">\n                    <li>\n     " +
+"                   <a href=\"https://www.hangfire.io/\" target=\"_blank\" rel=\"noope" +
+"ner noreferrer\">Hangfire ");
 
 
             
