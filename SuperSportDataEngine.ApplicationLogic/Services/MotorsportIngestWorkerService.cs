@@ -684,13 +684,13 @@
         private async Task<bool> ShouldStopPolling(MotorsportRaceEvent raceEvent, int pollingDurationInMinutes, string jobName)
         {
             var schedulerTrackingEvent = await _motorsportService.GetSchedulerTrackingEvent(raceEvent);
-
+            
             if (schedulerTrackingEvent.EndedDateTimeUtc == null) return false;
 
-            var endedTimeDiff = DateTimeOffset.UtcNow.Subtract(schedulerTrackingEvent.EndedDateTimeUtc.Value).TotalMinutes;
-
-            await 
+            await
                 _loggingService.Info($"GRID_JOB: {raceEvent.MotorsportRace.RaceName}", $"Ended time: {schedulerTrackingEvent.EndedDateTimeUtc.Value}");
+
+            var endedTimeDiff = DateTimeOffset.UtcNow.Subtract(schedulerTrackingEvent.EndedDateTimeUtc.Value).TotalMinutes;
 
             return endedTimeDiff >= pollingDurationInMinutes;
         }

@@ -116,6 +116,10 @@
         {
             return await AsSet().Where(predicate).ToListAsync();
         }
+        public virtual async Task<IEnumerable<T>> WhereAsyncAsNoTracking(Expression<Func<T, bool>> predicate)
+        {
+            return await AsSet().Where(predicate).AsNoTracking().ToListAsync();
+        }
 
         public virtual IEnumerable<T> WhereIncludeLocal(Expression<Func<T, bool>> predicate)
         {
@@ -133,5 +137,7 @@
         {
             return _dbContext.Set<T>();
         }
+
+       
     }
 }
