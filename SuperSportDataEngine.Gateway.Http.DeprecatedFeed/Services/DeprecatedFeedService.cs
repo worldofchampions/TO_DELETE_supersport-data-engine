@@ -205,15 +205,22 @@
 
         private void CheckIfRequestTakingTooLong(WebRequest request, DateTime requestTime, DateTime responseTime)
         {
-            if (request == null)
-                return;
-
-            var durationMilliseconds = (responseTime - requestTime).TotalMilliseconds;
-
-            if (durationMilliseconds > _requestDurationWarningMilliseconds)
+            try
             {
-                _logger.Warn($"HTTPRequestTooLong.{request.RequestUri}",
-                    $"HTTP request taking too long. {request.GetBaseUri()}. Warning level is {_requestDurationWarningMilliseconds / 1000.0} seconds; took " + durationMilliseconds / 1000.0 + " seconds.");
+                if (request == null)
+                    return;
+
+                var durationMilliseconds = (responseTime - requestTime).TotalMilliseconds;
+
+                if (durationMilliseconds > _requestDurationWarningMilliseconds)
+                {
+                    _logger.Warn($"HTTPRequestTooLong.{request.RequestUri}",
+                        $"HTTP request taking too long. {request.GetBaseUri()}. Warning level is {_requestDurationWarningMilliseconds / 1000.0} seconds; took " + durationMilliseconds / 1000.0 + " seconds.");
+                }
+            }
+            catch (Exception)
+            {
+                // ignored
             }
         }
     }
