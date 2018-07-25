@@ -6,19 +6,27 @@
     using System.Net;
     using System.Security.Cryptography;
     using System.Text;
+    using System.Configuration;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.Stats.Interfaces;
+
 
     public class StatsMotorsportMotorsportWebRequest : IStatsMotorsportWebRequest
     {
         private readonly string _statsApiSharedSecret;  // = "JDgQnhPVZQ";
         private readonly string _statsApiKey;           // = "ta3dprpc4sn79ecm2wg7tqbg";
         private readonly string _statsApiBaseUrl;       //= "http://api.stats.com";
+        private readonly string _cacheControlHeader;
 
         public StatsMotorsportMotorsportWebRequest(string statsApiBaseUrl, string statsApiKey, string statsApiSharedSecret)
         {
             _statsApiSharedSecret = statsApiSharedSecret;
+
             _statsApiKey = statsApiKey;
+
             _statsApiBaseUrl = statsApiBaseUrl;
+
+            _cacheControlHeader = ConfigurationManager.AppSettings["StatsApiMotorsportCacheControlHeader"];
+
         }
 
         public WebRequest GetRequestForDrivers(string providerSlug, int? providerDriverId)
@@ -36,11 +44,13 @@
 
             var requestUriString = _statsApiBaseUrl + driversUrl + queryString;
 
-            var webRequestForDriver = WebRequest.Create(requestUriString);
+            var requestForDrivers = WebRequest.Create(requestUriString);
 
-            webRequestForDriver.Method = "GET";
+            requestForDrivers.Method = "GET";
 
-            return webRequestForDriver;
+            requestForDrivers.Headers.Add(HttpRequestHeader.CacheControl, _cacheControlHeader);
+
+            return requestForDrivers;
         }
 
         public WebRequest GetRequestForTeams(string providerSlug)
@@ -56,11 +66,13 @@
 
             var requestUriString = _statsApiBaseUrl + teamsUrl + queryString;
 
-            var requestForTeam = WebRequest.Create(requestUriString);
+            var requestForTeams = WebRequest.Create(requestUriString);
 
-            requestForTeam.Method = "GET";
+            requestForTeams.Method = "GET";
 
-            return requestForTeam;
+            requestForTeams.Headers.Add(HttpRequestHeader.CacheControl, _cacheControlHeader);
+
+            return requestForTeams;
         }
 
         public WebRequest GetRequestForStandings(string providerSlug, string standingsTypeId, int providerSeasonId)
@@ -76,6 +88,8 @@
             var webRequestForStandings = WebRequest.Create(requestUriString);
 
             webRequestForStandings.Method = "GET";
+
+            webRequestForStandings.Headers.Add(HttpRequestHeader.CacheControl, _cacheControlHeader);
 
             return webRequestForStandings;
         }
@@ -94,6 +108,8 @@
 
             requestForLeagues.Method = "GET";
 
+            requestForLeagues.Headers.Add(HttpRequestHeader.CacheControl, _cacheControlHeader);
+
             return requestForLeagues;
         }
 
@@ -111,6 +127,8 @@
 
             requestForRaces.Method = "GET";
 
+            requestForRaces.Headers.Add(HttpRequestHeader.CacheControl, _cacheControlHeader);
+
             return requestForRaces;
         }
 
@@ -127,6 +145,8 @@
             var requestForSchedule = WebRequest.Create(requestUriString);
 
             requestForSchedule.Method = "GET";
+
+            requestForSchedule.Headers.Add(HttpRequestHeader.CacheControl, _cacheControlHeader);
 
             return requestForSchedule;
         }
@@ -146,6 +166,8 @@
 
             requestForRaceResults.Method = "GET";
 
+            requestForRaceResults.Headers.Add(HttpRequestHeader.CacheControl, _cacheControlHeader);
+
             return requestForRaceResults;
         }
 
@@ -162,6 +184,8 @@
             var requestForLeagueSeasons = WebRequest.Create(requestUriString);
 
             requestForLeagueSeasons.Method = "GET";
+
+            requestForLeagueSeasons.Headers.Add(HttpRequestHeader.CacheControl, _cacheControlHeader);
 
             return requestForLeagueSeasons;
         }
@@ -181,6 +205,8 @@
 
             requestForTournamentSchedule.Method = "GET";
 
+            requestForTournamentSchedule.Headers.Add(HttpRequestHeader.CacheControl, _cacheControlHeader);
+
             return requestForTournamentSchedule;
         }
 
@@ -198,6 +224,8 @@
             var requestForOwners = WebRequest.Create(requestUriString);
 
             requestForOwners.Method = "GET";
+
+            requestForOwners.Headers.Add(HttpRequestHeader.CacheControl, _cacheControlHeader);
 
             return requestForOwners;
         }
@@ -252,6 +280,6 @@
 
             return stamp;
         }
-      
+
     }
 }
