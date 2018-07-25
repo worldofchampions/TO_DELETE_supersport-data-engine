@@ -52,7 +52,15 @@
             return connectionMultiplexer;
         });
 
+        private static readonly Lazy<IMongoClient> LazyMongoClient = new Lazy<IMongoClient>(() =>
+        {
+            var mongoClient = new MongoClient(
+                ConfigurationManager.ConnectionStrings["MongoDB"].ConnectionString);
+            return mongoClient;
+        });
+
         private static ConnectionMultiplexer RedisConnection => LazyRedisConnection.Value;
+        private static IMongoClient MongoClient => LazyMongoClient.Value;
 
         public static void RegisterTypes(IUnityContainer container, ApplicationScope applicationScope)
         {
@@ -203,13 +211,12 @@
             {
                 container.RegisterType<IRecurringJobManager, RecurringJobManager>(
                     new HierarchicalLifetimeManager(),
-                    new InjectionFactory((x) => new RecurringJobManager(
+                    new InjectionFactory(x => new RecurringJobManager(
                         new SqlServerStorage(ConfigurationManager.ConnectionStrings["SqlDatabase_Hangfire"].ConnectionString))));
 
                 container.RegisterType<IMongoClient, MongoClient>(
                     new ContainerControlledLifetimeManager(),
-                    new InjectionFactory((x) => new MongoClient(
-                        ConfigurationManager.ConnectionStrings["MongoDB"].ConnectionString)));
+                    new InjectionFactory(x => MongoClient));
 
                 container.RegisterType<IMongoDbRugbyRepository, MongoDbRugbyRepository>();
                 container.RegisterType<IMongoDbMotorsportRepository, MongoDbMotorsportRepository>();
