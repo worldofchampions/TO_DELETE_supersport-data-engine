@@ -102,7 +102,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             var liveGames = (await _publicSportDataUnitOfWork.RugbyFixtures.AllAsync())
                     .Where(IsFixtureLive)
                     .Where(fixture => fixture.RugbyTournament != null && fixture.RugbyTournament.Id == tournamentId)
-                    .Where(f => f.IsDisabledInbound == false);
+                    .Where(f => !f.IsDisabledInbound);
 
             return liveGames;
         }
@@ -123,7 +123,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         {
             var liveGames = (await _publicSportDataUnitOfWork.RugbyFixtures.AllAsync())
                 .Where(IsFixtureLive)
-                .Where(f => f.IsDisabledInbound == false);
+                .Where(f => !f.IsDisabledInbound);
 
             return liveGames.Count();
         }
@@ -215,7 +215,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             var today = DateTime.UtcNow - TimeSpan.FromMinutes(120);
 
             var fixtures = await Task.FromResult(_publicSportDataUnitOfWork.RugbyFixtures.Where(t => 
-                        t.IsDisabledInbound == false && 
+                        !t.IsDisabledOutbound && 
                         t.RugbyTournament.Id == tournamentId && 
                         t.RugbyFixtureStatus == fixtureStatus &&
                         t.RugbySeason != null &&
@@ -251,7 +251,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             var today = DateTime.UtcNow - TimeSpan.FromMinutes(120);
 
             fixtures = _publicSportDataUnitOfWork.RugbyFixtures.Where(t =>
-                    t.IsDisabledInbound == false &&
+                    !t.IsDisabledOutbound &&
                     t.RugbyTournament.Id == tournament.Id &&
                     t.RugbyFixtureStatus != RugbyFixtureStatus.Result &&
                     t.StartDateTime >= today &&
@@ -291,7 +291,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         public async Task<IEnumerable<RugbyFixture>> GetRecentResultsFixtures(int maxCount)
         {
             var recentFixturesInResultsState = await Task.FromResult(_publicSportDataUnitOfWork.RugbyFixtures.Where(
-                x => x.IsDisabledInbound == false &&
+                x => !x.IsDisabledOutbound &&
                 x.RugbyFixtureStatus == RugbyFixtureStatus.Result &&
                 x.RugbyTournament.IsEnabled)
                 .OrderByDescending(f => f.StartDateTime)
@@ -304,7 +304,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
         {
             var rugbyFixtures =
                 (await Task.FromResult(_publicSportDataUnitOfWork.RugbyFixtures.Where(
-                    x => x.IsDisabledInbound == false &&
+                    x => !x.IsDisabledInbound &&
                          x.RugbyFixtureStatus == RugbyFixtureStatus.Result &&
                          x.RugbyTournament.IsEnabled &&
                          x.RugbyTournament.IsEnabled)))
@@ -372,8 +372,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             var today = DateTime.UtcNow;
 
             var fixtures = _publicSportDataUnitOfWork.RugbyFixtures.Where(t =>
-                t.IsDisabledInbound == false &&
-                t.RugbyTournament.IsEnabled == true &&
+                !t.IsDisabledOutbound &&
+                t.RugbyTournament.IsEnabled &&
                 t.RugbyFixtureStatus != RugbyFixtureStatus.Result &&
                 t.StartDateTime >= today)
                 .OrderBy(f => f.StartDateTime);
@@ -473,7 +473,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                .Where(f => 
                     f.StartDateTime > minDateTime && 
                     f.StartDateTime < tomorrow &&
-                    f.RugbyTournament.IsEnabled)
+                    f.RugbyTournament.IsEnabled &&
+                    !f.IsDisabledOutbound)
                 .OrderBy(f => f.StartDateTime);
 
             return await Task.FromResult(todayFixtures.ToList());
@@ -493,7 +494,8 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
                     f.StartDateTime > minDateTime &&
                     f.StartDateTime < tomorrow &&
                     f.RugbyTournament.IsEnabled &&
-                    f.RugbyTournament.Id == tournament.Id)
+                    f.RugbyTournament.Id == tournament.Id &&
+                    !f.IsDisabledOutbound)
                 .OrderBy(f => f.StartDateTime);
 
             return await Task.FromResult(todayFixtures.ToList());
