@@ -32,6 +32,9 @@
                 if (data == null)
                     return;
 
+                if (_mongoClient == null)
+                    return;
+
                 // Get the Mongo DB.
                 var db = _mongoClient.GetDatabase(_mongoDatabaseName);
                 if (db == null)

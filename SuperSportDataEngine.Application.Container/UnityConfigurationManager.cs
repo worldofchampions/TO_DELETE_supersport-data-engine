@@ -1,46 +1,45 @@
-﻿using Unity.Injection;
-using Unity.Lifetime;
-
-namespace SuperSportDataEngine.Application.Container
+﻿namespace SuperSportDataEngine.Application.Container
 {
     using Hangfire;
     using Hangfire.SqlServer;
     using MongoDB.Driver;
     using NLog.MSFTTeams;
     using StackExchange.Redis;
-    using SuperSportDataEngine.Application.Container.Enums;
-    using SuperSportDataEngine.Application.Service.Common.Interfaces;
-    using SuperSportDataEngine.Application.Service.Common.Services;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces.DeprecatedFeed;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces.LegacyFeed;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.CmsLogic.Interfaces;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.DeprecatedFeed.Interfaces;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.Stats.Interfaces;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
-    using SuperSportDataEngine.ApplicationLogic.Services;
-    using SuperSportDataEngine.ApplicationLogic.Services.Cms;
-    using SuperSportDataEngine.ApplicationLogic.Services.DeprecatedFeed;
-    using SuperSportDataEngine.ApplicationLogic.Services.LegacyFeed;
-    using SuperSportDataEngine.Common.Caching;
-    using SuperSportDataEngine.Common.Interfaces;
-    using SuperSportDataEngine.Common.Logging;
-    using SuperSportDataEngine.Gateway.Http.DeprecatedFeed.Services;
-    using SuperSportDataEngine.Gateway.Http.Stats.Services;
-    using SuperSportDataEngine.Gateway.Http.StatsProzone.Services;
-    using SuperSportDataEngine.Logging.NLog.Logging;
-    using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
-    using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.UnitOfWork;
-    using SuperSportDataEngine.Repository.EntityFramework.SystemSportData.Context;
-    using SuperSportDataEngine.Repository.EntityFramework.SystemSportData.UnitOfWork;
-    using SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories;
+    using Enums;
+    using Service.Common.Interfaces;
+    using Service.Common.Services;
+    using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+    using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces.DeprecatedFeed;
+    using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces.LegacyFeed;
+    using ApplicationLogic.Boundaries.CmsLogic.Interfaces;
+    using ApplicationLogic.Boundaries.Gateway.Http.DeprecatedFeed.Interfaces;
+    using ApplicationLogic.Boundaries.Gateway.Http.Stats.Interfaces;
+    using ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.Interfaces;
+    using ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
+    using ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
+    using ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
+    using ApplicationLogic.Services;
+    using ApplicationLogic.Services.Cms;
+    using ApplicationLogic.Services.DeprecatedFeed;
+    using ApplicationLogic.Services.LegacyFeed;
+    using Common.Caching;
+    using Common.Interfaces;
+    using Common.Logging;
+    using Gateway.Http.DeprecatedFeed.Services;
+    using Gateway.Http.Stats.Services;
+    using Gateway.Http.StatsProzone.Services;
+    using Logging.NLog.Logging;
+    using Repository.EntityFramework.PublicSportData.Context;
+    using Repository.EntityFramework.PublicSportData.UnitOfWork;
+    using Repository.EntityFramework.SystemSportData.Context;
+    using Repository.EntityFramework.SystemSportData.UnitOfWork;
+    using Repository.MongoDb.PayloadData.Repositories;
     using System;
     using System.Configuration;
     using System.Data.Entity;
     using Unity;
+    using Unity.Injection;
+    using Unity.Lifetime;
 
     public static class UnityConfigurationManager
     {
@@ -55,7 +54,15 @@ namespace SuperSportDataEngine.Application.Container
             return connectionMultiplexer;
         });
 
+        private static readonly Lazy<IMongoClient> LazyMongoClient = new Lazy<IMongoClient>(() =>
+        {
+            var mongoClient = new MongoClient(
+                ConfigurationManager.ConnectionStrings["MongoDB"].ConnectionString);
+            return mongoClient;
+        });
+
         private static ConnectionMultiplexer RedisConnection => LazyRedisConnection.Value;
+        private static IMongoClient MongoClient => LazyMongoClient.Value;
 
         public static void RegisterTypes(IUnityContainer container, ApplicationScope applicationScope)
         {
@@ -211,8 +218,7 @@ namespace SuperSportDataEngine.Application.Container
 
                 container.RegisterType<IMongoClient>(
                     new ContainerControlledLifetimeManager(),
-                    new InjectionFactory(x => new MongoClient(
-                        ConfigurationManager.ConnectionStrings["MongoDB"].ConnectionString)));
+                    new InjectionFactory(x => MongoClient));
 
                 container.RegisterType<IMongoDbRugbyRepository, MongoDbRugbyRepository>();
                 container.RegisterType<IMongoDbMotorsportRepository, MongoDbMotorsportRepository>();

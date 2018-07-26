@@ -27,6 +27,11 @@ namespace Hangfire.Dashboard
             _value = value;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="owinEnvironment"></param>
+        /// <returns></returns>
         public bool Authorize(IDictionary<string, object> owinEnvironment)
         {
             var context = new OwinContext(owinEnvironment);
