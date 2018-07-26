@@ -45,6 +45,9 @@
                         {
                             var streamReader = new StreamReader(responseStream, Encoding.UTF8);
                             var responseString = streamReader.ReadToEnd();
+                            if (responseString.Equals("null"))
+                                return null;
+
                             var response = JsonConvert.DeserializeObject<List<HighlightVideosResponse>>(responseString);
 
                             var responseTime = DateTime.Now;
@@ -82,6 +85,10 @@
                         {
                             var streamReader = new StreamReader(responseStream, Encoding.UTF8);
                             var responseString = streamReader.ReadToEnd();
+
+                            if (responseString.Equals("null"))
+                                return null;
+
                             var response = JsonConvert.DeserializeObject<List<LiveVideosResponse>>(responseString);
 
                             var responseTime = DateTime.Now;
@@ -119,6 +126,9 @@
                         {
                             var streamReader = new StreamReader(responseStream, Encoding.UTF8);
                             var responseString = streamReader.ReadToEnd();
+                            if (responseString.Equals("null"))
+                                return 0;
+
                             var response = JsonConvert.DeserializeObject<MatchDayBlogResponse>(responseString);
 
                             var responseTime = DateTime.Now;
@@ -155,6 +165,9 @@
                         {
                             var streamReader = new StreamReader(responseStream, Encoding.UTF8);
                             var responseString = streamReader.ReadToEnd();
+                            if (responseString.Equals("null"))
+                                return 0;
+
                             var response = JsonConvert.DeserializeObject<MatchPreviewResponse>(responseString);
 
                             var responseTime = DateTime.Now;
@@ -192,6 +205,9 @@
                         {
                             var streamReader = new StreamReader(responseStream, Encoding.UTF8);
                             var responseString = streamReader.ReadToEnd();
+                            if (responseString.Equals("null"))
+                                return 0;
+
                             var response = JsonConvert.DeserializeObject<MatchReportResponse>(responseString);
 
                             var responseTime = DateTime.Now;
