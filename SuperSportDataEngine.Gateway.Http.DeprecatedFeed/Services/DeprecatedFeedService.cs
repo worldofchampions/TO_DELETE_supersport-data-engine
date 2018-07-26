@@ -58,7 +58,9 @@
             catch (Exception exception)
             {
                 var key = GetType().FullName + ".GetHighlightVideos";
-                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.GetBaseUri()}.{Environment.NewLine}{key}{Environment.NewLine}{exception}");
+                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.GetBaseUri()}.{Environment.NewLine}{key}{Environment.NewLine}{exception.Message}" +
+                                                    $"{Environment.NewLine}{exception}" +
+                                                    $"{Environment.NewLine}{exception.InnerException}");
             }
 
             return null;
@@ -93,7 +95,9 @@
             catch (Exception exception)
             {
                 var key = GetType().FullName + ".GetLiveVideos";
-                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.GetBaseUri()}.{Environment.NewLine}{key}{Environment.NewLine}{exception}");
+                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.GetBaseUri()}.{Environment.NewLine}{key}{Environment.NewLine}{exception.Message}" +
+                                                    $"{Environment.NewLine}{exception}" +
+                                                    $"{Environment.NewLine}{exception.InnerException}");
             }
 
             return null;
@@ -128,7 +132,9 @@
             catch (Exception exception)
             {
                 var key = GetType().FullName + ".GetMatchDayBlogId";
-                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.GetBaseUri()}.{Environment.NewLine}{key}{Environment.NewLine}{exception}");
+                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.GetBaseUri()}.{Environment.NewLine}{key}{Environment.NewLine}{exception.Message}" +
+                                                    $"{Environment.NewLine}{exception}" +
+                                                    $"{Environment.NewLine}{exception.InnerException}");
             }
 
             return 0;
@@ -162,7 +168,9 @@
             catch (Exception exception)
             {
                 var key = GetType().FullName + ".GetMatchPreviewId";
-                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.GetBaseUri()}.{Environment.NewLine}{key}{Environment.NewLine}{exception}");
+                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.GetBaseUri()}.{Environment.NewLine}{key}{Environment.NewLine}{exception.Message}" +
+                                                    $"{Environment.NewLine}{exception}" +
+                                                    $"{Environment.NewLine}{exception.InnerException}");
             }
 
             return 0;
@@ -197,7 +205,9 @@
             catch (Exception exception)
             {
                 var key = GetType().FullName + ".GetMatchReportId";
-                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.GetBaseUri()}.{Environment.NewLine}{key}{Environment.NewLine}{exception}");
+                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.GetBaseUri()}.{Environment.NewLine}{key}{Environment.NewLine}{exception.Message}" +
+                                                    $"{Environment.NewLine}{exception}" +
+                                                    $"{Environment.NewLine}{exception.InnerException}");
             }
 
             return 0;
