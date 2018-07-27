@@ -16,6 +16,9 @@ using SuperSportDataEngine.Application.WebApi.SystemApi.Areas.HelpPage.Models;
 
 namespace SuperSportDataEngine.Application.WebApi.SystemApi.Areas.HelpPage
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class HelpPageConfigurationExtensions
     {
         private const string ApiModelPrefix = "MS_HelpPageApiModel_";

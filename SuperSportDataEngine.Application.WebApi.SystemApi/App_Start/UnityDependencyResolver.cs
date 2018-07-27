@@ -1,16 +1,28 @@
-﻿using Microsoft.Practices.Unity;
+﻿using System.Web.Http.Dependencies;
+using Microsoft.Practices.Unity;
 using SuperSportDataEngine.Application.Container;
-using System.Web.Http.Dependencies;
+using SuperSportDataEngine.Application.WebApi.SystemApi.App_Start;
 
-namespace SuperSportDataEngine.Application.WebApi.SystemApi.App_Start
+namespace SuperSportDataEngine.Application.WebApi.SystemApi
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class UnityDependencyResolver : UnityDependencyScope, IDependencyResolver
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="container"></param>
         public UnityDependencyResolver(IUnityContainer container)
            : base(container)
         {
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public IDependencyScope BeginScope()
         {
             var childContainer = Container.CreateChildContainer();

@@ -17,7 +17,7 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
     /// </summary>
     public class AccountController : ApiController
     {
-        private AuthService _authService = null;
+        private readonly AuthService _authService = null;
 
         /// <summary>
         /// Account default constructor
@@ -54,6 +54,10 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="disposing"></param>
         protected override void Dispose(bool disposing)
         {
             if (disposing)

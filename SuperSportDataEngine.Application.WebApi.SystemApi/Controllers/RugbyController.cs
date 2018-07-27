@@ -657,6 +657,10 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="exception"></param>
         protected async void LogException(Exception exception)
         {
             StackTrace st = new StackTrace();

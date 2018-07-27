@@ -7,9 +7,16 @@ using System.Web.Http;
 
 namespace SuperSportDataEngine.Application.WebApi.SystemApi
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public static class WebApiConfig
     {
         private static HttpConfiguration _httpConfig;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="config"></param>
         public static void Register(HttpConfiguration config)
         {
             _httpConfig = config;
