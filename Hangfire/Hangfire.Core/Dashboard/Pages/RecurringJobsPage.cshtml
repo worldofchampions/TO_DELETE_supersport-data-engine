@@ -58,20 +58,15 @@
                         @Strings.RecurringJobsPage_TriggerNow
                     </button>
 
-                    <button class="js-jobs-list-command btn btn-sm btn-default"
-                            data-url="@Url.To("/recurring/remove")"
-                            data-loading-text="@Strings.Common_Deleting"
-                            data-confirm="@Strings.Common_DeleteConfirm"
-                            disabled="disabled">
-                        <span class="glyphicon glyphicon-remove"></span>
-                        @Strings.Common_Delete
-                    </button>
+                  <button class="js-jobs-list-command btn btn-sm btn-default"
+                          data-url="@Url.To("/recurring/remove")"
+                          data-loading-text="@Strings.Common_Deleting"
+                          data-confirm="@Strings.Common_DeleteConfirm"
+                          disabled="disabled">
+                    <span class="glyphicon glyphicon-remove"></span>
+                    @Strings.Common_Delete
+                  </button>
 
-                    @if (pager != null)
-                    {
-                        @: @Html.PerPageSelector(pager)
-                    }
-                    
                   @if (true)
                   {
                       @Html.Filter(pager)
