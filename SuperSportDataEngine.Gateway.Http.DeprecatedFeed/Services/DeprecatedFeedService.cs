@@ -41,24 +41,32 @@
                 {
                     using (var responseStream = webResponse.GetResponseStream())
                     {
-                        var streamReader = new StreamReader(responseStream, Encoding.UTF8);
-                        var responseString = streamReader.ReadToEnd();
-                        var response = JsonConvert.DeserializeObject<List<HighlightVideosResponse>>(responseString);
+                        if (responseStream != null)
+                        {
+                            var streamReader = new StreamReader(responseStream, Encoding.UTF8);
+                            var responseString = streamReader.ReadToEnd();
 
-                        var responseTime = DateTime.Now;
-                        CheckIfRequestTakingTooLong(webRequest, requestTime, responseTime);
+                            var response = JsonConvert.DeserializeObject<List<HighlightVideosResponse>>(responseString);
+                            if (response == null)
+                                return null;
 
-                        return response;
+                            var responseTime = DateTime.Now;
+                            CheckIfRequestTakingTooLong(webRequest, requestTime, responseTime);
+
+                            return response;
+                        }
                     }
                 }
             }
             catch (Exception exception)
             {
                 var key = GetType().FullName + ".GetHighlightVideos";
-                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.GetBaseUri()}.{Environment.NewLine}{key}{Environment.NewLine}{exception}");
-
-                return null;
+                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.GetBaseUri()}.{Environment.NewLine}{key}{Environment.NewLine}{exception.Message}" +
+                                                    $"{Environment.NewLine}{exception}" +
+                                                    $"{Environment.NewLine}{exception.InnerException}");
             }
+
+            return null;
         }
 
         public async Task<IEnumerable<LiveVideosResponse>> GetLiveVideos(string sportName, int legacyFixtureId)
@@ -73,24 +81,32 @@
                 {
                     using (var responseStream = webResponse.GetResponseStream())
                     {
-                        var streamReader = new StreamReader(responseStream, Encoding.UTF8);
-                        var responseString = streamReader.ReadToEnd();
-                        var response = JsonConvert.DeserializeObject<List<LiveVideosResponse>>(responseString);
+                        if (responseStream != null)
+                        {
+                            var streamReader = new StreamReader(responseStream, Encoding.UTF8);
+                            var responseString = streamReader.ReadToEnd();
 
-                        var responseTime = DateTime.Now;
-                        CheckIfRequestTakingTooLong(webRequest, requestTime, responseTime);
+                            var response = JsonConvert.DeserializeObject<List<LiveVideosResponse>>(responseString);
+                            if (response == null)
+                                return null;
 
-                        return response;
+                            var responseTime = DateTime.Now;
+                            CheckIfRequestTakingTooLong(webRequest, requestTime, responseTime);
+
+                            return response;
+                        }
                     }
                 }
             }
             catch (Exception exception)
             {
                 var key = GetType().FullName + ".GetLiveVideos";
-                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.GetBaseUri()}.{Environment.NewLine}{key}{Environment.NewLine}{exception}");
-
-                return null;
+                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.GetBaseUri()}.{Environment.NewLine}{key}{Environment.NewLine}{exception.Message}" +
+                                                    $"{Environment.NewLine}{exception}" +
+                                                    $"{Environment.NewLine}{exception.InnerException}");
             }
+
+            return null;
         }
 
         public async Task<int> GetMatchDayBlogId(string sportName, int legacyFixtureId)
@@ -105,24 +121,32 @@
                 {
                     using (var responseStream = webResponse.GetResponseStream())
                     {
-                        var streamReader = new StreamReader(responseStream, Encoding.UTF8);
-                        var responseString = streamReader.ReadToEnd();
-                        var response = JsonConvert.DeserializeObject<MatchDayBlogResponse>(responseString);
+                        if (responseStream != null)
+                        {
+                            var streamReader = new StreamReader(responseStream, Encoding.UTF8);
+                            var responseString = streamReader.ReadToEnd();
 
-                        var responseTime = DateTime.Now;
-                        CheckIfRequestTakingTooLong(webRequest, requestTime, responseTime);
+                            var response = JsonConvert.DeserializeObject<MatchDayBlogResponse>(responseString);
+                            if (response == null)
+                                return 0;
 
-                        return response.ID;
+                            var responseTime = DateTime.Now;
+                            CheckIfRequestTakingTooLong(webRequest, requestTime, responseTime);
+
+                            return response.ID;
+                        }
                     }
                 }
             }
             catch (Exception exception)
             {
                 var key = GetType().FullName + ".GetMatchDayBlogId";
-                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.GetBaseUri()}.{Environment.NewLine}{key}{Environment.NewLine}{exception}");
-
-                return 0;
+                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.GetBaseUri()}.{Environment.NewLine}{key}{Environment.NewLine}{exception.Message}" +
+                                                    $"{Environment.NewLine}{exception}" +
+                                                    $"{Environment.NewLine}{exception.InnerException}");
             }
+
+            return 0;
         }
 
         public async Task<int> GetMatchPreviewId(string sportName, int legacyFixtureId)
@@ -136,24 +160,32 @@
                 {
                     using (var responseStream = webResponse.GetResponseStream())
                     {
-                        var streamReader = new StreamReader(responseStream, Encoding.UTF8);
-                        var responseString = streamReader.ReadToEnd();
-                        var response = JsonConvert.DeserializeObject<MatchPreviewResponse>(responseString);
+                        if (responseStream != null)
+                        {
+                            var streamReader = new StreamReader(responseStream, Encoding.UTF8);
+                            var responseString = streamReader.ReadToEnd();
 
-                        var responseTime = DateTime.Now;
-                        CheckIfRequestTakingTooLong(webRequest, requestTime, responseTime);
+                            var response = JsonConvert.DeserializeObject<MatchPreviewResponse>(responseString);
+                            if (response == null)
+                                return 0;
 
-                        return response.ID;
+                            var responseTime = DateTime.Now;
+                            CheckIfRequestTakingTooLong(webRequest, requestTime, responseTime);
+
+                            return response.ID;
+                        }
                     }
                 }
             }
             catch (Exception exception)
             {
                 var key = GetType().FullName + ".GetMatchPreviewId";
-                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.GetBaseUri()}.{Environment.NewLine}{key}{Environment.NewLine}{exception}");
-
-                return 0;
+                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.GetBaseUri()}.{Environment.NewLine}{key}{Environment.NewLine}{exception.Message}" +
+                                                    $"{Environment.NewLine}{exception}" +
+                                                    $"{Environment.NewLine}{exception.InnerException}");
             }
+
+            return 0;
         }
 
         public async Task<int> GetMatchReportId(string sportName, int legacyFixtureId)
@@ -168,37 +200,52 @@
                 {
                     using (var responseStream = webResponse.GetResponseStream())
                     {
-                        var streamReader = new StreamReader(responseStream, Encoding.UTF8);
-                        var responseString = streamReader.ReadToEnd();
-                        var response = JsonConvert.DeserializeObject<MatchReportResponse>(responseString);
+                        if (responseStream != null)
+                        {
+                            var streamReader = new StreamReader(responseStream, Encoding.UTF8);
+                            var responseString = streamReader.ReadToEnd();
 
-                        var responseTime = DateTime.Now;
-                        CheckIfRequestTakingTooLong(webRequest, requestTime, responseTime);
+                            var response = JsonConvert.DeserializeObject<MatchReportResponse>(responseString);
+                            if (response == null)
+                                return 0;
 
-                        return response.ID;
+                            var responseTime = DateTime.Now;
+                            CheckIfRequestTakingTooLong(webRequest, requestTime, responseTime);
+
+                            return response.ID;
+                        }
                     }
                 }
             }
             catch (Exception exception)
             {
                 var key = GetType().FullName + ".GetMatchReportId";
-                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.GetBaseUri()}.{Environment.NewLine}{key}{Environment.NewLine}{exception}");
-
-                return 0;
+                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.GetBaseUri()}.{Environment.NewLine}{key}{Environment.NewLine}{exception.Message}" +
+                                                    $"{Environment.NewLine}{exception}" +
+                                                    $"{Environment.NewLine}{exception.InnerException}");
             }
+
+            return 0;
         }
 
         private void CheckIfRequestTakingTooLong(WebRequest request, DateTime requestTime, DateTime responseTime)
         {
-            if (request == null)
-                return;
-
-            var durationMilliseconds = (responseTime - requestTime).TotalMilliseconds;
-
-            if (durationMilliseconds > _requestDurationWarningMilliseconds)
+            try
             {
-                _logger.Warn($"HTTPRequestTooLong.{request.RequestUri}",
-                    $"HTTP request taking too long. {request.GetBaseUri()}. Warning level is {_requestDurationWarningMilliseconds / 1000.0} seconds; took " + durationMilliseconds / 1000.0 + " seconds.");
+                if (request == null)
+                    return;
+
+                var durationMilliseconds = (responseTime - requestTime).TotalMilliseconds;
+
+                if (durationMilliseconds > _requestDurationWarningMilliseconds)
+                {
+                    _logger.Warn($"HTTPRequestTooLong.{request.RequestUri}",
+                        $"HTTP request taking too long. {request.GetBaseUri()}. Warning level is {_requestDurationWarningMilliseconds / 1000.0} seconds; took " + durationMilliseconds / 1000.0 + " seconds.");
+                }
+            }
+            catch (Exception)
+            {
+                // ignored
             }
         }
     }
