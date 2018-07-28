@@ -1,5 +1,5 @@
-// This file is part of Hangfire.
-// Copyright © 2013-2014 Sergey Odinokov.
+ï»¿// This file is part of Hangfire.
+// Copyright ï¿½ 2013-2014 Sergey Odinokov.
 // 
 // Hangfire is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as 
@@ -71,7 +71,7 @@ namespace Hangfire.SqlServer
 $@"insert into [{_storage.SchemaName}].JobQueue (JobId, Queue) values (@jobId, @queue)";
 
             connection.Execute(
-                enqueueJobSql, 
+                enqueueJobSql,
                 new { jobId = long.Parse(jobId), queue = queue }
 #if !NETFULL
                 , transaction
@@ -99,7 +99,7 @@ where Queue in @queues and
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
-                _storage.UseConnection(null, connection =>
+                _storage.UseConnection(connection =>
                 {
                     fetchedJob = connection
                         .Query<FetchedJob>(

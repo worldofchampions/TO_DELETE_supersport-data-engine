@@ -25,6 +25,9 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Areas.HelpPage
     /// </summary>
     public static class HelpPageConfig
     {
+        /// <summary>
+        /// 
+        /// </summary>
         [SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters",
             MessageId = "SuperSportDataEngine.Application.WebApi.SystemApi.Areas.HelpPage.TextSample.#ctor(System.String)",
             Justification = "End users may choose to merge this string with existing localized resources.")]

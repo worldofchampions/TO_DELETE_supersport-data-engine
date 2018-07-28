@@ -1,5 +1,5 @@
-// This file is part of Hangfire.
-// Copyright © 2013-2014 Sergey Odinokov.
+ï»¿// This file is part of Hangfire.
+// Copyright ï¿½ 2013-2014 Sergey Odinokov.
 // 
 // Hangfire is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as 
@@ -27,24 +27,24 @@ namespace Hangfire.Storage
         JobDetailsDto JobDetails(string jobId);
         StatisticsDto GetStatistics();
 
-        JobList<EnqueuedJobDto> EnqueuedJobs(string queue, int from, int perPage);
-        JobList<FetchedJobDto> FetchedJobs(string queue, int from, int perPage);
+        JobList<EnqueuedJobDto> EnqueuedJobs(string queue, int from, int perPage, string filter);
+        JobList<FetchedJobDto> FetchedJobs(string queue, int from, int perPage, string filter);
 
-        JobList<ProcessingJobDto> ProcessingJobs(int from, int count);
-        JobList<ScheduledJobDto> ScheduledJobs(int from, int count);
-        JobList<SucceededJobDto> SucceededJobs(int from, int count);
-        JobList<FailedJobDto> FailedJobs(int from, int count);
-        JobList<DeletedJobDto> DeletedJobs(int from, int count);
+        JobList<ProcessingJobDto> ProcessingJobs(int from, int count, string filter);
+        JobList<ScheduledJobDto> ScheduledJobs(int from, int count, string filter);
+        JobList<SucceededJobDto> SucceededJobs(int from, int count, string filter);
+        JobList<FailedJobDto> FailedJobs(int from, int count, string filter);
+        JobList<DeletedJobDto> DeletedJobs(int from, int count, string filter);
 
-        long ScheduledCount();
-        long EnqueuedCount(string queue);
-        long FetchedCount(string queue);
-        long FailedCount();
-        long ProcessingCount();
+        long ScheduledCount(string filter);
+        long EnqueuedCount(string queue, string filter);
+        long FetchedCount(string queue, string filter);
+        long FailedCount(string filter);
+        long ProcessingCount(string filter);
 
-        long SucceededListCount();
-        long DeletedListCount();
-        
+        long SucceededListCount(string filter);
+        long DeletedListCount(string filter);
+
         IDictionary<DateTime, long> SucceededByDatesCount();
         IDictionary<DateTime, long> FailedByDatesCount();
         IDictionary<DateTime, long> HourlySucceededJobs();
