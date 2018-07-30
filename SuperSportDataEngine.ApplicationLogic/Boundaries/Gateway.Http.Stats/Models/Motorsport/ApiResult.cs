@@ -182,6 +182,7 @@
         public Car car { get; set; }
         public Owner owner { get; set; }
         public CarStatus carStatus { get; set; }
+        public bool? isClassified { get; set; }
         public List<object> averageSpeed { get; set; }
         public CarPosition carPosition { get; set; }
         public Laps laps { get; set; }
