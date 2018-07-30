@@ -1293,6 +1293,8 @@
 
         private  IEnumerable<Team> ResolveDuplicateTeamIds(ICollection<Team> teams)
         {
+            if (teams == null || !teams.Any()) return null;
+
             var duplicateTeamsIds = teams.GroupBy(x => x.teamId)
                 .Where(group => group.Count() > 1)
                 .Select(group => group.Key).ToList();
