@@ -4,9 +4,9 @@
     using System.Threading.Tasks;
     using MongoDB.Bson;
     using MongoDB.Driver;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.Stats.Models.Motorsport;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
-    using SuperSportDataEngine.Common.Logging;
+    using ApplicationLogic.Boundaries.Gateway.Http.Stats.Models.Motorsport;
+    using ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
+    using Common.Logging;
 
     public class MongoDbMotorsportRepository : IMongoDbMotorsportRepository
     {
@@ -43,12 +43,12 @@
                     return;
                 }
 
-                bool isMongoLive = db.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
+                var isMongoLive = db.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
 
                 if (!isMongoLive)
                 {
 #if (!DEBUG)
-                    _logger.Error("MongoDbCannotConnect", "Unable to connect to MongoDB.");
+                    await _logger.Error("MongoDbCannotConnect", "Unable to connect to MongoDB.");
 #endif
                     return;
                 }
