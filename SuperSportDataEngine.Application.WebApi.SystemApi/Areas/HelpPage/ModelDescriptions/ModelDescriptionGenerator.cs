@@ -85,7 +85,10 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Areas.HelpPage.Model
         };
 
         private Lazy<IModelDocumentationProvider> _documentationProvider;
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="config"></param>
         public ModelDescriptionGenerator(HttpConfiguration config)
         {
             if (config == null)
@@ -96,7 +99,9 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Areas.HelpPage.Model
             _documentationProvider = new Lazy<IModelDocumentationProvider>(() => config.Services.GetDocumentationProvider() as IModelDocumentationProvider);
             GeneratedModels = new Dictionary<string, ModelDescription>(StringComparer.OrdinalIgnoreCase);
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
         public Dictionary<string, ModelDescription> GeneratedModels { get; private set; }
 
         private IModelDocumentationProvider DocumentationProvider
@@ -106,7 +111,11 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Areas.HelpPage.Model
                 return _documentationProvider.Value;
             }
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="modelType"></param>
+        /// <returns></returns>
         public ModelDescription GetOrCreateModelDescription(Type modelType)
         {
             if (modelType == null)

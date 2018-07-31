@@ -539,6 +539,11 @@
                 eventResultInRepo.CompletedRace = result.carStatus.carStatusId.Equals(0);
             }
 
+            if (result.isClassified != null)
+            {
+                eventResultInRepo.CompletedRace = result.isClassified.Value;
+            }
+
             if (result.owner != null)
             {
                 var teamInRepo =
@@ -592,6 +597,11 @@
             {
                 motorsportRaceResult.OutReason = result.carStatus.name;
                 motorsportRaceResult.CompletedRace = result.carStatus.carStatusId.Equals(0);
+            }
+
+            if (result.isClassified != null)
+            {
+                motorsportRaceResult.CompletedRace = result.isClassified.Value;
             }
 
             if (result.points.driver.total != null)
@@ -1283,6 +1293,8 @@
 
         private  IEnumerable<Team> ResolveDuplicateTeamIds(ICollection<Team> teams)
         {
+            if (teams == null || !teams.Any()) return null;
+
             var duplicateTeamsIds = teams.GroupBy(x => x.teamId)
                 .Where(group => group.Count() > 1)
                 .Select(group => group.Key).ToList();

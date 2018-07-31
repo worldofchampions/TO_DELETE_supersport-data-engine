@@ -102,7 +102,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
             // Runs on QA, Staging and Production.
 #if (!DEBUG)
             var monitorApi = JobStorage.Current.GetMonitoringApi();
-            var processingJobs = monitorApi.ProcessingJobs(0, (int)monitorApi.ProcessingCount());
+            var processingJobs = monitorApi.ProcessingJobs(0, (int)monitorApi.ProcessingCount(null), null);
 
             foreach (var job in processingJobs)
             {

@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Hangfire.Annotations;
 using Hangfire.Common;
 
@@ -51,6 +52,20 @@ namespace Hangfire.Storage
 
             var ids = connection.GetRangeFromSet("recurring-jobs", startingFrom, endingAt);
             return GetRecurringJobDtos(connection, ids);
+        }
+
+        public static List<RecurringJobDto> GetRecurringJobs(
+            [NotNull] this JobStorageConnection connection,
+            int startingFrom,
+            int endingAt, string filter)
+        {
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
+
+            var ids = connection.GetRangeFromSet("recurring-jobs", startingFrom, int.MaxValue - 1);
+            var recurringJobs = GetRecurringJobDtos(connection, ids).ToList();
+            return filter == null 
+               ? recurringJobs 
+               : recurringJobs.Where(j => j.Id.ToLower().Contains(filter.ToLower())).ToList();
         }
 
         public static List<RecurringJobDto> GetRecurringJobs([NotNull] this IStorageConnection connection)

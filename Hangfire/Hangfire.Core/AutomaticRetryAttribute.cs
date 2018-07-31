@@ -83,7 +83,7 @@ namespace Hangfire
         public static readonly int DefaultRetryAttempts = 10;
 
         private static readonly ILog Logger = LogProvider.For<AutomaticRetryAttribute>();
-        
+
         private readonly object _lockObject = new object();
         private int _attempts;
         private AttemptsExceededAction _onAttemptsExceeded;
@@ -207,7 +207,7 @@ namespace Hangfire
 
             const int maxMessageLength = 50;
             var exceptionMessage = failedState.Exception.Message.Length > maxMessageLength
-                ? failedState.Exception.Message.Substring(0, maxMessageLength - 1) + "…" 
+                ? failedState.Exception.Message.Substring(0, maxMessageLength - 1) + "…"
                 : failedState.Exception.Message;
 
             // If attempt number is less than max attempts, we should

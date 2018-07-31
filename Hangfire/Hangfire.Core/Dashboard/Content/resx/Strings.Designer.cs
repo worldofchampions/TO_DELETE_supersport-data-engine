@@ -115,6 +115,15 @@ namespace Hangfire.Dashboard.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Arguments.
+        /// </summary>
+        public static string Common_Arguments {
+            get {
+                return ResourceManager.GetString("Common_Arguments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Can not find the target method..
         /// </summary>
         public static string Common_CannotFindTargetMethod {
@@ -877,6 +886,15 @@ namespace Hangfire.Dashboard.Resources {
         public static string Paginator_TotalItems {
             get {
                 return ResourceManager.GetString("Paginator_TotalItems", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All.
+        /// </summary>
+        public static string PerPageSelector_All {
+            get {
+                return ResourceManager.GetString("PerPageSelector_All", resourceCulture);
             }
         }
         

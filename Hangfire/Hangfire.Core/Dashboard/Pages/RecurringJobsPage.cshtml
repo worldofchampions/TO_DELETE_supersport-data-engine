@@ -13,6 +13,8 @@
     
     int from, perPage;
 
+    var filter = Query("filter");
+
     int.TryParse(Query("from"), out from);
     int.TryParse(Query("count"), out perPage);
 
@@ -23,8 +25,9 @@
 	    var storageConnection = connection as JobStorageConnection;
 	    if (storageConnection != null)
 	    {
-	        pager = new Pager(from, perPage, storageConnection.GetRecurringJobCount());
-	        recurringJobs = storageConnection.GetRecurringJobs(pager.FromRecord, pager.FromRecord + pager.RecordsPerPage - 1);
+	        var monitor = Storage.GetMonitoringApi();
+	        pager = new Pager(from, perPage, storageConnection.GetRecurringJobCount(), filter, DefaultRecordsPerPage);
+	        recurringJobs = storageConnection.GetRecurringJobs(pager.FromRecord, pager.FromRecord + pager.RecordsPerPage - 1, filter);
 	    }
 	    else
 	    {
@@ -55,19 +58,19 @@
                         @Strings.RecurringJobsPage_TriggerNow
                     </button>
 
-                    <button class="js-jobs-list-command btn btn-sm btn-default"
-                            data-url="@Url.To("/recurring/remove")"
-                            data-loading-text="@Strings.Common_Deleting"
-                            data-confirm="@Strings.Common_DeleteConfirm"
-                            disabled="disabled">
-                        <span class="glyphicon glyphicon-remove"></span>
-                        @Strings.Common_Delete
-                    </button>
+                  <button class="js-jobs-list-command btn btn-sm btn-default"
+                          data-url="@Url.To("/recurring/remove")"
+                          data-loading-text="@Strings.Common_Deleting"
+                          data-confirm="@Strings.Common_DeleteConfirm"
+                          disabled="disabled">
+                    <span class="glyphicon glyphicon-remove"></span>
+                    @Strings.Common_Delete
+                  </button>
 
-                    @if (pager != null)
-                    {
-                        @: @Html.PerPageSelector(pager)
-                    }
+                  @if (true)
+                  {
+                      @Html.Filter(pager)
+                  }
                 </div>
 
                 <div class="table-responsive">
@@ -118,11 +121,6 @@
                         </tbody>
                     </table>
                 </div>
-
-                @if (pager != null)
-                {
-                    @: @Html.Paginator(pager)
-                }
             </div>
         }
     </div>
