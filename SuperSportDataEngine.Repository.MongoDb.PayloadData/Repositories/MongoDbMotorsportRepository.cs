@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
+﻿using System.Threading;
+
+namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
 {
     using System.Configuration;
     using System.Threading.Tasks;
@@ -27,6 +29,9 @@
         private async Task Save<T>(T data)
             where T : MotorsportEntitiesResponse
         {
+            var persistAttemptsCount = 1;
+            PersistIntoMongo:
+
             try
             {
                 if (data == null)
@@ -58,6 +63,15 @@
                 // Add to the collection.
                 var collection = db.GetCollection<ApiResult>("motorsport_entities");
                 await collection.InsertOneAsync(data.apiResults[0]);
+            }
+            catch (MongoConnectionException)
+            {
+                Thread.Sleep(100);
+                persistAttemptsCount++;
+                if (persistAttemptsCount >= 10)
+                    return;
+
+                goto PersistIntoMongo;
             }
             catch (System.Exception exception)
             {
