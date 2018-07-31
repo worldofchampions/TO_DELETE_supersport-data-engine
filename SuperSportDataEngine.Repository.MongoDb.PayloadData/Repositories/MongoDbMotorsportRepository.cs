@@ -16,7 +16,7 @@
         private readonly string _mongoDatabaseName;
 
         public MongoDbMotorsportRepository(
-            IMongoClient mongoClient, 
+            IMongoClient mongoClient,
             ILoggingService logger)
         {
             _mongoClient = mongoClient;
@@ -43,15 +43,17 @@
                     return;
                 }
 
-                var isMongoLive = db.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
+                //[TODO] Ronald: Disabling checking if mongo is live. 
+                //[TODO] I'm instead going to add retryWrites=true to the connectionString for MongoDB
+                //                var isMongoLive = db.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
 
-                if (!isMongoLive)
-                {
-#if (!DEBUG)
-                    await _logger.Error("MongoDbCannotConnect", "Unable to connect to MongoDB.");
-#endif
-                    return;
-                }
+                //                if (!isMongoLive)
+                //                {
+                //#if (!DEBUG)
+                //                    await _logger.Error("MongoDbCannotConnect", "Unable to connect to MongoDB.");
+                //#endif
+                //                    return;
+                //                }
 
                 // Add to the collection.
                 var collection = db.GetCollection<ApiResult>("motorsport_entities");
