@@ -29,7 +29,7 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
         private async Task Save<T>(T data)
             where T : MotorsportEntitiesResponse
         {
-            var persistAttemptsCount = 1;
+            var persistAttemptsCount = 0;
             PersistIntoMongo:
 
             try
