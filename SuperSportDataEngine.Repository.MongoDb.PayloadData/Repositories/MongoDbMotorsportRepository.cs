@@ -64,12 +64,21 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
                 var collection = db.GetCollection<ApiResult>("motorsport_entities");
                 await collection.InsertOneAsync(data.apiResults[0]);
             }
-            catch (MongoConnectionException)
+            catch (MongoConnectionException connectionException)
             {
                 Thread.Sleep(100);
                 persistAttemptsCount++;
                 if (persistAttemptsCount >= 10)
+                {
+                    await _logger.Warn(
+                        "MongoDbSave.Motorsport",
+                        "Cannot save data to MongoDB. " +
+                        "Message: \n" + connectionException.Message +
+                        "StackTrace: \n" + connectionException.StackTrace +
+                        "Inner Exception \n" + connectionException.InnerException);
+
                     return;
+                }
 
                 goto PersistIntoMongo;
             }
