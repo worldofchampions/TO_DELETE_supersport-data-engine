@@ -16,6 +16,8 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
         private readonly ILoggingService _logger;
 
         private readonly string _mongoDatabaseName;
+        private readonly int _maxRetryCount;
+        private readonly int _maxMillisecondsWaitBeforeMongoDbNextRetry;
 
         public MongoDbMotorsportRepository(
             IMongoClient mongoClient,
@@ -24,6 +26,9 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
             _mongoClient = mongoClient;
             _logger = logger;
             _mongoDatabaseName = ConfigurationManager.AppSettings["MongoDbName"];
+            _maxRetryCount = int.Parse(ConfigurationManager.AppSettings["MongoDBRetryCount"]);
+            _maxMillisecondsWaitBeforeMongoDbNextRetry =
+                int.Parse(ConfigurationManager.AppSettings["MongoDBWaitTimeInMillisecondsBeforeNextRetry"]);
         }
 
         private async Task Save<T>(T data)
@@ -48,27 +53,15 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
                     return;
                 }
 
-                //[TODO] Ronald: Disabling checking if mongo is live. 
-                //[TODO] I'm instead going to add retryWrites=true to the connectionString for MongoDB
-                //                var isMongoLive = db.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
-
-                //                if (!isMongoLive)
-                //                {
-                //#if (!DEBUG)
-                //                    await _logger.Error("MongoDbCannotConnect", "Unable to connect to MongoDB.");
-                //#endif
-                //                    return;
-                //                }
-
                 // Add to the collection.
                 var collection = db.GetCollection<ApiResult>("motorsport_entities");
                 await collection.InsertOneAsync(data.apiResults[0]);
             }
             catch (MongoConnectionException connectionException)
             {
-                Thread.Sleep(100);
+                Thread.Sleep(_maxMillisecondsWaitBeforeMongoDbNextRetry);
                 persistAttemptsCount++;
-                if (persistAttemptsCount >= 10)
+                if (persistAttemptsCount >= _maxRetryCount)
                 {
                     await _logger.Warn(
                         "MongoDbSave.Motorsport",
