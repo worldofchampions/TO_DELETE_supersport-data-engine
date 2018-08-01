@@ -26,6 +26,7 @@ using System.Text.RegularExpressions;
 using Hangfire.Annotations;
 using Hangfire.Dashboard.Pages;
 using Hangfire.Dashboard.Resources;
+using Newtonsoft.Json;
 
 namespace Hangfire.Dashboard
 {
@@ -78,6 +79,12 @@ namespace Hangfire.Dashboard
         {
             if (pager == null) throw new ArgumentNullException(nameof(pager));
             return RenderPartial(new PerPageSelector(pager));
+        }
+
+        public NonEscapedString Filter([NotNull] Pager pager)
+        {
+            if (pager == null) throw new ArgumentNullException(nameof(pager));
+            return RenderPartial(new Filter(pager));
         }
 
         public NonEscapedString RenderPartial(RazorPage partialPage)
@@ -149,6 +156,11 @@ namespace Hangfire.Dashboard
             return Raw($"<a class=\"job-method\" href=\"{_page.Url.JobDetails(jobId)}\">{HtmlEncode(jobName)}</a>");
         }
 
+        public NonEscapedString JobArguments(Job job)
+        {
+            var serialized = JsonConvert.SerializeObject(job?.Args, Formatting.Indented);
+            return Raw($"<a class=\"job-method toggle-ellipsis\">{HtmlEncode(serialized)}</a>");
+        }
         public NonEscapedString RelativeTime(DateTime value)
         {
             return Raw($"<span data-moment=\"{JobHelper.ToTimestamp(value)}\">{value}</span>");
@@ -229,8 +241,8 @@ namespace Hangfire.Dashboard
 
         public NonEscapedString QueueLabel(string queue)
         {
-            var label = queue != null 
-                ? $"<a class=\"text-uppercase\" href=\"{_page.Url.Queue(queue)}\">{queue}</a>" 
+            var label = queue != null
+                ? $"<a class=\"text-uppercase\" href=\"{_page.Url.Queue(queue)}\">{queue}</a>"
                 : $"<span class=\"label label-danger\"><i>{Strings.Common_Unknown}</i></span>";
 
             return new NonEscapedString(label);
@@ -249,14 +261,22 @@ namespace Hangfire.Dashboard
 
         private static readonly StackTraceHtmlFragments StackTraceHtmlFragments = new StackTraceHtmlFragments
         {
-            BeforeFrame         = "<span class='st-frame'>"                            , AfterFrame         = "</span>",
-            BeforeType          = "<span class='st-type'>"                             , AfterType          = "</span>",
-            BeforeMethod        = "<span class='st-method'>"                           , AfterMethod        = "</span>",
-            BeforeParameters    = "<span class='st-params'>"                           , AfterParameters    = "</span>",
-            BeforeParameterType = "<span class='st-param'><span class='st-param-type'>", AfterParameterType = "</span>",
-            BeforeParameterName = "<span class='st-param-name'>"                       , AfterParameterName = "</span></span>",
-            BeforeFile          = "<span class='st-file'>"                             , AfterFile          = "</span>",
-            BeforeLine          = "<span class='st-line'>"                             , AfterLine          = "</span>",
+            BeforeFrame = "<span class='st-frame'>",
+            AfterFrame = "</span>",
+            BeforeType = "<span class='st-type'>",
+            AfterType = "</span>",
+            BeforeMethod = "<span class='st-method'>",
+            AfterMethod = "</span>",
+            BeforeParameters = "<span class='st-params'>",
+            AfterParameters = "</span>",
+            BeforeParameterType = "<span class='st-param'><span class='st-param-type'>",
+            AfterParameterType = "</span>",
+            BeforeParameterName = "<span class='st-param-name'>",
+            AfterParameterName = "</span></span>",
+            BeforeFile = "<span class='st-file'>",
+            AfterFile = "</span>",
+            BeforeLine = "<span class='st-line'>",
+            AfterLine = "</span>",
         };
 
         public NonEscapedString StackTrace(string stackTrace)

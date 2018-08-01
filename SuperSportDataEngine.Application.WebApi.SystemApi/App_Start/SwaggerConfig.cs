@@ -8,8 +8,14 @@ using SuperSportDataEngine.Application.WebApi.SystemApi.Filters;
 
 namespace SuperSportDataEngine.Application.WebApi.SystemApi
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class SwaggerConfig
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public static void Register()
         {
             var thisAssembly = typeof(SwaggerConfig).Assembly;

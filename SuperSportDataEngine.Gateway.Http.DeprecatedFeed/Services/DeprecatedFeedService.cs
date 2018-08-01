@@ -45,7 +45,10 @@
                         {
                             var streamReader = new StreamReader(responseStream, Encoding.UTF8);
                             var responseString = streamReader.ReadToEnd();
+
                             var response = JsonConvert.DeserializeObject<List<HighlightVideosResponse>>(responseString);
+                            if (response == null)
+                                return null;
 
                             var responseTime = DateTime.Now;
                             CheckIfRequestTakingTooLong(webRequest, requestTime, responseTime);
@@ -58,7 +61,9 @@
             catch (Exception exception)
             {
                 var key = GetType().FullName + ".GetHighlightVideos";
-                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.GetBaseUri()}.{Environment.NewLine}{key}{Environment.NewLine}{exception}");
+                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.GetBaseUri()}.{Environment.NewLine}{key}{Environment.NewLine}{exception.Message}" +
+                                                    $"{Environment.NewLine}{exception}" +
+                                                    $"{Environment.NewLine}{exception.InnerException}");
             }
 
             return null;
@@ -80,7 +85,10 @@
                         {
                             var streamReader = new StreamReader(responseStream, Encoding.UTF8);
                             var responseString = streamReader.ReadToEnd();
+
                             var response = JsonConvert.DeserializeObject<List<LiveVideosResponse>>(responseString);
+                            if (response == null)
+                                return null;
 
                             var responseTime = DateTime.Now;
                             CheckIfRequestTakingTooLong(webRequest, requestTime, responseTime);
@@ -93,7 +101,9 @@
             catch (Exception exception)
             {
                 var key = GetType().FullName + ".GetLiveVideos";
-                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.GetBaseUri()}.{Environment.NewLine}{key}{Environment.NewLine}{exception}");
+                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.GetBaseUri()}.{Environment.NewLine}{key}{Environment.NewLine}{exception.Message}" +
+                                                    $"{Environment.NewLine}{exception}" +
+                                                    $"{Environment.NewLine}{exception.InnerException}");
             }
 
             return null;
@@ -115,7 +125,10 @@
                         {
                             var streamReader = new StreamReader(responseStream, Encoding.UTF8);
                             var responseString = streamReader.ReadToEnd();
+
                             var response = JsonConvert.DeserializeObject<MatchDayBlogResponse>(responseString);
+                            if (response == null)
+                                return 0;
 
                             var responseTime = DateTime.Now;
                             CheckIfRequestTakingTooLong(webRequest, requestTime, responseTime);
@@ -128,7 +141,9 @@
             catch (Exception exception)
             {
                 var key = GetType().FullName + ".GetMatchDayBlogId";
-                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.GetBaseUri()}.{Environment.NewLine}{key}{Environment.NewLine}{exception}");
+                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.GetBaseUri()}.{Environment.NewLine}{key}{Environment.NewLine}{exception.Message}" +
+                                                    $"{Environment.NewLine}{exception}" +
+                                                    $"{Environment.NewLine}{exception.InnerException}");
             }
 
             return 0;
@@ -149,7 +164,10 @@
                         {
                             var streamReader = new StreamReader(responseStream, Encoding.UTF8);
                             var responseString = streamReader.ReadToEnd();
+
                             var response = JsonConvert.DeserializeObject<MatchPreviewResponse>(responseString);
+                            if (response == null)
+                                return 0;
 
                             var responseTime = DateTime.Now;
                             CheckIfRequestTakingTooLong(webRequest, requestTime, responseTime);
@@ -162,7 +180,9 @@
             catch (Exception exception)
             {
                 var key = GetType().FullName + ".GetMatchPreviewId";
-                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.GetBaseUri()}.{Environment.NewLine}{key}{Environment.NewLine}{exception}");
+                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.GetBaseUri()}.{Environment.NewLine}{key}{Environment.NewLine}{exception.Message}" +
+                                                    $"{Environment.NewLine}{exception}" +
+                                                    $"{Environment.NewLine}{exception.InnerException}");
             }
 
             return 0;
@@ -184,7 +204,10 @@
                         {
                             var streamReader = new StreamReader(responseStream, Encoding.UTF8);
                             var responseString = streamReader.ReadToEnd();
+
                             var response = JsonConvert.DeserializeObject<MatchReportResponse>(responseString);
+                            if (response == null)
+                                return 0;
 
                             var responseTime = DateTime.Now;
                             CheckIfRequestTakingTooLong(webRequest, requestTime, responseTime);
@@ -197,7 +220,9 @@
             catch (Exception exception)
             {
                 var key = GetType().FullName + ".GetMatchReportId";
-                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.GetBaseUri()}.{Environment.NewLine}{key}{Environment.NewLine}{exception}");
+                await _logger.Error(key, exception, $"Error requesting data from: {webRequest.GetBaseUri()}.{Environment.NewLine}{key}{Environment.NewLine}{exception.Message}" +
+                                                    $"{Environment.NewLine}{exception}" +
+                                                    $"{Environment.NewLine}{exception.InnerException}");
             }
 
             return 0;

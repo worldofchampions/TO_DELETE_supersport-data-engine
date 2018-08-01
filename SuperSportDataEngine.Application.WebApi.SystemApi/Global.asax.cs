@@ -5,8 +5,14 @@
     using System.Web.Optimization;
     using System.Web.Routing;
 
+    /// <summary>
+    /// 
+    /// </summary>
     public class WebApiApplication : System.Web.HttpApplication
     {
+        /// <summary>
+        /// 
+        /// </summary>
         protected void Application_Start()
         {
             AreaRegistration.RegisterAllAreas();
