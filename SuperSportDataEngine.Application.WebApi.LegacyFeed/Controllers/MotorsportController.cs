@@ -262,7 +262,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         public async Task<IHttpActionResult> GetLive(string category)
         {
             // TODO: @motorsport-feed: implement.
-            return Content(HttpStatusCode.OK, "DEBUG GetLive");
+            return await Task.FromResult(Content(HttpStatusCode.OK, "DEBUG GetLive"));
         }
 
         // [TODO] Refactor this method out of this class and into a base class that has the cache.
