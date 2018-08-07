@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,11 +13,14 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters
 {
     public class LogUserAgentFilterAttribute : ActionFilterAttribute
     {
-        private Type _serviceType;
+        private readonly Type _serviceType;
+        private readonly int _retentionTimeForLoggingUserAgentInDays;
 
         public LogUserAgentFilterAttribute(Type serviceType)
         {
             _serviceType = serviceType;
+            _retentionTimeForLoggingUserAgentInDays = 
+                int.Parse(ConfigurationManager.AppSettings["RetentionTimeForLoggingUserAgentInDays"]);
         }
 
         public override async Task OnActionExecutingAsync(HttpActionContext context, CancellationToken cancellationToken)
@@ -52,7 +56,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters
                     "from User Agent = " + userAgent + 
                     " with Auth Key = " + authKey + 
                     " accessing Local path = " + context.Request.RequestUri.LocalPath,
-                    TimeSpan.FromDays(7));
+                    TimeSpan.FromDays(_retentionTimeForLoggingUserAgentInDays));
             }
         }
     }
