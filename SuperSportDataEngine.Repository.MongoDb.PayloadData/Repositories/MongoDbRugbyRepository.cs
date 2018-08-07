@@ -2,6 +2,7 @@
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.ResponseModels;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
 using System.Configuration;
+using System.Threading;
 using MongoDB.Bson;
 using SuperSportDataEngine.Common.Logging;
 
@@ -13,6 +14,8 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
         private readonly ILoggingService _logger;
 
         private readonly string _mongoDatabaseName;
+        private readonly int _maxRetryCount;
+        private readonly int _maxMillisecondsWaitBeforeMongoDbNextRetry;
 
         public MongoDbRugbyRepository(
             IMongoClient mongoClient,
@@ -21,11 +24,16 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
             _mongoClient = mongoClient;
             _logger = logger;
             _mongoDatabaseName = ConfigurationManager.AppSettings["MongoDbName"];
-
+            _maxRetryCount = int.Parse(ConfigurationManager.AppSettings["MongoDBRetryCount"]);
+            _maxMillisecondsWaitBeforeMongoDbNextRetry =
+                int.Parse(ConfigurationManager.AppSettings["MongoDBWaitTimeInMillisecondsBeforeNextRetry"]);
         }
 
         private async void Save<T>(T data, string collectionName)
         {
+            var persistAttemptsCount = 0;
+            PersistIntoMongo:
+
             try
             {
                 if (data == null)
@@ -42,19 +50,27 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
                     return;
                 }
 
-                var isMongoLive = db.RunCommandAsync((Command<BsonDocument>)"{ping:1}").Wait(1000);
-
-                if (!isMongoLive)
-                {
-#if (!DEBUG)
-                    await _logger.Error("MongoDbCannotConnect", "Unable to connect to MongoDB.");
-#endif
-                    return;
-                }
-
                 // Add to the collection.
                 var collection = db.GetCollection<T>(collectionName);
                 await collection.InsertOneAsync(data);
+            }
+            catch (MongoConnectionException connectionException)
+            {
+                Thread.Sleep(_maxMillisecondsWaitBeforeMongoDbNextRetry);
+                persistAttemptsCount++;
+                if (persistAttemptsCount >= _maxRetryCount)
+                {
+                    await _logger.Warn(
+                        "MongoDbSave.Rugby",
+                        "Cannot save data to MongoDB. " +
+                        "Message: \n" + connectionException.Message +
+                        "StackTrace: \n" + connectionException.StackTrace +
+                        "Inner Exception \n" + connectionException.InnerException);
+
+                    return;
+                }
+
+                goto PersistIntoMongo;
             }
             catch (System.Exception exception)
             {
