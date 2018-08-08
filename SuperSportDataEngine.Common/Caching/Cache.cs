@@ -39,7 +39,7 @@ namespace SuperSportDataEngine.Common.Caching
                 {
                     t.HashSetAsync(key,
                         new HashEntry[] {
-                            new HashEntry("value", JsonConvert.SerializeObject(cacheObject)),
+                            new HashEntry("value", JsonConvert.SerializeObject(cacheObject, Formatting.None, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore })),
                             new HashEntry("parent", parentKey)
                         },
                         CommandFlags.FireAndForget);
@@ -48,7 +48,7 @@ namespace SuperSportDataEngine.Common.Caching
                 {
                     t.HashSetAsync(key,
                         new HashEntry[] {
-                            new HashEntry("value", JsonConvert.SerializeObject(cacheObject))
+                            new HashEntry("value", JsonConvert.SerializeObject(cacheObject, Formatting.None, new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore }))
                         },
                         CommandFlags.FireAndForget);
                 }
