@@ -653,6 +653,11 @@
                     var venue = fixture.venueName == null ? null :
                         allVenues.FirstOrDefault(v => v.ProviderVenueId == fixture.venueId);
 
+                    // Check the teamNickName for the RugbyTeams
+                    // Persist it to the DB if we don't have it.
+                    UpdateTeamNickNameForRugbyTeam(team0, teamA);
+                    UpdateTeamNickNameForRugbyTeam(team1, teamB);
+
                     var newFixture = new RugbyFixture()
                     {
                         ProviderFixtureId = fixtureId,
@@ -722,6 +727,19 @@
             }
 
             await _publicSportDataUnitOfWork.SaveChangesAsync();
+        }
+
+        private static void UpdateTeamNickNameForRugbyTeam(
+            Boundaries.Gateway.Http.StatsProzone.Models.RugbyFixtures.Team providerTeam, 
+            RugbyTeam dbRugbyTeam)
+        {
+            if (string.IsNullOrEmpty(providerTeam.teamNickName))
+                return;
+
+            if (dbRugbyTeam.ProviderNameAlternate == providerTeam.teamNickName)
+                return;
+
+            dbRugbyTeam.ProviderNameAlternate = providerTeam.teamNickName;
         }
 
         private bool IsProviderFixturePartOfFinal(Boundaries.Gateway.Http.StatsProzone.Models.RugbyFixtures.RoundFixture roundFixture)
