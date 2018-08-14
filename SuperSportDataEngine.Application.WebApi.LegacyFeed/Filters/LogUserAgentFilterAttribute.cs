@@ -51,12 +51,12 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters
 
             if (isInvalidSlug)
             {
-                await logger.Warn("InvalidSlugName.UserAgent." + category,
+                await logger.Warn("InvalidSlugName:" + context.Request.RequestUri.ToString().Replace(":", "."),
                     "Invalid tournament slug =\"" + category + "\". Request coming " +
                     "from User Agent = " + userAgent + 
                     " with Auth Key = " + authKey + 
                     " accessing Local path = " + context.Request.RequestUri.LocalPath,
-                    TimeSpan.FromDays(_retentionTimeForLoggingUserAgentInDays));
+                    TimeSpan.MaxValue);
             }
         }
     }

@@ -89,20 +89,9 @@ namespace SuperSportDataEngine.Common.Caching
 
         private void ExecuteTransaction(Action<ITransaction> command)
         {
-            lock (_lock)
-            {
-                var transaction = Database.CreateTransaction();
-                command(transaction);
-
-                try
-                {
-                    transaction.Execute();
-                }
-                catch (Exception)
-                {
-                    // ignored 
-                }
-            }
+            var transaction = Database.CreateTransaction();
+            command(transaction);
+            transaction.Execute();
         }
     }
 }
