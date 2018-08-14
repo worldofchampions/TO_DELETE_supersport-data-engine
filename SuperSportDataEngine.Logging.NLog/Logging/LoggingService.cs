@@ -63,10 +63,10 @@ namespace SuperSportDataEngine.Logging.NLog.Logging
             {
                 try
                 {
-                    object cacheObject = await Cache.GetAsync<LogEventInfo>(key);
+                    object cacheObject = await Cache.GetAsync<string>(key);
                     if (cacheObject == null)
                     {
-                        Cache.Add(key, logEvent,
+                        Cache.Add(key, logEvent.Message,
                             ttlTimeSpan == default(TimeSpan) ?
                                 TimeSpan.FromMinutes(_cacheTtlInMinutes) :
                                 ttlTimeSpan);
@@ -226,7 +226,7 @@ namespace SuperSportDataEngine.Logging.NLog.Logging
             if (exception != null)
             {
                 assemblyProp = exception.Source;
-                classProp = exception.TargetSite.DeclaringType.FullName;
+                if (exception.TargetSite.DeclaringType != null) classProp = exception.TargetSite.DeclaringType.FullName;
                 methodProp = exception.TargetSite.Name;
                 messageProp = exception.Message;
 
@@ -241,6 +241,7 @@ namespace SuperSportDataEngine.Logging.NLog.Logging
             logEvent.Properties["error-method"] = methodProp;
             logEvent.Properties["error-message"] = messageProp;
             logEvent.Properties["inner-error-message"] = innerMessageProp;
+            logEvent.Message = format;
 
             return logEvent;
         }
