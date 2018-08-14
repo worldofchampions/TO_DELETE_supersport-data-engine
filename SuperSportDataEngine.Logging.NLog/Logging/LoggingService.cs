@@ -53,10 +53,11 @@ namespace SuperSportDataEngine.Logging.NLog.Logging
             // Add a namespace to the Redis key.
             //key = key.Replace(":", "");
             key = $"LoggingService:{key}";
+            Type type = typeof(LoggingService);
 
             if (Cache == null)
             {
-                await WriteLog(typeof(LoggingService), logEvent);
+                await WriteLog(type, logEvent);
             }
             else
             {
@@ -70,13 +71,13 @@ namespace SuperSportDataEngine.Logging.NLog.Logging
                                 TimeSpan.FromMinutes(_cacheTtlInMinutes) :
                                 ttlTimeSpan);
 
-                        await WriteLog(typeof(LoggingService), logEvent);
+                        await WriteLog(type, logEvent);
                     }
                 }
                 catch (Exception)
                 {
                     // Ignore the exception and log it anyways?
-                    await WriteLog(typeof(LoggingService), logEvent);
+                    await WriteLog(type, logEvent);
                 }
             }
         }
@@ -90,7 +91,7 @@ namespace SuperSportDataEngine.Logging.NLog.Logging
                     Environment.NewLine +
                     logEvent.Message;
 
-                Log(typeof(LoggingService), logEvent);
+                Log(type, logEvent);
             }
             catch (Exception exception)
             {
