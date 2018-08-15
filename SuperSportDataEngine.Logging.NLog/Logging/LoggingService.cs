@@ -224,9 +224,9 @@ namespace SuperSportDataEngine.Logging.NLog.Logging
                 string methodProp = string.Empty;
                 string messageProp = string.Empty;
                 string innerMessageProp = string.Empty;
-
+                string message = string.Format(format, args);
                 var logEvent = new LogEventInfo
-                    (level, loggerName, $"{format}");
+                    (level, loggerName, message);
 
                 if (exception != null)
                 {
@@ -246,7 +246,7 @@ namespace SuperSportDataEngine.Logging.NLog.Logging
                 logEvent.Properties["error-method"] = methodProp;
                 logEvent.Properties["error-message"] = messageProp;
                 logEvent.Properties["inner-error-message"] = innerMessageProp;
-                logEvent.Message = format;
+                logEvent.Message = message;
 
                 return logEvent;
             }

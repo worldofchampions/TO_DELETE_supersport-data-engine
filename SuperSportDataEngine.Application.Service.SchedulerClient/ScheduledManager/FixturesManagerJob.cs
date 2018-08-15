@@ -88,8 +88,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
                             QueueName = HangfireQueueConfiguration.HighPriority
                         });
 
-                    await _loggingService.Info("CreatedJob." + jobId, "Created Job = " + jobId);
-
                     var tournamentInDb =
                         (await _systemSportDataUnitOfWork.SchedulerTrackingRugbyTournaments.AllAsync())
                         .FirstOrDefault(t => t.TournamentId == tournament.Id &&

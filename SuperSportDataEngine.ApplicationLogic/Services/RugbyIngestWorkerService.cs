@@ -1005,7 +1005,6 @@
                     var key = GetType().FullName + ".IngestStandingsForSuperRugby" + ". Season=" + seasonId;
                     var message = $"Error processing RugbyLogGroup for ladderId={ladder.group}, groupName={ladder.groupName}. Check that the RugbyLogGroup entry is configured in the DB.";
                     await _logger.Error(key, exception, $"{message}{Environment.NewLine}{key}{Environment.NewLine}{exception}");
-                    continue;
                 }
             }
         }
@@ -1599,7 +1598,10 @@
                 {
                     var key = GetType().FullName + ".IngestStandingsForSevens2018" + ". Season=" + seasonId;
                     var message = $"Error processing RugbyLogGroup for ladderId={ladder.group}, groupName={ladder.groupName} roundNumber={ladder.roundNumber}. Check that the RugbyLogGroup entry is configured in the DB.";
-                    await _logger.Warn(key, exception, $"{message}{Environment.NewLine}{key}{Environment.NewLine}{exception}");
+                    await _logger.Warn(
+                        key, 
+                        exception, 
+                        $"{message}{Environment.NewLine}{key}{Environment.NewLine}{exception}");
                 }
             }
         }
@@ -2646,9 +2648,10 @@
                                 providerPlayer.playerId.Equals(
                                     p.ProviderPlayerId))).ToList();
 
-                        await _logger.Warn("IngestingNewPlayers.Lineups",
-                            "We are ingesting new players from STATS while ingesting Lineups. LegacyFixtureId = " +
-                            fixture.LegacyFixtureId);
+                        await _logger.Warn(
+                            "IngestingNewPlayers.Lineups",
+                            null,
+                            $"We are ingesting new players from STATS while ingesting Lineups. LegacyFixtureId = {fixture.LegacyFixtureId}");
                     }
 
                     if (dbPlayer.FirstName == null && dbPlayer.LastName == null)
@@ -2818,15 +2821,17 @@
             var standingsToRemove = groupStandingsToRemove as IList<RugbyGroupedLog> ?? groupStandingsToRemove.ToList();
             foreach (var rugbyGroupedLog in standingsToRemove)
             {
-                await _logger.Warn("CleanUpGroupedLogs." +
-                                   rugbyGroupedLog.RugbyTournament.ProviderTournamentId + "." +
-                                   rugbyGroupedLog.RugbySeason.ProviderSeasonId + "." +
-                                   rugbyGroupedLog.RugbyTeam.LegacyTeamId + "." +
-                                   rugbyGroupedLog.RugbyLogGroup.Slug,
-                    "Going to remove Secondary Group Standings log entry for Team = " + rugbyGroupedLog.RugbyTeam.Name +
-                    " from Tournament = " + rugbyGroupedLog.RugbyTournament.Name +
-                    " for Season = " + rugbyGroupedLog.RugbySeason.ProviderSeasonId +
-                    " for Group = " + rugbyGroupedLog.RugbyLogGroup.GroupName);
+                await _logger.Warn(
+                    "CleanUpGroupedLogs." +
+                    rugbyGroupedLog.RugbyTournament.ProviderTournamentId + "." +
+                    rugbyGroupedLog.RugbySeason.ProviderSeasonId + "." +
+                    rugbyGroupedLog.RugbyTeam.LegacyTeamId + "." +
+                    rugbyGroupedLog.RugbyLogGroup.Slug,
+                    null,
+                    $"Going to remove Secondary Group Standings log entry for Team = {rugbyGroupedLog.RugbyTeam.Name}\n" +
+                    $" from Tournament = {rugbyGroupedLog.RugbyTournament.Name}\n" +
+                    $" for Season = {rugbyGroupedLog.RugbySeason.ProviderSeasonId}\n" +
+                    $" for Group = {rugbyGroupedLog.RugbyLogGroup.GroupName}");
             }
 
             _publicSportDataUnitOfWork.RugbyGroupedLogs.DeleteRange(standingsToRemove);
@@ -2858,10 +2863,11 @@
                                    rugbyGroupedLog.RugbySeason.ProviderSeasonId + "." +
                                    rugbyGroupedLog.RugbyTeam.LegacyTeamId + "." +
                                    rugbyGroupedLog.RugbyLogGroup.Slug,
-                    "Going to remove Group Standings log entry for Team = " + rugbyGroupedLog.RugbyTeam.Name +
-                    " from Tournament = " + rugbyGroupedLog.RugbyTournament.Name +
-                    " for Season = " + rugbyGroupedLog.RugbySeason.ProviderSeasonId +
-                    " for Group = " + rugbyGroupedLog.RugbyLogGroup.GroupName);
+                                   null,
+                    $"Going to remove Group Standings log entry for Team = {rugbyGroupedLog.RugbyTeam.Name}" +
+                    $" from Tournament = {rugbyGroupedLog.RugbyTournament.Name}" +
+                    $" for Season = {rugbyGroupedLog.RugbySeason.ProviderSeasonId}" +
+                    $" for Group = {rugbyGroupedLog.RugbyLogGroup.GroupName}");
             }
 
             _publicSportDataUnitOfWork.RugbyGroupedLogs.DeleteRange(standingsToRemove);
@@ -2893,9 +2899,10 @@
                                    rugbyGroupedLog.RugbySeason.ProviderSeasonId + "." +
                                    rugbyGroupedLog.RugbyTeam.LegacyTeamId + "." +
                                    rugbyGroupedLog.RugbyLogGroup.Slug,
-                    "Going to remove Overall Standings log entry for Team = " + rugbyGroupedLog.RugbyTeam.Name +
-                    "from Tournament = " + rugbyGroupedLog.RugbyTournament.Name +
-                    "for Season = " + rugbyGroupedLog.RugbySeason.ProviderSeasonId);
+                    null,
+                    $"Going to remove Overall Standings log entry for Team = {rugbyGroupedLog.RugbyTeam.Name}\n" +
+                    $"from Tournament = {rugbyGroupedLog.RugbyTournament.Name}\n" +
+                    $"for Season = {rugbyGroupedLog.RugbySeason.ProviderSeasonId}");
             }
 
             _publicSportDataUnitOfWork.RugbyGroupedLogs.DeleteRange(standingsToRemove);
@@ -2932,9 +2939,10 @@
                                    rugbyFlatLog.RugbyTournament.ProviderTournamentId + "." +
                                    rugbyFlatLog.RugbySeason.ProviderSeasonId + "." + 
                                    rugbyFlatLog.RugbyTeam.LegacyTeamId,
-                    "Going to remove log entry for Team = " + rugbyFlatLog.RugbyTeam.Name +
-                    "from Tournament = " + rugbyFlatLog.RugbyTournament.Name + 
-                    "for Season = " + rugbyFlatLog.RugbySeason.ProviderSeasonId);
+                    null,
+                    $"Going to remove log entry for Team = {rugbyFlatLog.RugbyTeam.Name}\n" +
+                    $"from Tournament = {rugbyFlatLog.RugbyTournament.Name}\n" +
+                    $"for Season = {rugbyFlatLog.RugbyTournament.Name}");
             }
 
             // Now remove the log entries that 
