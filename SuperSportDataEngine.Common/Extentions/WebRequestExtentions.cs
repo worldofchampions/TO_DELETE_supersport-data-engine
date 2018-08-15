@@ -20,13 +20,16 @@ namespace SuperSportDataEngine.Common.Extentions
 
                 request.Abort();
 
-                await logger.Error("PROVIDERCALLS:REQUESTDURATION:" + request.GetBaseUri(), "Request timed out. Timeout length is " + timeoutInMilliseconds / 1000 + " seconds" + request.RequestUri);
+                await logger.Error("PROVIDERCALLS:REQUESTDURATION:" + request.GetBaseUri(),
+                    null, 
+                    $"Request timed out. Timeout length is {timeoutInMilliseconds / 1000} seconds. Requested Uri: {request.RequestUri}");
 
                 return null;
             }
             catch (Exception e)
             {
-                await logger.Error("PROVIDERCALLS:EXCEPTION:" + request.GetBaseUri().Replace(":", ""), "Provider throwing exception for request to " + request.GetBaseUri() + ": " + e.StackTrace);
+                await logger.Error("PROVIDERCALLS:EXCEPTION:" + request.GetBaseUri().Replace(":", ""),
+                    e, $"Provider throwing exception for request to {request.GetBaseUri()}, Stack Trace: {e.StackTrace}");
                 return null;
             }
         }

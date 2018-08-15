@@ -601,17 +601,14 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Controllers
         /// 
         /// </summary>
         /// <param name="exception"></param>
-        protected async void LogException(Exception exception)
+        private void LogException(Exception exception)
         {
-            StackTrace st = new StackTrace();
-            StackFrame sf = st.GetFrame(0);
-
-            MethodBase currentMethodName = sf.GetMethod();
-
-            await _logger.Error(string.Format("{0}/{1}", currentMethodName.ReflectedType.FullName, HttpContext.Current.Request.Url.PathAndQuery),
-                    "Message: \n" + exception.Message +
-                    "StackTrace: \n" + exception.StackTrace +
-                    "Inner Exception \n" + exception.InnerException);
+            _logger?.Error(
+                "MotorsportException." + exception.Message,
+                exception,
+                $"Message: {exception.Message}\n" +
+                $"StackTrace: {exception.StackTrace}\n" +
+                $"Inner Exception {exception.InnerException}");
         }
     }
 }
