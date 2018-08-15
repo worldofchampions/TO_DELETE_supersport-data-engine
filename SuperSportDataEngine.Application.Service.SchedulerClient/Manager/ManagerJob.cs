@@ -158,9 +158,10 @@
             {
                 _logger?.Fatal(
                     "LegacyException." + exception.Message,
-                    "Message: " + Environment.NewLine + exception.Message + "  " +
-                    "StackTrace: " + Environment.NewLine + exception.StackTrace + "  " +
-                    "Inner Exception " + Environment.NewLine + exception.InnerException);
+                    exception,
+                    $"Message: {exception.Message}\n" +
+                    $"StackTrace: {exception.StackTrace}" +
+                    $"Inner Exception {exception.InnerException}");
             }
 
             _timer.Start();

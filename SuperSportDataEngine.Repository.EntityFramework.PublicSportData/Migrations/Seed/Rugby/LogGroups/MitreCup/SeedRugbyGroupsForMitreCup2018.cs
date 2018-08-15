@@ -8,11 +8,11 @@ using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
 
 namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.MitreCup
 {
-    public static class SeedRugbyGroupsForMitreCup2017
+    public static class SeedRugbyGroupsForMitreCup2018
     {
-        private const string SlugHierachyLevel0MitreCup = "MitreCup-2017-HL0-MitreCup";
-        private const string SlugHierachyLevel1Premiership = "MitreCup-2017-HL1-Premiership";
-        private const string SlugHierachyLevel1Championship = "MitreCup-2017-HL1-Championship";
+        private const string SlugHierachyLevel0MitreCup = "MitreCup-2018-HL0-MitreCup";
+        private const string SlugHierachyLevel1Premiership = "MitreCup-2018-HL1-Premiership";
+        private const string SlugHierachyLevel1Championship = "MitreCup-2018-HL1-Championship";
 
         public static void Seed(PublicSportDataContext context)
         {
@@ -25,7 +25,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                 var rugbySeason = context.RugbySeasons.Single(x =>
                     x.DataProvider == DataProvider.StatsProzone &&
                     x.RugbyTournament.Id == rugbyTournament.Id &&
-                    x.ProviderSeasonId == RugbyStatsProzoneConstants.ProviderTournamentSeasonId2017);
+                    x.ProviderSeasonId == RugbyStatsProzoneConstants.ProviderTournamentSeasonId2018);
 
                 // Create log groups.
                 context.RugbyLogGroups.AddOrUpdate(

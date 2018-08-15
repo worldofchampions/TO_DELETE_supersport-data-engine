@@ -320,7 +320,10 @@
 
             var url = exception.Response.ResponseUri.AbsoluteUri;
 
-            _loggingService.Warn(key, exception, $"{key}{Environment.NewLine}{exception.Message}{Environment.NewLine}{url}");
+            _loggingService.Warn(
+                key,
+                exception, 
+                $"{key}{Environment.NewLine}{exception.Message}{Environment.NewLine}{url}");
         }
     }
 }

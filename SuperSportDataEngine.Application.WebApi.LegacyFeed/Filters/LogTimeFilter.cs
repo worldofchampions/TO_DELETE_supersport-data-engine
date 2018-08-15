@@ -30,7 +30,10 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters
             _stopwatch.Stop();
             var actionName = actionExecutedContext.ActionContext.ActionDescriptor.ActionName;
             var loggerService = actionExecutedContext.Request.GetDependencyScope().GetService(typeof(ILoggingService)) as ILoggingService;
-            loggerService?.Info("ElapsedTime." + actionName, actionName + ": Took " + _stopwatch.ElapsedMilliseconds + "ms.");
+            loggerService?.Info(
+                "ElapsedTime." + actionName, 
+                    null,
+                $"{actionName} Took {_stopwatch.ElapsedMilliseconds} ms.");
         }
     }
 }

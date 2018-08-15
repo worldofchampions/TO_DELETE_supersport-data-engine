@@ -89,7 +89,13 @@
             }
             catch (Exception exception)
             {
-                _logger?.Error("LOGGING:PersistToCache." + cacheKey, "key = " + cacheKey + " " + exception.Message + exception.StackTrace);
+                _logger?.Error(
+                    "LOGGING:PersistToCache." + cacheKey,
+                    exception,
+                    $"key = {cacheKey}\n" +
+                    $"Message: {exception.Message}\n" +
+                    $"Stack Trace: {exception.StackTrace}\n" +
+                    $"Inner Exception: {exception.InnerException}");
             }
         }
 
@@ -104,7 +110,13 @@
             }
             catch (Exception exception)
             {
-                _logger?.Error("LOGGING:GetFromCache." + key, "key = " + key + " " + exception.Message + exception.StackTrace);
+                _logger?.Error(
+                    "LOGGING:GetFromCache." + key,
+                    exception,
+                    $"key = {key}\n" +
+                    $"Message: {exception.Message}\n" +
+                    $"Stack Trace: {exception.StackTrace}\n" +
+                    $"Inner Exception: {exception.InnerException}");
                 return null;
             }
         }

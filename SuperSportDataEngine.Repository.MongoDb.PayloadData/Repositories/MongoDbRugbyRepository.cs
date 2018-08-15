@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using System;
+using MongoDB.Driver;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsProzone.ResponseModels;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
 using System.Configuration;
@@ -46,7 +47,8 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
                 var db = _mongoClient.GetDatabase(_mongoDatabaseName);
                 if (db == null)
                 {
-                    await _logger.Error("MongoDbIsNull", "Mongo db object is null.");
+                    await _logger.Error("MongoDbIsNull",
+                        null, "Mongo db object is null.");
                     return;
                 }
 
@@ -62,10 +64,11 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
                 {
                     await _logger.Warn(
                         "MongoDbSave.Rugby",
-                        "Cannot save data to MongoDB. " +
-                        "Message: \n" + connectionException.Message +
-                        "StackTrace: \n" + connectionException.StackTrace +
-                        "Inner Exception \n" + connectionException.InnerException);
+                        connectionException,
+                        "Cannot save data to MongoDB." +
+                        $"Message: {connectionException.Message}\n" +
+                        $"StackTrace: {connectionException.StackTrace}\n" +
+                        $"Inner Exception {connectionException.InnerException}\n");
 
                     return;
                 }
@@ -76,10 +79,11 @@ namespace SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories
             {
                 await _logger.Warn(
                     "MongoDbSave.Rugby", 
+                    exception,
                     "Cannot save data to MongoDB. " +
-                     "Message: \n" + exception.Message +
-                    "StackTrace: \n" + exception.StackTrace +
-                    "Inner Exception \n" + exception.InnerException);
+                    $"Message: {exception.Message}\n" +
+                    $"StackTrace: {exception.StackTrace}\n" +
+                    $"Inner Exception {exception.InnerException}\n");
             }
         }
 
