@@ -44,10 +44,11 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters
 
             loggerService?.Fatal(
                 "LegacyException." + context.Exception.Message,
-                "URL: " + Environment.NewLine + uri + "  with auth key = " + authKey + "   " +
-                "Message: " + Environment.NewLine + context.Exception.Message + "  " +
-                "StackTrace: " + Environment.NewLine + context.Exception.StackTrace + "  " +
-                "Inner Exception " + Environment.NewLine + context.Exception.InnerException);
+                context.Exception,
+                $"URL: {Environment.NewLine + uri} with auth key = {authKey} " +
+                $"Message: {Environment.NewLine + context.Exception.Message} " +
+                $"StackTrace: {Environment.NewLine + context.Exception.StackTrace}" +
+                $"Inner Exception {Environment.NewLine + context.Exception.InnerException}");
         }
     }
 }

@@ -141,9 +141,10 @@
                 container.RegisterType<ICache, Cache>(new ContainerControlledLifetimeManager(), new InjectionFactory((x) => null));
 
                 logger.Error("NoCacheInDIContainer",
-                    "Message: \n" + exception.Message + "\n" +
-                    "StackTrace: \n" + exception.StackTrace + "\n" +
-                    "Inner Exception \n" + exception.InnerException);
+                    exception,
+                    $"Message: {exception.Message}\n" +
+                    $"StackTrace: {exception.StackTrace}\n" +
+                    $"Inner Exception {exception.InnerException}");
             }
         }
 

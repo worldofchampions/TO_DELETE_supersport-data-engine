@@ -46,9 +46,14 @@
             {
                 return await RugbyEntitiesResponse();
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                await _logger.Debug(System.Reflection.MethodBase.GetCurrentMethod().Name, e.StackTrace);
+                await _logger.Debug(
+                    "Exception." + exception.Message,
+                    exception,
+                    $"Message: {exception.Message}\n" +
+                    $"StackTrace: {exception.StackTrace }\n" +
+                    $"Inner Exception {exception.InnerException}");
                 return null;
             }
         }
@@ -98,9 +103,14 @@
             {
                 return await RugbyFixturesResponse(tournament, seasonId);
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                await _logger.Debug(System.Reflection.MethodBase.GetCurrentMethod().Name, e.StackTrace);
+                await _logger.Debug(
+                    "Exception." + exception.Message,
+                    exception,
+                    $"Message: {exception.Message}\n" +
+                    $"StackTrace: {exception.StackTrace }\n" +
+                    $"Inner Exception {exception.InnerException}");
                 return null;
             }
         }
@@ -155,9 +165,14 @@
             {
                 return await RugbySeasonResponse(tournamentId, tournamentYear);
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                await _logger.Debug(System.Reflection.MethodBase.GetCurrentMethod().Name, e.StackTrace);
+                await _logger.Debug(
+                    "Exception." + exception.Message,
+                    exception,
+                    $"Message: {exception.Message}\n" +
+                    $"StackTrace: {exception.StackTrace }\n" +
+                    $"Inner Exception {exception.InnerException}");
                 return null;
             }
         }
@@ -207,9 +222,14 @@
             {
                 return await ResponseData(tournamentId, seasonId);
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                await _logger.Debug(System.Reflection.MethodBase.GetCurrentMethod().Name, e.StackTrace);
+                await _logger.Debug(
+                    "Exception." + exception.Message,
+                    exception,
+                    $"Message: {exception.Message}\n" +
+                    $"StackTrace: {exception.StackTrace }\n" +
+                    $"Inner Exception {exception.InnerException}");
                 return null;
             }
         }
@@ -248,9 +268,14 @@
             {
                 return await RugbyFlatLogsResponse(competitionId, seasonId, roundNumber);
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                await _logger.Debug(System.Reflection.MethodBase.GetCurrentMethod().Name, e.StackTrace);
+                await _logger.Debug(
+                    "Exception." + exception.Message,
+                    exception,
+                    $"Message: {exception.Message}\n" +
+                    $"StackTrace: {exception.StackTrace }\n" +
+                    $"Inner Exception {exception.InnerException}");
                 return null;
             }
         }
@@ -376,9 +401,14 @@
             {
                 return await MatchStatsResponse(providerFixtureId);
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                await _logger.Debug(System.Reflection.MethodBase.GetCurrentMethod().Name, e.StackTrace);
+                await _logger.Debug(
+                    "Exception." + exception.Message,
+                    exception,
+                    $"Message: {exception.Message}\n" +
+                    $"StackTrace: {exception.StackTrace }\n" +
+                    $"Inner Exception {exception.InnerException}");
                 return null;
             }
         }
@@ -430,9 +460,14 @@
             {
                 return await EventsFlowResponse(providerFixtureId);
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                await _logger.Debug(System.Reflection.MethodBase.GetCurrentMethod().Name, e.StackTrace);
+                await _logger.Debug(
+                    "Exception." + exception.Message,
+                    exception,
+                    $"Message: {exception.Message}\n" +
+                    $"StackTrace: {exception.StackTrace }\n" +
+                    $"Inner Exception {exception.InnerException}");
                 return null;
             }
         }
@@ -472,9 +507,14 @@
                     }
                 }
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                await _logger.Debug(System.Reflection.MethodBase.GetCurrentMethod().Name, e.StackTrace);
+                await _logger.Debug(
+                    "Exception." + exception.Message,
+                    exception,
+                    $"Message: {exception.Message}\n" +
+                    $"StackTrace: {exception.StackTrace }\n" +
+                    $"Inner Exception {exception.InnerException}");
                 return null;
             }
         }
@@ -566,13 +606,18 @@
 
         private void CheckIfRequestTakingTooLong(WebRequest request, dynamic o)
         {
-            _logger.Info("MadeProviderRequest." + request.RequestUri, "Made provider request to: " + request.RequestUri.ToString());
+            _logger.Info(
+                "MadeProviderRequest." + request.RequestUri, 
+                    null,
+                $"Made provider request to: {request.RequestUri}");
+
             TimeSpan timeDifference = (o.ResponseTime - o.RequestTime);
             var milliseconds = timeDifference.TotalMilliseconds;
 
             if (milliseconds > _maximumTimeForRequestWithResponseInMilliseconds)
             {
                 _logger.Warn($"HTTPRequestTooLong.{request.RequestUri}",
+                    null,
                     $"HTTP request taking too long. {request.GetBaseUri()}. Warning level is {_maximumTimeForRequestWithResponseInMilliseconds / 1000.0} seconds; took " +
                     milliseconds / 1000.0 + " seconds.");
             }

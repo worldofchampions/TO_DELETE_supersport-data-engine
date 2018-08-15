@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Converters;
 using NLog;
 using SuperSportDataEngine.Common.Interfaces;
-using SuperSportDataEngine.Logging.NLog.Logging;
+using SuperSportDataEngine.Common.Logging;
 
 namespace SuperSportDataEngine.Common.Caching
 {
@@ -67,33 +67,19 @@ namespace SuperSportDataEngine.Common.Caching
 
         public async Task<T> GetAsync<T>(string key) where T : class
         {
-            try
+            var hashEntry = await Database.HashGetAllAsync(key);
+            if (hashEntry == null)
             {
-                var hashEntry = await Database.HashGetAllAsync(key);
-                if (hashEntry == null)
-                {
-                    return null;
-                }
-
-                var dict = hashEntry.ToDictionary();
-                if ((!dict.ContainsKey("parent") && dict.ContainsKey("value")) ||
-                    (dict.ContainsKey("parent") && await Database.SetContainsAsync($"{dict["parent"]}$$children", key)))
-                {
-                    if(typeof(T) != typeof(LogEventInfo))
-                        return JsonConvert.DeserializeObject<T>(dict["value"]);
-
-                    var value = dict["value"];
-                    return JsonConvert.DeserializeObject<T>(value, new EventInfoConverter(value));
-                }
-
                 return null;
             }
-            catch (Exception)
-            {
-                // ignored
-            }
 
-            return null;
+            var dict = hashEntry.ToDictionary();
+            if ((dict.ContainsKey("parent") || !dict.ContainsKey("value")) &&
+                (!dict.ContainsKey("parent") || !await Database.SetContainsAsync($"{dict["parent"]}$$children", key)))
+                return null;
+
+            var value = dict["value"].ToString();
+            return JsonConvert.DeserializeObject<T>(value);
         }
 
         public void SetParentExpiry(string parentKey, TimeSpan ttl)
@@ -103,20 +89,9 @@ namespace SuperSportDataEngine.Common.Caching
 
         private void ExecuteTransaction(Action<ITransaction> command)
         {
-            lock (_lock)
-            {
-                var transaction = Database.CreateTransaction();
-                command(transaction);
-
-                try
-                {
-                    transaction.Execute();
-                }
-                catch (Exception)
-                {
-                    // ignored 
-                }
-            }
+            var transaction = Database.CreateTransaction();
+            command(transaction);
+            transaction.Execute();
         }
     }
 }

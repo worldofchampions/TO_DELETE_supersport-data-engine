@@ -688,7 +688,10 @@
             if (schedulerTrackingEvent.EndedDateTimeUtc == null) return false;
 
             await
-                _loggingService.Info($"GRID_JOB: {raceEvent.MotorsportRace.RaceName}", $"Ended time: {schedulerTrackingEvent.EndedDateTimeUtc.Value}");
+                _loggingService.Info(
+                    $"GRID_JOB: {raceEvent.MotorsportRace.RaceName}",
+                    null,
+                    $"Ended time: {schedulerTrackingEvent.EndedDateTimeUtc.Value}");
 
             var endedTimeDiff = DateTimeOffset.UtcNow.Subtract(schedulerTrackingEvent.EndedDateTimeUtc.Value).TotalMinutes;
 

@@ -55,6 +55,9 @@ namespace SuperSportDataEngine.Logging.NLog.Logging
             key = $"LoggingService:{key}";
             Type type = typeof(LoggingService);
 
+            if (logEvent == null)
+                return;
+
             if (Cache == null)
             {
                 await WriteLog(type, logEvent);
@@ -63,10 +66,10 @@ namespace SuperSportDataEngine.Logging.NLog.Logging
             {
                 try
                 {
-                    object cacheObject = await Cache.GetAsync<LogEventInfo>(key);
+                    object cacheObject = await Cache.GetAsync<string>(key);
                     if (cacheObject == null)
                     {
-                        Cache.Add(key, logEvent,
+                        Cache.Add(key, logEvent.Message,
                             ttlTimeSpan == default(TimeSpan) ?
                                 TimeSpan.FromMinutes(_cacheTtlInMinutes) :
                                 ttlTimeSpan);
@@ -214,35 +217,43 @@ namespace SuperSportDataEngine.Logging.NLog.Logging
 
         private LogEventInfo GetLogEvent(string loggerName, LogLevel level, Exception exception, string format, object[] args)
         {
-            string assemblyProp = string.Empty;
-            string classProp = string.Empty;
-            string methodProp = string.Empty;
-            string messageProp = string.Empty;
-            string innerMessageProp = string.Empty;
-
-            var logEvent = new LogEventInfo
-                (level, loggerName, string.Format(format, args));
-
-            if (exception != null)
+            try
             {
-                assemblyProp = exception.Source;
-                classProp = exception.TargetSite.DeclaringType.FullName;
-                methodProp = exception.TargetSite.Name;
-                messageProp = exception.Message;
+                string assemblyProp = string.Empty;
+                string classProp = string.Empty;
+                string methodProp = string.Empty;
+                string messageProp = string.Empty;
+                string innerMessageProp = string.Empty;
+                string message = string.Format(format, args);
+                var logEvent = new LogEventInfo
+                    (level, loggerName, message);
 
-                if (exception.InnerException != null)
+                if (exception != null)
                 {
-                    innerMessageProp = exception.InnerException.Message;
+                    assemblyProp = exception.Source;
+                    if (exception.TargetSite.DeclaringType != null) classProp = exception.TargetSite.DeclaringType.FullName;
+                    methodProp = exception.TargetSite.Name;
+                    messageProp = exception.Message;
+
+                    if (exception.InnerException != null)
+                    {
+                        innerMessageProp = exception.InnerException.Message;
+                    }
                 }
+
+                logEvent.Properties["error-source"] = assemblyProp;
+                logEvent.Properties["error-class"] = classProp;
+                logEvent.Properties["error-method"] = methodProp;
+                logEvent.Properties["error-message"] = messageProp;
+                logEvent.Properties["inner-error-message"] = innerMessageProp;
+                logEvent.Message = message;
+
+                return logEvent;
             }
-
-            logEvent.Properties["error-source"] = assemblyProp;
-            logEvent.Properties["error-class"] = classProp;
-            logEvent.Properties["error-method"] = methodProp;
-            logEvent.Properties["error-message"] = messageProp;
-            logEvent.Properties["inner-error-message"] = innerMessageProp;
-
-            return logEvent;
+            catch (Exception)
+            {
+                return null;
+            }
         }
     }
 }
