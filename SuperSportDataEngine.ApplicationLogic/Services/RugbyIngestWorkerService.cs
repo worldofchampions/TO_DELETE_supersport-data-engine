@@ -1639,6 +1639,9 @@
                 {
                     if (seasonId == RugbyStatsProzoneConstants.ProviderTournamentSeasonId2017)
                         await IngestStandingsForMitreCup(cancellationToken, 1, logs, logs.RugbyGroupedLogs.ladderposition);
+
+                    if (seasonId == RugbyStatsProzoneConstants.ProviderTournamentSeasonId2018)
+                        await IngestStandingsForMitreCup(cancellationToken, 1, logs, logs.RugbyGroupedLogs.ladderposition);
                 }
             }
 
