@@ -33,8 +33,8 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                     // LogGroups for "OverallStandings", GroupHierarchyLevel: 0.
                     new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 0, IsConference = false, IsCoreGroup = true, Slug = SlugHierachyLevel0MitreCup, ProviderLogGroupId = 0, ProviderGroupName = null, GroupName = "Mitre Cup", GroupShortName = "Mitre Cup" },
                     // LogGroups for "GroupStandings", GroupHierarchyLevel: 1.
-                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = true, IsCoreGroup = true, Slug = SlugHierachyLevel1Premiership, ProviderLogGroupId = 1, ProviderGroupName = "Mitre 10 Cup Premiership", GroupName = "Mitre 10 Cup Premiership", GroupShortName = "Mitre 10 Cup Premiership" },
-                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = true, IsCoreGroup = true, Slug = SlugHierachyLevel1Championship, ProviderLogGroupId = 2, ProviderGroupName = "Mitre 10 Cup Championship", GroupName = "Mitre 10 Cup Championship", GroupShortName = "Mitre 10 Cup Championship" }
+                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = true, IsCoreGroup = true, Slug = SlugHierachyLevel1Premiership, ProviderLogGroupId = 1, ProviderGroupName = "Premiership", GroupName = "Mitre 10 Cup Premiership", GroupShortName = "Mitre 10 Cup Premiership" },
+                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = true, IsCoreGroup = true, Slug = SlugHierachyLevel1Championship, ProviderLogGroupId = 2, ProviderGroupName = "Championship", GroupName = "Mitre 10 Cup Championship", GroupShortName = "Mitre 10 Cup Championship" }
                 );
 
                 context.SaveChanges();
