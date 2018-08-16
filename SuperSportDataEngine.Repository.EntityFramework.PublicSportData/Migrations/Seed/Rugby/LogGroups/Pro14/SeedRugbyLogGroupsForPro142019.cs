@@ -8,11 +8,11 @@ using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
 
 namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.Pro14
 {
-    public static class SeedRugbyLogGroupsForPro142018
+    public static class SeedRugbyLogGroupsForPro142019
     {
-        private const string SlugHierarchyLevel0Pro14 = "Pro14-2018-HL0-Pro14";
-        private const string SlugHierarchyLevel1ConferenceA = "Pro14-2018-HL1-ConferenceA";
-        private const string SlugHierarchyLevel1ConferenceB = "Pro14-2018-HL1-ConferenceB";
+        private const string SlugHierarchyLevel0Pro14 = "Pro14-2019-HL0-Pro14";
+        private const string SlugHierarchyLevel1ConferenceA = "Pro14-2019-HL1-ConferenceA";
+        private const string SlugHierarchyLevel1ConferenceB = "Pro14-2019-HL1-ConferenceB";
 
         public static void Seed(PublicSportDataContext context)
         {
@@ -25,7 +25,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                 var rugbySeason = context.RugbySeasons.Single(x =>
                     x.DataProvider == DataProvider.StatsProzone &&
                     x.RugbyTournament.Id == rugbyTournament.Id &&
-                    x.ProviderSeasonId == RugbyStatsProzoneConstants.ProviderTournamentSeasonId2018);
+                    x.ProviderSeasonId == RugbyStatsProzoneConstants.ProviderTournamentSeasonId2019);
 
                 // Create log groups.
                 context.RugbyLogGroups.AddOrUpdate(
@@ -33,8 +33,8 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                     // LogGroups for "OverallStandings", GroupHierarchyLevel: 0.
                     new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 0, IsConference = false, IsCoreGroup = true, Slug = SlugHierarchyLevel0Pro14, ProviderLogGroupId = 0, ProviderGroupName = null, GroupName = "Pro 14", GroupShortName = "Pro 14" },
                     // LogGroups for "GroupStandings", GroupHierarchyLevel: 1.
-                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = false, IsCoreGroup = true, Slug = SlugHierarchyLevel1ConferenceA, ProviderLogGroupId = 1, ProviderGroupName = "Pro 14 Conference A 2018", GroupName = "Conference A", GroupShortName = "Conference A" },
-                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = false, IsCoreGroup = true, Slug = SlugHierarchyLevel1ConferenceB, ProviderLogGroupId = 2, ProviderGroupName = "Pro 14 Conference B 2018", GroupName = "Conference B", GroupShortName = "Conference B" }
+                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = false, IsCoreGroup = true, Slug = SlugHierarchyLevel1ConferenceA, ProviderLogGroupId = 1, ProviderGroupName = "Pro 14 Conference A 2019", GroupName = "Conference A", GroupShortName = "Conference A" },
+                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = false, IsCoreGroup = true, Slug = SlugHierarchyLevel1ConferenceB, ProviderLogGroupId = 2, ProviderGroupName = "Pro 14 Conference B 2019", GroupName = "Conference B", GroupShortName = "Conference B" }
                 );
 
                 context.SaveChanges();
