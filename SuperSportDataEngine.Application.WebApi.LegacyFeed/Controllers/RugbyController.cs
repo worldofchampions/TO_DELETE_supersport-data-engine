@@ -512,6 +512,9 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             const int emptyCollectionCount = 0;
 
             var season = await _rugbyService.GetCurrentRugbySeasonForTournament(category);
+            if(season == null)
+                return Ok(Enumerable.Empty<Log>());
+
             if (season.RugbyLogType == RugbyLogType.FlatLogs)
             {
                 var flatLogsFromService = await _rugbyService.GetFlatLogs(category);
