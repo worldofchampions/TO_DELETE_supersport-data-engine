@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
+﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models.Enums;
+
+namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 {
     using AutoMapper;
     using SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters;
@@ -442,6 +444,7 @@
         /// Get Logs for Tournament
         /// </summary>
         /// <param name="category"></param>
+        /// <param name="groupName"></param>
         /// <returns></returns>
         [HttpGet, HttpHead]
         [Route("{category}/logs/{groupName?}")]
@@ -506,53 +509,61 @@
 
         private async Task<IHttpActionResult> GetLogsFromService(string category, string groupName)
         {
-            var flatLogsFromService = await _rugbyService.GetFlatLogs(category);
-
             const int emptyCollectionCount = 0;
 
-            var logsFromService = flatLogsFromService as IList<RugbyFlatLog> ?? flatLogsFromService.ToList();
-
-            if (logsFromService.Count() > emptyCollectionCount)
+            var season = await _rugbyService.GetCurrentRugbySeasonForTournament(category);
+            if (season.RugbyLogType == RugbyLogType.FlatLogs)
             {
-                const string flatLogsCacheKeyPrefix = "FLATLOGS:";
-                var flatLogsCacheKey = flatLogsCacheKeyPrefix + $"rugby/flatLogs/{category}";
+                var flatLogsFromService = await _rugbyService.GetFlatLogs(category);
 
-                var flatLogsCache = logsFromService.Select(Mapper.Map<Log>);
+                var logsFromService = flatLogsFromService as IList<RugbyFlatLog> ?? flatLogsFromService.ToList();
 
-                var logsCache = flatLogsCache as IList<Log> ?? flatLogsCache.ToList();
+                if (logsFromService.Count() > emptyCollectionCount)
+                {
+                    const string flatLogsCacheKeyPrefix = "FLATLOGS:";
+                    var flatLogsCacheKey = flatLogsCacheKeyPrefix + $"rugby/flatLogs/{category}";
 
-                PersistToCache(flatLogsCacheKey, logsCache);
+                    var flatLogsCache = logsFromService.Select(Mapper.Map<Log>);
 
-                return Ok(logsCache);
+                    var logsCache = flatLogsCache as IList<Log> ?? flatLogsCache.ToList();
+
+                    PersistToCache(flatLogsCacheKey, logsCache);
+
+                    return Ok(logsCache);
+                }
+            }
+            else
+            {
+                var groupedLogsFromService = await _rugbyService.GetGroupedLogs(category);
+
+                var rugbyGroupedLogs = groupedLogsFromService as IList<RugbyGroupedLog> ?? groupedLogsFromService.ToList();
+
+                if (rugbyGroupedLogs.Count() <= emptyCollectionCount)
+                {
+                    return Ok(Enumerable.Empty<Log>());
+                }
+
+                const string groupedLogsCacheKeyPrefix = "GROUPEDLOGS:";
+                var groupedLogsCacheKey = groupedLogsCacheKeyPrefix + $"rugby/groupedLogs/{category}";
+
+                var groupedLogsCache = rugbyGroupedLogs.Select(Mapper.Map<Log>).ToList();
+
+                // Dynamically calculate the qualifier indicator
+                // to append to the team names.
+                if (category.ToLower() == "super-rugby")
+                {
+                    groupedLogsCache = AddQualifiersToTeams(groupedLogsCache);
+                }
+
+                PersistToCache(groupedLogsCacheKey, groupedLogsCache);
+
+                if (groupName != null)
+                    groupedLogsCache = groupedLogsCache.Where(g => String.Equals(g.GroupName, groupName, StringComparison.CurrentCultureIgnoreCase)).ToList();
+
+                return Ok(groupedLogsCache);
             }
 
-            var groupedLogsFromService = await _rugbyService.GetGroupedLogs(category);
-
-            var rugbyGroupedLogs = groupedLogsFromService as IList<RugbyGroupedLog> ?? groupedLogsFromService.ToList();
-
-            if (rugbyGroupedLogs.Count() <= emptyCollectionCount)
-            {
-                return Ok(Enumerable.Empty<Log>());
-            }
-
-            const string groupedLogsCacheKeyPrefix = "GROUPEDLOGS:";
-            var groupedLogsCacheKey = groupedLogsCacheKeyPrefix + $"rugby/groupedLogs/{category}";
-
-            var groupedLogsCache = rugbyGroupedLogs.Select(Mapper.Map<Log>).ToList();
-
-            // Dynamically calculate the qualifier indicator
-            // to append to the team names.
-            if (category.ToLower() == "super-rugby")
-            {
-                groupedLogsCache = AddQualifiersToTeams(groupedLogsCache);
-            }
-
-            PersistToCache(groupedLogsCacheKey, groupedLogsCache);
-
-            if (groupName != null)
-                groupedLogsCache = groupedLogsCache.Where(g => String.Equals(g.GroupName, groupName, StringComparison.CurrentCultureIgnoreCase)).ToList();
-
-            return Ok(groupedLogsCache);
+            return Ok(Enumerable.Empty<Log>());
         }
 
         private static List<Log> AddQualifiersToTeams(List<Log> groupedLogsCache)
