@@ -274,7 +274,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             }
             catch (Exception exception)
             {
-                _logger?.Error("LOGGING:PersistToCache." + cacheKey, "key = " + cacheKey + " " + exception.Message + exception.StackTrace);
+                _logger?.Error("LOGGING:PersistToCache." + cacheKey, exception, $"key = {cacheKey} {exception.Message} {exception.StackTrace}");
             }
         }
 
@@ -292,7 +292,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
             }
             catch (Exception exception)
             {
-                _logger?.Error("LOGGING:GetFromCacheAsync." + key, "key = " + key + " " + exception.Message + exception.StackTrace);
+                _logger?.Error("LOGGING:GetFromCacheAsync." + key, exception, $"key = {key} {exception.Message} {exception.StackTrace}");
 
                 return null;
             }

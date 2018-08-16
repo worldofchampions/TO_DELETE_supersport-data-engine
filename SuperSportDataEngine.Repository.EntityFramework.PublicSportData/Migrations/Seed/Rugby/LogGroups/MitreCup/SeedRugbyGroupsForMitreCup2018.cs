@@ -8,11 +8,11 @@ using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
 
 namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.MitreCup
 {
-    public static class SeedRugbyGroupsForMitreCup2017
+    public static class SeedRugbyGroupsForMitreCup2018
     {
-        private const string SlugHierachyLevel0MitreCup = "MitreCup-2017-HL0-MitreCup";
-        private const string SlugHierachyLevel1Premiership = "MitreCup-2017-HL1-Premiership";
-        private const string SlugHierachyLevel1Championship = "MitreCup-2017-HL1-Championship";
+        private const string SlugHierachyLevel0MitreCup = "MitreCup-2018-HL0-MitreCup";
+        private const string SlugHierachyLevel1Premiership = "MitreCup-2018-HL1-Premiership";
+        private const string SlugHierachyLevel1Championship = "MitreCup-2018-HL1-Championship";
 
         public static void Seed(PublicSportDataContext context)
         {
@@ -25,7 +25,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                 var rugbySeason = context.RugbySeasons.Single(x =>
                     x.DataProvider == DataProvider.StatsProzone &&
                     x.RugbyTournament.Id == rugbyTournament.Id &&
-                    x.ProviderSeasonId == RugbyStatsProzoneConstants.ProviderTournamentSeasonId2017);
+                    x.ProviderSeasonId == RugbyStatsProzoneConstants.ProviderTournamentSeasonId2018);
 
                 // Create log groups.
                 context.RugbyLogGroups.AddOrUpdate(
@@ -33,8 +33,8 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                     // LogGroups for "OverallStandings", GroupHierarchyLevel: 0.
                     new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 0, IsConference = false, IsCoreGroup = true, Slug = SlugHierachyLevel0MitreCup, ProviderLogGroupId = 0, ProviderGroupName = null, GroupName = "Mitre Cup", GroupShortName = "Mitre Cup" },
                     // LogGroups for "GroupStandings", GroupHierarchyLevel: 1.
-                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = true, IsCoreGroup = true, Slug = SlugHierachyLevel1Premiership, ProviderLogGroupId = 1, ProviderGroupName = "Mitre 10 Cup Premiership", GroupName = "Mitre 10 Cup Premiership", GroupShortName = "Mitre 10 Cup Premiership" },
-                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = true, IsCoreGroup = true, Slug = SlugHierachyLevel1Championship, ProviderLogGroupId = 2, ProviderGroupName = "Mitre 10 Cup Championship", GroupName = "Mitre 10 Cup Championship", GroupShortName = "Mitre 10 Cup Championship" }
+                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = true, IsCoreGroup = true, Slug = SlugHierachyLevel1Premiership, ProviderLogGroupId = 1, ProviderGroupName = "Premiership", GroupName = "Mitre 10 Cup Premiership", GroupShortName = "Mitre 10 Cup Premiership" },
+                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = true, IsCoreGroup = true, Slug = SlugHierachyLevel1Championship, ProviderLogGroupId = 2, ProviderGroupName = "Championship", GroupName = "Mitre 10 Cup Championship", GroupShortName = "Mitre 10 Cup Championship" }
                 );
 
                 context.SaveChanges();

@@ -73,9 +73,10 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
                     {
                         _logger?.Fatal(
                             "LegacyException." + exception.Message,
-                            "Message: " + Environment.NewLine + exception.Message + "  " +
-                            "StackTrace: " + Environment.NewLine + exception.StackTrace + "  " +
-                            "Inner Exception " + Environment.NewLine + exception.InnerException);
+                            exception,
+                            $"Message: {exception.Message}\n" +
+                            $"StackTrace: {exception.StackTrace}" +
+                            $"Inner Exception {exception.InnerException}");
                     }
 
                     Thread.Sleep(2000);
@@ -130,13 +131,18 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
 
                 if (timespanDuration > TimeSpan.FromMinutes(errorThresholdInMinutes))
                 {
-                    _logger.Error(key, jobName + "is taking too long to process. Error threshold is " +
-                        errorThresholdInMinutes + "minutes. Taking " + timespanDuration.Value.TotalMinutes + " minutes.");
+                    _logger.Error(key, null, 
+                        $"{jobName} is taking too long to process. Error threshold is {errorThresholdInMinutes} minutes. " +
+                        $"Taking {timespanDuration.Value.TotalMinutes} minutes.");
                 }
                 else if (timespanDuration > TimeSpan.FromMinutes(warningThresholdInMinutes))
                 {
-                    _logger.Warn(key, jobName + "is taking too long to process. Warning threshold is " +
-                        warningThresholdInMinutes + "minutes. Taking " + timespanDuration.Value.TotalMinutes + " minutes.");
+                    _logger.Warn(
+                        key, 
+                        null,
+                        $"{jobName} is taking too long to process. Warning threshold is " +
+                        $"{warningThresholdInMinutes} minutes. Taking " +
+                        $"{timespanDuration.Value.TotalMinutes} minutes.");
                 }
             }
 

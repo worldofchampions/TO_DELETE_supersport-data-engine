@@ -58,7 +58,10 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
             catch (Exception e)
             {
                 await _loggingService.Warn("CannotAddAuthKeys", 
-                    "Failed to add the auth keys to the cache.");
+                    e, "Failed to add the auth keys to the cache. " +
+                       $"Message: {e.Message}\n" +
+                       $"Inner Exception: {e.InnerException}\n" +
+                       $"Stack Trace: {e.StackTrace}");
             }
         }
 
@@ -188,8 +191,8 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
             var userAgent = request.Headers.UserAgent;
 
             _loggingService.Error("RequestUnauthorised." + request.RequestUri,
-                "Request failed authorisation accessing Uri " + uri + "\n" +
-                "User Agent = " + userAgent);
+                null,
+                $"Request failed authorisation accessing Uri {uri}, User Agent = {userAgent}.");
 
             throw new HttpResponseException(msg);
         }
