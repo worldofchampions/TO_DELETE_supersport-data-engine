@@ -388,6 +388,12 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
             return result;
         }
 
+        public async Task<RugbySeason> GetCurrentRugbySeasonForTournament(string category)
+        {
+            return await Task.FromResult(_publicSportDataUnitOfWork.RugbySeasons.FirstOrDefault(
+                s => s.RugbyTournament.Slug == category && s.IsCurrent));
+        }
+
         private async Task<IEnumerable<RugbyFixture>> GetNationalTeamResults()
         {
             const string nationalTeamName = "South Africa";
