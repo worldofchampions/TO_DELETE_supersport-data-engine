@@ -48,7 +48,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests.Services
             _publicSportDataUnitOfWork.RugbyTournaments.Add(
                 rugbyTournament);
 
-            Assert.IsNotNull(await _rugbyService.GetTournamentBySlug("FAIL"));
+            Assert.IsNotNull(await _rugbyService.GetTournamentBySlug("TEST"));
         }
 
         [Test]
