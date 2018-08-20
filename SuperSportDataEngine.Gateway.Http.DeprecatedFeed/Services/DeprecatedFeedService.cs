@@ -239,8 +239,12 @@
 
                 if (durationMilliseconds > _requestDurationWarningMilliseconds)
                 {
-                    _logger.Warn($"HTTPRequestTooLong.{request.RequestUri}",
-                        $"HTTP request taking too long. {request.GetBaseUri()}. Warning level is {_requestDurationWarningMilliseconds / 1000.0} seconds; took " + durationMilliseconds / 1000.0 + " seconds.");
+                    _logger.Warn(
+                        $"HTTPRequestTooLong.{request.RequestUri}",
+                        null,
+                        $"HTTP request taking too long. {request.GetBaseUri()}. " +
+                        $"Warning level is {_requestDurationWarningMilliseconds / 1000.0} seconds; " +
+                        $"took {durationMilliseconds / 1000.0} seconds.");
                 }
             }
             catch (Exception)

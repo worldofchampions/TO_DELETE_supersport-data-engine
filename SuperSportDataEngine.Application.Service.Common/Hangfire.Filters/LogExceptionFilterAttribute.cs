@@ -28,9 +28,10 @@ namespace SuperSportDataEngine.Application.Service.Common.Hangfire.Filters
             {
                 _logger.Error(
                     "Job `{0}` has been failed due to an exception `{1}`",
-                    context.BackgroundJob.Id,
-                    default(TimeSpan),
-                    failedState.Exception);
+                    failedState.Exception,
+                    $"Message: {failedState.Exception.Message}\n" +
+                    $"Stack Trace: {failedState.Exception.StackTrace}\n" +
+                    $"Inner Exception: {failedState.Exception.InnerException}");
             }
         }
     }

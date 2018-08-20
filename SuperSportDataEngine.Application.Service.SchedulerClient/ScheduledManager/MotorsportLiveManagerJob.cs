@@ -399,7 +399,8 @@
             {
                 var jobId =
                     ConfigurationManager.AppSettings["Motorsport_LiveRaceJob_JobIdPrefix"] +
-                    raceEvent.MotorsportRace.RaceName + "→" + raceEvent.LegacyRaceEventId;
+                    raceEvent.MotorsportRace.MotorsportLeague.Name + "→" + raceEvent.MotorsportRace.RaceName + 
+                    "→" + raceEvent.LegacyRaceEventId;
 
                 var jobCronExpression = ConfigurationManager.AppSettings["Motorsport_LiveRaceJob_JobCronExpression"];
 
@@ -435,7 +436,8 @@
             {
                 var jobId =
                     ConfigurationManager.AppSettings["MotorsportChildJob_RaceEventsResults_JobIdPrefix"] +
-                    raceEvent.MotorsportRace.RaceName + "→" + raceEvent.LegacyRaceEventId;
+                    raceEvent.MotorsportRace.MotorsportLeague.Name + "→" + raceEvent.MotorsportRace.RaceName +
+                    "→" + raceEvent.LegacyRaceEventId;
 
                 var jobCronExpression =
                     ConfigurationManager.AppSettings["MotorsportChildJob_RaceEventsResults_JobCronExpression"];

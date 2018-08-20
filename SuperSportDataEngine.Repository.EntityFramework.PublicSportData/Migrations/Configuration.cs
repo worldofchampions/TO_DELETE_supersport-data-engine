@@ -1,4 +1,6 @@
 using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.JuniorRugby;
+using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.MitreCup;
+using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.Pro14;
 using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.Sevens._2017;
 using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.Sevens._2018;
 
@@ -41,7 +43,9 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
             SeedRugbyLogGroupsForTournamentSuperRugby2018.Seed(context);
             SeedRugbyLogGroupsForChampionsCup2018.Seed(context);
             SeedRugbyLogGroupsForPro142018.Seed(context);
+            SeedRugbyLogGroupsForPro142019.Seed(context);
             SeedRugbyGroupsForMitreCup2017.Seed(context);
+            SeedRugbyGroupsForMitreCup2018.Seed(context);
             SeedSevens(context);
 
             SeedRugbyLogGroupsForRugbyChallenge.Seed(context);

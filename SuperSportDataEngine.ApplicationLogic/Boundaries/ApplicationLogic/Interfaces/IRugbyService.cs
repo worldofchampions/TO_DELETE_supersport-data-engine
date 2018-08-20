@@ -43,5 +43,6 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Inte
         Task<IEnumerable<RugbyPlayerStatistics>> GetTournamentPointsScorers(string tournamentSlug);
         Task<IEnumerable<RugbyTournament>> GetTournamentsForJustEndedFixtures();
         bool IsNationalTeamSlug(string slugName);
+        Task<RugbySeason> GetCurrentRugbySeasonForTournament(string category);
     }
 }
