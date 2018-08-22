@@ -14,5 +14,6 @@
         // Tournament Season IDs.
         public const int ProviderTournamentSeasonId2017 = 2017;
         public const int ProviderTournamentSeasonId2018 = 2018;
+        public const int ProviderTournamentSeasonId2019 = 2019;
     }
 }
