@@ -28,6 +28,11 @@
         private Mock<IRugbyService> _mockRugbyService;
         private Mock<ILoggingService> _mockLogger;
 
+        public RugbyControllerTests()
+        {
+            AutoMapperConfig.InitializeMappings();
+        }
+
         [SetUp]
         public void Setup()
         {
@@ -47,8 +52,6 @@
                 new Mock<IDeprecatedFeedIntegrationServiceRugby>().Object,
                 _cache,
                 new Mock<ILoggingService>().Object);
-
-            AutoMapperConfig.InitializeMappings();
 
             _controller = new RugbyController(
                 rugbyService,
