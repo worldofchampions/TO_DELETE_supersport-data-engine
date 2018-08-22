@@ -5,6 +5,7 @@ using System.Configuration;
 
 namespace SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration
 {
+
     public static class HangfireConfiguration
     {
         // Hangfire SQL Server Options.
@@ -19,9 +20,7 @@ namespace SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration
                     _storageOptions =
                         new SqlServerStorageOptions
                         {
-                            PrepareSchemaIfNecessary = true,
-                            TransactionTimeout = TimeSpan.FromSeconds(Convert.ToInt32(ConfigurationManager.AppSettings["Hangfire.Transaction.Timeout.InSeconds"])),
-                            CommandTimeout = TimeSpan.FromSeconds(Convert.ToInt32(ConfigurationManager.AppSettings["Hangfire.Command.Timeout.InSeconds"]))
+                            PrepareSchemaIfNecessary = true
                         };
                 }
 
