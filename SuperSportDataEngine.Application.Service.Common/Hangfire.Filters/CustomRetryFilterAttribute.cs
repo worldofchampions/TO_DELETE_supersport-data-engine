@@ -1,10 +1,10 @@
 ﻿using Hangfire;
 using Hangfire.Common;
 using Hangfire.States;
-using Microsoft.Practices.Unity;
 using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
 using SuperSportDataEngine.Common.Logging;
 using System;
+using Unity;
 
 namespace SuperSportDataEngine.Application.Service.Common.Hangfire.Filters
 {

@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Hangfire.Storage;
 using SuperSportDataEngine.Common.Logging;
-using Microsoft.Practices.Unity;
+using Unity;
 
 namespace SuperSportDataEngine.Application.Service.Common.Hangfire.Filters
 {

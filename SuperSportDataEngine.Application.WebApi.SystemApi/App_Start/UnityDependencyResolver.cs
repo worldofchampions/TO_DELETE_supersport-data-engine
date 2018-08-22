@@ -1,7 +1,6 @@
 ﻿using System.Web.Http.Dependencies;
-using Microsoft.Practices.Unity;
 using SuperSportDataEngine.Application.Container;
-using SuperSportDataEngine.Application.WebApi.SystemApi.App_Start;
+using Unity;
 
 namespace SuperSportDataEngine.Application.WebApi.SystemApi
 {

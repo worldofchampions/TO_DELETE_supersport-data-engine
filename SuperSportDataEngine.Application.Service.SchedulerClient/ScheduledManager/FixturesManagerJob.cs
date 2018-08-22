@@ -5,7 +5,6 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
 {
     using Hangfire;
     using Hangfire.Common;
-    using Microsoft.Practices.Unity;
     using SuperSportDataEngine.Application.Container;
     using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;

@@ -2,10 +2,10 @@ using System.Web.Http;
 
 using Unity.AspNet.WebApi;
 
-[assembly: WebActivatorEx.PreApplicationStartMethod(typeof(SuperSportDataEngine.Application.WebApi.InboundApi.UnityWebApiActivator), nameof(SuperSportDataEngine.Application.WebApi.InboundApi.UnityWebApiActivator.Start))]
-[assembly: WebActivatorEx.ApplicationShutdownMethod(typeof(SuperSportDataEngine.Application.WebApi.InboundApi.UnityWebApiActivator), nameof(SuperSportDataEngine.Application.WebApi.InboundApi.UnityWebApiActivator.Shutdown))]
+[assembly: WebActivatorEx.PreApplicationStartMethod(typeof(SuperSportDataEngine.Application.WebApi.SystemApi.UnityWebApiActivator), nameof(SuperSportDataEngine.Application.WebApi.SystemApi.UnityWebApiActivator.Start))]
+[assembly: WebActivatorEx.ApplicationShutdownMethod(typeof(SuperSportDataEngine.Application.WebApi.SystemApi.UnityWebApiActivator), nameof(SuperSportDataEngine.Application.WebApi.SystemApi.UnityWebApiActivator.Shutdown))]
 
-namespace SuperSportDataEngine.Application.WebApi.InboundApi
+namespace SuperSportDataEngine.Application.WebApi.SystemApi
 {
     /// <summary>
     /// Provides the bootstrapping for integrating Unity with WebApi when it is hosted in ASP.NET.

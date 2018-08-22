@@ -1,8 +1,8 @@
-﻿using Microsoft.Practices.Unity;
+﻿using System;
 using SuperSportDataEngine.Application.Container;
-using System;
+using Unity;
 
-namespace Hangfire
+namespace Hangfire.Unity
 {
     /// <summary>
     /// A job activator which use unity to create job instance

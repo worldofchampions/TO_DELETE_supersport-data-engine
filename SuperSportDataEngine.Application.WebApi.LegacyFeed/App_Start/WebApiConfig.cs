@@ -1,9 +1,8 @@
-﻿using SuperSportDataEngine.Application.WebApi.LegacyFeed.App_Start;
-using System.Net.Http.Formatting;
+﻿using System.Net.Http.Formatting;
 using System.Web.Http;
-using Microsoft.Practices.Unity;
 using SuperSportDataEngine.Application.Container;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Filters;
+using Unity;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed
 {

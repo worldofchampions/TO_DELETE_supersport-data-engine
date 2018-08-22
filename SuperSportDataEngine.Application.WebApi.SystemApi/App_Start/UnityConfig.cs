@@ -2,7 +2,7 @@ using System;
 
 using Unity;
 
-namespace SuperSportDataEngine.Application.WebApi.PublicApi
+namespace SuperSportDataEngine.Application.WebApi.SystemApi
 {
     /// <summary>
     /// Specifies the Unity configuration for the main container.
