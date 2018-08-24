@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using Hangfire;
 using Hangfire.Dashboard;
-using Microsoft.Practices.Unity;
 using System.Configuration;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+using Unity;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient
 {

@@ -1,11 +1,12 @@
-﻿namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
+﻿using Unity;
+
+namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
 {
     using System;
     using System.Configuration;
     using System.Threading;
     using Hangfire;
     using Hangfire.Common;
-    using Microsoft.Practices.Unity;
     using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using SuperSportDataEngine.Common.Logging;

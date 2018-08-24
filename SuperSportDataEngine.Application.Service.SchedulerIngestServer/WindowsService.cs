@@ -1,11 +1,12 @@
 ﻿using System.Threading.Tasks;
+using Hangfire.Unity;
 using SuperSportDataEngine.Common.Logging;
+using Unity;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerIngestServer
 {
     using Hangfire;
     using Hangfire.Logging;
-    using Microsoft.Practices.Unity;
     using Common.Hangfire.Configuration;
     using Common.Hangfire.Filters;
     using Common.Interfaces;
