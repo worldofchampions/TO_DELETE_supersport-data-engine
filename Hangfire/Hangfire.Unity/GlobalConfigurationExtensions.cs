@@ -1,8 +1,8 @@
 ﻿using System;
-using Microsoft.Practices.Unity;
 using Hangfire.Annotations;
+using Unity;
 
-namespace Hangfire
+namespace Hangfire.Unity
 {
     public static class GlobalConfigurationExtensions
     {

@@ -7,17 +7,10 @@ namespace SuperSportDataEngine.Application.WebApi.SystemApi.Areas.HelpPage.Model
     /// </summary>
     public abstract class ModelDescription
     {
-        /// <summary>
-        /// 
-        /// </summary>
         public string Documentation { get; set; }
-        /// <summary>
-        /// 
-        /// </summary>
+
         public Type ModelType { get; set; }
-        /// <summary>
-        /// 
-        /// </summary>
+
         public string Name { get; set; }
     }
 }

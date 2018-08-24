@@ -1,9 +1,8 @@
-﻿using Microsoft.Practices.Unity;
-using SuperSportDataEngine.Application.Container;
-using SuperSportDataEngine.Application.WebApi.SystemApi.App_Start;
+﻿using SuperSportDataEngine.Application.Container;
 using SuperSportDataEngine.Application.WebApi.SystemApi.Authentication;
 using System.Web.Http.Cors;
 using System.Web.Http;
+using Unity;
 
 namespace SuperSportDataEngine.Application.WebApi.SystemApi
 {
