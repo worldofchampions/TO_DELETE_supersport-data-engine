@@ -1,6 +1,7 @@
-﻿namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
+﻿using Unity;
+
+namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
 {
-    using Microsoft.Practices.Unity;
     using System;
     using System.Timers;
     using System.Threading.Tasks;
