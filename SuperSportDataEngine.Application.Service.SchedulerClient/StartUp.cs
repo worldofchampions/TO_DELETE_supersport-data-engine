@@ -1,11 +1,11 @@
 ﻿using Microsoft.Owin;
 using Owin;
-using Microsoft.Practices.Unity;
 using SuperSportDataEngine.Application.Container;
 using SuperSportDataEngine.Application.Container.Enums;
 using Hangfire.Dashboard;
 using Hangfire.Logging;
 using Hangfire;
+using Unity;
 
 [assembly: OwinStartup(typeof(SuperSportDataEngine.Application.Service.SchedulerClient.StartUp))]
 

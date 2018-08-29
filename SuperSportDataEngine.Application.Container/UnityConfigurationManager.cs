@@ -1,8 +1,11 @@
-﻿namespace SuperSportDataEngine.Application.Container
+﻿using Unity;
+using Unity.Injection;
+using Unity.Lifetime;
+
+namespace SuperSportDataEngine.Application.Container
 {
     using Hangfire;
     using Hangfire.SqlServer;
-    using Microsoft.Practices.Unity;
     using MongoDB.Driver;
     using NLog.MSFTTeams;
     using StackExchange.Redis;
@@ -131,14 +134,14 @@
         {
             try
             {
-                container.RegisterType<ICache, Cache>(new ContainerControlledLifetimeManager(),
-                    new InjectionFactory((x) => new Cache(RedisConnection)));
+                container.RegisterType<ICache>(new ContainerControlledLifetimeManager(),
+                    new InjectionFactory(x => new Cache(RedisConnection)));
 
                 logger.Cache = container.Resolve<ICache>();
             }
             catch (Exception exception)
             {
-                container.RegisterType<ICache, Cache>(new ContainerControlledLifetimeManager(), new InjectionFactory((x) => null));
+                container.RegisterType<ICache>(new ContainerControlledLifetimeManager(), new InjectionFactory(x => null));
 
                 logger.Error("NoCacheInDIContainer",
                     exception,
@@ -185,9 +188,9 @@
             // The Unit of work is shared accross all services per container.
             // The unit of work is responsible for the creation and disposing of the repositories.
             // The services will access the repositories through the unit of work object.
-            container.RegisterType<IPublicSportDataUnitOfWork, PublicSportDataUnitOfWork>(
+            container.RegisterType<IPublicSportDataUnitOfWork>(
                 new HierarchicalLifetimeManager(),
-                new InjectionFactory((x) => new PublicSportDataUnitOfWork(
+                new InjectionFactory(x => new PublicSportDataUnitOfWork(
                     container.Resolve<DbContext>(PublicSportDataRepository))));
         }
 
@@ -199,9 +202,9 @@
             // The Unit of work is shared accross all services per container.
             // The unit of work is responsible for the creation and disposing of the repositories.
             // The services will access the repositories through the unit of work object.
-            container.RegisterType<ISystemSportDataUnitOfWork, SystemSportDataUnitOfWork>(
+            container.RegisterType<ISystemSportDataUnitOfWork>(
                 new HierarchicalLifetimeManager(),
-                new InjectionFactory((x) => new SystemSportDataUnitOfWork(
+                new InjectionFactory(x => new SystemSportDataUnitOfWork(
                     container.Resolve<DbContext>(SystemSportDataRepository))));
         }
 
@@ -210,12 +213,12 @@
             if (applicationScope == ApplicationScope.ServiceSchedulerClient ||
                 applicationScope == ApplicationScope.ServiceSchedulerIngestServer)
             {
-                container.RegisterType<IRecurringJobManager, RecurringJobManager>(
+                container.RegisterType<IRecurringJobManager>(
                     new HierarchicalLifetimeManager(),
                     new InjectionFactory(x => new RecurringJobManager(
                         new SqlServerStorage(ConfigurationManager.ConnectionStrings["SqlDatabase_Hangfire"].ConnectionString))));
 
-                container.RegisterType<IMongoClient, MongoClient>(
+                container.RegisterType<IMongoClient>(
                     new ContainerControlledLifetimeManager(),
                     new InjectionFactory(x => MongoClient));
 

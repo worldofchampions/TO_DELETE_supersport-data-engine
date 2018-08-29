@@ -1,5 +1,4 @@
 ﻿using Hangfire;
-using Microsoft.Practices.Unity;
 using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
 using SuperSportDataEngine.ApplicationLogic.Services;
 using System.Configuration;
@@ -8,6 +7,7 @@ using System;
 using Hangfire.Common;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
 using SuperSportDataEngine.Common.Logging;
+using Unity;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
 {
