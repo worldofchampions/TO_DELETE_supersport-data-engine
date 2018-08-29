@@ -50,6 +50,9 @@
                         ? ((DateTimeOffset)src.StartDateTimeUtc).ToLocalTime().ToString("s")
                         : ""))
 
+                .ForMember(dest => dest.RaceEventStatus, expression => expression.MapFrom(
+                    src => src.MotorsportRaceEventStatus.ToString()))
+
                 // [TODO] This value is set to the minimum date time because we do not get it from the provider.
                 .ForMember(dest => dest.EndDate, expression => expression.UseValue(DateTime.MinValue.ToString("s")))
 
