@@ -4,6 +4,7 @@
     using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Motorsport;
     using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
     using System;
     using System.Collections.Generic;
     using System.Web.WebPages;
@@ -51,7 +52,7 @@
                         : ""))
 
                 .ForMember(dest => dest.RaceEventStatus, expression => expression.MapFrom(
-                    src => src.MotorsportRaceEventStatus.ToString()))
+                    src => FormatRaceEventStatusForResponse(src.MotorsportRaceEventStatus)))
 
                 // [TODO] This value is set to the minimum date time because we do not get it from the provider.
                 .ForMember(dest => dest.EndDate, expression => expression.UseValue(DateTime.MinValue.ToString("s")))
@@ -74,6 +75,31 @@
 
             var fullName = (name + " " + surname).Trim();
             return fullName.IsEmpty() ? null : fullName;
+        }
+
+        private static string FormatRaceEventStatusForResponse(MotorsportRaceEventStatus motorsportRaceEventStatus)
+        {
+            switch (motorsportRaceEventStatus)
+            {
+                case MotorsportRaceEventStatus.PreRace:
+                    return "PreRace";
+                case MotorsportRaceEventStatus.InProgress:
+                    return "InProgress";
+                case MotorsportRaceEventStatus.Result:
+                    return "Results";
+                case MotorsportRaceEventStatus.Postponed:
+                    return "Postponed";
+                case MotorsportRaceEventStatus.Suspended:
+                    return "Suspended";
+                case MotorsportRaceEventStatus.Delayed:
+                    return "Delayed";
+                case MotorsportRaceEventStatus.Cancelled:
+                    return "Cancelled";
+                case MotorsportRaceEventStatus.Unknown:
+                    return string.Empty;
+                default:
+                    return string.Empty;
+            }
         }
     }
 }
