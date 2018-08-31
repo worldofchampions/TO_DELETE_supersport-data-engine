@@ -200,23 +200,9 @@
             var standingsFromDb = _publicSportDataUnitOfWork.MotorsportDriverStandings.Where(ds =>
                 ds.MotorsportLeagueId == league.Id && ds.MotorsportSeasonId == season.Id).ToList();
 
+            await AddOrUpdateDriverStandingsInDb(standingsFromProvider, standingsFromDb, league, season);
+
             RemoveDriverStandingsFromDbIfNotInProviderCollection(standingsFromDb, standingsFromProvider);
-
-            //await AddOrUpdateDriverStandingsInDb(standingsFromProvider, standingsFromDb, league, season);
-            foreach (var standing in standingsFromProvider)
-            {
-                var repoStanding = standingsFromDb.FirstOrDefault(s =>
-                    s.MotorsportDriver.ProviderDriverId == standing.playerId);
-
-                if (repoStanding is null)
-                {
-                    await AddNewDriverStandingToRepo(standing, league, season);
-                }
-                else
-                {
-                    UpdateDriverStandingInRepo(standing, repoStanding);
-                }
-            }
 
             await _publicSportDataUnitOfWork.SaveChangesAsync();
         }
@@ -272,37 +258,10 @@
 
             var eventResultsFromDb = _publicSportDataUnitOfWork.MotorsportRaceEventResults.Where(result =>
                 result.MotorsportRaceEventId == raceEvent.Id).ToList();
+            
+            AddOrUpdateRaceEventResultsInDb(resultsFromProvider, raceEvent, league);
 
-            var eventResultsToRemove = new List<MotorsportRaceEventResult>();
-
-            foreach (var dbResult in eventResultsFromDb)
-            {
-                if (resultsFromProvider.FirstOrDefault(r => r.player.playerId == dbResult.MotorsportDriver.ProviderDriverId) == null)
-                {
-                    eventResultsToRemove.Add(dbResult);
-                }
-            }
-
-            foreach (var result in resultsFromProvider)
-            {
-                var playerId = result?.player?.playerId;
-                if (playerId is null) continue;
-
-                var resultInRepo = _publicSportDataUnitOfWork.MotorsportRaceEventResults.FirstOrDefault(
-                    r => r.MotorsportDriver.ProviderDriverId == playerId
-                         && r.MotorsportRaceEventId == raceEvent.Id);
-
-                if (resultInRepo is null)
-                {
-                    AddNewResultsToRepo(result, raceEvent, league);
-                }
-                else
-                {
-                    UpdateResultsInRepo(resultInRepo, result, league);
-                }
-            }
-
-            _publicSportDataUnitOfWork.MotorsportRaceEventResults.DeleteRange(eventResultsToRemove);
+            RemoveResultsFromDbIfNotInProviderCollection(eventResultsFromDb, resultsFromProvider);
 
             await _publicSportDataUnitOfWork.SaveChangesAsync();
 
@@ -391,11 +350,11 @@
             if (!gridFromProviderResponse.Any()) return;
 
             var gridentriesFromDb =
-                _publicSportDataUnitOfWork.MotorsportRaceEventGrids.Where(result => result.MotorsportRaceEventId == raceEvent.Id);
-
-            RemoveGridEntriesFromDbIfNotInProviderCollection(gridentriesFromDb, gridFromProviderResponse);
+                _publicSportDataUnitOfWork.MotorsportRaceEventGrids.Where(result => result.MotorsportRaceEventId == raceEvent.Id).ToList();
 
             AddOrUpdateGridEntiresInDb(gridFromProviderResponse, raceEvent, league);
+
+            RemoveGridEntriesFromDbIfNotInProviderCollection(gridentriesFromDb, gridFromProviderResponse);
 
             await _publicSportDataUnitOfWork.SaveChangesAsync();
         }
