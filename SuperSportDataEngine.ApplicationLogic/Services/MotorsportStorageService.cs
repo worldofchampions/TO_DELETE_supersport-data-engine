@@ -257,9 +257,9 @@
             var standingsFromDb = _publicSportDataUnitOfWork.MotorsportTeamStandings.Where(standing =>
                 standing.MotorsportLeagueId == league.Id && standing.MotorsportSeasonId == season.Id).ToList();
 
-            RemoveTeamStandingsFromDbIfNotInProviderCollection(standingsFromDb, standingsFromProvider);
-
             await AddOrUpdateTeamStandingsInDb(standingsFromProvider, standingsFromDb, league, season);
+
+            RemoveTeamStandingsFromDbIfNotInProviderCollection(standingsFromDb, standingsFromProvider);
 
             await _publicSportDataUnitOfWork.SaveChangesAsync();
         }
