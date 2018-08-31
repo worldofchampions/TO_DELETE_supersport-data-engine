@@ -271,9 +271,7 @@
             if (!resultsFromProvider.Any()) return;
 
             var eventResultsFromDb = _publicSportDataUnitOfWork.MotorsportRaceEventResults.Where(result =>
-                result.MotorsportRaceEventId == raceEvent.Id);
-
-            //RemoveResultsFromDbIfNotInProviderCollection(eventResultsFromDb, resultsFromProvider);
+                result.MotorsportRaceEventId == raceEvent.Id).ToList();
 
             var eventResultsToRemove = new List<MotorsportRaceEventResult>();
 
@@ -283,11 +281,8 @@
                 {
                     eventResultsToRemove.Add(dbResult);
                 }
-
             }
-            _publicSportDataUnitOfWork.MotorsportRaceEventResults.DeleteRange(eventResultsToRemove);
 
-            //AddOrUpdateRaceEventResultsInDb(resultsFromProvider, raceEvent, league);
             foreach (var result in resultsFromProvider)
             {
                 var playerId = result?.player?.playerId;
@@ -306,6 +301,8 @@
                     UpdateResultsInRepo(resultInRepo, result, league);
                 }
             }
+
+            _publicSportDataUnitOfWork.MotorsportRaceEventResults.DeleteRange(eventResultsToRemove);
 
             await _publicSportDataUnitOfWork.SaveChangesAsync();
 
