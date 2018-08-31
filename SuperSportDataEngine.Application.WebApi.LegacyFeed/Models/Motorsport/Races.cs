@@ -17,6 +17,7 @@
         public string Venue { get; set; }
         public string City { get; set; }
         public string Country { get; set; }
+        public string RaceEventStatus { get; set; }
         public DateTime Date { get; set; }
         public DateTime EndDate { get; set; }
         public string report { get; set; }
