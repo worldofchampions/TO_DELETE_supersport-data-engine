@@ -445,8 +445,7 @@
             foreach (var standing in standingsFromProvider)
             {
                 var repoStanding = standingsFromDb.FirstOrDefault(s =>
-                    s.MotorsportDriver.ProviderDriverId == standing.playerId
-                    && s.MotorsportSeasonId == season.Id && s.MotorsportLeagueId == league.Id);
+                    s.MotorsportDriver.ProviderDriverId == standing.playerId);
 
                 if (repoStanding is null)
                 {
@@ -465,8 +464,7 @@
             foreach (var providerStanding in standingsFromProvider)
             {
                 var repoStanding = standingsFromDb.FirstOrDefault(s =>
-                    s.MotorsportTeam.ProviderTeamId == providerStanding.teamId
-                    && s.MotorsportSeasonId == season.Id && s.MotorsportLeagueId == league.Id);
+                    s.MotorsportTeam.ProviderTeamId == providerStanding.teamId);
 
                 if (repoStanding is null)
                 {
