@@ -273,7 +273,19 @@
             var eventResultsFromDb = _publicSportDataUnitOfWork.MotorsportRaceEventResults.Where(result =>
                 result.MotorsportRaceEventId == raceEvent.Id);
 
-            RemoveResultsFromDbIfNotInProviderCollection(eventResultsFromDb, resultsFromProvider);
+            //RemoveResultsFromDbIfNotInProviderCollection(eventResultsFromDb, resultsFromProvider);
+
+            var eventResultsToRemove = new List<MotorsportRaceEventResult>();
+
+            foreach (var dbResult in eventResultsFromDb)
+            {
+                if (resultsFromProvider.FirstOrDefault(r => r.player.playerId == dbResult.MotorsportDriver.ProviderDriverId) == null)
+                {
+                    eventResultsToRemove.Add(dbResult);
+                }
+
+            }
+            _publicSportDataUnitOfWork.MotorsportRaceEventResults.DeleteRange(eventResultsToRemove);
 
             //AddOrUpdateRaceEventResultsInDb(resultsFromProvider, raceEvent, league);
             foreach (var result in resultsFromProvider)
