@@ -202,7 +202,21 @@
 
             RemoveDriverStandingsFromDbIfNotInProviderCollection(standingsFromDb, standingsFromProvider);
 
-            await AddOrUpdateDriverStandingsInDb(standingsFromProvider, standingsFromDb, league, season);
+            //await AddOrUpdateDriverStandingsInDb(standingsFromProvider, standingsFromDb, league, season);
+            foreach (var standing in standingsFromProvider)
+            {
+                var repoStanding = standingsFromDb.FirstOrDefault(s =>
+                    s.MotorsportDriver.ProviderDriverId == standing.playerId);
+
+                if (repoStanding is null)
+                {
+                    await AddNewDriverStandingToRepo(standing, league, season);
+                }
+                else
+                {
+                    UpdateDriverStandingInRepo(standing, repoStanding);
+                }
+            }
 
             await _publicSportDataUnitOfWork.SaveChangesAsync();
         }
@@ -261,7 +275,25 @@
 
             RemoveResultsFromDbIfNotInProviderCollection(eventResultsFromDb, resultsFromProvider);
 
-            AddOrUpdateRaceEventResultsInDb(resultsFromProvider, raceEvent, league);
+            //AddOrUpdateRaceEventResultsInDb(resultsFromProvider, raceEvent, league);
+            foreach (var result in resultsFromProvider)
+            {
+                var playerId = result?.player?.playerId;
+                if (playerId is null) continue;
+
+                var resultInRepo = _publicSportDataUnitOfWork.MotorsportRaceEventResults.FirstOrDefault(
+                    r => r.MotorsportDriver.ProviderDriverId == playerId
+                         && r.MotorsportRaceEventId == raceEvent.Id);
+
+                if (resultInRepo is null)
+                {
+                    AddNewResultsToRepo(result, raceEvent, league);
+                }
+                else
+                {
+                    UpdateResultsInRepo(resultInRepo, result, league);
+                }
+            }
 
             await _publicSportDataUnitOfWork.SaveChangesAsync();
 
