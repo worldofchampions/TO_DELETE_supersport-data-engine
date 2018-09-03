@@ -272,6 +272,10 @@
     <Compile Include="Migrations\201804260942030_Motorsport_Add_IsDisabledInbound_For_Races.Designer.cs">
       <DependentUpon>201804260942030_Motorsport_Add_IsDisabledInbound_For_Races.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201809031917128_Rugby_Add_DefaultRugbyLogType_RugbyTournament.cs" />
+    <Compile Include="Migrations\201809031917128_Rugby_Add_DefaultRugbyLogType_RugbyTournament.Designer.cs">
+      <DependentUpon>201809031917128_Rugby_Add_DefaultRugbyLogType_RugbyTournament.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Seed\Motorsport\SeedMotorsportCurrentSeasons.cs" />
     <Compile Include="Migrations\Seed\Rugby\LogGroups\JuniorRugby\SeedRugbyLogGroupsForJuniorRugbyWorldCup2018.cs" />
@@ -295,6 +299,7 @@
     <Compile Include="Migrations\Seed\Rugby\LogGroups\Sevens\2018\Round04Hamilton.cs" />
     <Compile Include="Migrations\Seed\Rugby\LogGroups\Sevens\2018\Round03Sydney.cs" />
     <Compile Include="Migrations\Seed\Rugby\LogGroups\Sevens\2017\Round01Dubai.cs" />
+    <Compile Include="Migrations\Seed\SeedRugbyDefaultLogTypeTournaments.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyHasLogsTournaments.cs" />
     <Compile Include="Migrations\Seed\Rugby\LogGroups\SuperRugby\SeedRugbyLogGroupsForTournamentSuperRugby2017.cs" />
     <Compile Include="Migrations\Seed\Rugby\LogGroups\SuperRugby\SeedRugbyLogGroupsForTournamentSuperRugby2018.cs" />
@@ -461,6 +466,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201804260942030_Motorsport_Add_IsDisabledInbound_For_Races.resx">
       <DependentUpon>201804260942030_Motorsport_Add_IsDisabledInbound_For_Races.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809031917128_Rugby_Add_DefaultRugbyLogType_RugbyTournament.resx">
+      <DependentUpon>201809031917128_Rugby_Add_DefaultRugbyLogType_RugbyTournament.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
