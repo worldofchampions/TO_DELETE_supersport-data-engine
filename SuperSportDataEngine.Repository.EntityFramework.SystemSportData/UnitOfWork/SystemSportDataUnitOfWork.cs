@@ -17,7 +17,6 @@
         public IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> SchedulerTrackingRugbyFixtures { get; private set; }
         public IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> SchedulerTrackingRugbySeasons { get; private set; }
         public IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> SchedulerTrackingRugbyTournaments { get; private set; }
-        public IBaseEntityFrameworkRepository<SchedulerTrackingMotorsportSeason> SchedulerTrackingMotorsportSeasons { get; }
         public IBaseEntityFrameworkRepository<SchedulerTrackingMotorsportRaceEvent> SchedulerTrackingMotorsportRaceEvents { get; private set; }
 
         public SystemSportDataUnitOfWork(DbContext context)
@@ -30,7 +29,6 @@
             SchedulerTrackingRugbySeasons = new BaseEntityFrameworkRepository<SchedulerTrackingRugbySeason>(_context);
             SchedulerTrackingRugbyTournaments = new BaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament>(_context);
 
-            SchedulerTrackingMotorsportSeasons = new BaseEntityFrameworkRepository<SchedulerTrackingMotorsportSeason>(_context);
             SchedulerTrackingMotorsportRaceEvents = new BaseEntityFrameworkRepository<SchedulerTrackingMotorsportRaceEvent>(_context);
         }
 
