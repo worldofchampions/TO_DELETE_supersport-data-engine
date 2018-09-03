@@ -1,4 +1,4 @@
-﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models
+﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums
 {
     public enum SchedulerStateForMotorsportRaceEventCalendarPolling
     {

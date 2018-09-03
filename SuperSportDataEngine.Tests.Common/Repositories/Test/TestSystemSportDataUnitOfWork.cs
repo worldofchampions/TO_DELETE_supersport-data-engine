@@ -14,7 +14,6 @@
         public IBaseEntityFrameworkRepository<SchedulerTrackingRugbyFixture> SchedulerTrackingRugbyFixtures { get; set; }
         public IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> SchedulerTrackingRugbySeasons { get; set; }
         public IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> SchedulerTrackingRugbyTournaments { get; set; }
-        public IBaseEntityFrameworkRepository<SchedulerTrackingMotorsportSeason> SchedulerTrackingMotorsportSeasons { get; }
         public IBaseEntityFrameworkRepository<SchedulerTrackingMotorsportRaceEvent> SchedulerTrackingMotorsportRaceEvents { get; set; }
 
         public TestSystemSportDataUnitOfWork()
@@ -25,7 +24,6 @@
             LegacyZoneSites = new TestEntityFrameworkRepository<LegacyZoneSite>(new List<LegacyZoneSite>());
             SchedulerTrackingRugbySeasons = new TestEntityFrameworkRepository<SchedulerTrackingRugbySeason>(new List<SchedulerTrackingRugbySeason>());
             SchedulerTrackingRugbyTournaments = new TestEntityFrameworkRepository<SchedulerTrackingRugbyTournament>(new List<SchedulerTrackingRugbyTournament>());
-            SchedulerTrackingMotorsportSeasons = new TestEntityFrameworkRepository<SchedulerTrackingMotorsportSeason>(new List<SchedulerTrackingMotorsportSeason>());
         }
 
         public int SaveChanges()
@@ -46,7 +44,6 @@
             SchedulerTrackingRugbyFixtures?.Dispose();
             SchedulerTrackingRugbySeasons?.Dispose();
             SchedulerTrackingRugbyTournaments?.Dispose();
-            SchedulerTrackingMotorsportSeasons?.Dispose();
         }
     }
 }
