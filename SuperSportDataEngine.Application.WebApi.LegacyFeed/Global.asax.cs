@@ -26,8 +26,18 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed
 
         private static void ConfigureApplicationInsightGlobalSettings()
         {
-                Microsoft.ApplicationInsights.Extensibility.
-                        TelemetryConfiguration.Active.InstrumentationKey = WebConfigurationManager.AppSettings["ikey"];
+            try
+            {
+                var iKey = WebConfigurationManager.AppSettings["AppInsightsInstrumentationKey"];
+                if (iKey != null)
+                {
+                    Microsoft.ApplicationInsights.Extensibility.TelemetryConfiguration.Active.InstrumentationKey = iKey;
+                }
+            }
+            catch (System.Exception)
+            {
+                Microsoft.ApplicationInsights.Extensibility.TelemetryConfiguration.Active.InstrumentationKey = string.Empty;
+            }
         }
 
         private static void ConfigureRequestHandlers()
