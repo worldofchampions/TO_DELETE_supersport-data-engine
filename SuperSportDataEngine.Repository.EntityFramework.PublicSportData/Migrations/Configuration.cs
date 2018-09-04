@@ -35,7 +35,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
         private static void SeedRugbyData(PublicSportDataContext context)
         {
             SeedRugbyTournamentSlugs.Seed(context);
-            SeedRugbyDefaultLogTypeTournaments.Seed(context);
+            SeedRugbyTournamentDefaultLogType.Seed(context);
             SeedRugbyHasLogsTournaments.Seed(context);
             SeedRugbyEventTypes.Seed(context);
             SeedRugbyEventTypeProviderMappings.Seed(context);

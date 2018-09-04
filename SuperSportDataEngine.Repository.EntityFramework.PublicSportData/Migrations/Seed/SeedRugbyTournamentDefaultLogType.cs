@@ -4,10 +4,11 @@ using System.Data.Entity.Migrations;
 using System.Linq;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models.Enums;
 using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
+using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Constants;
 
 namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed
 {
-    public static class SeedRugbyDefaultLogTypeTournaments
+    public static class SeedRugbyTournamentDefaultLogType
     {
         public static void Seed(PublicSportDataContext context)
         {
@@ -29,17 +30,17 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
             }
         }
 
-        private static List<string> GetGroupedLogTournamentSlugNames()
+        private static IEnumerable<string> GetGroupedLogTournamentSlugNames()
         {
             var tournaments = new List<string>
             {
-                "super-rugby",
-                "supersport-challenge",
-                "junior-rugby",
-                "new-zealand",
-                "pro14",
-                "champions-cup",
-                "sevens"
+                RugbyTournamentConstants.SuperRugbySlugName,
+                RugbyTournamentConstants.SupersportChallengeSlugName,
+                RugbyTournamentConstants.JuniorRugbySlugName,
+                RugbyTournamentConstants.NewZealandSlugName,
+                RugbyTournamentConstants.Pro14,
+                RugbyTournamentConstants.ChampionsCupSlugName,
+                RugbyTournamentConstants.SevensSlugName
             };
 
             return tournaments;
