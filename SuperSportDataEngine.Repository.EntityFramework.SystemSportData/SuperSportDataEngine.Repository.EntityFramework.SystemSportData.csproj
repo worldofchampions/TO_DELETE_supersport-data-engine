@@ -143,6 +143,10 @@
     <Compile Include="Migrations\201805301241534_Motorsport_RaceEvents_Tracking_Table.Designer.cs">
       <DependentUpon>201805301241534_Motorsport_RaceEvents_Tracking_Table.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201809030816573_Motorsport_Delete_Unused_TrackingTable.cs" />
+    <Compile Include="Migrations\201809030816573_Motorsport_Delete_Unused_TrackingTable.Designer.cs">
+      <DependentUpon>201809030816573_Motorsport_Delete_Unused_TrackingTable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Seed\SeedSchedulingDashboardUsers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -207,6 +211,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201805301241534_Motorsport_RaceEvents_Tracking_Table.resx">
       <DependentUpon>201805301241534_Motorsport_RaceEvents_Tracking_Table.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201809030816573_Motorsport_Delete_Unused_TrackingTable.resx">
+      <DependentUpon>201809030816573_Motorsport_Delete_Unused_TrackingTable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -1,10 +1,9 @@
-﻿using Unity;
-
-namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
+﻿namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
 {
     using System;
     using System.Configuration;
     using System.Threading;
+    using Unity;
     using Hangfire;
     using Hangfire.Common;
     using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
@@ -119,6 +118,33 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
 
         private void UpdateRecurringJobDefinition_RaceEvents()
         {
+            ScheduleNightlyRecurringJobForRaceEvents();
+
+            ScheduleTimeConfiguredRecurringJobForRaceEvents();
+        }
+
+        private void ScheduleTimeConfiguredRecurringJobForRaceEvents()
+        {
+            var recurringJobId = ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_RaceEvents_Minutely_JobId"];
+
+            var cronExpression = ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_RaceEvents_Minutely_JobCronExpression"];
+
+            var recurringJobOptions = new RecurringJobOptions
+            {
+                TimeZone = TimeZoneInfo.Local,
+                QueueName = HangfireQueueConfiguration.NormalPriority
+            };
+
+            _recurringJobManager.AddOrUpdate(
+                recurringJobId,
+                Job.FromExpression(() =>
+                    _container.Resolve<IMotorsportIngestWorkerService>().IngestRacesEvents(CancellationToken.None)),
+                cronExpression,
+                recurringJobOptions);
+        }
+
+        private void ScheduleNightlyRecurringJobForRaceEvents()
+        {
             _recurringJobManager.AddOrUpdate(
                 ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_RaceEvents_JobId"],
                 Job.FromExpression(() => _container.Resolve<IMotorsportIngestWorkerService>().IngestRacesEvents(CancellationToken.None)),
@@ -185,7 +211,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
 
             ScheduleTimeConfiguredRecurringJobForDriverStandings();
         }
-        
+
         private void UpdateRecurringJobDefinition_TeamStandings()
         {
             ScheduleNightlyRecurringJobForTeamStandings();

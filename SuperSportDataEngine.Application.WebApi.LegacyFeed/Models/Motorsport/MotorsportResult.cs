@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Web;
-using System.Xml;
+﻿using System.Collections.Generic;
 using System.Xml.Serialization;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Motorsport
@@ -19,5 +14,6 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Motorsport
         public string Name { get; set; }
         public string Country { get; set; }
         public string Circuit { get; set; }
+        public string RaceEventStatus { get; set; }
     }
 }
