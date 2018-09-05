@@ -445,7 +445,7 @@
             foreach (var standing in standingsFromProvider)
             {
                 var repoStanding = standingsFromDb.FirstOrDefault(s =>
-                    s.MotorsportDriver.ProviderDriverId == standing.playerId);
+                    s.MotorsportDriver.ProviderDriverId == standing.playerId && s.MotorsportTeam.ProviderTeamId == standing.team.teamId);
 
                 if (repoStanding is null)
                 {
@@ -1100,6 +1100,20 @@
                 if (providerStanding.finishes != null)
                 {
                     repoStanding.Wins = providerStanding.finishes.first;
+                }
+
+                if (providerStanding.owner != null)
+                {
+                    var repoTeam = _publicSportDataUnitOfWork.MotortsportTeams.FirstOrDefault(t =>
+                        t.ProviderTeamId == providerStanding.owner.ownerId && t.MotorsportLeague.Id == repoStanding.MotorsportLeagueId);
+
+                    if (repoTeam != null)
+                    {
+                        repoTeam = _publicSportDataUnitOfWork.MotortsportTeams.FirstOrDefault(t =>
+                            t.ProviderTeamId == providerStanding.owner.ownerId && t.MotorsportLeague.Id == repoStanding.MotorsportLeagueId);
+                    }
+
+                    repoStanding.MotorsportTeam = repoTeam;
                 }
             }
 
