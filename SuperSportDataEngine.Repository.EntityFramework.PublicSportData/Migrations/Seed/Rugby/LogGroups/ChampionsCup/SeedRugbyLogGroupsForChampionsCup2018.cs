@@ -6,7 +6,7 @@ using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramewor
 using SuperSportDataEngine.ApplicationLogic.Constants.Providers;
 using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
 
-namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed
+namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.ChampionsCup
 {
     public static class SeedRugbyLogGroupsForChampionsCup2018
     {
@@ -25,10 +25,13 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                         x.DataProvider == DataProvider.StatsProzone &&
                         x.ProviderTournamentId == RugbyStatsProzoneConstants.ProviderTournamentIdChampionsCup);
 
-                var rugbySeason = context.RugbySeasons.Single(x =>
+                var rugbySeason = context.RugbySeasons.FirstOrDefault(x =>
                     x.DataProvider == DataProvider.StatsProzone &&
                     x.RugbyTournament.Id == rugbyTournament.Id &&
                     x.ProviderSeasonId == RugbyStatsProzoneConstants.ProviderTournamentSeasonId2018);
+
+                if (rugbySeason == null)
+                    return;
 
                 // Create log groups.
                 context.RugbyLogGroups.AddOrUpdate(

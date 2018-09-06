@@ -26,10 +26,13 @@
                     x.DataProvider == DataProvider.StatsProzone &&
                     x.ProviderTournamentId == RugbyStatsProzoneConstants.ProviderTournamentIdSuperRugby);
 
-                var rugbySeason = context.RugbySeasons.Single(x =>
+                var rugbySeason = context.RugbySeasons.FirstOrDefault(x =>
                     x.DataProvider == DataProvider.StatsProzone &&
                     x.RugbyTournament.Id == rugbyTournament.Id &&
                     x.ProviderSeasonId == RugbyStatsProzoneConstants.ProviderTournamentSeasonId2017);
+
+                if (rugbySeason == null)
+                    return;
 
                 // Create log groups.
                 context.RugbyLogGroups.AddOrUpdate(
