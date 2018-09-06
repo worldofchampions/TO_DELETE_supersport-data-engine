@@ -185,14 +185,10 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
             {
                 foreach (var tournament in nonCurrentTournaments)
                 {
-                    var activeTournamentJobId =
-                        ConfigurationManager.AppSettings["ScheduleManagerJob_Fixtures_ActiveTournaments_JobIdPrefix"] +
-                        tournament.Name;
                     var currentTournamentJobId =
                         ConfigurationManager.AppSettings["ScheduleManagerJob_Fixtures_CurrentTournaments_JobIdPrefix"] +
                         tournament.Name;
 
-                    _recurringJobManager.RemoveIfExists(activeTournamentJobId);
                     _recurringJobManager.RemoveIfExists(currentTournamentJobId);
 
                     var tournamentInDb =
