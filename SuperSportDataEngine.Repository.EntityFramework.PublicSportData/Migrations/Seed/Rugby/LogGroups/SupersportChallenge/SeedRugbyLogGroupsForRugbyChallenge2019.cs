@@ -1,22 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Entity.Migrations;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
 using SuperSportDataEngine.ApplicationLogic.Constants.Providers;
 using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
 
-namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed
+namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.SupersportChallenge
 {
-    static class SeedRugbyLogGroupsForRugbyChallenge
+    static class SeedRugbyLogGroupsForSupersportChallenge2019
     {
-        private const string SlugHierarchyLevel0RugbyChallenge = "RugbyChallenge-2018-HL0-RugbyChallenge";
-        private const string SlugHierarchyLevel1Central = "RugbyChallenge-2018-HL1-Central";
-        private const string SlugHierarchyLevel1North = "RugbyChallenge-2018-HL1-North";
-        private const string SlugHierarchyLevel1South = "RugbyChallenge-2018-HL1-South";
+        private const string SlugHierarchyLevel0RugbyChallenge = "SupersportChallenge-2019-HL0-RugbyChallenge";
+        private const string SlugHierarchyLevel1Central = "SupersportChallenge-2019-HL1-Central";
+        private const string SlugHierarchyLevel1North = "SupersportChallenge-2019-HL1-North";
+        private const string SlugHierarchyLevel1South = "SupersportChallenge-2019-HL1-South";
 
         public static void Seed(PublicSportDataContext context)
         {
@@ -24,12 +21,12 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
             {
                 var rugbyTournament = context.RugbyTournaments.Single(x =>
                         x.DataProvider == DataProvider.StatsProzone &&
-                        x.ProviderTournamentId == RugbyStatsProzoneConstants.ProviderTournamentIdRugbyChallenge);
+                        x.ProviderTournamentId == RugbyStatsProzoneConstants.ProviderTournamentIdSupersportChallenge);
 
                 var rugbySeason = context.RugbySeasons.FirstOrDefault(x =>
                     x.DataProvider == DataProvider.StatsProzone &&
                     x.RugbyTournament.Id == rugbyTournament.Id &&
-                    x.ProviderSeasonId == RugbyStatsProzoneConstants.ProviderTournamentSeasonId2018);
+                    x.ProviderSeasonId == RugbyStatsProzoneConstants.ProviderTournamentSeasonId2019);
 
                 if (rugbySeason == null)
                     return;
