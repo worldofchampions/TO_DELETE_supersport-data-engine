@@ -5,6 +5,7 @@ using System.Linq;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
 using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
+using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Constants;
 
 namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed
 {
@@ -45,23 +46,23 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
         {
             return new List<RugbyTournament>
             {
-                new RugbyTournament {Slug = "british-lions",ProviderTournamentId = 761},
-                new RugbyTournament {Slug = "champions-cup",ProviderTournamentId = 291},
-                new RugbyTournament {Slug = "craven-week",ProviderTournamentId = 129},
-                new RugbyTournament {Slug = "currie-cup",ProviderTournamentId = 121},
-                new RugbyTournament {Slug = "international",ProviderTournamentId = 810},
-                new RugbyTournament {Slug = "pro14",ProviderTournamentId = 293},
-                new RugbyTournament {Slug = "pro-d2",ProviderTournamentId = 242},
-                new RugbyTournament {Slug = "national-rugby-championship",ProviderTournamentId = 117}, // National Rugby Championship
-                new RugbyTournament {Slug = "supersport-challenge",ProviderTournamentId = 165}, // Rugby Challenge
-                new RugbyTournament {Slug = "rugby-championship",ProviderTournamentId = 191}, // The Rugby Championship
-                new RugbyTournament {Slug = "sevens",ProviderTournamentId = 831},
-                new RugbyTournament {Slug = "six-nations",ProviderTournamentId = 301},
-                new RugbyTournament {Slug = "super-rugby",ProviderTournamentId = 181},
-                new RugbyTournament {Slug = "top14",ProviderTournamentId = 241},
-                new RugbyTournament {Slug = "england",ProviderTournamentId = 201},
-                new RugbyTournament {Slug = "new-zealand",ProviderTournamentId = 101},
-                new RugbyTournament {Slug = "junior-rugby",ProviderTournamentId = 791}
+                new RugbyTournament {Slug = RugbyTournamentConstants.BritishLionsSlugName, ProviderTournamentId = 761},
+                new RugbyTournament {Slug = RugbyTournamentConstants.ChampionsCupSlugName, ProviderTournamentId = 291},
+                new RugbyTournament {Slug = RugbyTournamentConstants.CravenWeekSlugName, ProviderTournamentId = 129},
+                new RugbyTournament {Slug = RugbyTournamentConstants.CurrieCupSlugName, ProviderTournamentId = 121},
+                new RugbyTournament {Slug = RugbyTournamentConstants.InternationalSlugName, ProviderTournamentId = 810},
+                new RugbyTournament {Slug = RugbyTournamentConstants.Pro14, ProviderTournamentId = 293},
+                new RugbyTournament {Slug = RugbyTournamentConstants.ProD2SlugName, ProviderTournamentId = 242},
+                new RugbyTournament {Slug = RugbyTournamentConstants.NationalRugbyChampionshipSlugName, ProviderTournamentId = 117}, // National Rugby Championship
+                new RugbyTournament {Slug = RugbyTournamentConstants.SupersportChallengeSlugName, ProviderTournamentId = 165}, // Rugby Challenge
+                new RugbyTournament {Slug = RugbyTournamentConstants.RugbyChampionshipSlugName, ProviderTournamentId = 191}, // The Rugby Championship
+                new RugbyTournament {Slug = RugbyTournamentConstants.SevensSlugName, ProviderTournamentId = 831},
+                new RugbyTournament {Slug = RugbyTournamentConstants.SixNationsSlugName, ProviderTournamentId = 301},
+                new RugbyTournament {Slug = RugbyTournamentConstants.SuperRugbySlugName, ProviderTournamentId = 181},
+                new RugbyTournament {Slug = RugbyTournamentConstants.Top14SlugName, ProviderTournamentId = 241},
+                new RugbyTournament {Slug = RugbyTournamentConstants.EnglandSlugName, ProviderTournamentId = 201},
+                new RugbyTournament {Slug = RugbyTournamentConstants.NewZealandSlugName, ProviderTournamentId = 101},
+                new RugbyTournament {Slug = RugbyTournamentConstants.JuniorRugbySlugName, ProviderTournamentId = 791}
             };
         }
     }
