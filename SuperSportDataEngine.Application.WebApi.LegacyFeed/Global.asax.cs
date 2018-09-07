@@ -1,4 +1,5 @@
-﻿using SuperSportDataEngine.Application.WebApi.LegacyFeed.Handlers;
+﻿using System.Web.Configuration;
+using SuperSportDataEngine.Application.WebApi.LegacyFeed.Handlers;
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed
@@ -20,6 +21,23 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed
 
             ConfigureFomatters();
             ConfigureRequestHandlers();
+            ConfigureApplicationInsightGlobalSettings();
+        }
+
+        private static void ConfigureApplicationInsightGlobalSettings()
+        {
+            try
+            {
+                var iKey = WebConfigurationManager.AppSettings["AppInsightsInstrumentationKey"];
+                if (iKey != null)
+                {
+                    Microsoft.ApplicationInsights.Extensibility.TelemetryConfiguration.Active.InstrumentationKey = iKey;
+                }
+            }
+            catch (System.Exception)
+            {
+                Microsoft.ApplicationInsights.Extensibility.TelemetryConfiguration.Active.InstrumentationKey = string.Empty;
+            }
         }
 
         private static void ConfigureRequestHandlers()

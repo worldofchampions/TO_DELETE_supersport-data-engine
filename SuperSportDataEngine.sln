@@ -80,6 +80,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperSportDataEngine.Applic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperSportDataEngine.Gateway.Http.Stats", "SuperSportDataEngine.Gateway.Http.Stats\SuperSportDataEngine.Gateway.Http.Stats.csproj", "{C3AEA7FF-D0A4-473A-8B49-AA52EF7058A6}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SuperSportDataEngine.Application.WebApi.LegacyFeed.IIS.Setup.Scripts", "SuperSportDataEngine.Application.WebApi.LegacyFeed.IIS.Setup.Scripts", "{AECFD9B2-CD25-4200-A710-E5359CE53105}"
+	ProjectSection(SolutionItems) = preProject
+		configure-ssde-feed-app-pool-settings.ps1 = configure-ssde-feed-app-pool-settings.ps1
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
