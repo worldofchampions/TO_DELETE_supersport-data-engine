@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Motorsport
+﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
+
+namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Motorsport
 {
     using AutoMapper;
     using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Motorsport;
@@ -47,16 +49,20 @@
 
                 .ForMember(dest => dest.Date, expression => expression.MapFrom(
                     src => src.StartDateTimeUtc != null
-                        ? ((DateTimeOffset)src.StartDateTimeUtc).ToLocalTime().ToString("s")
+                        ? ((DateTimeOffset) src.StartDateTimeUtc).ToLocalTime().ToString("s")
                         : ""))
 
                 // [TODO] This value is set to the minimum date time because we do not get it from the provider.
                 .ForMember(dest => dest.EndDate, expression => expression.UseValue(DateTime.MinValue.ToString("s")))
 
                 .ForMember(dest => dest.winner, expression => expression.MapFrom(src =>
-                    src.RaceEventWinner != null && src.RaceEventWinner.FullNameCmsOverride != null ? src.RaceEventWinner.FullNameCmsOverride :
-                    GetFullName(src.RaceEventWinner != null ? src.RaceEventWinner.FirstName : null,
-                                src.RaceEventWinner != null ? src.RaceEventWinner.LastName : null)))
+                    src.RaceEventWinner != null && src.RaceEventWinner.FullNameCmsOverride != null
+                        ? src.RaceEventWinner.FullNameCmsOverride
+                        : GetFullName(src.RaceEventWinner != null ? src.RaceEventWinner.FirstName : null,
+                            src.RaceEventWinner != null ? src.RaceEventWinner.LastName : null)))
+
+                .ForMember(dest => dest.RaceEventStatus, expression => expression.MapFrom(
+                    src => FormatRaceEventStatusForResponse(src.MotorsportRaceEventStatus)))
 
                 .ForMember(dest => dest.Videos, expression => expression.UseValue(new List<MatchVideoModel>()))
                 .ForMember(dest => dest.LiveVideos, expression => expression.UseValue(new List<MatchLiveVideoModel>()))
@@ -71,6 +77,31 @@
 
             var fullName = (name + " " + surname).Trim();
             return fullName.IsEmpty() ? null : fullName;
+        }
+
+        private static string FormatRaceEventStatusForResponse(MotorsportRaceEventStatus motorsportRaceEventStatus)
+        {
+            switch (motorsportRaceEventStatus)
+            {
+                case MotorsportRaceEventStatus.PreRace:
+                    return "PreRace";
+                case MotorsportRaceEventStatus.InProgress:
+                    return "InProgress";
+                case MotorsportRaceEventStatus.Result:
+                    return "Results";
+                case MotorsportRaceEventStatus.Postponed:
+                    return "Postponed";
+                case MotorsportRaceEventStatus.Suspended:
+                    return "Suspended";
+                case MotorsportRaceEventStatus.Delayed:
+                    return "Delayed";
+                case MotorsportRaceEventStatus.Cancelled:
+                    return "Cancelled";
+                case MotorsportRaceEventStatus.Unknown:
+                    return string.Empty;
+                default:
+                    return string.Empty;
+            }
         }
     }
 }
