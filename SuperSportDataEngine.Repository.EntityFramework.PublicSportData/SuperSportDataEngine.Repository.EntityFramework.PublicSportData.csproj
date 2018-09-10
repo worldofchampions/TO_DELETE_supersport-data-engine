@@ -279,9 +279,12 @@
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Seed\Constants\RugbyTournamentConstants.cs" />
     <Compile Include="Migrations\Seed\Motorsport\SeedMotorsportCurrentSeasons.cs" />
+    <Compile Include="Migrations\Seed\Rugby\LogGroups\ChampionsCup\SeedRugbyLogGroupsForChampionsCup2019.cs" />
+    <Compile Include="Migrations\Seed\Rugby\LogGroups\JuniorRugby\SeedRugbyLogGroupsForJuniorRugbyWorldCup2019.cs" />
     <Compile Include="Migrations\Seed\Rugby\LogGroups\JuniorRugby\SeedRugbyLogGroupsForJuniorRugbyWorldCup2018.cs" />
     <Compile Include="Migrations\Seed\Rugby\LogGroups\MitreCup\SeedRugbyGroupsForMitreCup2018.cs" />
     <Compile Include="Migrations\Seed\Rugby\LogGroups\Pro14\SeedRugbyLogGroupsForPro142019.cs" />
+    <Compile Include="Migrations\Seed\Rugby\LogGroups\SupersportChallenge\SeedRugbyLogGroupsForRugbyChallenge2019.cs" />
     <Compile Include="Migrations\Seed\Rugby\LogGroups\Sevens\2018\Round10Paris.cs" />
     <Compile Include="Migrations\Seed\Rugby\LogGroups\Sevens\2018\Round09London.cs" />
     <Compile Include="Migrations\Seed\Rugby\LogGroups\Sevens\2018\Round08Singapore.cs" />
@@ -291,7 +294,8 @@
     <Compile Include="Migrations\Seed\Motorsport\SeedMotorsportHistoricSeasons.cs" />
     <Compile Include="Migrations\Seed\Motorsport\SeedMotorsportLeagueSlugs.cs" />
     <Compile Include="Migrations\Seed\Rugby\LogGroups\Sevens\2018\Round05LasVegas.cs" />
-    <Compile Include="Migrations\Seed\Rugby\LogGroups\RugbyChallenge\SeedRugbyLogGroupsForRugbyChallenge.cs" />
+    <Compile Include="Migrations\Seed\Rugby\LogGroups\SupersportChallenge\SeedRugbyLogGroupsForRugbyChallenge.cs" />
+    <Compile Include="Migrations\Seed\Rugby\LogGroups\SuperRugby\SeedRugbyLogGroupsForTournamentSuperRugby2019.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypeProviderMappings.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyEventTypes.cs" />
     <Compile Include="Migrations\Seed\Rugby\LogGroups\MitreCup\SeedRugbyGroupsForMitreCup2017.cs" />

@@ -1671,7 +1671,7 @@
                 }
             }
 
-            if (competitionId == RugbyStatsProzoneConstants.ProviderTournamentIdRugbyChallenge)
+            if (competitionId == RugbyStatsProzoneConstants.ProviderTournamentIdSupersportChallenge)
             {
                 if (seasonId == RugbyStatsProzoneConstants.ProviderTournamentSeasonId2018)
                 {
