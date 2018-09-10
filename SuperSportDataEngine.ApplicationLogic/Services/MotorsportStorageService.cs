@@ -29,9 +29,9 @@
 
         public async Task PersistLeagueDriversInRepository(MotorsportEntitiesResponse providerResponse, MotorsportLeague league)
         {
-            var driversFromProvider = ExtractDriversFromProviderResponse(providerResponse);
+            var driversFromProvider = ExtractDriversFromProviderResponse(providerResponse)?.ToList();
 
-            if (driversFromProvider != null)
+            if (driversFromProvider != null && driversFromProvider.Any())
             {
                 foreach (var providerDriver in driversFromProvider)
                 {
@@ -57,8 +57,9 @@
             MotorsportLeague league,
             CancellationToken cancellationToken)
         {
-            var racesFromProvider = ExtractRacesFromProviderResponse(providerResponse);
-            if (racesFromProvider == null) return;
+            var racesFromProvider = ExtractRacesFromProviderResponse(providerResponse)?.ToList();
+
+            if (racesFromProvider == null || !racesFromProvider.Any()) return;
 
             foreach (var providerRace in racesFromProvider)
             {
@@ -84,8 +85,9 @@
             MotorsportSeason season,
             CancellationToken cancellationToken)
         {
-            var raceEventsFromProviderResponse = ExtractRaceEventsFromProviderResponse(providerResponse);
-            if (raceEventsFromProviderResponse is null) return;
+            var raceEventsFromProviderResponse = ExtractRaceEventsFromProviderResponse(providerResponse)?.ToList();
+
+            if (raceEventsFromProviderResponse is null || !raceEventsFromProviderResponse.Any()) return;
 
             var eventsToAddToTrackingRepo = new List<Event>();
 
@@ -137,8 +139,9 @@
             MotorsportEntitiesResponse providerResponse,
             CancellationToken cancellationToken)
         {
-            var leaguesFromProvider = ExtractLeaguesFromProviderResponse(providerResponse);
-            if (leaguesFromProvider == null) return;
+            var leaguesFromProvider = ExtractLeaguesFromProviderResponse(providerResponse)?.ToList();
+
+            if (leaguesFromProvider == null || !leaguesFromProvider.Any()) return;
 
             foreach (var leagueFromProvider in leaguesFromProvider)
             {
@@ -165,8 +168,9 @@
             MotorsportLeague league,
             CancellationToken cancellationToken)
         {
-            var seasonsFromProviderResponse = ExtractSeasonsFromProviderResponse(providerResponse);
-            if (seasonsFromProviderResponse == null) return;
+            var seasonsFromProviderResponse = ExtractSeasonsFromProviderResponse(providerResponse)?.ToList();
+
+            if (seasonsFromProviderResponse == null || !seasonsFromProviderResponse.Any()) return;
 
             foreach (var providerSeason in seasonsFromProviderResponse)
             {
@@ -193,9 +197,9 @@
             MotorsportSeason season,
             CancellationToken cancellationToken)
         {
-            var standingsFromProvider = ExtractDriverStandingsFromProviderResponse(providerResponse).ToList();
+            var standingsFromProvider = ExtractDriverStandingsFromProviderResponse(providerResponse)?.ToList();
 
-            if (!standingsFromProvider.Any()) return;
+            if (standingsFromProvider == null || !standingsFromProvider.Any()) return;
 
             var standingsFromDb = _publicSportDataUnitOfWork.MotorsportDriverStandings.Where(ds =>
                 ds.MotorsportLeagueId == league.Id && ds.MotorsportSeasonId == season.Id).ToList();
@@ -209,8 +213,9 @@
 
         public async Task PersistTeamsInRepository(MotorsportEntitiesResponse response, MotorsportLeague league)
         {
-            var ownersFromProvider = ExtractOwnersFromProviderResponse(response);
-            if (ownersFromProvider == null) return;
+            var ownersFromProvider = ExtractOwnersFromProviderResponse(response)?.ToList();
+
+            if (ownersFromProvider == null || !ownersFromProvider.Any()) return;
 
             foreach (var owner in ownersFromProvider)
             {
@@ -236,9 +241,9 @@
             MotorsportSeason season,
             CancellationToken cancellationToken)
         {
-            var standingsFromProvider = ExtractTeamStandingsFromProviderResponse(providerResponse).ToList();
+            var standingsFromProvider = ExtractTeamStandingsFromProviderResponse(providerResponse)?.ToList();
 
-            if (!standingsFromProvider.Any()) return;
+            if (standingsFromProvider == null || !standingsFromProvider.Any()) return;
 
             var standingsFromDb = _publicSportDataUnitOfWork.MotorsportTeamStandings.Where(standing =>
                 standing.MotorsportLeagueId == league.Id && standing.MotorsportSeasonId == season.Id).ToList();
@@ -252,9 +257,9 @@
 
         public async Task PersistResultsInRepository(MotorsportEntitiesResponse response, MotorsportRaceEvent raceEvent, MotorsportLeague league)
         {
-            var resultsFromProvider = ExtractResultsFromProviderResponse(response).ToList();
+            var resultsFromProvider = ExtractResultsFromProviderResponse(response)?.ToList();
 
-            if (!resultsFromProvider.Any()) return;
+            if (resultsFromProvider == null || !resultsFromProvider.Any()) return;
 
             var eventResultsFromDb = _publicSportDataUnitOfWork.MotorsportRaceEventResults.Where(result =>
                 result.MotorsportRaceEventId == raceEvent.Id).ToList();
@@ -345,9 +350,9 @@
 
         public async Task PersistGridInRepository(MotorsportEntitiesResponse response, MotorsportRaceEvent raceEvent, MotorsportLeague league)
         {
-            var gridFromProviderResponse = ExtractRaceGridFromProviderResponse(response).ToList();
+            var gridFromProviderResponse = ExtractRaceGridFromProviderResponse(response)?.ToList();
 
-            if (!gridFromProviderResponse.Any()) return;
+            if (gridFromProviderResponse == null || !gridFromProviderResponse.Any()) return;
 
             var gridentriesFromDb =
                 _publicSportDataUnitOfWork.MotorsportRaceEventGrids.Where(result => result.MotorsportRaceEventId == raceEvent.Id).ToList();
