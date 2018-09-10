@@ -8,12 +8,12 @@ using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
 
 namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.JuniorRugby
 {
-    public static class SeedRugbyLogGroupsForJuniorRugbyWorldCup2018
+    public static class SeedRugbyLogGroupsForJuniorRugbyWorldCup2019
     {
-        private const string SlugHierachyLevel0JuniorRugby = "JuniorRugbyWorldCup-2018-HL0-JuniorRugby";
-        private const string SlugHierachyLevel1PoolA = "JuniorRugbyWorldCup-2018-HL1-PoolA";
-        private const string SlugHierachyLevel1PoolB = "JuniorRugbyWorldCup-2018-HL1-PoolB";
-        private const string SlugHierachyLevel1PoolC = "JuniorRugbyWorldCup-2018-HL1-PoolC";
+        private const string SlugHierachyLevel0JuniorRugby = "JuniorRugbyWorldCup-2019-HL0-JuniorRugby";
+        private const string SlugHierachyLevel1PoolA = "JuniorRugbyWorldCup-2019-HL1-PoolA";
+        private const string SlugHierachyLevel1PoolB = "JuniorRugbyWorldCup-2019-HL1-PoolB";
+        private const string SlugHierachyLevel1PoolC = "JuniorRugbyWorldCup-2019-HL1-PoolC";
 
         public static void Seed(PublicSportDataContext context)
         {
@@ -26,7 +26,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                 var rugbySeason = context.RugbySeasons.FirstOrDefault(x =>
                     x.DataProvider == DataProvider.StatsProzone &&
                     x.RugbyTournament.Id == rugbyTournament.Id &&
-                    x.ProviderSeasonId == RugbyStatsProzoneConstants.ProviderTournamentSeasonId2018);
+                    x.ProviderSeasonId == RugbyStatsProzoneConstants.ProviderTournamentSeasonId2019);
 
                 if (rugbySeason == null)
                     return;
