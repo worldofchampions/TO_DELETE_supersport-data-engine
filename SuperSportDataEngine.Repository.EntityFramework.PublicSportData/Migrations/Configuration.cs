@@ -1,8 +1,11 @@
+using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.ChampionsCup;
 using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.JuniorRugby;
 using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.MitreCup;
 using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.Pro14;
 using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.Sevens._2017;
 using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.Sevens._2018;
+using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.SuperRugby;
+using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.SupersportChallenge;
 
 namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations
 {
@@ -49,8 +52,13 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
             SeedRugbyGroupsForMitreCup2018.Seed(context);
             SeedSevens(context);
 
-            SeedRugbyLogGroupsForRugbyChallenge.Seed(context);
+            SeedRugbyLogGroupsForSupersportChallenge.Seed(context);
             SeedRugbyLogGroupsForJuniorRugbyWorldCup2018.Seed(context);
+
+            SeedRugbyLogGroupsForTournamentSuperRugby2019.Seed(context);
+            SeedRugbyLogGroupsForSupersportChallenge2019.Seed(context);
+            SeedRugbyLogGroupsForJuniorRugbyWorldCup2019.Seed(context);
+            SeedRugbyLogGroupsForChampionsCup2019.Seed(context);
         }
 
         private static void SeedSevens(PublicSportDataContext context)

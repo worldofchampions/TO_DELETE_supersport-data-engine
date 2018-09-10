@@ -26,10 +26,13 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                         x.DataProvider == DataProvider.StatsProzone &&
                         x.ProviderTournamentId == RugbyStatsProzoneConstants.ProviderTournamentIdSevensRugby);
 
-                var rugbySeason = context.RugbySeasons.Single(x =>
+                var rugbySeason = context.RugbySeasons.FirstOrDefault(x =>
                     x.DataProvider == DataProvider.StatsProzone &&
                     x.RugbyTournament.Id == rugbyTournament.Id &&
                     x.ProviderSeasonId == RugbyStatsProzoneConstants.ProviderTournamentSeasonId2018);
+
+                if (rugbySeason == null)
+                    return;
 
                 // Create log groups.
                 context.RugbyLogGroups.AddOrUpdate(
