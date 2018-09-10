@@ -263,7 +263,7 @@
 
             var eventResultsFromDb = _publicSportDataUnitOfWork.MotorsportRaceEventResults.Where(result =>
                 result.MotorsportRaceEventId == raceEvent.Id).ToList();
-            
+
             AddOrUpdateRaceEventResultsInDb(resultsFromProvider, raceEvent, league);
 
             RemoveResultsFromDbIfNotInProviderCollection(eventResultsFromDb, resultsFromProvider);
@@ -449,16 +449,18 @@
         {
             foreach (var standing in standingsFromProvider)
             {
-                var repoStanding = standingsFromDb.FirstOrDefault(s =>
-                    s.MotorsportDriver.ProviderDriverId == standing.playerId && s.MotorsportTeam.ProviderTeamId == standing.team.teamId);
-
-                if (repoStanding is null)
+                if (standingsFromDb != null)
                 {
-                    await AddNewDriverStandingToRepo(standing, league, season);
+                    if (standing == null) continue;
+
+                    var repoStanding =
+                        standingsFromDb.FirstOrDefault(s => s.MotorsportDriver.ProviderDriverId == standing.playerId);
+
+                    UpdateDriverStandingInRepo(standing, repoStanding);
                 }
                 else
                 {
-                    UpdateDriverStandingInRepo(standing, repoStanding);
+                    await AddNewDriverStandingToRepo(standing, league, season);
                 }
             }
         }
@@ -468,7 +470,7 @@
         {
             foreach (var providerStanding in standingsFromProvider)
             {
-                var repoStanding = standingsFromDb.FirstOrDefault(s =>
+                var repoStanding = standingsFromDb?.FirstOrDefault(s =>
                     s.MotorsportTeam.ProviderTeamId == providerStanding.teamId);
 
                 if (repoStanding is null)
