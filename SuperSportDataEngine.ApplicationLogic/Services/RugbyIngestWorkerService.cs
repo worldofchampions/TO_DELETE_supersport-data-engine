@@ -335,6 +335,8 @@
                     .FirstOrDefault(s => s.RugbyTournament.ProviderTournamentId == providerTournamentId && s.ProviderSeasonId == providerSeasonId);
 
             var tournamentInDb = (await _publicSportDataUnitOfWork.RugbyTournaments.AllAsync()).FirstOrDefault(t => t.ProviderTournamentId == providerTournamentId);
+            if (tournamentInDb == null)
+                return;
 
             var newEntry = new RugbySeason()
             {
@@ -342,6 +344,7 @@
                 RugbyTournament = tournamentInDb,
                 IsCurrent = isSeasonCurrentlyActive,
                 Name = season.RugbySeasons.season.First().name,
+                RugbyLogType = tournamentInDb.DefaultRugbyLogType,
                 DataProvider = DataProvider.StatsProzone,
             };
 
