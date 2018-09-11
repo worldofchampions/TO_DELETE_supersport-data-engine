@@ -449,14 +449,16 @@
         {
             foreach (var standing in standingsFromProvider)
             {
-                if (standingsFromDb != null)
-                {
-                    if (standing == null) continue;
+                if (standing == null) continue;
 
+                if (standingsFromDb != null && standingsFromDb.Any())
+                {
                     var repoStanding =
                         standingsFromDb.FirstOrDefault(s => s.MotorsportDriver.ProviderDriverId == standing.playerId);
-
-                    UpdateDriverStandingInRepo(standing, repoStanding);
+                    if (repoStanding != null)
+                    {
+                        UpdateDriverStandingInRepo(standing, repoStanding);
+                    }
                 }
                 else
                 {
