@@ -313,14 +313,19 @@
         {
             var results = _systemSportDataUnitOfWork.SchedulerTrackingMotorsportRaceEvents.Where(e =>
                     e.MotorsportRaceEventStatus == MotorsportRaceEventStatus.Result)
-                    .ToList().Where(e => IsEventRecentlyEnded(e, numberOfHoursAnEventEnded));
+                .ToList().Where(e => IsEventRecentlyEnded(e, numberOfHoursAnEventEnded)).ToList();
 
             var leagues = new List<MotorsportLeague>();
+
+            if (!results.Any()) return await Task.FromResult(leagues);
 
             foreach (var result in results)
             {
                 var raceEvent =
-                    _publicSportDataUnitOfWork.MotorsportRaceEvents.FirstOrDefault(e => e.Id == result.MotorsportRaceEventId);
+                    _publicSportDataUnitOfWork.MotorsportRaceEvents.FirstOrDefault(e =>
+                        e.Id == result.MotorsportRaceEventId);
+
+                if (raceEvent == null) continue;
 
                 if (leagues.Contains(raceEvent.MotorsportRace.MotorsportLeague)) continue;
 
