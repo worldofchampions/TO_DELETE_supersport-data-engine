@@ -1506,7 +1506,8 @@
             CancellationToken cancellationToken,
             int groupHierarchyLevel,
             RugbyGroupedLogsResponse logs,
-            IEnumerable<Ladderposition> ladderPositions)
+            IEnumerable<Ladderposition> ladderPositions,
+            bool ignoreRoundNumber)
         {
             var tournamentId = logs.RugbyGroupedLogs.competitionId;
             var seasonId = logs.RugbyGroupedLogs.seasonId;
@@ -1531,7 +1532,7 @@
                 var roundNumber = 
                     rugbySeason.CurrentRoundNumberCmsOverride ?? rugbySeason.CurrentRoundNumber;
 
-                if (ladder.roundNumber != roundNumber)
+                if (ladder.roundNumber != roundNumber && !ignoreRoundNumber)
                     continue;
 
                 try
@@ -1566,7 +1567,7 @@
                         TriesAgainst = ladder.triesAgainst,
                         RugbyTeam = rugbyTeam,
                         RugbyLogGroup = rugbyLogGroup,
-                        RoundNumber = ladder.roundNumber?? 0,
+                        RoundNumber = (int) (ladder.roundNumber == null ? 0 : ladder.roundNumber == 0 ? roundNumber : ladder.roundNumber),
                         RugbySeason = rugbySeason,
                         RugbySeasonId = rugbySeason.Id,
                         RugbyTeamId = rugbyTeam.Id,
@@ -1662,12 +1663,11 @@
             {
                 if (seasonId == RugbyStatsProzoneConstants.ProviderTournamentSeasonId2018)
                 {
-                    // NOTE: As per business requirements: We are not ingesting, and will not serve out the Overall Standings of Sevens.
-                    //if (logs.RugbyGroupedLogs.secondaryGroupStandings != null)
-                    //    await IngestStandingsForSevens2018(cancellationToken, 1, logs, logs.RugbyGroupedLogs.secondaryGroupStandings.ladderposition);
+                    if (logs.RugbyGroupedLogs.overallStandings != null)
+                        await IngestStandingsForSevens2018(cancellationToken, 1, logs, logs.RugbyGroupedLogs.overallStandings.ladderposition, true);
 
                     if (logs.RugbyGroupedLogs.groupStandings != null)
-                        await IngestStandingsForSevens2018(cancellationToken, 2, logs, logs.RugbyGroupedLogs.groupStandings.ladderposition);
+                        await IngestStandingsForSevens2018(cancellationToken, 3, logs, logs.RugbyGroupedLogs.groupStandings.ladderposition, false);
                 }
             }
 
