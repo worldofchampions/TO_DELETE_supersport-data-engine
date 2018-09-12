@@ -81,6 +81,8 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
 
             foreach (var tournament in todayTournaments)
             {
+                if(tournament == null || !tournament.HasLogs) continue;
+
                 var seasonId = await _rugbyService.GetCurrentProviderSeasonIdForTournament(CancellationToken.None, tournament.Id);
                 var jobId = ConfigurationManager.AppSettings["ScheduleManagerJob_Logs_CurrentTournaments_JobIdPrefix"] + tournament.Name;
                 var cronExpression =

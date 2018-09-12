@@ -868,6 +868,18 @@
                 if (cancellationToken.IsCancellationRequested)
                     return;
 
+                if (tournament == null) continue;
+                if (!tournament.HasLogs)
+                {
+#if DEBUG
+                    await _logger.Info(
+                        "INGEST.LOGS",
+                        null,
+                        $"Skipping ingest for {tournament.Name}. Set HasLogs to true to enable logs ingest for tournament.");
+#endif
+                    continue;
+                }
+
                 int activeSeasonIdForTournament =
                         await _rugbyService.GetCurrentProviderSeasonIdForTournament(cancellationToken, tournament.Id);
 
@@ -2744,10 +2756,12 @@
             var seasons = (await _publicSportDataUnitOfWork.RugbySeasons.AllAsync());
 
             var season =
-                    seasons
-                        .Where(s =>
-                            s.ProviderSeasonId == seasonId &&
-                            s.RugbyTournament.ProviderTournamentId == providerTournamentId).ToList();
+                seasons
+                    .Where(s =>
+                        s.ProviderSeasonId == seasonId &&
+                        s.RugbyTournament != null &&
+                        s.RugbyTournament.ProviderTournamentId == providerTournamentId &&
+                        s.RugbyTournament.HasLogs).ToList();
 
             if (!season.Any())
                 return;
