@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Constants
+﻿namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Constants
 {
     public static class RugbyTournamentConstants
     {
@@ -25,5 +19,6 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
         public const string SixNationsSlugName = "six-nations";
         public const string Top14SlugName = "top14";
         public const string EnglandSlugName = "england";
+        public const string RugbyWorldCupSlugName = "rugby-world-cup";
     } 
 }

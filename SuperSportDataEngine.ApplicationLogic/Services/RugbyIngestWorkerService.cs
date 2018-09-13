@@ -873,7 +873,7 @@
                 {
 #if DEBUG
                     await _logger.Info(
-                        "INGEST.LOGS",
+                        $"INGEST.LOGS.{tournament.Name}",
                         null,
                         $"Skipping ingest for {tournament.Name}. Set HasLogs to true to enable logs ingest for tournament.");
 #endif

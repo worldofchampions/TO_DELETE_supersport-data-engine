@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity.Migrations;
 using System.Linq;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models.Enums;
 using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
@@ -40,7 +39,8 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                 RugbyTournamentConstants.NewZealandSlugName,
                 RugbyTournamentConstants.Pro14,
                 RugbyTournamentConstants.ChampionsCupSlugName,
-                RugbyTournamentConstants.SevensSlugName
+                RugbyTournamentConstants.SevensSlugName,
+                RugbyTournamentConstants.RugbyWorldCupSlugName
             };
 
             return tournaments;
