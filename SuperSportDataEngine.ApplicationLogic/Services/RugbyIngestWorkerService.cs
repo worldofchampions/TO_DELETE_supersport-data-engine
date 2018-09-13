@@ -2922,8 +2922,10 @@
                 l.RugbySeason.ProviderSeasonId == seasonId).ToList();
 
             var groupId = secondaryGroupStandings?.ladderposition?.FirstOrDefault()?.group;
+            var groupName = secondaryGroupStandings?.ladderposition?.FirstOrDefault()?.groupName;
             var ourGroupStandings = logsInDb.Where(l =>
-                l.RugbyLogGroup.ProviderLogGroupId == groupId);
+                l.RugbyLogGroup.ProviderLogGroupId == groupId &&
+                l.RugbyLogGroup.ProviderGroupName == groupName);
 
             var groupStandingsToRemove = ourGroupStandings.Where(l =>
                 secondaryGroupStandings?.ladderposition.Count(lProvider =>
@@ -2944,7 +2946,9 @@
                     $"Going to remove Secondary Group Standings log entry for Team = {rugbyGroupedLog.RugbyTeam.Name}\n" +
                     $" from Tournament = {rugbyGroupedLog.RugbyTournament.Name}\n" +
                     $" for Season = {rugbyGroupedLog.RugbySeason.ProviderSeasonId}\n" +
-                    $" for Group = {rugbyGroupedLog.RugbyLogGroup.GroupName}");
+                    $" for Group = {rugbyGroupedLog.RugbyLogGroup.GroupName}\n" +
+                    $" for Provider Group = {rugbyGroupedLog.RugbyLogGroup.ProviderGroupName}\n" +
+                    $" for Hierachy Level = {rugbyGroupedLog.RugbyLogGroup.GroupHierarchyLevel}");
             }
 
             _publicSportDataUnitOfWork.RugbyGroupedLogs.DeleteRange(standingsToRemove);
@@ -2958,33 +2962,42 @@
                 l.RugbyTournament.ProviderTournamentId == competitionId &&
                 l.RugbySeason.ProviderSeasonId == seasonId).ToList();
 
-            var groupId = groupStandings?.ladderposition?.FirstOrDefault()?.group;
-            var ourGroupStandings = logsInDb.Where(l =>
-                l.RugbyLogGroup.ProviderLogGroupId == groupId);
+            if (groupStandings?.ladderposition == null)
+                return;
 
-            var groupStandingsToRemove = ourGroupStandings.Where(l =>
-                groupStandings?.ladderposition.Count(lProvider =>
-                    lProvider.teamId == l.RugbyTeam.ProviderTeamId) == 0);
-
-            // For each of those entries, log them as a 
-            // warning that we are going to remove them.
-            var standingsToRemove = groupStandingsToRemove as IList<RugbyGroupedLog> ?? groupStandingsToRemove.ToList();
-            foreach (var rugbyGroupedLog in standingsToRemove)
+            foreach(var ladderposition in groupStandings?.ladderposition)
             {
-                await _logger.Warn("CleanUpGroupedLogs." +
-                                   rugbyGroupedLog.RugbyTournament.ProviderTournamentId + "." +
-                                   rugbyGroupedLog.RugbySeason.ProviderSeasonId + "." +
-                                   rugbyGroupedLog.RugbyTeam.LegacyTeamId + "." +
-                                   rugbyGroupedLog.RugbyLogGroup.Slug,
-                                   null,
-                    $"Going to remove Group Standings log entry for Team = {rugbyGroupedLog.RugbyTeam.Name}" +
-                    $" from Tournament = {rugbyGroupedLog.RugbyTournament.Name}" +
-                    $" for Season = {rugbyGroupedLog.RugbySeason.ProviderSeasonId}" +
-                    $" for Group = {rugbyGroupedLog.RugbyLogGroup.GroupName}");
-            }
+                var groupId = ladderposition.group;
+                var groupName = ladderposition.groupName;
 
-            _publicSportDataUnitOfWork.RugbyGroupedLogs.DeleteRange(standingsToRemove);
-            await _publicSportDataUnitOfWork.SaveChangesAsync();
+                var ourGroupStandings = logsInDb.Where(l =>
+                    l.RugbyLogGroup.ProviderLogGroupId == groupId &&
+                    l.RugbyLogGroup.ProviderGroupName == groupName);
+
+                var groupStandingsToRemove = ourGroupStandings.Where(l =>
+                    groupStandings.ladderposition.Count(lProvider =>
+                        lProvider.teamId == l.RugbyTeam.ProviderTeamId) == 0);
+
+                // For each of those entries, log them as a 
+                // warning that we are going to remove them.
+                var standingsToRemove = groupStandingsToRemove as IList<RugbyGroupedLog> ?? groupStandingsToRemove.ToList();
+                foreach (var rugbyGroupedLog in standingsToRemove)
+                {
+                    await _logger.Warn("CleanUpGroupedLogs." +
+                                       rugbyGroupedLog.RugbyTournament.ProviderTournamentId + "." +
+                                       rugbyGroupedLog.RugbySeason.ProviderSeasonId + "." +
+                                       rugbyGroupedLog.RugbyTeam.LegacyTeamId + "." +
+                                       rugbyGroupedLog.RugbyLogGroup.Slug,
+                        null,
+                        $"Going to remove Group Standings log entry for Team = {rugbyGroupedLog.RugbyTeam.Name}" +
+                        $" from Tournament = {rugbyGroupedLog.RugbyTournament.Name}" +
+                        $" for Season = {rugbyGroupedLog.RugbySeason.ProviderSeasonId}" +
+                        $" for Group = {rugbyGroupedLog.RugbyLogGroup.GroupName}");
+                }
+
+                _publicSportDataUnitOfWork.RugbyGroupedLogs.DeleteRange(standingsToRemove);
+                await _publicSportDataUnitOfWork.SaveChangesAsync();
+            }
         }
 
         private async Task CleanUpOverallStandings(int competitionId, int seasonId, OverallStandings overallStandings)
@@ -2995,8 +3008,10 @@
                 l.RugbySeason.ProviderSeasonId == seasonId).ToList();
 
             var groupId = overallStandings?.ladderposition?.FirstOrDefault()?.group;
+            var groupName = overallStandings?.ladderposition?.FirstOrDefault()?.groupName;
             var ourOverallStandings = logsInDb.Where(l =>
-                l.RugbyLogGroup.ProviderLogGroupId == groupId);
+                l.RugbyLogGroup.ProviderLogGroupId == groupId &&
+                l.RugbyLogGroup.ProviderGroupName == groupName);
 
             var overallStandingsToRemove = ourOverallStandings.Where(l =>
                 overallStandings?.ladderposition.Count(lProvider =>
