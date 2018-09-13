@@ -2948,7 +2948,7 @@
                     $" for Season = {rugbyGroupedLog.RugbySeason.ProviderSeasonId}\n" +
                     $" for Group = {rugbyGroupedLog.RugbyLogGroup.GroupName}\n" +
                     $" for Provider Group = {rugbyGroupedLog.RugbyLogGroup.ProviderGroupName}\n" +
-                    $" for Hierachy Level = {rugbyGroupedLog.RugbyLogGroup.GroupHierarchyLevel}");
+                    $" for Hierarchy Level = {rugbyGroupedLog.RugbyLogGroup.GroupHierarchyLevel}");
             }
 
             _publicSportDataUnitOfWork.RugbyGroupedLogs.DeleteRange(standingsToRemove);
