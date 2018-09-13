@@ -1502,12 +1502,119 @@
             }
         }
 
+        private async Task IngestOverallStandingsForSevens2018(
+            CancellationToken cancellationToken,
+            int groupHierarchyLevel,
+            RugbyGroupedLogsResponse logs,
+            IEnumerable<Ladderposition> ladderPositions)
+        {
+            var tournamentId = logs.RugbyGroupedLogs.competitionId;
+            var seasonId = logs.RugbyGroupedLogs.seasonId;
+
+            var rugbyTournament = (await _publicSportDataUnitOfWork.RugbyTournaments.AllAsync()).FirstOrDefault(t => t.ProviderTournamentId == tournamentId);
+            if (rugbyTournament == null)
+                return;
+
+            var rugbySeason = (await _publicSportDataUnitOfWork.RugbySeasons.AllAsync()).FirstOrDefault(s => s.RugbyTournament.ProviderTournamentId == tournamentId && s.ProviderSeasonId == seasonId);
+
+            foreach (var ladder in ladderPositions)
+            {
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
+                var teamId = ladder.teamId;
+                var rugbyTeam = (await _publicSportDataUnitOfWork.RugbyTeams.AllAsync()).FirstOrDefault(t => t.ProviderTeamId == teamId);
+
+                if (rugbySeason == null) continue;
+                if (rugbyTeam == null) continue;
+
+                var roundNumber =
+                    rugbySeason.CurrentRoundNumberCmsOverride ?? rugbySeason.CurrentRoundNumber;
+
+                // The round number that we get from STATS for the Overall standings are 0.
+                // Set it to the current round number we have.
+                ladder.roundNumber = roundNumber;
+
+                try
+                {
+                    var rugbyLogGroup = (await _publicSportDataUnitOfWork.RugbyLogGroups.AllAsync()).Single(g =>
+                        g.RugbySeason.Id == rugbySeason.Id &&
+                        g.GroupHierarchyLevel == groupHierarchyLevel &&
+                        g.ProviderLogGroupId == ladder.group &&
+                        g.ProviderGroupName == ladder.groupName);
+
+                    // Does an entry in the db exist for this tournament-season-round-team?
+                    var entryInDb = (await _publicSportDataUnitOfWork.RugbyGroupedLogs.AllAsync())
+                                        .FirstOrDefault(g => g.RugbyLogGroup.ProviderLogGroupId == ladder.group &&
+                                                             g.RugbyTournament.ProviderTournamentId == tournamentId &&
+                                                             g.RugbySeason.ProviderSeasonId == seasonId &&
+                                                             g.RoundNumber == ladder.roundNumber &&
+                                                             g.RugbyTeam.ProviderTeamId == teamId);
+
+                    var newLogEntry = new RugbyGroupedLog()
+                    {
+                        LogPosition = ladder.position,
+                        GamesPlayed = ladder.gamesPlayed,
+                        GamesWon = ladder.wins,
+                        GamesLost = ladder.losses,
+                        GamesDrawn = ladder.draws ?? 0,
+                        PointsFor = ladder.pointsFor,
+                        PointsAgainst = ladder.pointsAgainst,
+                        PointsDifference = ladder.pointsDifference,
+                        TournamentPoints = ladder.competitionPoints,
+                        BonusPoints = ladder.bonusPoints,
+                        TriesFor = ladder.triesFor,
+                        TriesAgainst = ladder.triesAgainst,
+                        RugbyTeam = rugbyTeam,
+                        RugbyLogGroup = rugbyLogGroup,
+                        RoundNumber = (int)(ladder.roundNumber == null ? 0 : ladder.roundNumber == 0 ? roundNumber : ladder.roundNumber),
+                        RugbySeason = rugbySeason,
+                        RugbySeasonId = rugbySeason.Id,
+                        RugbyTeamId = rugbyTeam.Id,
+                        RugbyTournament = rugbyTournament,
+                        RugbyTournamentId = rugbyTournament.Id,
+                        RugbyLogGroupId = rugbyLogGroup.Id
+                    };
+
+                    if (entryInDb == null)
+                    {
+                        _publicSportDataUnitOfWork.RugbyGroupedLogs.Add(newLogEntry);
+                    }
+                    else
+                    {
+                        entryInDb.LogPosition = ladder.position;
+                        entryInDb.GamesPlayed = ladder.gamesPlayed;
+                        entryInDb.GamesWon = ladder.wins;
+                        entryInDb.GamesLost = ladder.losses;
+                        entryInDb.GamesDrawn = ladder.draws ?? 0;
+                        entryInDb.PointsFor = ladder.pointsFor;
+                        entryInDb.PointsAgainst = ladder.pointsAgainst;
+                        entryInDb.PointsDifference = ladder.pointsDifference;
+                        entryInDb.TournamentPoints = ladder.competitionPoints;
+                        entryInDb.BonusPoints = ladder.bonusPoints;
+                        entryInDb.TriesFor = ladder.triesFor;
+                        entryInDb.TriesAgainst = ladder.triesAgainst;
+
+                        _publicSportDataUnitOfWork.RugbyGroupedLogs.Update(entryInDb);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    var key = GetType().FullName + ".IngestOverallStandingsForSevens2018" + ". Season=" + seasonId;
+                    var message = $"Error processing RugbyLogGroup for ladderId={ladder.group}, groupName={ladder.groupName} roundNumber={ladder.roundNumber}. Check that the RugbyLogGroup entry is configured in the DB.";
+                    await _logger.Warn(
+                        key,
+                        exception,
+                        $"{message}{Environment.NewLine}{key}{Environment.NewLine}{exception}");
+                }
+            }
+        }
+
         private async Task IngestStandingsForSevens2018(
             CancellationToken cancellationToken,
             int groupHierarchyLevel,
             RugbyGroupedLogsResponse logs,
-            IEnumerable<Ladderposition> ladderPositions,
-            bool ignoreRoundNumber)
+            IEnumerable<Ladderposition> ladderPositions)
         {
             var tournamentId = logs.RugbyGroupedLogs.competitionId;
             var seasonId = logs.RugbyGroupedLogs.seasonId;
@@ -1532,7 +1639,7 @@
                 var roundNumber = 
                     rugbySeason.CurrentRoundNumberCmsOverride ?? rugbySeason.CurrentRoundNumber;
 
-                if (ladder.roundNumber != roundNumber && !ignoreRoundNumber)
+                if (ladder.roundNumber != roundNumber)
                     continue;
 
                 try
@@ -1567,7 +1674,7 @@
                         TriesAgainst = ladder.triesAgainst,
                         RugbyTeam = rugbyTeam,
                         RugbyLogGroup = rugbyLogGroup,
-                        RoundNumber = (int) (ladder.roundNumber == null ? 0 : ladder.roundNumber == 0 ? roundNumber : ladder.roundNumber),
+                        RoundNumber = ladder.roundNumber?? 0,
                         RugbySeason = rugbySeason,
                         RugbySeasonId = rugbySeason.Id,
                         RugbyTeamId = rugbyTeam.Id,
@@ -1664,10 +1771,10 @@
                 if (seasonId == RugbyStatsProzoneConstants.ProviderTournamentSeasonId2018)
                 {
                     if (logs.RugbyGroupedLogs.overallStandings != null)
-                        await IngestStandingsForSevens2018(cancellationToken, 1, logs, logs.RugbyGroupedLogs.overallStandings.ladderposition, true);
+                        await IngestOverallStandingsForSevens2018(cancellationToken, 1, logs, logs.RugbyGroupedLogs.overallStandings.ladderposition);
 
                     if (logs.RugbyGroupedLogs.groupStandings != null)
-                        await IngestStandingsForSevens2018(cancellationToken, 3, logs, logs.RugbyGroupedLogs.groupStandings.ladderposition, false);
+                        await IngestStandingsForSevens2018(cancellationToken, 3, logs, logs.RugbyGroupedLogs.groupStandings.ladderposition);
                 }
             }
 
