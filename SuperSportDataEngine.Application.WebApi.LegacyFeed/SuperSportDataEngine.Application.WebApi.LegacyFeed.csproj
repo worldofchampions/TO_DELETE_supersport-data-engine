@@ -213,6 +213,8 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\UnityDependencyResolver.cs" />
     <Compile Include="App_Start\UnityDependencyScope.cs" />
+    <Compile Include="Config\LegacyFeedConfig.cs" />
+    <Compile Include="Controllers\TennisController.cs" />
     <Compile Include="Areas\HelpPage\ApiDescriptionExtensions.cs" />
     <Compile Include="Areas\HelpPage\App_Start\HelpPageConfig.cs" />
     <Compile Include="Areas\HelpPage\Controllers\HelpController.cs" />
@@ -241,22 +243,16 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\ObjectGenerator.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\SampleDirection.cs" />
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
-    <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
-    <Compile Include="Config\LegacyFeedConfig.cs" />
-    <Compile Include="Controllers\MotorsportController.cs" />
     <Compile Include="Filters\LegacyExceptionFilter.cs" />
+    <Compile Include="Helpers\Extensions\ResponseModelsExtensions.cs" />
     <Compile Include="Filters\LogTimeFilter.cs" />
     <Compile Include="Filters\LogUserAgentFilterAttribute.cs" />
     <Compile Include="Handlers\BufferedNonStreamedContentHandler.cs" />
-    <Compile Include="Helpers\Extensions\ResponseModelsExtensions.cs" />
-    <Compile Include="Models\Mappers\LegacyFeedConstants.cs" />
-    <Compile Include="Models\Mappers\LegacyCommentaryAsEventMapperProfile.cs" />
-    <Compile Include="Models\Mappers\LegacyCommentaryMapperProfile.cs" />
-    <Compile Include="Models\Mappers\LegacyFixtureMapperProfile.cs" />
-    <Compile Include="App_Start\RouteConfig.cs" />
-    <Compile Include="App_Start\UnityConfig.cs" />
-    <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
+    <Compile Include="Controllers\MotorsportController.cs" />
     <Compile Include="Controllers\RugbyController.cs" />
+    <Compile Include="Models\Mappers\LegacyFeedConstants.cs" />
+    <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -280,6 +276,9 @@
     <Compile Include="Models\Mappers\Motorsport\LegacyMotorsportGridMapperProfile.cs" />
     <Compile Include="Models\Mappers\Motorsport\LegacyMotorsportScheduleMapperProfile.cs" />
     <Compile Include="Models\Mappers\Motorsport\LegacyMotorsportTeamStandingsMapperProfile.cs" />
+    <Compile Include="Models\Mappers\Tennis\LegacyTennisRankingsMappingProfile.cs" />
+    <Compile Include="Models\Mappers\Tennis\LegacyTennisResultsMappingProfile.cs" />
+    <Compile Include="Models\Mappers\Tennis\LegacyTennisScheduleMapperProfile.cs" />
     <Compile Include="Models\Motorsport\MotorsportResult.cs" />
     <Compile Include="Models\Motorsport\MotorsportGrid.cs" />
     <Compile Include="Models\Motorsport\RacesWithResults.cs" />
@@ -322,10 +321,10 @@
     <Compile Include="Models\Shared\MatchDetailsModel.cs" />
     <Compile Include="Models\Shared\MatchEventModel.cs" />
     <Compile Include="Models\Shared\MatchEventsModel.cs" />
-    <Compile Include="Models\Shared\MatchLiveVideoModel.cs" />
+    <Compile Include="Models\Shared\MatchLiveVideo.cs" />
     <Compile Include="Models\Shared\MatchModel.cs" />
     <Compile Include="Models\Shared\MatchStatisticsModel.cs" />
-    <Compile Include="Models\Shared\MatchVideoModel.cs" />
+    <Compile Include="Models\Shared\MatchVideo.cs" />
     <Compile Include="Models\Shared\MedalStandingModel.cs" />
     <Compile Include="Models\Motorsport\Driver.cs" />
     <Compile Include="Models\Motorsport\DriversList.cs" />
@@ -358,15 +357,15 @@
     <Compile Include="Models\Shared\SubstituteModel.cs" />
     <Compile Include="Models\Shared\TeamModel.cs" />
     <Compile Include="Models\Motorsport\TeamStandings.cs" />
-    <Compile Include="Models\Tennis\TennisMatchModel.cs" />
-    <Compile Include="Models\Tennis\TennisPlayerModel.cs" />
-    <Compile Include="Models\Tennis\TennisRankingsModel.cs" />
-    <Compile Include="Models\Tennis\TennisSetModel.cs" />
-    <Compile Include="Models\Tennis\TennisSideModel.cs" />
-    <Compile Include="Models\Tennis\TennisTournamentModel.cs" />
+    <Compile Include="Models\Tennis\TennisMatch.cs" />
+    <Compile Include="Models\Tennis\TennisPlayer.cs" />
+    <Compile Include="Models\Tennis\TennisRankings.cs" />
+    <Compile Include="Models\Tennis\TennisSet.cs" />
     <Compile Include="Models\Shared\TournamentModel.cs" />
     <Compile Include="Models\Shared\VenueDetailsModel.cs" />
     <Compile Include="Models\Shared\VenueModel.cs" />
+    <Compile Include="Models\Tennis\TennisSide.cs" />
+    <Compile Include="Models\Tennis\TennisTournament.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequestHandlers\FeedRequestHandler.cs" />
   </ItemGroup>

@@ -85,19 +85,19 @@
             }
         }
 
-        public static List<MatchVideoModel> EmptyVideosList
+        public static List<MatchVideo> EmptyVideosList
         {
             get
             {
-                return Enumerable.Empty<MatchVideoModel>().ToList();
+                return Enumerable.Empty<MatchVideo>().ToList();
             }
         }
 
-        public static List<MatchLiveVideoModel> EmptyLiveVideosList
+        public static List<MatchLiveVideo> EmptyLiveVideosList
         {
             get
             {
-                return Enumerable.Empty<MatchLiveVideoModel>().ToList();
+                return Enumerable.Empty<MatchLiveVideo>().ToList();
             }
         }
 

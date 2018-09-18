@@ -1,9 +1,10 @@
-﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
+﻿using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby;
+
+namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
 {
     using AutoMapper;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
-    using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
+    using ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
+    using ApplicationLogic.Entities.Legacy;
 
     // This class is used by Reflection.
     public class LegacyMatchDetailsMapperProfile : Profile

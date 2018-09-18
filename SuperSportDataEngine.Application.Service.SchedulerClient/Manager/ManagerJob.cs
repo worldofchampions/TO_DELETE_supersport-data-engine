@@ -11,10 +11,11 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
     using ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using ApplicationLogic.Services;
     using System.Configuration;
-    using SuperSportDataEngine.Application.Container.Enums;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
+    using Container.Enums;
+    using ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
+    using ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
     using SuperSportDataEngine.Common.Logging;
+    using SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledManager.Tennis;
 
     internal class ManagerJob
     {
@@ -30,8 +31,13 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
         private LogsManagerJob _logsManagerJob;
         private PlayerStatisticsManagerJob _playerStatisticsManagerJob;
         private MotorsportLiveManagerJob _motorsportLiveManagerJob;
+        private TennisCalendarManagerJob _tennisCalendarManagerJob;
+        private TennisResultsManagerJob _tennisResultsManagerJob;
+        private TennisRankingsManagerJob _tennisRankingsManagerJob;
+        private TennisLiveManagerJob _tennisLiveManagerJob;
         private IMotorsportIngestWorkerService _motorsportIngestWorkerService;
         private IMotorsportService _motorsportService;
+        private ITennisIngestWorkerService _tennisIngestWorkerService;
         private static int _managerLoopTimeInSeconds;
         private ILoggingService _logger;
 
@@ -51,6 +57,8 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
             ConfigureRugbyDependencies();
 
             ConfigureMotorsportDependencies();
+
+            ConfigureTennisDepedencies();
         }
 
         private void ConfigureCommonDependencies()
@@ -123,6 +131,39 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
                     _publicSportDataUnitOfWork);
         }
 
+        private void ConfigureTennisDepedencies()
+        {
+            _tennisIngestWorkerService = _container.Resolve<ITennisIngestWorkerService>();
+
+            _tennisCalendarManagerJob =
+                new TennisCalendarManagerJob(
+                    _publicSportDataUnitOfWork,
+                    _systemSportDataUnitOfWork,
+                    _recurringJobManager,
+                    _tennisIngestWorkerService);
+
+            _tennisResultsManagerJob =
+                new TennisResultsManagerJob(
+                    _publicSportDataUnitOfWork,
+                    _systemSportDataUnitOfWork,
+                    _tennisIngestWorkerService,
+                    _recurringJobManager);
+
+            _tennisRankingsManagerJob = 
+                new TennisRankingsManagerJob(
+                    _publicSportDataUnitOfWork,
+                    _systemSportDataUnitOfWork,
+                    _recurringJobManager,
+                    _tennisIngestWorkerService);
+
+            _tennisLiveManagerJob =
+                new TennisLiveManagerJob(
+                    _publicSportDataUnitOfWork,
+                    _systemSportDataUnitOfWork,
+                    _recurringJobManager,
+                    _tennisIngestWorkerService);
+        }
+
         private void ConfigureTimer()
         {
             _timer = new Timer
@@ -142,17 +183,21 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
                 ConfigureDepenencies();
 
                 var rugbyEnabled = bool.Parse(ConfigurationManager.AppSettings["RugbyIngestEnabled"]);
-
                 if (rugbyEnabled)
                 {
                     await ScheduleRugbyJobs();
                 }
 
                 var motorsportEnabled = bool.Parse(ConfigurationManager.AppSettings["MotorsportIngestEnabled"]);
-
                 if (motorsportEnabled)
                 {
                     await ScheduleMotorsportJobs();
+                }
+
+                var tennisEnabled = bool.Parse(ConfigurationManager.AppSettings["TennisIngestEnabled"]);
+                if (tennisEnabled)
+                {
+                    await ScheduleTennisJobs();
                 }
             }
             catch (Exception exception)
@@ -166,6 +211,14 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Manager
             }
 
             _timer.Start();
+        }
+
+        private async Task ScheduleTennisJobs()
+        {
+            await _tennisCalendarManagerJob.DoWorkAsync();
+            await _tennisResultsManagerJob.DoWorkAsync();
+            await _tennisRankingsManagerJob.DoWorkAsync();
+            await _tennisLiveManagerJob.DoWorkAsync();
         }
 
         private async Task ScheduleMotorsportJobs()

@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models.Tennis;
 
 namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork
 {
@@ -36,6 +37,21 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFram
         IBaseEntityFrameworkRepository<MotorsportTeamStanding> MotorsportTeamStandings { get; }
         IBaseEntityFrameworkRepository<MotorsportRaceEvent> MotorsportRaceEvents { get; set; }
 
+        // Tennis
+        IBaseEntityFrameworkRepository<TennisLeague> TennisLeagues { get; set; }
+        IBaseEntityFrameworkRepository<TennisTournament> TennisTournaments { get; set; }
+        IBaseEntityFrameworkRepository<TennisSeason> TennisSeasons { get; set; }
+        IBaseEntityFrameworkRepository<TennisSurfaceType> TennisSurfaceTypes { get; set; }
+        IBaseEntityFrameworkRepository<TennisVenue> TennisVenues { get; set; }
+        IBaseEntityFrameworkRepository<TennisPlayer> TennisPlayers { get; set; }
+        IBaseEntityFrameworkRepository<TennisEvent> TennisEvents { get; set; }
+        IBaseEntityFrameworkRepository<TennisEventTennisLeagues> TennisEventTennisLeagues { get; set; }
+        IBaseEntityFrameworkRepository<TennisRanking> TennisRankings { get; set; }
+        IBaseEntityFrameworkRepository<TennisMatch> TennisMatches { get; set; }
+        IBaseEntityFrameworkRepository<TennisEventSeed> TennisEventSeeds { get; set; }
+        IBaseEntityFrameworkRepository<TennisSide> TennisSides { get; set; }
+        IBaseEntityFrameworkRepository<TennisSet> TennisSets { get; set; }
+        IBaseEntityFrameworkRepository<TennisCountry> TennisCountries { get; set; }
         int SaveChanges();
         Task<int> SaveChangesAsync();
     }

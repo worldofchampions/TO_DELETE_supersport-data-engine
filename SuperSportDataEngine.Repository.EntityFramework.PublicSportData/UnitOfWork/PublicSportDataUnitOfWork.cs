@@ -3,12 +3,13 @@ using System.Data.Entity;
 using System.Threading.Tasks;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models.Tennis;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
 using SuperSportDataEngine.Repository.EntityFramework.Common.Repositories.Base;
 
 namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.UnitOfWork
 {
-    public class PublicSportDataUnitOfWork : IPublicSportDataUnitOfWork, IDisposable
+    public class PublicSportDataUnitOfWork : IPublicSportDataUnitOfWork
     {
         private readonly DbContext _context;
 
@@ -29,7 +30,6 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.UnitOf
         public IBaseEntityFrameworkRepository<RugbyTournament> RugbyTournaments { get; private set; }
         public IBaseEntityFrameworkRepository<RugbyVenue> RugbyVenues { get; private set; }
 
-
         public IBaseEntityFrameworkRepository<MotorsportDriver> MotorsportDrivers { get; set; }
         public IBaseEntityFrameworkRepository<MotorsportLeague> MotorsportLeagues { get; set; }
         public IBaseEntityFrameworkRepository<MotorsportRace> MotorsportRaces { get; set; }
@@ -40,6 +40,21 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.UnitOf
         public IBaseEntityFrameworkRepository<MotorsportRaceEventResult> MotorsportRaceEventResults { get; set; }
         public IBaseEntityFrameworkRepository<MotorsportRaceEventGrid> MotorsportRaceEventGrids { get; set; }
         public IBaseEntityFrameworkRepository<MotorsportRaceEvent> MotorsportRaceEvents { get; set; }
+
+        public IBaseEntityFrameworkRepository<TennisLeague> TennisLeagues { get; set; }
+        public IBaseEntityFrameworkRepository<TennisTournament> TennisTournaments { get; set; }
+        public IBaseEntityFrameworkRepository<TennisSeason> TennisSeasons { get; set; }
+        public IBaseEntityFrameworkRepository<TennisSurfaceType> TennisSurfaceTypes { get; set; }
+        public IBaseEntityFrameworkRepository<TennisVenue> TennisVenues { get; set; }
+        public IBaseEntityFrameworkRepository<TennisPlayer> TennisPlayers { get; set; }
+        public IBaseEntityFrameworkRepository<TennisEvent> TennisEvents { get; set; }
+        public IBaseEntityFrameworkRepository<TennisEventTennisLeagues> TennisEventTennisLeagues { get; set; }
+        public IBaseEntityFrameworkRepository<TennisRanking> TennisRankings { get; set; }
+        public IBaseEntityFrameworkRepository<TennisMatch> TennisMatches { get; set; }
+        public IBaseEntityFrameworkRepository<TennisEventSeed> TennisEventSeeds { get; set; }
+        public IBaseEntityFrameworkRepository<TennisSide> TennisSides { get; set; }
+        public IBaseEntityFrameworkRepository<TennisSet> TennisSets { get; set; }
+        public IBaseEntityFrameworkRepository<TennisCountry> TennisCountries { get; set; }
 
         public PublicSportDataUnitOfWork(
             DbContext context)
@@ -72,6 +87,19 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.UnitOf
             MotorsportSeasons = new BaseEntityFrameworkRepository<MotorsportSeason>(_context);
             MotortsportTeams = new BaseEntityFrameworkRepository<MotorsportTeam>(_context);
             MotorsportTeamStandings = new BaseEntityFrameworkRepository<MotorsportTeamStanding>(_context);
+            TennisLeagues = new BaseEntityFrameworkRepository<TennisLeague>(_context);
+            TennisTournaments = new BaseEntityFrameworkRepository<TennisTournament>(_context);
+            TennisSeasons = new BaseEntityFrameworkRepository<TennisSeason>(_context);
+            TennisSurfaceTypes = new BaseEntityFrameworkRepository<TennisSurfaceType>(_context);
+            TennisVenues = new BaseEntityFrameworkRepository<TennisVenue>(_context);
+            TennisPlayers = new BaseEntityFrameworkRepository<TennisPlayer>(_context);
+            TennisEvents = new BaseEntityFrameworkRepository<TennisEvent>(_context);
+            TennisEventTennisLeagues = new BaseEntityFrameworkRepository<TennisEventTennisLeagues>(_context);
+            TennisRankings = new BaseEntityFrameworkRepository<TennisRanking>(_context);
+            TennisMatches = new BaseEntityFrameworkRepository<TennisMatch>(_context);
+            TennisEventSeeds = new BaseEntityFrameworkRepository<TennisEventSeed>(_context);
+            TennisSides = new BaseEntityFrameworkRepository<TennisSide>(_context);
+            TennisCountries = new BaseEntityFrameworkRepository<TennisCountry>(_context);
         }
         
         public int SaveChanges()

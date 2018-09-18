@@ -23,7 +23,7 @@
         public string report { get; set; }
         public string winner { get; set; }
         public List<string> channels { get; set; }
-        public List<MatchVideoModel> Videos { get; set; }
-        public List<MatchLiveVideoModel> LiveVideos { get; set; }
+        public List<MatchVideo> Videos { get; set; }
+        public List<MatchLiveVideo> LiveVideos { get; set; }
     }
 }

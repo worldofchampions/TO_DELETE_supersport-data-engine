@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.Repository.EntityFramework.SystemSportData.UnitOfWork
+﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Tennis;
+
+namespace SuperSportDataEngine.Repository.EntityFramework.SystemSportData.UnitOfWork
 {
     using System.Data.Entity;
     using System.Threading.Tasks;
@@ -18,6 +20,8 @@
         public IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> SchedulerTrackingRugbySeasons { get; private set; }
         public IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> SchedulerTrackingRugbyTournaments { get; private set; }
         public IBaseEntityFrameworkRepository<SchedulerTrackingMotorsportRaceEvent> SchedulerTrackingMotorsportRaceEvents { get; private set; }
+        public IBaseEntityFrameworkRepository<SchedulerTrackingTennisEvent> SchedulerTrackingTennisEvents { get; set; }
+        public IBaseEntityFrameworkRepository<SchedulerTrackingTennisMatch> SchedulerTrackingTennisMatches { get; set; }
 
         public SystemSportDataUnitOfWork(DbContext context)
         {
@@ -30,6 +34,9 @@
             SchedulerTrackingRugbyTournaments = new BaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament>(_context);
 
             SchedulerTrackingMotorsportRaceEvents = new BaseEntityFrameworkRepository<SchedulerTrackingMotorsportRaceEvent>(_context);
+
+            SchedulerTrackingTennisEvents = new BaseEntityFrameworkRepository<SchedulerTrackingTennisEvent>(_context);
+            SchedulerTrackingTennisMatches = new BaseEntityFrameworkRepository<SchedulerTrackingTennisMatch>(_context);
         }
 
         public int SaveChanges()

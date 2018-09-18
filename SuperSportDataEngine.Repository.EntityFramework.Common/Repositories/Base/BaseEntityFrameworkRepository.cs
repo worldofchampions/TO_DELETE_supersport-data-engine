@@ -1,6 +1,6 @@
 ﻿namespace SuperSportDataEngine.Repository.EntityFramework.Common.Repositories.Base
 {
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
+    using ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Interfaces;
     using System;
     using System.Collections.Generic;
     using System.Data.Entity;
@@ -11,7 +11,7 @@
 
     public class BaseEntityFrameworkRepository<T> : IBaseEntityFrameworkRepository<T> where T : class
     {
-        protected readonly DbContext _dbContext;
+        private readonly DbContext _dbContext;
 
         public BaseEntityFrameworkRepository(DbContext context)
         {

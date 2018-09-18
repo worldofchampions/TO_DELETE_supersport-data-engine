@@ -212,7 +212,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
                     return null;
                 }
 
-                return await _cache.GetAsync<AuthModel>(CacheKeyPrefix + "AUTH:" + $"auth/{siteId}/{auth}");
+                return await _cache.GetAsync<AuthModel>(GetCacheKey(siteId, auth));
             }
             catch (Exception exception)
             {
@@ -220,6 +220,11 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.RequestHandlers
 
                 return null;
             }
+        }
+
+        private static string GetCacheKey(int siteid, string auth)
+        {
+            return CacheKeyPrefix + "AUTH:" + "auth/" + siteid + "/" +  auth;
         }
 
         private void PersistRequestToCache(int siteId, string auth, AuthModel authModel)

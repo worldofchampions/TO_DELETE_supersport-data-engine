@@ -3,7 +3,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.SystemSportData.Migrat
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class Initial_Motorsport_Migration : DbMigration
+    public partial class c : DbMigration
     {
         public override void Up()
         {

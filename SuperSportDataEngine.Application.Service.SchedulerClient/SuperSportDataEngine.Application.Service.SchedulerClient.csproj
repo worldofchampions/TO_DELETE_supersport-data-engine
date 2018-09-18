@@ -183,6 +183,7 @@
   <ItemGroup>
     <Compile Include="FixedSchedule\FixedScheduledJob.cs" />
     <Compile Include="FixedSchedule\MotorsportFixedScheduledJob.cs" />
+    <Compile Include="FixedSchedule\TennisFixedScheduledJob.cs" />
     <Compile Include="HangfireDashboardConfiguration.cs" />
     <Compile Include="Manager\ManagerJob.cs" />
     <Compile Include="Program.cs" />
@@ -193,6 +194,10 @@
     <Compile Include="ScheduledManager\LogsManagerJob.cs" />
     <Compile Include="ScheduledManager\PlayerStatisticsManagerJob.cs" />
     <Compile Include="ScheduledManager\MotorsportLiveManagerJob.cs" />
+    <Compile Include="ScheduledManager\Tennis\TennisCalendarManagerJob.cs" />
+    <Compile Include="ScheduledManager\Tennis\TennisLiveManagerJob.cs" />
+    <Compile Include="ScheduledManager\Tennis\TennisRankingsManagerJob.cs" />
+    <Compile Include="ScheduledManager\Tennis\TennisResultsManagerJob.cs" />
     <Compile Include="StartUp.cs" />
     <Compile Include="WindowsService.cs" />
   </ItemGroup>
@@ -222,9 +227,10 @@
       <IsTransformFile>True</IsTransformFile>
       <SubType>Designer</SubType>
     </None>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Properties\app.manifest" />
-    <None Include="SuperSportDataEngine.Application.Service.SchedulerClient_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Hangfire\Hangfire.Core\Hangfire.Core.csproj">

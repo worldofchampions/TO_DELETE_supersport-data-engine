@@ -1,18 +1,19 @@
-﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Rugby
+﻿using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby;
+
+namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Rugby
 {
     using AutoMapper;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.DeprecatedFeed.ResponseModels;
-    using SuperSportDataEngine.ApplicationLogic.Entities.Legacy;
+    using Shared;
+    using ApplicationLogic.Boundaries.Gateway.Http.DeprecatedFeed.ResponseModels;
+    using ApplicationLogic.Entities.Legacy;
 
     public class LegacyRugbyMatchDetailsArticlesAndVideosMapperProfile : Profile
     {
         public LegacyRugbyMatchDetailsArticlesAndVideosMapperProfile()
         {
-            CreateMap<LiveVideosResponse, MatchLiveVideoModel>();
+            CreateMap<LiveVideosResponse, MatchLiveVideo>();
 
-            CreateMap<HighlightVideosResponse, MatchVideoModel>();
+            CreateMap<HighlightVideosResponse, MatchVideo>();
 
             CreateMap<DeprecatedArticlesAndVideosEntity, RugbyMatchDetails>()
                 .ForMember(dest => dest.MatchDayBlogId, exp => exp.MapFrom(src => src.MatchDayBlogId))

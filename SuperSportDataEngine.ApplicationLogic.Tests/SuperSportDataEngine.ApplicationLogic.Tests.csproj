@@ -82,9 +82,8 @@
     <Reference Include="Moq, Version=4.8.0.0, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
       <HintPath>..\packages\Moq.4.8.1\lib\net45\Moq.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Users\Ronald Mariah\.nuget\packages\newtonsoft.json\5.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="nunit.framework, Version=3.10.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
       <HintPath>..\packages\NUnit.3.10.1\lib\net45\nunit.framework.dll</HintPath>
@@ -107,11 +106,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Extensions\DictionaryExtensionsTests.cs" />
+    <Compile Include="Helpers\DateTimerTests.cs" />
     <Compile Include="HelperTests.cs" />
+    <Compile Include="Mocks\MockMongoTennisService.cs" />
+    <Compile Include="Mocks\MockStatsIngestService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\LegacyAuthServiceTests.cs" />
     <Compile Include="Services\RugbyIngestWorkerServiceTests.cs" />
     <Compile Include="Services\RugbyServiceTests.cs" />
+    <Compile Include="Services\Tennis\TennisIngestWorkerServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -125,6 +128,10 @@
     <ProjectReference Include="..\SuperSportDataEngine.Common\SuperSportDataEngine.Common.csproj">
       <Project>{BBE845AF-8B84-4B61-ABD7-724ACA22AB69}</Project>
       <Name>SuperSportDataEngine.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SuperSportDataEngine.Gateway.Http.Stats\SuperSportDataEngine.Gateway.Http.Stats.csproj">
+      <Project>{c3aea7ff-d0a4-473a-8b49-aa52ef7058a6}</Project>
+      <Name>SuperSportDataEngine.Gateway.Http.Stats</Name>
     </ProjectReference>
     <ProjectReference Include="..\SuperSportDataEngine.Tests.Common\SuperSportDataEngine.Tests.Common.csproj">
       <Project>{65e69b64-f50a-477a-a355-f2b681ed6314}</Project>

@@ -1,4 +1,4 @@
-﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Motorsport
+namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Motorsport
 {
     using AutoMapper;
     using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Motorsport;
@@ -62,8 +62,8 @@
                     GetFullName(src.RaceEventWinner != null ? src.RaceEventWinner.FirstName : null,
                                 src.RaceEventWinner != null ? src.RaceEventWinner.LastName : null)))
 
-                .ForMember(dest => dest.Videos, expression => expression.UseValue(new List<MatchVideoModel>()))
-                .ForMember(dest => dest.LiveVideos, expression => expression.UseValue(new List<MatchLiveVideoModel>()))
+                .ForMember(dest => dest.Videos, expression => expression.UseValue(new List<MatchVideo>()))
+                .ForMember(dest => dest.LiveVideos, expression => expression.UseValue(new List<MatchLiveVideo>()))
 
                 .ForAllOtherMembers(m => m.Ignore());
         }

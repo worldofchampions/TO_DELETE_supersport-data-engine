@@ -655,11 +655,11 @@ namespace SuperSportDataEngine.ApplicationLogic.Services
 
         public async Task<IEnumerable<RugbyFixture>> GetPostponedFixtures()
         {
-            var threeHoursAgo = (DateTimeOffset.UtcNow - TimeSpan.FromHours(3));
+            var threeHoursAgo = DateTimeOffset.UtcNow - TimeSpan.FromHours(3);
 
             return await Task.FromResult(_publicSportDataUnitOfWork.RugbyFixtures.Where(f =>
-                (f.RugbyFixtureStatus == RugbyFixtureStatus.PreMatch && f.StartDateTime < threeHoursAgo)
-                || (f.RugbyFixtureStatus == RugbyFixtureStatus.Postponed)));
+                f.RugbyFixtureStatus == RugbyFixtureStatus.PreMatch && f.StartDateTime < threeHoursAgo || 
+                f.RugbyFixtureStatus == RugbyFixtureStatus.Postponed));
         }
 
         public async Task<IEnumerable<RugbyFixture>> GetFixturesNotIngestedYet()

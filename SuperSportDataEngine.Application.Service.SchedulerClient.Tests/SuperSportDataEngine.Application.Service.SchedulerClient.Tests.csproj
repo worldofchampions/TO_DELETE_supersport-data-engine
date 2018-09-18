@@ -190,9 +190,15 @@
     <Compile Include="ScheduledManagerTests\LogsManagerJobTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScheduledManagerTests\PlayerStatisticsManagerJobTests.cs" />
+    <Compile Include="ScheduledManager\Tennis\TennisCalendarManagerJobTests.cs" />
+    <Compile Include="ScheduledManager\Tennis\TennisLiveManagerJobTests.cs" />
+    <Compile Include="ScheduledManager\Tennis\TennisRankingsManagerJobTests.cs" />
+    <Compile Include="ScheduledManager\Tennis\TennisResultsManagerJobTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -232,6 +238,9 @@
       <Project>{65e69b64-f50a-477a-a355-f2b681ed6314}</Project>
       <Name>SuperSportDataEngine.Tests.Common</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Services\Tennis\" />
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

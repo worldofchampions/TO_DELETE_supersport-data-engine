@@ -227,6 +227,52 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
         }
 
         [Test]
+        public async Task WhenFixturePostponed_RemoveChildJob()
+        {
+            Guid tournamentId = Guid.NewGuid();
+            Guid fixtureId = Guid.NewGuid();
+
+            _mockUnitOfWork.SchedulerTrackingRugbyFixtures.Add(
+                new SchedulerTrackingRugbyFixture { TournamentId = tournamentId, FixtureId = fixtureId, SchedulerStateFixtures = SchedulerStateForRugbyFixturePolling.LivePolling });
+
+            var tournament = new RugbyTournament() { Id = tournamentId };
+
+            _mockRugbyService
+                .Setup(r => r.GetCurrentTournaments()).Returns(
+                    Task.FromResult(new List<RugbyTournament>() { tournament }.AsEnumerable()));
+
+            var rugbyFixtures =
+                Task.FromResult(new List<RugbyFixture>()
+                    {
+                        new RugbyFixture
+                        {
+                            Id = fixtureId,
+                            RugbyTournament = tournament,
+                            TeamA = new RugbyTeam { Name = "TeamA" },
+                            TeamB = new RugbyTeam { Name = "TeamB" },
+                            LegacyFixtureId = 123,
+                            RugbyFixtureStatus = RugbyFixtureStatus.Result
+                        }
+                    }.AsEnumerable());
+
+            _mockRugbyService.Setup(r => r.GetPostponedFixtures()).Returns(rugbyFixtures);
+
+            await _liveManagerJob.DoWorkAsync();
+
+            _mockRecurringJobManager.Verify(m => m.AddOrUpdate(
+                        "Rugby→StatsProzone→LiveManagerJob→LiveMatch→TeamA vs TeamB→123",
+                        It.IsAny<Job>(),
+                        "0 0 29 2/12000 WED",
+                        It.IsAny<RecurringJobOptions>()),
+                        Times.Never());
+
+            var f = _mockUnitOfWork.SchedulerTrackingRugbyFixtures.All().FirstOrDefault();
+
+            _mockRecurringJobManager.Verify(m => m.RemoveIfExists(It.IsAny<string>()), Times.Once());
+            Assert.AreEqual(SchedulerStateForRugbyFixturePolling.SchedulingNotYetStarted, f.SchedulerStateFixtures);
+        }
+
+        [Test]
         public async Task WhenFixtureIsPreLivePolling_ChildJobGetsCreated()
         {
             DateTimeOffset now = DateTimeOffset.UtcNow;

@@ -2,7 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
+    using Shared;
 
     [Serializable]
     public class RugbyMatchDetails : MatchDetailsModel

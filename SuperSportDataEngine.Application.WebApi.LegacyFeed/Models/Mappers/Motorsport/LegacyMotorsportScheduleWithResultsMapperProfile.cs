@@ -3,9 +3,9 @@
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Motorsport
 {
     using AutoMapper;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Motorsport;
-    using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+    using Models.Motorsport;
+    using Shared;
+    using ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
     using System;
     using System.Collections.Generic;
     using System.Web.WebPages;
@@ -64,8 +64,8 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Moto
                 .ForMember(dest => dest.RaceEventStatus, expression => expression.MapFrom(
                     src => FormatRaceEventStatusForResponse(src.MotorsportRaceEventStatus)))
 
-                .ForMember(dest => dest.Videos, expression => expression.UseValue(new List<MatchVideoModel>()))
-                .ForMember(dest => dest.LiveVideos, expression => expression.UseValue(new List<MatchLiveVideoModel>()))
+                .ForMember(dest => dest.Videos, expression => expression.UseValue(new List<MatchVideo>()))
+                .ForMember(dest => dest.LiveVideos, expression => expression.UseValue(new List<MatchLiveVideo>()))
 
                 .ForAllOtherMembers(m => m.Ignore());
         }

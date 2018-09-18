@@ -25,6 +25,6 @@
         public int TournamentId { get; set; }
         public CyclingStageType Type { get; set; }
         public DateTime Date { get; set; }
-        public List<MatchVideoModel> Videos { get; set; }
+        public List<MatchVideo> Videos { get; set; }
     }
 }

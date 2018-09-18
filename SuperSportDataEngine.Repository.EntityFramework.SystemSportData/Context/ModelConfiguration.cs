@@ -1,4 +1,5 @@
 ﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Tennis;
 
 namespace SuperSportDataEngine.Repository.EntityFramework.SystemSportData.Context
 {
@@ -32,6 +33,10 @@ namespace SuperSportDataEngine.Repository.EntityFramework.SystemSportData.Contex
             modelBuilder.Entity<SchedulerTrackingRugbyTournament>().HasKey(x => new { x.TournamentId, x.SeasonId });
 
             modelBuilder.Entity<SchedulerDashboardUser>().HasKey(x => new { x.Username });
+
+            modelBuilder.Entity<SchedulerTrackingTennisEvent>().HasKey(x => new { x.TennisEventId });
+
+            modelBuilder.Entity<SchedulerTrackingTennisMatch>().HasKey(x => new { x.TennisMatchId });
         }
 
         private static void ApplyMotorSportConfigurations(DbModelBuilder modelBuilder)

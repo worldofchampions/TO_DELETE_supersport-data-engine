@@ -26,7 +26,6 @@
             _statsApiBaseUrl = statsApiBaseUrl;
 
             _cacheControlHeader = ConfigurationManager.AppSettings["StatsApiMotorsportCacheControlHeader"];
-
         }
 
         public WebRequest GetRequestForDrivers(string providerSlug, int? providerDriverId)

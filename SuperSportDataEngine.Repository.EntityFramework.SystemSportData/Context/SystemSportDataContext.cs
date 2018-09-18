@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.Repository.EntityFramework.SystemSportData.Context
+﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Tennis;
+
+namespace SuperSportDataEngine.Repository.EntityFramework.SystemSportData.Context
 {
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models;
     using SuperSportDataEngine.Repository.EntityFramework.Common.Database;
@@ -19,6 +21,8 @@
         public DbSet<SchedulerTrackingRugbyTournament> SchedulerTrackingRugbyTournament { get; set; }
         public DbSet<SchedulerDashboardUser> SchedulingDashboardUsers { get; set; }
         public DbSet<SchedulerTrackingMotorsportRaceEvent> SchedulerTrackingMotorsportRaceEvents { get; set; }
+        public DbSet<SchedulerTrackingTennisEvent> SchedulerTrackingTennisEvents { get; set; }
+        public DbSet<SchedulerTrackingTennisMatch> SchedulerTrackingTennisMatches { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

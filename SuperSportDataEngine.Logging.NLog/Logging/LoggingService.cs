@@ -3,7 +3,6 @@ using NLog.Config;
 using SuperSportDataEngine.Common.Logging;
 using System;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using NLog.Internal;
 using SuperSportDataEngine.Common.Interfaces;
 

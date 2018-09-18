@@ -209,7 +209,6 @@
     </None>
     <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
-    <None Include="SuperSportDataEngine.Application.Service.SchedulerIngestServer_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Hangfire\Hangfire.Core\Hangfire.Core.csproj">

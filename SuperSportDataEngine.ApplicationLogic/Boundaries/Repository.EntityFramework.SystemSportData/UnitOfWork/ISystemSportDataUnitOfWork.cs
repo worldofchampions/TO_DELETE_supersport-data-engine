@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork
+﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Tennis;
+
+namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork
 {
     using System;
     using System.Threading.Tasks;
@@ -14,6 +16,8 @@
         IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> SchedulerTrackingRugbySeasons { get; }
         IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> SchedulerTrackingRugbyTournaments { get; }
         IBaseEntityFrameworkRepository<SchedulerTrackingMotorsportRaceEvent> SchedulerTrackingMotorsportRaceEvents { get; }
+        IBaseEntityFrameworkRepository<SchedulerTrackingTennisEvent> SchedulerTrackingTennisEvents { get; set; }
+        IBaseEntityFrameworkRepository<SchedulerTrackingTennisMatch> SchedulerTrackingTennisMatches { get; set; }
         int SaveChanges();
         Task<int> SaveChangesAsync();
     }

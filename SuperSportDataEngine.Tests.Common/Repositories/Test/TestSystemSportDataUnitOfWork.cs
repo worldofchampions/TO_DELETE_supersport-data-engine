@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.Tests.Common.Repositories.Test
+﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Tennis;
+
+namespace SuperSportDataEngine.Tests.Common.Repositories.Test
 {
     using System.Collections.Generic;
     using System.Threading.Tasks;
@@ -15,6 +17,8 @@
         public IBaseEntityFrameworkRepository<SchedulerTrackingRugbySeason> SchedulerTrackingRugbySeasons { get; set; }
         public IBaseEntityFrameworkRepository<SchedulerTrackingRugbyTournament> SchedulerTrackingRugbyTournaments { get; set; }
         public IBaseEntityFrameworkRepository<SchedulerTrackingMotorsportRaceEvent> SchedulerTrackingMotorsportRaceEvents { get; set; }
+        public IBaseEntityFrameworkRepository<SchedulerTrackingTennisEvent> SchedulerTrackingTennisEvents { get; set; }
+        public IBaseEntityFrameworkRepository<SchedulerTrackingTennisMatch> SchedulerTrackingTennisMatches { get; set; }
 
         public TestSystemSportDataUnitOfWork()
         {
@@ -24,6 +28,8 @@
             LegacyZoneSites = new TestEntityFrameworkRepository<LegacyZoneSite>(new List<LegacyZoneSite>());
             SchedulerTrackingRugbySeasons = new TestEntityFrameworkRepository<SchedulerTrackingRugbySeason>(new List<SchedulerTrackingRugbySeason>());
             SchedulerTrackingRugbyTournaments = new TestEntityFrameworkRepository<SchedulerTrackingRugbyTournament>(new List<SchedulerTrackingRugbyTournament>());
+            SchedulerTrackingTennisEvents = new TestEntityFrameworkRepository<SchedulerTrackingTennisEvent>(new List<SchedulerTrackingTennisEvent>());
+            SchedulerTrackingTennisMatches = new TestEntityFrameworkRepository<SchedulerTrackingTennisMatch>(new List<SchedulerTrackingTennisMatch>());
         }
 
         public int SaveChanges()
@@ -44,6 +50,7 @@
             SchedulerTrackingRugbyFixtures?.Dispose();
             SchedulerTrackingRugbySeasons?.Dispose();
             SchedulerTrackingRugbyTournaments?.Dispose();
+            SchedulerTrackingTennisEvents?.Dispose();
         }
     }
 }

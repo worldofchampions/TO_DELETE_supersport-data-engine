@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context
+﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models.Tennis;
+
+namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context
 {
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
     using SuperSportDataEngine.Repository.EntityFramework.Common.Database;
@@ -39,6 +41,19 @@
         public DbSet<MotorsportRaceEventGrid> MotorsportRaceEventGrids { get; set; }
         public DbSet<MotorsportRaceEvent> MotorsportRaceEvents { get; set; }
 
+        // Tennis
+        public DbSet<TennisLeague> TennisLeagues { get; set; }
+        public DbSet<TennisTournament> TennisTournaments { get; set; }
+        public DbSet<TennisSeason> TennisSeasons { get; set; }
+        public DbSet<TennisSurfaceType> TennisSurfaceTypes { get; set; }
+        public DbSet<TennisVenue> TennisVenues { get; set; }
+        public DbSet<TennisEventTennisLeagues> TennisLeagueEventMappings { get; set; }
+        public DbSet<TennisRanking> TennisRankings { get; set; }
+        public DbSet<TennisMatch> TennisMatches { get; set; }
+        public DbSet<TennisEvent> TennisEvents { get; set; }
+        public DbSet<TennisEventSeed> TennisEventSeeds { get; set; }
+        public DbSet<TennisSide> TennisSides { get; set; }
+        public DbSet<TennisSet> TennisSets { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

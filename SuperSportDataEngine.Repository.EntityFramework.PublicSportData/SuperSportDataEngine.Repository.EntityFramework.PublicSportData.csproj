@@ -248,14 +248,6 @@
     <Compile Include="Migrations\201802010905205_Add_RugbySeason_To_RugbyFixture.Designer.cs">
       <DependentUpon>201802010905205_Add_RugbySeason_To_RugbyFixture.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201802191222054_Added_PlayerStats_Model.cs" />
-    <Compile Include="Migrations\201802191222054_Added_PlayerStats_Model.Designer.cs">
-      <DependentUpon>201802191222054_Added_PlayerStats_Model.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201802261121368_Add_CurrentRoundNumberCmsOverride_To_RugbySeasons.cs" />
-    <Compile Include="Migrations\201802261121368_Add_CurrentRoundNumberCmsOverride_To_RugbySeasons.designer.cs">
-      <DependentUpon>201802261121368_Add_CurrentRoundNumberCmsOverride_To_RugbySeasons.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\201803140651364_Motorsport_Initial_Migration.cs" />
     <Compile Include="Migrations\201803140651364_Motorsport_Initial_Migration.Designer.cs">
       <DependentUpon>201803140651364_Motorsport_Initial_Migration.cs</DependentUpon>
@@ -267,6 +259,10 @@
     <Compile Include="Migrations\201804170525526_Rugby_Added_Venue_Name_Cms_Override.cs" />
     <Compile Include="Migrations\201804170525526_Rugby_Added_Venue_Name_Cms_Override.Designer.cs">
       <DependentUpon>201804170525526_Rugby_Added_Venue_Name_Cms_Override.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201806071108180_Tennis_InitialMigration.cs" />
+    <Compile Include="Migrations\201806071108180_Tennis_InitialMigration.Designer.cs">
+      <DependentUpon>201806071108180_Tennis_InitialMigration.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201804260942030_Motorsport_Add_IsDisabledInbound_For_Races.cs" />
     <Compile Include="Migrations\201804260942030_Motorsport_Add_IsDisabledInbound_For_Races.Designer.cs">
@@ -310,6 +306,11 @@
     <Compile Include="Migrations\Seed\Rugby\LogGroups\SuperRugby\SeedRugbyLogGroupsForTournamentSuperRugby2018.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyTeams.cs" />
     <Compile Include="Migrations\Seed\SeedRugbyTournamentSlugs.cs" />
+    <Compile Include="Migrations\Seed\Tennis\SeedEnableTennisSeasonsFor2018.cs" />
+    <Compile Include="Migrations\Seed\Tennis\SeedTennisEnabledInboundLeagues.cs" />
+    <Compile Include="Migrations\Seed\Tennis\SeedTennisGenderForLeagues.cs" />
+    <Compile Include="Migrations\Seed\Tennis\SeedTennisSeasons.cs" />
+    <Compile Include="Migrations\Seed\Tennis\SeedTennisTournamentSlugsForGrandSlams.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UnitOfWork\PublicSportDataUnitOfWork.cs" />
   </ItemGroup>
@@ -454,12 +455,6 @@
     <EmbeddedResource Include="Migrations\201802010905205_Add_RugbySeason_To_RugbyFixture.resx">
       <DependentUpon>201802010905205_Add_RugbySeason_To_RugbyFixture.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201802191222054_Added_PlayerStats_Model.resx">
-      <DependentUpon>201802191222054_Added_PlayerStats_Model.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201802261121368_Add_CurrentRoundNumberCmsOverride_To_RugbySeasons.resx">
-      <DependentUpon>201802261121368_Add_CurrentRoundNumberCmsOverride_To_RugbySeasons.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201803140651364_Motorsport_Initial_Migration.resx">
       <DependentUpon>201803140651364_Motorsport_Initial_Migration.cs</DependentUpon>
     </EmbeddedResource>
@@ -468,6 +463,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201804170525526_Rugby_Added_Venue_Name_Cms_Override.resx">
       <DependentUpon>201804170525526_Rugby_Added_Venue_Name_Cms_Override.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201806071108180_Tennis_InitialMigration.resx">
+      <DependentUpon>201806071108180_Tennis_InitialMigration.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201804260942030_Motorsport_Add_IsDisabledInbound_For_Races.resx">
       <DependentUpon>201804260942030_Motorsport_Add_IsDisabledInbound_For_Races.cs</DependentUpon>

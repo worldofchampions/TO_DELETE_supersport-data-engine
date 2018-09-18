@@ -20,6 +20,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
     {
         private readonly FixedScheduledJob _fixedManagerJob;
         private readonly MotorsportFixedScheduledJob _motorFixedScheduledJob;
+        private readonly TennisFixedScheduledJob _tennisFixedScheduledJob;
         private readonly ManagerJob _jobManager;
         private readonly ILoggingService _logger;
         private System.Timers.Timer _timer;
@@ -30,6 +31,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
 
             _fixedManagerJob = new FixedScheduledJob(container.CreateChildContainer());
             _motorFixedScheduledJob = new MotorsportFixedScheduledJob(container.CreateChildContainer());
+            _tennisFixedScheduledJob = new TennisFixedScheduledJob(container.CreateChildContainer());
             _jobManager = new ManagerJob();
         }
 
@@ -66,8 +68,12 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
                             _fixedManagerJob.UpdateRecurringJobDefinitions();
 
                         var motorEnabled = bool.Parse(ConfigurationManager.AppSettings["MotorsportIngestEnabled"]);
-                        if (motorEnabled)
+                        if(motorEnabled)
                             _motorFixedScheduledJob.UpdateRecurringJobDefinitions();
+
+                        var tennisEnabled = bool.Parse(ConfigurationManager.AppSettings["TennisIngestEnabled"]);
+                        if(tennisEnabled)
+                            _tennisFixedScheduledJob.UpdateRecurringJobDefinitions();
                     }
                     catch (Exception exception)
                     {
@@ -82,6 +88,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
                     Thread.Sleep(2000);
                 }
             }
+            // ReSharper disable once FunctionNeverReturns
         }
 
         private void ConfigureTimer()

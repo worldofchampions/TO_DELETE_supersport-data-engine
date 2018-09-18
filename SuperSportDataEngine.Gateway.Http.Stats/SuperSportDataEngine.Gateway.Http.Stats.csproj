@@ -75,6 +75,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\Tennis\StatsTennisIngestService.cs" />
+    <Compile Include="Services\Tennis\StatsTennisProviderWebRequest.cs" />
     <Compile Include="Services\Motorsport\StatsMotorsportIngestService.cs" />
     <Compile Include="Services\Motorsport\StatsMotorsportWebRequest.cs" />
   </ItemGroup>

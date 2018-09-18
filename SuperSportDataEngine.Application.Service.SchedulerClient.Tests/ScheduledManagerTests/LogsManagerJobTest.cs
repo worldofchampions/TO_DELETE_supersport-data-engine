@@ -39,6 +39,12 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
             _publicSportDataUnitOfWork = new TestPublicSportDataUnitOfWork();
 
             _mockRecurringJobManager = new Mock<IRecurringJobManager>();
+            _mockRecurringJobManager.Setup(c =>
+                c.AddOrUpdate(It.IsAny<string>(), It.IsAny<Job>(), It.IsAny<string>(), It.IsAny<RecurringJobOptions>()));
+
+            _mockRecurringJobManager.Setup(c =>
+                c.RemoveIfExists(It.IsAny<string>()));
+
             _mockLogger = new Mock<ILoggingService>();
 
             _rugbyService = new RugbyService(
@@ -62,6 +68,19 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
                         _rugbyIngestWorkerService,
                         _systemSportDataUnitOfWork,
                         _publicSportDataUnitOfWork);
+        }
+
+        [Test]
+        public async Task DoWorkAsync_ThrowsNoExceptions()
+        {
+            try
+            {
+                await _logsManagerJob.DoWorkAsync();
+            }
+            catch (Exception)
+            {
+                Assert.Fail();
+            }
         }
 
         [Test]
@@ -110,6 +129,57 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
                         It.IsAny<string>(),
                         It.IsAny<RecurringJobOptions>()),
                         Times.Once());
+        }
+
+        [Test]
+        public async Task WhenNoFixturesTodayForTournament_DeleteLogsJob()
+        {
+            var tournamentId = Guid.NewGuid();
+            var rugbyTournament = new RugbyTournament()
+            {
+                Id = tournamentId,
+                Name = "TestTournament",
+                IsEnabled = true,
+                Slug = "test",
+            };
+
+            var season = new RugbySeason
+            {
+                Id = Guid.NewGuid(),
+                RugbyTournament = rugbyTournament,
+                ProviderSeasonId = 0,
+                IsCurrent = true
+            };
+
+            var schedulerSeason = new SchedulerTrackingRugbySeason
+            {
+                SeasonId = season.Id,
+                RugbySeasonStatus = RugbySeasonStatus.InProgress,
+                SchedulerStateForManagerJobPolling = SchedulerStateForManagerJobPolling.NotRunning,
+                TournamentId = tournamentId
+            };
+            _systemSportDataUnitOfWork.SchedulerTrackingRugbySeasons.Add(schedulerSeason);
+            _publicSportDataUnitOfWork.RugbySeasons.Add(season);
+
+            var rugbyFixture = new RugbyFixture()
+            {
+                RugbyTournament = rugbyTournament,
+                Id = Guid.NewGuid(),
+                LegacyFixtureId = 0,
+                ProviderFixtureId = 0,
+                RugbyFixtureStatus = RugbyFixtureStatus.Result,
+                StartDateTime = DateTimeOffset.UtcNow + TimeSpan.FromDays(2),
+                RugbySeason = season
+            };
+
+            _publicSportDataUnitOfWork.RugbyTournaments.Add(rugbyTournament);
+            _publicSportDataUnitOfWork.RugbyFixtures.Add(rugbyFixture);
+
+            await _logsManagerJob.DoWorkAsync();
+
+            _mockRecurringJobManager.Verify(m => m.RemoveIfExists(
+                    It.IsAny<string>()),
+                Times.Once());
         }
 
         [Test]

@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context
+﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models.Tennis;
+
+namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context
 {
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
     using System.ComponentModel.DataAnnotations.Schema;
@@ -12,6 +14,8 @@
             ApplyRugbyConfiguration(modelBuilder);
 
             ApplyMotorSportConfiguration(modelBuilder);
+
+            ApplyTennisConfiguration(modelBuilder);
         }
 
         private static void ApplyRugbyConfiguration(DbModelBuilder modelBuilder)
@@ -121,6 +125,113 @@
             modelBuilder.Entity<MotorsportTeam>().Property(x => x.ProviderTeamId).HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Seek_ProviderTeamId")));
 
             modelBuilder.Entity<MotorsportTeamStanding>().HasKey(x => new { x.MotorsportLeagueId, x.MotorsportSeasonId, x.MotorsportTeamId });
+        }
+
+        private static void ApplyTennisConfiguration(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<TennisLeague>().Property(x => x.Id)
+                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+
+            modelBuilder.Entity<TennisLeague>().Property(x => x.LegacyLeagueId)
+                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+
+            modelBuilder.Entity<TennisLeague>().Property(x => x.ProviderLeagueId).HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Seek_ProviderLeagueId")));
+
+            modelBuilder.Entity<TennisLeague>().Property(x => x.Name).IsRequired();
+            modelBuilder.Entity<TennisLeague>().Property(x => x.Slug).IsRequired();
+            modelBuilder.Entity<TennisLeague>().Property(x => x.Slug).HasMaxLength(450);
+            modelBuilder.Entity<TennisLeague>().Property(x => x.Slug).HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Unique_Slug") { IsUnique = true }));
+
+            modelBuilder.Entity<TennisTournament>().Property(x => x.Id)
+                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+
+            modelBuilder.Entity<TennisTournament>().Property(x => x.LegacyTournamentId)
+                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+
+            modelBuilder.Entity<TennisTournament>().Property(x => x.ProviderTournamentId).HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Seek_ProviderTournamentId")));
+
+            modelBuilder.Entity<TennisTournament>().Property(x => x.ProviderDisplayName).IsRequired();
+            modelBuilder.Entity<TennisTournament>().Property(x => x.Slug).IsRequired();
+            modelBuilder.Entity<TennisTournament>().Property(x => x.Slug).HasMaxLength(450);
+            modelBuilder.Entity<TennisTournament>().Property(x => x.Slug).HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Unique_Slug") { IsUnique = true }));
+
+            modelBuilder.Entity<TennisSeason>().Property(x => x.Id)
+                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+
+            modelBuilder.Entity<TennisSeason>().Property(x => x.ProviderSeasonId).IsRequired();
+            modelBuilder.Entity<TennisSeason>().Property(x => x.ProviderSeasonId).HasColumnAnnotation(
+                IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Seek_ProviderSeasonId")));
+
+            modelBuilder.Entity<TennisSurfaceType>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+            modelBuilder.Entity<TennisSurfaceType>().Property(x => x.Name).IsRequired();
+            modelBuilder.Entity<TennisSurfaceType>().Property(x => x.Name).HasMaxLength(450);
+            modelBuilder.Entity<TennisSurfaceType>().Property(x => x.ProviderSurfaceId).HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Seek_ProviderSurfaceId"){ IsUnique = true }));
+
+            modelBuilder.Entity<TennisVenue>().Property(x => x.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+            modelBuilder.Entity<TennisVenue>().Property(x => x.LegacyVenueId).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+            modelBuilder.Entity<TennisVenue>().Property(x => x.Name).IsRequired();
+            modelBuilder.Entity<TennisVenue>().Property(x => x.Name).HasMaxLength(450);
+            modelBuilder.Entity<TennisVenue>().Property(x => x.ProviderVenueId).HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Seek_ProviderVenueId") { IsUnique = true }));
+            modelBuilder.Entity<TennisVenue>().Property(x => x.LegacyVenueId).HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Seek_LegacyVenueId") { IsUnique = true }));
+
+            modelBuilder.Entity<TennisCountry>().Property(x => x.Id)
+                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+            modelBuilder.Entity<TennisCountry>().Property(x => x.ProviderCountryId).HasColumnAnnotation(IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Seek_ProviderCountryId") { IsUnique = true }));
+
+            modelBuilder.Entity<TennisPlayer>().Property(x => x.Id)
+                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+
+            modelBuilder.Entity<TennisPlayer>().Property(x => x.LegacyPlayerId)
+                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+
+            modelBuilder.Entity<TennisPlayer>().Property(x => x.ProviderPlayerId).IsRequired();
+            modelBuilder.Entity<TennisPlayer>().Property(x => x.ProviderPlayerId).HasColumnAnnotation(
+                IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Seek_ProviderPlayerId")));
+
+            modelBuilder.Entity<TennisPlayer>().Property(x => x.LegacyPlayerId).HasColumnAnnotation(
+                IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Seek_LegacyPlayerId")));
+
+            modelBuilder.Entity<TennisEvent>().Property(x => x.Id)
+                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+
+            modelBuilder.Entity<TennisEvent>().Property(x => x.LegacyEventId)
+                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+
+            modelBuilder.Entity<TennisEvent>().Property(x => x.ProviderEventId).IsRequired();
+
+            modelBuilder.Entity<TennisEvent>().Property(x => x.ProviderEventId).HasColumnAnnotation(
+                IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Seek_ProviderEventId")));
+
+            modelBuilder.Entity<TennisEvent>().Property(x => x.LegacyEventId).HasColumnAnnotation(
+                IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Seek_LegacyEventId")));
+
+            modelBuilder.Entity<TennisEvent>().Property(x => x.EventName).IsRequired();
+            modelBuilder.Entity<TennisEvent>().Property(x => x.EventName).HasMaxLength(450);
+
+            modelBuilder.Entity<TennisEventTennisLeagues>().HasKey(x => new { x.TennisLeagueId, x.TennisEventId });
+
+            modelBuilder.Entity<TennisEventTennisLeagues>().Property(x => x.Prize).HasMaxLength(450);
+
+            modelBuilder.Entity<TennisRanking>().HasKey(x => new { x.TennisPlayerId, x.TennisSeasonId, x.TennisLeagueId, x.TennisRankingType });
+
+            modelBuilder.Entity<TennisMatch>().Property(x => x.Id)
+                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+
+            modelBuilder.Entity<TennisMatch>().Property(x => x.LegacyMatchId)
+                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+
+            modelBuilder.Entity<TennisMatch>().Property(x => x.LegacyMatchId).HasColumnAnnotation(
+                IndexAnnotation.AnnotationName, new IndexAnnotation(new IndexAttribute("Seek_LegacyMatchId")));
+
+            modelBuilder.Entity<TennisMatch>().Property(x => x.ProviderMatchId).IsRequired();
+
+            modelBuilder.Entity<TennisEventSeed>().HasKey(x => new { x.TennisPlayerId, x.TennisEventId });
+
+            modelBuilder.Entity<TennisSide>().Property(x => x.Id)
+                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
+
+            modelBuilder.Entity<TennisSet>().Property(x => x.Id)
+                .HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
         }
     }
 }

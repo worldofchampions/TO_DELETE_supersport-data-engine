@@ -12,7 +12,8 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
     using Context;
     using Seed;
     using System.Data.Entity.Migrations;
-    using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Motorsport;
+    using Seed.Motorsport;
+    using Seed.Tennis;
 
     internal sealed class Configuration : DbMigrationsConfiguration<PublicSportDataContext>
     {
@@ -25,6 +26,16 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
         {
             SeedRugbyData(context);
             SeedMotorsportData(context);
+            SeedTennisData(context);
+        }
+
+        private void SeedTennisData(PublicSportDataContext context)
+        {
+            SeedTennisGenderForLeagues.Seed(context);
+            SeedTennisTournamentSlugsForGrandSlams.Seed(context);
+            SeedEnableTennisSeasonsFor2018.Seed(context);
+            SeedTennisSeasons.Seed(context);
+            SeedTennisEnabledInboundLeagues.Seed(context);
         }
 
         private static void SeedMotorsportData(PublicSportDataContext context)
