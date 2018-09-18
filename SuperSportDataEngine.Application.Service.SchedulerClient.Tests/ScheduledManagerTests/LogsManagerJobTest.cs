@@ -87,6 +87,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
                 Name = "TestTournament",
                 IsEnabled = true,
                 Slug = "test",
+                HasLogs = true
             };
 
             var rugbyFixture = new RugbyFixture()
@@ -125,6 +126,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
                     Name = "TestTournament",
                     IsEnabled = true,
                     Slug = "test",
+                    HasLogs = true
                 },
                 new RugbyTournament()
                 {
@@ -132,6 +134,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
                     Name = "TestTournament2",
                     IsEnabled = true,
                     Slug = "test2",
+                    HasLogs = true
                 }
             };
 
@@ -182,6 +185,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.Tests.Schedul
                 Name = "TestTournament",
                 IsEnabled = true,
                 Slug = "test",
+                HasLogs = true
             };
 
             var season = new RugbySeason
