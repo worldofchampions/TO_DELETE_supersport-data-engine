@@ -868,6 +868,18 @@
                 if (cancellationToken.IsCancellationRequested)
                     return;
 
+                if (tournament == null) continue;
+                if (!tournament.HasLogs)
+                {
+#if DEBUG
+                    await _logger.Info(
+                        $"INGEST.LOGS.{tournament.Name}",
+                        null,
+                        $"Skipping ingest for {tournament.Name}. Set HasLogs to true to enable logs ingest for tournament.");
+#endif
+                    continue;
+                }
+
                 int activeSeasonIdForTournament =
                         await _rugbyService.GetCurrentProviderSeasonIdForTournament(cancellationToken, tournament.Id);
 
@@ -1207,6 +1219,102 @@
                 }
             }
         }
+
+
+        private async Task IngestStandingsForRugbyWorldCup(CancellationToken cancellationToken, int groupHierarchyLevel, RugbyGroupedLogsResponse logs, List<Ladderposition> ladderPositions)
+        {
+            var tournamentId = logs.RugbyGroupedLogs.competitionId;
+            var seasonId = logs.RugbyGroupedLogs.seasonId;
+
+            var rugbyTournament = (await _publicSportDataUnitOfWork.RugbyTournaments.AllAsync()).FirstOrDefault(t => t.ProviderTournamentId == tournamentId);
+            if (rugbyTournament == null)
+                return;
+
+            var rugbySeason = (await _publicSportDataUnitOfWork.RugbySeasons.AllAsync()).FirstOrDefault(s => s.RugbyTournament.ProviderTournamentId == tournamentId && s.ProviderSeasonId == seasonId);
+
+            foreach (var ladder in ladderPositions)
+            {
+                if (cancellationToken.IsCancellationRequested)
+                    return;
+
+                var teamId = ladder.teamId;
+                var rugbyTeam = (await _publicSportDataUnitOfWork.RugbyTeams.AllAsync()).FirstOrDefault(t => t.ProviderTeamId == teamId);
+
+                if (rugbySeason == null) continue;
+                if (rugbyTeam == null) continue;
+
+                try
+                {
+                    var rugbyLogGroup = (await _publicSportDataUnitOfWork.RugbyLogGroups.AllAsync()).Single(g =>
+                        g.RugbySeason.Id == rugbySeason.Id &&
+                        g.GroupHierarchyLevel == groupHierarchyLevel &&
+                        g.ProviderLogGroupId == ladder.group &&
+                        g.ProviderGroupName == ladder.groupName);
+
+                    // Does an entry in the db exist for this tournament-season-round-team?
+                    var entryInDb = (await _publicSportDataUnitOfWork.RugbyGroupedLogs.AllAsync())
+                                        .FirstOrDefault(g => g.RugbyLogGroup.ProviderLogGroupId == ladder.group &&
+                                                             g.RugbyTournament.ProviderTournamentId == tournamentId &&
+                                                             g.RugbySeason.ProviderSeasonId == seasonId &&
+                                                             g.RoundNumber == logs.RugbyGroupedLogs.roundNumber &&
+                                                             g.RugbyTeam.ProviderTeamId == teamId);
+
+                    var newLogEntry = new RugbyGroupedLog()
+                    {
+                        LogPosition = ladder.position,
+                        GamesPlayed = ladder.gamesPlayed,
+                        GamesWon = ladder.wins,
+                        GamesLost = ladder.losses,
+                        GamesDrawn = ladder.draws ?? 0,
+                        PointsFor = ladder.pointsFor,
+                        PointsAgainst = ladder.pointsAgainst,
+                        PointsDifference = ladder.pointsDifference,
+                        TournamentPoints = ladder.competitionPoints,
+                        BonusPoints = ladder.bonusPoints,
+                        TriesFor = ladder.triesFor,
+                        TriesAgainst = ladder.triesAgainst,
+                        RugbyTeam = rugbyTeam,
+                        RugbyLogGroup = rugbyLogGroup,
+                        RoundNumber = logs.RugbyGroupedLogs.roundNumber,
+                        RugbySeason = rugbySeason,
+                        RugbySeasonId = rugbySeason.Id,
+                        RugbyTeamId = rugbyTeam.Id,
+                        RugbyTournament = rugbyTournament,
+                        RugbyTournamentId = rugbyTournament.Id,
+                        RugbyLogGroupId = rugbyLogGroup.Id
+                    };
+
+                    if (entryInDb == null)
+                    {
+                        _publicSportDataUnitOfWork.RugbyGroupedLogs.Add(newLogEntry);
+                    }
+                    else
+                    {
+                        entryInDb.LogPosition = ladder.position;
+                        entryInDb.GamesPlayed = ladder.gamesPlayed;
+                        entryInDb.GamesWon = ladder.wins;
+                        entryInDb.GamesLost = ladder.losses;
+                        entryInDb.GamesDrawn = ladder.draws ?? 0;
+                        entryInDb.PointsFor = ladder.pointsFor;
+                        entryInDb.PointsAgainst = ladder.pointsAgainst;
+                        entryInDb.PointsDifference = ladder.pointsDifference;
+                        entryInDb.TournamentPoints = ladder.competitionPoints;
+                        entryInDb.BonusPoints = ladder.bonusPoints;
+                        entryInDb.TriesFor = ladder.triesFor;
+                        entryInDb.TriesAgainst = ladder.triesAgainst;
+
+                        _publicSportDataUnitOfWork.RugbyGroupedLogs.Update(entryInDb);
+                    }
+                }
+                catch (Exception exception)
+                {
+                    var key = GetType().FullName + ".IngestStandingsForRugbyWorldCup" + ". Season=" + seasonId;
+                    var message = $"Error processing RugbyLogGroup for ladderId={ladder.group}, groupName={ladder.groupName}. Check that the RugbyLogGroup entry is configured in the DB.";
+                    await _logger.Error(key, exception, $"{message}{Environment.NewLine}{key}{Environment.NewLine}{exception}");
+                }
+            }
+        }
+
 
         private async Task IngestStandingsForPro14(
             CancellationToken cancellationToken,
@@ -1613,6 +1721,16 @@
         {
             var competitionId = logs.RugbyGroupedLogs.competitionId;
             var seasonId = logs.RugbyGroupedLogs.seasonId;
+            
+            if (competitionId == RugbyStatsProzoneConstants.ProviderTournamentIdRugbyWorldCup)
+            {
+                if (logs.RugbyGroupedLogs.overallStandings == null &&
+                    logs.RugbyGroupedLogs.groupStandings == null &&
+                    logs.RugbyGroupedLogs.secondaryGroupStandings == null)
+                {
+                    await IngestStandingsForRugbyWorldCup(cancellationToken, 1, logs, logs.RugbyGroupedLogs.ladderposition);
+                }
+            }
 
             if (competitionId == RugbyStatsProzoneConstants.ProviderTournamentIdChampionsCup)
             {
@@ -2744,10 +2862,12 @@
             var seasons = (await _publicSportDataUnitOfWork.RugbySeasons.AllAsync());
 
             var season =
-                    seasons
-                        .Where(s =>
-                            s.ProviderSeasonId == seasonId &&
-                            s.RugbyTournament.ProviderTournamentId == providerTournamentId).ToList();
+                seasons
+                    .Where(s =>
+                        s.ProviderSeasonId == seasonId &&
+                        s.RugbyTournament != null &&
+                        s.RugbyTournament.ProviderTournamentId == providerTournamentId &&
+                        s.RugbyTournament.HasLogs).ToList();
 
             if (!season.Any())
                 return;
