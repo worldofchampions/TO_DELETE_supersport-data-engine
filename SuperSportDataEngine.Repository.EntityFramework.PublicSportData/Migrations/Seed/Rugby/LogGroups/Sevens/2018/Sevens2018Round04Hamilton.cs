@@ -8,7 +8,7 @@ using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
 
 namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.Sevens._2018
 {
-    public static class Round04Hamilton
+    public static class Sevens2018Round04Hamilton
     {
         private const string SlugHierarchyLevel2HamiltonSevens2018      = "Sevens-2018-HL2-Round_4-Hamilton";
 
@@ -50,7 +50,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
 
                 context.SaveChanges();
 
-                context.RugbyLogGroups.Single(x => x.Slug == SlugHierarchyLevel2HamiltonSevens2018).ParentRugbyLogGroup = context.RugbyLogGroups.Single(x => x.Slug == Round03Sydney.SlugHierarchyLevel1Sevens2018Rounds);
+                context.RugbyLogGroups.Single(x => x.Slug == SlugHierarchyLevel2HamiltonSevens2018).ParentRugbyLogGroup = context.RugbyLogGroups.Single(x => x.Slug == Sevens2018Round03Sydney.SlugHierarchyLevel1Sevens2018Rounds);
 
                 context.RugbyLogGroups.Single(x => x.Slug == SlugHierarchyLevel3HamiltonNonCoreGroup).ParentRugbyLogGroup = context.RugbyLogGroups.Single(x => x.Slug == SlugHierarchyLevel2HamiltonSevens2018);
                 context.RugbyLogGroups.Single(x => x.Slug == SlugHierarchyLevel3HamiltonSevens2018PoolA).ParentRugbyLogGroup = context.RugbyLogGroups.Single(x => x.Slug == SlugHierarchyLevel2HamiltonSevens2018);
