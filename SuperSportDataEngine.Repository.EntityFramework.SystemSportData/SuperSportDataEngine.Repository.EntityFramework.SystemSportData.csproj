@@ -147,9 +147,9 @@
     <Compile Include="Migrations\201809030816573_Motorsport_Delete_Unused_TrackingTable.Designer.cs">
       <DependentUpon>201809030816573_Motorsport_Delete_Unused_TrackingTable.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201807040918419_Tennis_InitialMigration.cs" />
-    <Compile Include="Migrations\201807040918419_Tennis_InitialMigration.Designer.cs">
-      <DependentUpon>201807040918419_Tennis_InitialMigration.cs</DependentUpon>
+    <Compile Include="Migrations\201809181259585_Tennis_InitialMigration.cs" />
+    <Compile Include="Migrations\201809181259585_Tennis_InitialMigration.Designer.cs">
+      <DependentUpon>201809181259585_Tennis_InitialMigration.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Seed\SeedSchedulingDashboardUsers.cs" />
@@ -217,10 +217,10 @@
       <DependentUpon>201805301241534_Motorsport_RaceEvents_Tracking_Table.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201809030816573_Motorsport_Delete_Unused_TrackingTable.resx">
-    <DependentUpon>201809030816573_Motorsport_Delete_Unused_TrackingTable.cs</DependentUpon>
+      <DependentUpon>201809030816573_Motorsport_Delete_Unused_TrackingTable.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201807040918419_Tennis_InitialMigration.resx">
-      <DependentUpon>201807040918419_Tennis_InitialMigration.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201809181259585_Tennis_InitialMigration.resx">
+      <DependentUpon>201809181259585_Tennis_InitialMigration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
