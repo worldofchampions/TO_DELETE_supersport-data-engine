@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity.Migrations;
 using System.Linq;
 using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
@@ -11,14 +12,21 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
         {
             try
             {
-                const int internationalsProviderTournamentId = 810;
+                var rugbyTournaments = context.RugbyTournaments.ToList();
 
-                var nonInternationalsDbTournaments =
-                    context.RugbyTournaments.Where(t => t.ProviderTournamentId != internationalsProviderTournamentId).ToList();
+                var providerIdsForTournamentsWithNoLogs = GetProviderIdsForTournamentsWithNoLogs();
 
-                foreach (var tournament in nonInternationalsDbTournaments)
+                foreach (var tournament in rugbyTournaments)
                 {
-                    tournament.HasLogs = true;
+                    if (providerIdsForTournamentsWithNoLogs.Any(t => t == tournament.ProviderTournamentId))
+                    {
+                        tournament.HasLogs = false;
+                    }
+                    else
+                    {
+                        tournament.HasLogs = true;
+                    }
+
                     context.RugbyTournaments.AddOrUpdate(tournament);
                 }
 
@@ -29,6 +37,15 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                 // TODO: Add logging.
                 Console.WriteLine(exception);
             }
+        }
+
+        private static List<int> GetProviderIdsForTournamentsWithNoLogs()
+        {
+            return new List<int>()
+            {
+                Constants.RugbyTournamentConstants.InternationalsProviderTournamentId,
+                Constants.RugbyTournamentConstants.RugbyWorldCupProviderTournamentId
+            };
         }
     }
 }
