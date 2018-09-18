@@ -62,7 +62,8 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                 new RugbyTournament {Slug = RugbyTournamentConstants.Top14SlugName, ProviderTournamentId = 241},
                 new RugbyTournament {Slug = RugbyTournamentConstants.EnglandSlugName, ProviderTournamentId = 201},
                 new RugbyTournament {Slug = RugbyTournamentConstants.NewZealandSlugName, ProviderTournamentId = 101},
-                new RugbyTournament {Slug = RugbyTournamentConstants.JuniorRugbySlugName, ProviderTournamentId = 791}
+                new RugbyTournament {Slug = RugbyTournamentConstants.JuniorRugbySlugName, ProviderTournamentId = 791},
+                new RugbyTournament {Slug = RugbyTournamentConstants.RugbyWorldCupSlugName, ProviderTournamentId = 850}
             };
         }
     }

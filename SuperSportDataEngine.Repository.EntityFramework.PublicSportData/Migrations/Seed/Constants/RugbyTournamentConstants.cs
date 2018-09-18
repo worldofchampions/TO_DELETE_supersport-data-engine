@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Constants
+﻿namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Constants
 {
     public static class RugbyTournamentConstants
     {
+        #region Slugs
+
         public const string SuperRugbySlugName = "super-rugby";
         public const string SupersportChallengeSlugName = "supersport-challenge";
         public const string JuniorRugbySlugName = "junior-rugby";
@@ -25,5 +21,15 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
         public const string SixNationsSlugName = "six-nations";
         public const string Top14SlugName = "top14";
         public const string EnglandSlugName = "england";
-    } 
+        public const string RugbyWorldCupSlugName = "rugby-world-cup";
+
+        #endregion
+
+        #region StatsProzoneProviderTournamentIds
+
+        public const int RugbyWorldCupProviderTournamentId = 850;
+        public const int InternationalsProviderTournamentId = 810;
+
+        #endregion
+    }
 }
