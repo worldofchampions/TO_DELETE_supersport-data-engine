@@ -1,19 +1,18 @@
-using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.ChampionsCup;
-using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.JuniorRugby;
-using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.MitreCup;
-using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.Pro14;
-using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.RugbyWorldCup;
-using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.Sevens._2017;
-using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.Sevens._2018;
-using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.SuperRugby;
-using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.SupersportChallenge;
-
 namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations
 {
     using Context;
     using Seed;
-    using System.Data.Entity.Migrations;
     using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Motorsport;
+    using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.ChampionsCup;
+    using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.JuniorRugby;
+    using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.MitreCup;
+    using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.Pro14;
+    using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.RugbyWorldCup;
+    using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.Sevens._2017;
+    using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.Sevens._2018;
+    using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.SuperRugby;
+    using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.SupersportChallenge;
+    using System.Data.Entity.Migrations;
 
     internal sealed class Configuration : DbMigrationsConfiguration<PublicSportDataContext>
     {
@@ -61,6 +60,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
             SeedRugbyLogGroupsForJuniorRugbyWorldCup2019.Seed(context);
             SeedRugbyLogGroupsForChampionsCup2019.Seed(context);
 
+            SeedRugbyLogGroupsForRugbyWorldCup2015.Seed(context);
             SeedRugbyLogGroupsForRugbyWorldCup2019.Seed(context);
         }
 
