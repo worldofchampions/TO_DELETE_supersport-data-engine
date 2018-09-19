@@ -112,6 +112,7 @@
     <Compile Include="Services\LegacyAuthServiceTests.cs" />
     <Compile Include="Services\RugbyIngestWorkerServiceTests.cs" />
     <Compile Include="Services\RugbyServiceTests.cs" />
+    <Compile Include="Services\MotorsportIngestWorkerServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -125,6 +126,10 @@
     <ProjectReference Include="..\SuperSportDataEngine.Common\SuperSportDataEngine.Common.csproj">
       <Project>{BBE845AF-8B84-4B61-ABD7-724ACA22AB69}</Project>
       <Name>SuperSportDataEngine.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SuperSportDataEngine.Gateway.Http.Stats\SuperSportDataEngine.Gateway.Http.Stats.csproj">
+      <Project>{C3AEA7FF-D0A4-473A-8B49-AA52EF7058A6}</Project>
+      <Name>SuperSportDataEngine.Gateway.Http.Stats</Name>
     </ProjectReference>
     <ProjectReference Include="..\SuperSportDataEngine.Tests.Common\SuperSportDataEngine.Tests.Common.csproj">
       <Project>{65e69b64-f50a-477a-a355-f2b681ed6314}</Project>
