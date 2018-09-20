@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity.Migrations;
 using System.Linq;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models.Enums;
 using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
@@ -17,8 +16,17 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                 var tournamentsSlugs = GetGroupedLogTournamentSlugNames();
                 foreach (var tournamentsSlug in tournamentsSlugs)
                 {
-                    var tournament = context.RugbyTournaments.First(t => t.Slug == tournamentsSlug);
-                    tournament.DefaultRugbyLogType = RugbyLogType.GroupedLogs;
+                    try
+                    {
+                        var tournament = context.RugbyTournaments.First(t => t.Slug == tournamentsSlug);
+                        tournament.DefaultRugbyLogType = RugbyLogType.GroupedLogs;
+                    }
+                    catch (Exception exception)
+                    {
+                        // Sometimes the exception is only for one tournament. This must not affect seeding for others.
+                        // TODO: Add logging.
+                        Console.WriteLine(exception);
+                    }
                 }
 
                 context.SaveChanges();
@@ -40,7 +48,8 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                 RugbyTournamentConstants.NewZealandSlugName,
                 RugbyTournamentConstants.Pro14,
                 RugbyTournamentConstants.ChampionsCupSlugName,
-                RugbyTournamentConstants.SevensSlugName
+                RugbyTournamentConstants.SevensSlugName,
+                RugbyTournamentConstants.RugbyWorldCupSlugName
             };
 
             return tournaments;
