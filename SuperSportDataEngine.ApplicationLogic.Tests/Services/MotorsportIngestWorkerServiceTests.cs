@@ -1,8 +1,8 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.Stats.Interfaces;
 using SuperSportDataEngine.Gateway.Http.Stats.Services;
 using System;
-using NUnit.Framework;
 using Assert = NUnit.Framework.Assert;
 
 namespace SuperSportDataEngine.ApplicationLogic.Tests.Services
@@ -15,6 +15,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests.Services
         private string _statsApiKey;
         private string _statsApiBaseUrl;
         private IStatsMotorsportWebRequest _statsMotorsportWebRequest;
+        private readonly MotorsportLegacyFeedServiceTests _motorsportLegacyFeedServiceTests = new MotorsportLegacyFeedServiceTests();
 
         [SetUp]
         public void Setup()
