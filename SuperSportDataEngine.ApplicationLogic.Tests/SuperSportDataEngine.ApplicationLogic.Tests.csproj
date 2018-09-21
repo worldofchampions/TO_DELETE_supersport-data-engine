@@ -132,6 +132,10 @@
       <Project>{C3AEA7FF-D0A4-473A-8B49-AA52EF7058A6}</Project>
       <Name>SuperSportDataEngine.Gateway.Http.Stats</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SuperSportDataEngine.Repository.EntityFramework.Common\SuperSportDataEngine.Repository.EntityFramework.Common.csproj">
+      <Project>{4339EE97-496E-485D-A790-CA34258A27ED}</Project>
+      <Name>SuperSportDataEngine.Repository.EntityFramework.Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SuperSportDataEngine.Tests.Common\SuperSportDataEngine.Tests.Common.csproj">
       <Project>{65e69b64-f50a-477a-a355-f2b681ed6314}</Project>
       <Name>SuperSportDataEngine.Tests.Common</Name>

@@ -33,7 +33,6 @@ namespace SuperSportDataEngine.Tests.Common.Repositories.Test
         public IBaseEntityFrameworkRepository<MotorsportTeamStanding> MotorsportTeamStandings { get; set; }
         public IBaseEntityFrameworkRepository<MotorsportRaceEvent> MotorsportRaceEvents { get; set; }
         public IBaseEntityFrameworkRepository<MotorsportTeam> MotortsportTeams { get; set; }
-        public IBaseEntityFrameworkRepository<MotorsportRaceEventResult> MotorTeamResults { get; set; }
         public IBaseEntityFrameworkRepository<MotorsportRaceEventGrid> MotorsportRaceEventGrids { get; set; }
 
         public TestPublicSportDataUnitOfWork()
@@ -55,6 +54,18 @@ namespace SuperSportDataEngine.Tests.Common.Repositories.Test
             RugbyTeams = new TestEntityFrameworkRepository<RugbyTeam>(new List<RugbyTeam>());
             RugbyTournaments = new TestEntityFrameworkRepository<RugbyTournament>(new List<RugbyTournament>());
             RugbyVenues = new TestEntityFrameworkRepository<RugbyVenue>(new List<RugbyVenue>());
+
+            //Motorsport
+            MotorsportLeagues = new TestEntityFrameworkRepository<MotorsportLeague>(new List<MotorsportLeague>());
+            MotorsportRaces = new TestEntityFrameworkRepository<MotorsportRace>(new List<MotorsportRace>());
+            MotorsportSeasons = new TestEntityFrameworkRepository<MotorsportSeason>(new List<MotorsportSeason>());
+            MotorsportDrivers = new TestEntityFrameworkRepository<MotorsportDriver>(new List<MotorsportDriver>());
+            MotortsportTeams = new TestEntityFrameworkRepository<MotorsportTeam>(new List<MotorsportTeam>());
+            MotorsportRaces = new TestEntityFrameworkRepository<MotorsportRace>(new List<MotorsportRace>());
+            MotorsportRaceEventGrids = new TestEntityFrameworkRepository<MotorsportRaceEventGrid>(new List<MotorsportRaceEventGrid>());
+            MotorsportDriverStandings = new TestEntityFrameworkRepository<MotorsportDriverStanding>(new List<MotorsportDriverStanding>());
+            MotorsportTeamStandings = new TestEntityFrameworkRepository<MotorsportTeamStanding>(new List<MotorsportTeamStanding>());
+            MotorsportRaceEventResults = new TestEntityFrameworkRepository<MotorsportRaceEventResult>(new List<MotorsportRaceEventResult>());
         }
 
         public int SaveChanges()

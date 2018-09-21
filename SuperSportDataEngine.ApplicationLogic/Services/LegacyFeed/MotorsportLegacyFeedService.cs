@@ -55,7 +55,7 @@
         public async Task<MotorsportRaceEventGridEntity> GetGridForRaceEventId(string category, int eventId)
         {
             var raceEvent = _publicSportDataUnitOfWork.MotorsportRaceEvents
-                .FirstOrDefault(r =>
+                ?.FirstOrDefault(r =>
                     r.LegacyRaceEventId == eventId &&
                     r.MotorsportSeason.MotorsportLeague.Slug.Equals(category));
 
@@ -82,7 +82,7 @@
         public async Task<MotorsportRaceEventGridEntity> GetLatestGrid(string category)
         {
             var raceEvent = _publicSportDataUnitOfWork.MotorsportRaceEvents
-                .FirstOrDefault(r =>
+                ?.FirstOrDefault(r =>
                     r.IsCurrent &&
                     r.MotorsportSeason.MotorsportLeague.Slug.Equals(category));
 
@@ -114,7 +114,7 @@
         public async Task<MotorsportRaceEventResultsEntity> GetResultsForRaceEventId(string category, int eventId)
         {
             var raceEvent =
-                _publicSportDataUnitOfWork.MotorsportRaceEvents.FirstOrDefault(r =>
+                _publicSportDataUnitOfWork.MotorsportRaceEvents?.FirstOrDefault(r =>
                     r.LegacyRaceEventId == eventId &&
                     r.MotorsportSeason.MotorsportLeague.Slug.Equals(category));
 
@@ -145,7 +145,7 @@
         public async Task<MotorsportRaceEventResultsEntity> GetLatestResult(string category)
         {
             var raceEvent = _publicSportDataUnitOfWork.MotorsportRaceEvents
-                .FirstOrDefault(r =>
+                ?.FirstOrDefault(r =>
                     r.IsCurrent &&
                     r.MotorsportSeason.MotorsportLeague.Slug.Equals(category));
 
