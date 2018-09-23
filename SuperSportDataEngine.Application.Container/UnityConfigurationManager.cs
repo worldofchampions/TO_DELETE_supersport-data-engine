@@ -7,7 +7,6 @@ namespace SuperSportDataEngine.Application.Container
     using Hangfire;
     using Hangfire.SqlServer;
     using MongoDB.Driver;
-    using NLog.MSFTTeams;
     using StackExchange.Redis;
     using SuperSportDataEngine.Application.Container.Enums;
     using SuperSportDataEngine.Application.Service.Common.Interfaces;
@@ -67,22 +66,6 @@ namespace SuperSportDataEngine.Application.Container
 
         public static void RegisterTypes(IUnityContainer container, ApplicationScope applicationScope)
         {
-            //   I had to add explicit usage of third party assemblies to the UnityConfigurationManager class just so that the third party dlls gets copied.
-
-            //    Here's the reason why it happens.
-            //    Before hack:
-            //    - *Container* project is a class library which has the reference to NLog.MSFTTeams.dll
-            //    - *SchedulerClient* project references* Container* but does not make use of the NLog.MSFTTeams.dll, so the dll is
-            //      not copied to the */bin* folder of the SchedulerClient.
-
-            //    After Hack:
-            //    - SchedulerClient references *Container* which makes direct use of the dll. So the dll is copied.
-
-            // Reference: https://stackoverflow.com/questions/20280717/references-from-class-library-are-not-copied-to-running-project-bin-folder
-
-            // ReSharper disable once ObjectCreationAsStatement
-            new ConnectorCard();
-
             ApplyRegistrationsForLogging(container);
             ApplyRegistrationsForApplicationLogic(container, applicationScope);
             ApplyRegistrationsForGatewayHttpDeprecatedFeed(container, applicationScope);
