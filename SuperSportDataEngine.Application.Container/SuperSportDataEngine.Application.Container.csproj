@@ -226,6 +226,10 @@
       <Project>{90e43dad-2892-4438-92e1-b1966b6aaaec}</Project>
       <Name>SuperSportDataEngine.Gateway.Http.StatsProzone</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SuperSportDataEngine.Logging.NLog.MSTeams\SuperSportDataEngine.Logging.NLog.MSTeams.csproj">
+      <Project>{c0e4a7b6-a4a1-4162-9191-8b54c8fb87f1}</Project>
+      <Name>SuperSportDataEngine.Logging.NLog.MSTeams</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SuperSportDataEngine.Logging.NLog\SuperSportDataEngine.Logging.NLog.csproj">
       <Project>{b07c451e-7b8b-406f-92cc-03b68f54e3ac}</Project>
       <Name>SuperSportDataEngine.Logging.NLog</Name>
