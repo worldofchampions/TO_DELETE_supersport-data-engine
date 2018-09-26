@@ -22,10 +22,10 @@ namespace SuperSportDataEngine.Logging.NLog.MSTeams
         {
             string logMessage = Layout.Render(logEvent);
 
-            SendTheMessageToRemoteHostAsync(Host, logEvent.Message, logEvent.Level.Name);
+            SendTheMessageToRemoteHost(Host, logEvent.Message, logEvent.Level.Name);
         }
 
-        private void SendTheMessageToRemoteHostAsync(string host, string message, string level)
+        private void SendTheMessageToRemoteHost(string host, string message, string level)
         {
             bool isErrorLevel = level == "Error" || level == "Fatal";
             string themeHexCode = isErrorLevel ? "FF0000" : "0072C6";
