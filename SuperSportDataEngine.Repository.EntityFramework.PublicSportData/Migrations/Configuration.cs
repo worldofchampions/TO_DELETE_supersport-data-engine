@@ -66,15 +66,15 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
 
         private static void SeedSevens(PublicSportDataContext context)
         {
-            Round01Dubai.Seed(context);
-            Round03Sydney.Seed(context);
-            Round04Hamilton.Seed(context);
-            Round05LasVegas.Seed(context);
-            Round06Vancouver.Seed(context);
-            Round07HongKong.Seed(context);
-            Round08Singapore.Seed(context);
-            Round09London.Seed(context);
-            Round10Paris.Seed(context);
+            Sevens2017Round01Dubai.Seed(context);
+            Sevens2018Round03Sydney.Seed(context);
+            Sevens2018Round04Hamilton.Seed(context);
+            Sevens2018Round05LasVegas.Seed(context);
+            Sevens2018Round06Vancouver.Seed(context);
+            Sevens2018Round07HongKong.Seed(context);
+            Sevens2018Round08Singapore.Seed(context);
+            Sevens2018Round09London.Seed(context);
+            Sevens2018Round10Paris.Seed(context);
         }
     }
 }
