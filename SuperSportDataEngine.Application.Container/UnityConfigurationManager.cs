@@ -41,6 +41,7 @@ namespace SuperSportDataEngine.Application.Container
     using System;
     using System.Configuration;
     using System.Data.Entity;
+    using Microsoft.ApplicationInsights;
 
     public static class UnityConfigurationManager
     {
@@ -82,6 +83,7 @@ namespace SuperSportDataEngine.Application.Container
 
             // ReSharper disable once ObjectCreationAsStatement
             new MSTeamsTarget();
+            new Microsoft.ApplicationInsights.NLogTarget.ApplicationInsightsTarget();
 
             ApplyRegistrationsForLogging(container);
             ApplyRegistrationsForApplicationLogic(container, applicationScope);
