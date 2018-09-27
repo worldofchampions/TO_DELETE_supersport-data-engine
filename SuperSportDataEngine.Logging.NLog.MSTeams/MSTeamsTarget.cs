@@ -22,23 +22,24 @@ namespace SuperSportDataEngine.Logging.NLog.MSTeams
         {
             string logMessage = Layout.Render(logEvent);
 
-            SendTheMessageToRemoteHost(Host, logEvent.Message, logEvent.Level.Name);
+            SendTheMessageToRemoteHost(Host, logEvent.Message, logEvent?.Level?.Name);
         }
 
         private void SendTheMessageToRemoteHost(string host, string message, string level)
         {
-            bool isErrorLevel = level == "Error" || level == "Fatal";
-            string themeHexCode = isErrorLevel ? "FF0000" : "0072C6";
-
-            string jsonPostData = "{ " +
-                "\"@context\" : \"https://schema.org/extensions\", " +
-                "\"@type\": \"MessageCard\", " +
-                "\"themeColor\": \"" + themeHexCode + "\", " +
-                "\"title\": \"Level: "+ level +"\", " +
-                "\"text\": \"" + message.ToString() + "\"}";
-
             try
             {
+                bool isErrorLevel = level == "Error" || level == "Fatal";
+                string themeHexCode = isErrorLevel ? "FF0000" : "0072C6";
+
+                string jsonPostData = "{ " +
+                    "\"@context\" : \"https://schema.org/extensions/\", " +
+                    "\"@type\": \"MessageCard\", " +
+                    "\"themeColor\": \"" + themeHexCode + "\", " +
+                    "\"title\": \"Level: "+ level +"\", " +
+                    "\"text\": \"" + message.ToString() + "\"}";
+
+            
                 using (var client = new WebClient())
                 {
                     client.Headers[HttpRequestHeader.ContentType] = "application/json";
