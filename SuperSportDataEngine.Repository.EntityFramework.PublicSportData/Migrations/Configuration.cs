@@ -5,6 +5,7 @@ using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations
 using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.RugbyWorldCup;
 using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.Sevens._2017;
 using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.Sevens._2018;
+using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.Sevens._2019;
 using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.SuperRugby;
 using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.SupersportChallenge;
 
@@ -75,6 +76,17 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
             Sevens2018Round08Singapore.Seed(context);
             Sevens2018Round09London.Seed(context);
             Sevens2018Round10Paris.Seed(context);
+
+            Sevens2019Round01Dubai.Seed(context);
+            Sevens2019Round02CapeTown.Seed(context);
+            Sevens2019Round03Sydney.Seed(context);
+            Sevens2019Round04Hamilton.Seed(context);
+            Sevens2019Round05LasVegas.Seed(context);
+            Sevens2019Round06Vancouver.Seed(context);
+            Sevens2019Round07HongKong.Seed(context);
+            Sevens2019Round08Singapore.Seed(context);
+            Sevens2019Round09London.Seed(context);
+            Sevens2019Round10Paris.Seed(context);
         }
     }
 }

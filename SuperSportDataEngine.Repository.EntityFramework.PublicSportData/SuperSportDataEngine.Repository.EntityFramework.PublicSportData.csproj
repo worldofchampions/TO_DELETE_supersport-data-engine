@@ -294,6 +294,16 @@
     <Compile Include="Migrations\Seed\Rugby\LogGroups\Sevens\2018\Sevens2018Round08Singapore.cs" />
     <Compile Include="Migrations\Seed\Rugby\LogGroups\Sevens\2018\Sevens2018Round09London.cs" />
     <Compile Include="Migrations\Seed\Rugby\LogGroups\Sevens\2018\Sevens2018Round10Paris.cs" />
+    <Compile Include="Migrations\Seed\Rugby\LogGroups\Sevens\2019\Sevens2019Round02CapeTown.cs" />
+    <Compile Include="Migrations\Seed\Rugby\LogGroups\Sevens\2019\Sevens2019Round03Sydney.cs" />
+    <Compile Include="Migrations\Seed\Rugby\LogGroups\Sevens\2019\Sevens2019Round04Hamilton.cs" />
+    <Compile Include="Migrations\Seed\Rugby\LogGroups\Sevens\2019\Sevens2019Round05LasVegas.cs" />
+    <Compile Include="Migrations\Seed\Rugby\LogGroups\Sevens\2019\Sevens2019Round06Vancouver.cs" />
+    <Compile Include="Migrations\Seed\Rugby\LogGroups\Sevens\2019\Sevens2019Round07HongKong.cs" />
+    <Compile Include="Migrations\Seed\Rugby\LogGroups\Sevens\2019\Sevens2019Round08Singapore.cs" />
+    <Compile Include="Migrations\Seed\Rugby\LogGroups\Sevens\2019\Sevens2019Round09London.cs" />
+    <Compile Include="Migrations\Seed\Rugby\LogGroups\Sevens\2019\Sevens2019Round10Paris.cs" />
+    <Compile Include="Migrations\Seed\Rugby\LogGroups\Sevens\2019\Sevens2019Round01Dubai.cs" />
     <Compile Include="Migrations\Seed\Rugby\LogGroups\SupersportChallenge\SeedRugbyLogGroupsForRugbyChallenge2019.cs" />
     <Compile Include="Migrations\Seed\Motorsport\SeedMotorsportEnabledLeagues.cs" />
     <Compile Include="Migrations\Seed\Motorsport\SeedMotorsportHistoricSeasons.cs" />
@@ -480,8 +490,6 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Migrations\Seed\Rugby\LogGroups\Sevens\2019\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
