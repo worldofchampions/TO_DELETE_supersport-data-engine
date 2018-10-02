@@ -8,7 +8,7 @@ using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
 
 namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Rugby.LogGroups.Sevens._2017
 {
-    public static class Round01Dubai
+    public static class Sevens2017Round01Dubai
     {
         private const string SlugHierarchyLevel0 = "Sevens-2017-HL0";
         private const string SlugHierarchyLevel1Dubai = "Sevens-2017-HL1-Dubai";

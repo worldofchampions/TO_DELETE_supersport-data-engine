@@ -7,7 +7,6 @@ namespace SuperSportDataEngine.Application.Container
     using Hangfire;
     using Hangfire.SqlServer;
     using MongoDB.Driver;
-    using NLog.MSFTTeams;
     using StackExchange.Redis;
     using SuperSportDataEngine.Application.Container.Enums;
     using SuperSportDataEngine.Application.Service.Common.Interfaces;
@@ -33,6 +32,7 @@ namespace SuperSportDataEngine.Application.Container
     using SuperSportDataEngine.Gateway.Http.Stats.Services;
     using SuperSportDataEngine.Gateway.Http.StatsProzone.Services;
     using SuperSportDataEngine.Logging.NLog.Logging;
+    using SuperSportDataEngine.Logging.NLog.MSTeams;
     using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
     using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.UnitOfWork;
     using SuperSportDataEngine.Repository.EntityFramework.SystemSportData.Context;
@@ -41,6 +41,7 @@ namespace SuperSportDataEngine.Application.Container
     using System;
     using System.Configuration;
     using System.Data.Entity;
+    using Microsoft.ApplicationInsights;
 
     public static class UnityConfigurationManager
     {
@@ -71,8 +72,8 @@ namespace SuperSportDataEngine.Application.Container
 
             //    Here's the reason why it happens.
             //    Before hack:
-            //    - *Container* project is a class library which has the reference to NLog.MSFTTeams.dll
-            //    - *SchedulerClient* project references* Container* but does not make use of the NLog.MSFTTeams.dll, so the dll is
+            //    - *Container* project is a class library which has the reference to SuperSportDataEngine.Logging.NLog.MSTeams.dll
+            //    - *SchedulerClient* project references* Container* but does not make use of the SuperSportDataEngine.Logging.NLog.MSTeams.dll, so the dll is
             //      not copied to the */bin* folder of the SchedulerClient.
 
             //    After Hack:
@@ -81,7 +82,8 @@ namespace SuperSportDataEngine.Application.Container
             // Reference: https://stackoverflow.com/questions/20280717/references-from-class-library-are-not-copied-to-running-project-bin-folder
 
             // ReSharper disable once ObjectCreationAsStatement
-            new ConnectorCard();
+            new MSTeamsTarget();
+            new Microsoft.ApplicationInsights.NLogTarget.ApplicationInsightsTarget();
 
             ApplyRegistrationsForLogging(container);
             ApplyRegistrationsForApplicationLogic(container, applicationScope);
