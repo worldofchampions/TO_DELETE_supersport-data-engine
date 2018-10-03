@@ -36,6 +36,9 @@
                     src => src.RugbyVenue == null ?
                         "TBC" : (src.RugbyVenue.NameCmsOverride ?? src.RugbyVenue.Name)))
 
+                .ForMember(dest => dest.MatchNumber, exp => exp.MapFrom(
+                    src => src.MatchNumberCmsOverride ?? src.MatchNumber))
+
                 .ForMember(dest => dest.Result, expression => expression.UseValue(true))
 
                 .ForMember(dest => dest.Sorting, expression => expression.UseValue(LegacyFeedConstants.DefaultSortingValue))

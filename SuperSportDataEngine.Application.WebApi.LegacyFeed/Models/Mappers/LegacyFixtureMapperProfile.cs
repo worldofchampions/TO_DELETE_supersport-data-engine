@@ -42,6 +42,9 @@
                 .ForMember(dest => dest.Status, exp => exp.MapFrom(
                         src => LegacyFeedConstants.GetFixtureStatusDescription(src.RugbyFixtureStatus)))
 
+                .ForMember(dest => dest.MatchNumber, exp => exp.MapFrom(
+                    src => src.MatchNumberCmsOverride ?? src.MatchNumber))
+
                 .ForMember(dest => dest.video, src => src.Ignore());
         }
     }

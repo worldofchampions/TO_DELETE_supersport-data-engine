@@ -51,6 +51,9 @@
                 .ForMember(dest => dest.MatchID, expression => expression.MapFrom(
                     src => src.LegacyFixtureId))
 
+                .ForMember(dest => dest.MatchNumber, exp => exp.MapFrom(
+                    src => src.MatchNumberCmsOverride ?? src.MatchNumber))
+
                 // Use sortable datetime format for legacy feed
                 .ForMember(dest => dest.MatchDateTime, expression => expression.MapFrom(
                     src => Convert.ToDateTime(src.StartDateTime.UtcDateTime.ToLocalTime().ToString("s"))))

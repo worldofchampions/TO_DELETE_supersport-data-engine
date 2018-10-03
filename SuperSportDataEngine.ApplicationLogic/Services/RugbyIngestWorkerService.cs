@@ -678,6 +678,7 @@
                         TeamAScore = null,
                         TeamBScore = null,
                         RoundNumber = roundFixture.roundId,
+                        MatchNumber = fixture.gameNumber,
                         RugbySeason =
                             _publicSportDataUnitOfWork.RugbySeasons.FirstOrDefault(s =>
                                     s.RugbyTournament.ProviderTournamentId == tournament.ProviderTournamentId &&
@@ -722,6 +723,7 @@
                         fixtureInDb.RugbyTournament = newFixture.RugbyTournament;
                         fixtureInDb.RoundNumber = roundFixture.roundId;
                         fixtureInDb.RugbySeason = newFixture.RugbySeason;
+                        fixtureInDb.MatchNumber = newFixture.MatchNumber;
 
                         // Do not update the isLiveScored property here.
                         // It will be updated by the CMS.
