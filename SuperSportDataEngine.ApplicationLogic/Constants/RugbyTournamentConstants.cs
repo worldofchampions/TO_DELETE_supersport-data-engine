@@ -1,4 +1,4 @@
-﻿namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Constants
+﻿namespace SuperSportDataEngine.ApplicationLogic.Constants
 {
     public static class RugbyTournamentConstants
     {
