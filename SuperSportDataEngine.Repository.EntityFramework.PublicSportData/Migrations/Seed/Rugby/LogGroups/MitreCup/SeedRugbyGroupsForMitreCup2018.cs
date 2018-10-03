@@ -10,9 +10,9 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
 {
     public static class SeedRugbyGroupsForMitreCup2018
     {
-        private const string SlugHierachyLevel0MitreCup = "MitreCup-2018-HL0-MitreCup";
-        private const string SlugHierachyLevel1Premiership = "MitreCup-2018-HL1-Premiership";
-        private const string SlugHierachyLevel1Championship = "MitreCup-2018-HL1-Championship";
+        private const string SlugHierarchyLevel0MitreCup = "MitreCup-2018-HL0-MitreCup";
+        private const string SlugHierarchyLevel1Premiership = "MitreCup-2018-HL1-Premiership";
+        private const string SlugHierarchyLevel1Championship = "MitreCup-2018-HL1-Championship";
 
         public static void Seed(PublicSportDataContext context)
         {
@@ -34,19 +34,19 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
                 context.RugbyLogGroups.AddOrUpdate(
                     x => x.Slug,
                     // LogGroups for "OverallStandings", GroupHierarchyLevel: 0.
-                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 0, IsConference = false, IsCoreGroup = true, Slug = SlugHierachyLevel0MitreCup, ProviderLogGroupId = 0, ProviderGroupName = null, GroupName = "Mitre Cup", GroupShortName = "Mitre Cup" },
+                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 0, IsConference = false, IsCoreGroup = true, Slug = SlugHierarchyLevel0MitreCup, ProviderLogGroupId = 0, ProviderGroupName = null, GroupName = "Mitre Cup", GroupShortName = "Mitre Cup" },
                     // LogGroups for "GroupStandings", GroupHierarchyLevel: 1.
-                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = true, IsCoreGroup = true, Slug = SlugHierachyLevel1Premiership, ProviderLogGroupId = 1, ProviderGroupName = "Premiership", GroupName = "Mitre 10 Cup Premiership", GroupShortName = "Mitre 10 Cup Premiership" },
-                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = true, IsCoreGroup = true, Slug = SlugHierachyLevel1Championship, ProviderLogGroupId = 2, ProviderGroupName = "Championship", GroupName = "Mitre 10 Cup Championship", GroupShortName = "Mitre 10 Cup Championship" }
+                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = true, IsCoreGroup = true, Slug = SlugHierarchyLevel1Premiership, ProviderLogGroupId = 1, ProviderGroupName = "Premiership", GroupName = "Mitre 10 Cup Premiership", GroupShortName = "Mitre 10 Cup Premiership" },
+                    new RugbyLogGroup { DataProvider = DataProvider.StatsProzone, RugbySeason = rugbySeason, GroupHierarchyLevel = 1, IsConference = true, IsCoreGroup = true, Slug = SlugHierarchyLevel1Championship, ProviderLogGroupId = 2, ProviderGroupName = "Championship", GroupName = "Mitre 10 Cup Championship", GroupShortName = "Mitre 10 Cup Championship" }
                 );
 
                 context.SaveChanges();
 
-                context.RugbyLogGroups.Single(x => x.Slug == SlugHierachyLevel1Premiership).ParentRugbyLogGroup =
-                    context.RugbyLogGroups.Single(x => x.Slug == SlugHierachyLevel0MitreCup);
+                context.RugbyLogGroups.Single(x => x.Slug == SlugHierarchyLevel1Premiership).ParentRugbyLogGroup =
+                    context.RugbyLogGroups.Single(x => x.Slug == SlugHierarchyLevel0MitreCup);
 
-                context.RugbyLogGroups.Single(x => x.Slug == SlugHierachyLevel1Championship).ParentRugbyLogGroup =
-                    context.RugbyLogGroups.Single(x => x.Slug == SlugHierachyLevel0MitreCup);
+                context.RugbyLogGroups.Single(x => x.Slug == SlugHierarchyLevel1Championship).ParentRugbyLogGroup =
+                    context.RugbyLogGroups.Single(x => x.Slug == SlugHierarchyLevel0MitreCup);
 
                 context.SaveChanges();
             }
