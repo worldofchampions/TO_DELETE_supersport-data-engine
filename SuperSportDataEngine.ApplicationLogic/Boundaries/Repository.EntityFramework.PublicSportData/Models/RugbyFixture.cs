@@ -30,6 +30,12 @@
         /// <summary> A CMS driven value. </summary>
         public int? MatchNumberCmsOverride { get; set; }
 
+        /// <summary> A provider driven value. </summary>
+        public string RoundName { get; set; }
+
+        /// <summary> A CMS driven value. </summary>
+        public string RoundNameCmsOverride { get; set; }
+
         public RugbyFixtureStatus RugbyFixtureStatus { get; set; }
 
         public DataProvider DataProvider { get; set; }

@@ -33,6 +33,12 @@
                     src => src.RugbyVenue == null ?
                         "TBC" : (src.RugbyVenue.NameCmsOverride ?? src.RugbyVenue.Name)))
 
+                .ForMember(dest => dest.MatchNumber, exp => exp.MapFrom(
+                    src => src.MatchNumberCmsOverride ?? src.MatchNumber))
+
+                .ForMember(dest => dest.RoundName, exp => exp.MapFrom(
+                    src => src.RoundNameCmsOverride ?? src.RoundName))
+
                 .ForMember(dest => dest.Preview, src => src.Ignore())
 
                 .ForMember(dest => dest.Sorting, expression => expression.UseValue(LegacyFeedConstants.DefaultSortingValue))
@@ -41,9 +47,6 @@
 
                 .ForMember(dest => dest.Status, exp => exp.MapFrom(
                         src => LegacyFeedConstants.GetFixtureStatusDescription(src.RugbyFixtureStatus)))
-
-                .ForMember(dest => dest.MatchNumber, exp => exp.MapFrom(
-                    src => src.MatchNumberCmsOverride ?? src.MatchNumber))
 
                 .ForMember(dest => dest.video, src => src.Ignore());
         }

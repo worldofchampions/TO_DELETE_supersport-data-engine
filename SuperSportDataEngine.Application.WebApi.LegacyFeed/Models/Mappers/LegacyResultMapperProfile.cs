@@ -39,6 +39,9 @@
                 .ForMember(dest => dest.MatchNumber, exp => exp.MapFrom(
                     src => src.MatchNumberCmsOverride ?? src.MatchNumber))
 
+                .ForMember(dest => dest.RoundName, exp => exp.MapFrom(
+                    src => src.RoundNameCmsOverride ?? src.RoundName))
+
                 .ForMember(dest => dest.Result, expression => expression.UseValue(true))
 
                 .ForMember(dest => dest.Sorting, expression => expression.UseValue(LegacyFeedConstants.DefaultSortingValue))

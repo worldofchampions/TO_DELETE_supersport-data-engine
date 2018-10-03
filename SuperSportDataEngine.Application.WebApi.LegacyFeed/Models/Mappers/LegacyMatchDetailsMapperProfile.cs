@@ -63,6 +63,12 @@
                 .ForMember(dest => dest.TeamBCards, src => src.UseValue(LegacyFeedConstants.EmptyTeamCardsList))
 
                 // Fixture Specific Details
+                .ForMember(dest => dest.MatchNumber, exp => exp.MapFrom(
+                    src => src.RugbyFixture.MatchNumberCmsOverride ?? src.RugbyFixture.MatchNumber))
+
+                .ForMember(dest => dest.RoundName, exp => exp.MapFrom(
+                    src => src.RugbyFixture.RoundNameCmsOverride ?? src.RugbyFixture.RoundName))
+
                 .ForMember(dest => dest.Teamsheet, exp => exp.MapFrom(src => src.TeamsLineups))
 
                 .ForMember(dest => dest.Events, exp => exp.MapFrom(src => src.MatchEvents))

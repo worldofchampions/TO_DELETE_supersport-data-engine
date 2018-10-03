@@ -678,6 +678,7 @@
                         TeamAScore = null,
                         TeamBScore = null,
                         RoundNumber = roundFixture.roundId,
+                        RoundName = roundFixture.roundName,
                         MatchNumber = fixture.gameNumber,
                         RugbySeason =
                             _publicSportDataUnitOfWork.RugbySeasons.FirstOrDefault(s =>
@@ -722,6 +723,7 @@
                         fixtureInDb.TeamBIsHomeTeam = newFixture.TeamBIsHomeTeam;
                         fixtureInDb.RugbyTournament = newFixture.RugbyTournament;
                         fixtureInDb.RoundNumber = roundFixture.roundId;
+                        fixtureInDb.RoundName = roundFixture.roundName;
                         fixtureInDb.RugbySeason = newFixture.RugbySeason;
                         fixtureInDb.MatchNumber = newFixture.MatchNumber;
 

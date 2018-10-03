@@ -53,6 +53,9 @@
 
                 .ForMember(dest => dest.MatchNumber, exp => exp.MapFrom(
                     src => src.MatchNumberCmsOverride ?? src.MatchNumber))
+                
+                .ForMember(dest => dest.RoundName, exp => exp.MapFrom(
+                    src => src.RoundNameCmsOverride ?? src.RoundName))
 
                 // Use sortable datetime format for legacy feed
                 .ForMember(dest => dest.MatchDateTime, expression => expression.MapFrom(
