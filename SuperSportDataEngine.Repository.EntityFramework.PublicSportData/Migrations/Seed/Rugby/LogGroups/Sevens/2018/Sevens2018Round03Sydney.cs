@@ -10,7 +10,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
 {
     public static class Sevens2018Round03Sydney
     {
-        public const string SlugHierarchyLevel0Sevens2018                  = "Sevens-2018-HL0-Sevens_2018/19";
+        public const string SlugHierarchyLevel0Sevens2018                  = "Sevens-2018-HL0-Sevens_2017/18";
 
         public const string SlugHierarchyLevel1Sevens2018OverallStandings  = "Sevens-2018-HL1-Overall_Standings";
         public const string SlugHierarchyLevel1Sevens2018Rounds            = "Sevens-2018-HL1-Rounds";
