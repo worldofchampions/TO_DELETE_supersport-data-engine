@@ -167,6 +167,7 @@
     <Compile Include="Boundaries\Repository.EntityFramework.PublicSportData\UnitOfWork\IPublicSportDataUnitOfWork.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\Models\Motorsport\Enums\MotorsportSeasonStatus.cs" />
     <Compile Include="Boundaries\Repository.EntityFramework.SystemSportData\UnitOfWork\ISystemSportDataUnitOfWork.cs" />
+    <Compile Include="Constants\RugbyTournamentConstants.cs" />
     <Compile Include="Entities\Legacy\DeprecatedArticlesAndVideosEntity.cs" />
     <Compile Include="Entities\Legacy\LegacyRugbyMatchEventEntity.cs" />
     <Compile Include="Entities\Legacy\LegacyRugbyScorerEntity.cs" />

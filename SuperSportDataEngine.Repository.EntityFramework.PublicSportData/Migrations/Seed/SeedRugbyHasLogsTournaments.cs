@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity.Migrations;
-using System.Linq;
-using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
-
-namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed
+﻿namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed
 {
+    using SuperSportDataEngine.ApplicationLogic.Constants;
+    using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
+    using System;
+    using System.Collections.Generic;
+    using System.Data.Entity.Migrations;
+    using System.Linq;
+
     public static class SeedRugbyHasLogsTournaments
     {
         public static void Seed(PublicSportDataContext context)
@@ -43,8 +44,8 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
         {
             return new List<int>()
             {
-                Constants.RugbyTournamentConstants.InternationalsProviderTournamentId,
-                Constants.RugbyTournamentConstants.RugbyWorldCupProviderTournamentId
+                RugbyTournamentConstants.InternationalsProviderTournamentId,
+                RugbyTournamentConstants.RugbyWorldCupProviderTournamentId
             };
         }
     }
