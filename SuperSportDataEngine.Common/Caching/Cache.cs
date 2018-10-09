@@ -1,12 +1,9 @@
 ﻿using Newtonsoft.Json;
 using StackExchange.Redis;
 using System;
-using System.CodeDom;
+using System.Configuration;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Converters;
-using NLog;
 using SuperSportDataEngine.Common.Interfaces;
-using SuperSportDataEngine.Common.Logging;
 
 namespace SuperSportDataEngine.Common.Caching
 {
@@ -14,16 +11,25 @@ namespace SuperSportDataEngine.Common.Caching
     {
         private readonly ConnectionMultiplexer _redisConnection;
         private readonly object _lock = new object();
+        private readonly string _environmentName;
 
         private IDatabase Database => _redisConnection.GetDatabase();
 
         public Cache(ConnectionMultiplexer redisConnection)
         {
             _redisConnection = redisConnection;
+            _environmentName = ConfigurationManager.AppSettings["ENVIRONMENT"];
+        }
+
+        private string GetKeyWithEnvironmentPrefix(string key)
+        {
+            return $"{_environmentName}:{key}";
         }
 
         public void Add<T>(string key, T cacheObject, TimeSpan? ttl = null, string parentKey = null) where T : class
         {
+            key = GetKeyWithEnvironmentPrefix(key);
+
             if (ttl == null)
             {
                 ttl = TimeSpan.FromSeconds(20);
@@ -58,6 +64,8 @@ namespace SuperSportDataEngine.Common.Caching
 
         public void Remove(string key)
         {
+            key = GetKeyWithEnvironmentPrefix(key);
+
             ExecuteTransaction(t =>
             {
                 t.KeyDeleteAsync(key);
@@ -67,6 +75,8 @@ namespace SuperSportDataEngine.Common.Caching
 
         public async Task<T> GetAsync<T>(string key) where T : class
         {
+            key = GetKeyWithEnvironmentPrefix(key);
+
             var hashEntry = await Database.HashGetAllAsync(key);
             if (hashEntry == null)
             {
@@ -84,6 +94,8 @@ namespace SuperSportDataEngine.Common.Caching
 
         public void SetParentExpiry(string parentKey, TimeSpan ttl)
         {
+            parentKey = GetKeyWithEnvironmentPrefix(parentKey);
+
             Database.KeyExpireAsync($"{parentKey}$$children", ttl, CommandFlags.FireAndForget);
         }
 
