@@ -94,8 +94,6 @@ namespace SuperSportDataEngine.Common.Caching
 
         public void SetParentExpiry(string parentKey, TimeSpan ttl)
         {
-            parentKey = GetKeyWithEnvironmentPrefix(parentKey);
-
             Database.KeyExpireAsync($"{parentKey}$$children", ttl, CommandFlags.FireAndForget);
         }
 
