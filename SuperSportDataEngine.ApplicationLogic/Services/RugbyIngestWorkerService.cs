@@ -701,6 +701,7 @@
 
                             // When a fixture is not in "PreMatch", check if STATS has the teamFinalScore
                             // If STATS has it populated, then set the scores to what they have.
+                            // Real-time scores will be updated separately in a method that runs more frequently.
                             if (fixtureInDb.RugbyFixtureStatus != RugbyFixtureStatus.PreMatch)
                             {
                                 if (teamAFromProvider.teamFinalScore != null)
