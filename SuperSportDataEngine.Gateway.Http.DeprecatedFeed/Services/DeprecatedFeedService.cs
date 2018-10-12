@@ -19,6 +19,7 @@
         private readonly int _requestDurationWarningMilliseconds;
         private readonly string _authKey;
         private readonly string _host;
+        private readonly int _requestTimeoutDurationInMilliseconds;
 
         public DeprecatedFeedService(ILoggingService logger)
         {
@@ -26,6 +27,8 @@
 
             _requestDurationWarningMilliseconds = int.Parse(ConfigurationManager.AppSettings["RequestDurationWarningMilliseconds.SuperSportDeprecatedFeed"]);
             _authKey = ConfigurationManager.AppSettings["AuthKey.SuperSportDeprecatedFeed"];
+            _requestTimeoutDurationInMilliseconds = int.Parse(ConfigurationManager.AppSettings["RequestTimeoutDurationInMilliseconds"]);
+
             _host = ConfigurationManager.AppSettings["Host.SuperSportDeprecatedFeed"];
         }
 
@@ -37,8 +40,11 @@
 
             try
             {
-                using (var webResponse = await webRequest.GetResponseAsync())
+                using (var webResponse = await webRequest.GetResponseAsync(_requestTimeoutDurationInMilliseconds, _logger))
                 {
+                    if (webResponse == null)
+                        return null;
+
                     using (var responseStream = webResponse.GetResponseStream())
                     {
                         if (responseStream != null)
