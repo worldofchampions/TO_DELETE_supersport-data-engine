@@ -83,8 +83,11 @@
 
             try
             {
-                using (var webResponse = await webRequest.GetResponseAsync())
+                using (var webResponse = await webRequest.GetResponseAsync(_requestTimeoutDurationInMilliseconds, _logger))
                 {
+                    if (webResponse == null)
+                        return null;
+
                     using (var responseStream = webResponse.GetResponseStream())
                     {
                         if (responseStream != null)
@@ -123,8 +126,11 @@
 
             try
             {
-                using (var webResponse = await webRequest.GetResponseAsync())
+                using (var webResponse = await webRequest.GetResponseAsync(_requestTimeoutDurationInMilliseconds, _logger))
                 {
+                    if (webResponse == null)
+                        return 0;
+
                     using (var responseStream = webResponse.GetResponseStream())
                     {
                         if (responseStream != null)
@@ -162,8 +168,11 @@
             var requestTime = DateTime.Now;
             try
             {
-                using (var webResponse = await webRequest.GetResponseAsync())
+                using (var webResponse = await webRequest.GetResponseAsync(_requestTimeoutDurationInMilliseconds, _logger))
                 {
+                    if (webResponse == null)
+                        return 0;
+
                     using (var responseStream = webResponse.GetResponseStream())
                     {
                         if (responseStream != null)
@@ -202,8 +211,11 @@
 
             try
             {
-                using (var webResponse = await webRequest.GetResponseAsync())
+                using (var webResponse = await webRequest.GetResponseAsync(_requestTimeoutDurationInMilliseconds, _logger))
                 {
+                    if (webResponse == null)
+                        return 0;
+
                     using (var responseStream = webResponse.GetResponseStream())
                     {
                         if (responseStream != null)
