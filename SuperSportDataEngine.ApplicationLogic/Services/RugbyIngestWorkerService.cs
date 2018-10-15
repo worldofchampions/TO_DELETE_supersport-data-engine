@@ -636,18 +636,18 @@
                     var teams = fixture.teams.ToArray();
                     // We need temporary variables here.
                     // Cannot use indexing in Linq Where clause.
-                    var team0 = teams[0];
-                    var team1 = teams[1];
+                    var teamAFromProvider = teams[0];
+                    var teamBFromProvider = teams[1];
 
-                    var teamA = allTeams.FirstOrDefault(t => t.ProviderTeamId == team0.teamId);
-                    var teamB = allTeams.FirstOrDefault(t => t.ProviderTeamId == team1.teamId);
+                    var teamAInDb = allTeams.FirstOrDefault(t => t.ProviderTeamId == teamAFromProvider.teamId);
+                    var teamBInDb = allTeams.FirstOrDefault(t => t.ProviderTeamId == teamBFromProvider.teamId);
 
                     // When either team is null i.e this fixture has missing information.
                     // Do not ingest this fixture.
                     // Ammended: Ingest this fixture.
                     // We have a TBC team in the DB for when a team is un-determined.
 
-                    var isFixtureTbc = teamA == null || teamB == null;
+                    var isFixtureTbc = teamAInDb == null || teamBInDb == null;
                     var isFixturePartOfAFinal = IsProviderFixturePartOfFinal(roundFixture);
 
                     if (isFixtureTbc && !isFixturePartOfAFinal)
@@ -662,10 +662,10 @@
                         StartDateTime = startTime,
                         RugbyVenue = venue,
                         RugbyTournament = tournament,
-                        TeamA = teamA,
-                        TeamB = teamB,
-                        TeamAIsHomeTeam = team0.isHomeTeam,
-                        TeamBIsHomeTeam = team1.isHomeTeam,
+                        TeamA = teamAInDb,
+                        TeamB = teamBInDb,
+                        TeamAIsHomeTeam = teamAFromProvider.isHomeTeam,
+                        TeamBIsHomeTeam = teamBFromProvider.isHomeTeam,
                         RugbyFixtureStatus = GetFixtureStatusFromProviderFixtureState(null, fixture.gameStateName),
                         DataProvider = DataProvider.StatsProzone,
                         IsLiveScored = tournament != null && tournament.IsLiveScored,
@@ -681,8 +681,8 @@
                     // Should we set the scores of the new fixture?
                     if (newFixture.RugbyFixtureStatus != RugbyFixtureStatus.PreMatch)
                     {
-                        newFixture.TeamAScore = team0.teamFinalScore;
-                        newFixture.TeamBScore = team1.teamFinalScore;
+                        newFixture.TeamAScore = teamAFromProvider.teamFinalScore;
+                        newFixture.TeamBScore = teamBFromProvider.teamFinalScore;
                     }
 
                     // Lookup in Db
@@ -699,12 +699,16 @@
                             fixtureInDb.StartDateTime = startTime;
                             fixtureInDb.RugbyFixtureStatus = GetFixtureStatusFromProviderFixtureState(fixtureInDb, fixture.gameStateName);
 
-                            // Only update the scores for games that are completed.
+                            // When a fixture is not in "PreMatch", check if STATS has the teamFinalScore
+                            // If STATS has it populated, then set the scores to what they have.
                             // Real-time scores will be updated separately in a method that runs more frequently.
-                            if (fixtureInDb.RugbyFixtureStatus == RugbyFixtureStatus.Result)
+                            if (fixtureInDb.RugbyFixtureStatus != RugbyFixtureStatus.PreMatch)
                             {
-                                fixtureInDb.TeamAScore = team0.teamFinalScore;
-                                fixtureInDb.TeamBScore = team1.teamFinalScore;
+                                if (teamAFromProvider.teamFinalScore != null)
+                                    fixtureInDb.TeamAScore = teamAFromProvider.teamFinalScore;
+
+                                if (teamBFromProvider.teamFinalScore != null)
+                                    fixtureInDb.TeamBScore = teamBFromProvider.teamFinalScore;
                             }
                         }
 
