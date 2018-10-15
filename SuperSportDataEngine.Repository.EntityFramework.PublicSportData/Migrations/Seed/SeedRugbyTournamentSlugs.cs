@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity.Migrations;
-using System.Linq;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
-using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
-using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Constants;
-
-namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed
+﻿namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed
 {
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models;
+    using SuperSportDataEngine.ApplicationLogic.Constants;
+    using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
+    using System;
+    using System.Collections.Generic;
+    using System.Data.Entity.Migrations;
+    using System.Linq;
+
     public static class SeedRugbyTournamentSlugs
     {
         public static void Seed(PublicSportDataContext context)
@@ -26,6 +26,7 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
 
                     if (dbTournament == null) continue;
 
+                    //TODO: Revist this check since slugs cannot be set via cms
                     if (!string.IsNullOrEmpty(dbTournament.Slug)) continue;
 
                     dbTournament.Slug = tournament.Slug;
