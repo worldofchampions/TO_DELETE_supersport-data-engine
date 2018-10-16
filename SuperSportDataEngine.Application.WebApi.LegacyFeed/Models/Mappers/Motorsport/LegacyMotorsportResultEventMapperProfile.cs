@@ -2,6 +2,7 @@
 using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Motorsport;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
 using SuperSportDataEngine.ApplicationLogic.Entities.Legacy.Motorsport;
+using SuperSportDataEngine.Common.Helpers;
 
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Motorsport
 {
@@ -18,10 +19,10 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Moto
                     src => src.MotorsportRaceEvent.LegacyRaceEventId))
 
                 .ForMember(dest => dest.Date, expression => expression.MapFrom(
-                    src => src.MotorsportRaceEvent.StartDateTimeUtc.Value.LocalDateTime.Date.ToString("s")))
+                    src => src.MotorsportRaceEvent.StartDateTimeUtc.Value.ConvertToLocalSAST().Date.ToString("s")))
 
                 .ForMember(dest => dest.StartTime, expression => expression.MapFrom(
-                    src => src.MotorsportRaceEvent.StartDateTimeUtc.Value.LocalDateTime.ToString("HH:mm")))
+                    src => src.MotorsportRaceEvent.StartDateTimeUtc.Value.ConvertToLocalSAST().ToString("HH:mm")))
 
                 .ForMember(dest => dest.EndTime, expression => expression.UseValue(""))
 
