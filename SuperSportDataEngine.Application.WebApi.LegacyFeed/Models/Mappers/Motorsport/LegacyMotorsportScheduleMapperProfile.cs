@@ -50,7 +50,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Moto
 
                 .ForMember(dest => dest.Date, expression => expression.MapFrom(
                     src => src.StartDateTimeUtc != null
-                        ? ((DateTimeOffset)src.StartDateTimeUtc).ConvertToLocalSAST().ToString("s")
+                        ? ((DateTimeOffset)src.StartDateTimeUtc).ToLocalSASTDateTimeOffset().ToString("s")
                         : ""))
 
                 .ForMember(dest => dest.RaceEventStatus, expression => expression.MapFrom(

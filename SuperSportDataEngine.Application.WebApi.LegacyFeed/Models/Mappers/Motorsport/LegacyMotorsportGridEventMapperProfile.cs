@@ -23,10 +23,10 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Moto
                     src => src.MotorsportRaceEvent.LegacyRaceEventId))
 
                 .ForMember(dest => dest.Date, expression => expression.MapFrom(
-                    src => src.MotorsportRaceEvent.StartDateTimeUtc.Value.ConvertToLocalSAST().Date.ToString("s")))
+                    src => src.MotorsportRaceEvent.StartDateTimeUtc.Value.ToLocalSASTDateTimeOffset().Date.ToString("s")))
 
                 .ForMember(dest => dest.StartTime, expression => expression.MapFrom(
-                    src => src.MotorsportRaceEvent.StartDateTimeUtc.Value.ConvertToLocalSAST().ToString("HH:mm")))
+                    src => src.MotorsportRaceEvent.StartDateTimeUtc.Value.ToLocalSASTDateTimeOffset().ToString("HH:mm")))
 
                 .ForMember(dest => dest.EndTime, expression => expression.UseValue(""))
 
