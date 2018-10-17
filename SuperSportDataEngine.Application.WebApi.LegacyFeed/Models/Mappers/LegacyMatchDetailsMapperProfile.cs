@@ -70,10 +70,10 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
                 .ForMember(dest => dest.Events, exp => exp.MapFrom(src => src.MatchEvents))
 
                 .ForMember(dest => dest.KickoffDateTime, exp => exp.MapFrom(
-                    src => src.RugbyFixture.StartDateTime.UtcDateTime.ToLocalSASTDateTime().ToString("s")))
+                    src => src.RugbyFixture.StartDateTime.UtcDateTime.FromUtcToSastDateTime().ToString("s")))
 
                 .ForMember(dest => dest.KickoffDateTimeString, exp => exp.MapFrom(
-                    src => src.RugbyFixture.StartDateTime.UtcDateTime.ToLocalSASTDateTime().ToString("s")))
+                    src => src.RugbyFixture.StartDateTime.UtcDateTime.FromUtcToSastDateTime().ToString("s")))
 
                 .ForMember(dest => dest.LeagueId, exp => exp.MapFrom(src => src.RugbyFixture.RugbyTournament.LegacyTournamentId))
 
@@ -98,7 +98,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
                 .ForMember(dest => dest.MatchID, exp => exp.MapFrom(src => src.RugbyFixture.LegacyFixtureId))
 
                 .ForMember(dest => dest.MatchTime, exp => exp.MapFrom(
-                    src => (src.RugbyFixture.StartDateTime.UtcDateTime.ToLocalSASTDateTime().AddSeconds(
+                    src => (src.RugbyFixture.StartDateTime.UtcDateTime.FromUtcToSastDateTime().AddSeconds(
                         src.RugbyFixture.GameTimeInSeconds)).ToString("s")))
 
                 .ForMember(dest => dest.Officials, src => src.UseValue(LegacyFeedConstants.EmptyMatchOfficialsList))

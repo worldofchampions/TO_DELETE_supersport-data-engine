@@ -50,7 +50,7 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Moto
 
                 .ForMember(dest => dest.Date, expression => expression.MapFrom(
                     src => src.StartDateTimeUtc != null
-                        ? ((DateTimeOffset) src.StartDateTimeUtc).ToLocalSASTDateTimeOffset().ToString("s")
+                        ? ((DateTimeOffset) src.StartDateTimeUtc).FromUtcToSastDateTimeOffset().ToString("s")
                         : ""))
 
                 // [TODO] This value is set to the minimum date time because we do not get it from the provider.
