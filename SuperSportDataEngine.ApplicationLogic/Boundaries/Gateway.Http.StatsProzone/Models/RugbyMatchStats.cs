@@ -134,7 +134,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsPro
         public int team1stHalfScore { get; set; }
         public int team2ndHalfScore { get; set; }
         public string teamAbbr { get; set; }
-        public int teamFinalScore { get; set; }
+        public int? teamFinalScore { get; set; }
         public int teamFullTimeScore { get; set; }
         public int teamHalfTimeScore { get; set; }
         public int teamId { get; set; }
