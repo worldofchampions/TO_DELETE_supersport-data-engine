@@ -13,7 +13,7 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.StatsPro
         public string teamName { get; set; }
         public string teamNickName { get; set; }
         public string teamAbbr { get; set; }
-        public int teamFinalScore { get; set; }
+        public int? teamFinalScore { get; set; }
         public bool isHomeTeam { get; set; }
     }
 
