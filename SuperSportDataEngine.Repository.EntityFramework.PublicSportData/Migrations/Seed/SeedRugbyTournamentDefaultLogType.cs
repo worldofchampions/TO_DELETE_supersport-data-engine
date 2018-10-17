@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models.Enums;
-using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
-using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed.Constants;
-
-namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed
+﻿namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrations.Seed
 {
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models.Enums;
+    using SuperSportDataEngine.ApplicationLogic.Constants;
+    using SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Context;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
     public static class SeedRugbyTournamentDefaultLogType
     {
         public static void Seed(PublicSportDataContext context)
@@ -14,17 +14,17 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
             try
             {
                 var tournamentsSlugs = GetGroupedLogTournamentSlugNames();
-                foreach (var tournamentsSlug in tournamentsSlugs)
+                foreach (var slug in tournamentsSlugs)
                 {
                     try
                     {
-                        var tournament = context.RugbyTournaments.First(t => t.Slug == tournamentsSlug);
+                        var tournament = context.RugbyTournaments.First(t => t.Slug == slug);
                         tournament.DefaultRugbyLogType = RugbyLogType.GroupedLogs;
                     }
                     catch (Exception exception)
                     {
                         // Sometimes the exception is only for one tournament. This must not affect seeding for others.
-                        // TODO: Add logging.
+                        Console.WriteLine("No tournament found for slug: " + slug);
                         Console.WriteLine(exception);
                     }
                 }

@@ -131,14 +131,17 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient
 
                 if (timespanDuration > TimeSpan.FromMinutes(errorThresholdInMinutes))
                 {
-                    _logger.Error(key, null, 
-                        $"{jobName} is taking too long to process. Error threshold is {errorThresholdInMinutes} minutes. " +
+                    _logger.Error(
+                        key,
+                        null, 
+                        $"{jobName} is taking too long to process. Error threshold is " +
+                        $"{errorThresholdInMinutes} minutes. " +
                         $"Taking {timespanDuration.Value.TotalMinutes} minutes.");
                 }
                 else if (timespanDuration > TimeSpan.FromMinutes(warningThresholdInMinutes))
                 {
                     _logger.Warn(
-                        key, 
+                        key,
                         null,
                         $"{jobName} is taking too long to process. Warning threshold is " +
                         $"{warningThresholdInMinutes} minutes. Taking " +
