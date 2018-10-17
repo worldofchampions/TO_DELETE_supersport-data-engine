@@ -35,5 +35,11 @@ namespace SuperSportDataEngine.ApplicationLogic.Tests.Helpers
             DateTime dateTime = DateTime.UtcNow;
             Assert.AreEqual(dateTime.AddHours(2), dateTime.FromUtcToSastDateTime());
         }
+
+        [Test]
+        public void LocalSAST_StateUnderTest_ExpectedBehavior()
+        {
+            Assert.AreEqual(TimezoneHelper.LocalSAST.Id, "South Africa Standard Time");
+        }
     }
 }
