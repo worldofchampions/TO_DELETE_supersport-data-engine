@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
+﻿using SuperSportDataEngine.Common.Helpers;
+
+namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
 {
     using System;
     using System.Configuration;
@@ -59,7 +61,7 @@
                 ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_Cleanup_Monthly_JobCronExpression"],
                 new RecurringJobOptions
                 {
-                    TimeZone = TimeZoneInfo.Local,
+                    TimeZone = TimezoneHelper.LocalSAST,
                     QueueName = HangfireQueueConfiguration.NormalPriority
                 });
         }
@@ -72,7 +74,7 @@
                 ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_SetCurrentEvents_JobCronExpression"],
                 new RecurringJobOptions
                 {
-                    TimeZone = TimeZoneInfo.Local,
+                    TimeZone = TimezoneHelper.LocalSAST,
                     QueueName = HangfireQueueConfiguration.NormalPriority
                 });
         }
@@ -85,7 +87,7 @@
                 ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_Leagues_JobCronExpression"],
                 new RecurringJobOptions
                 {
-                    TimeZone = TimeZoneInfo.Local,
+                    TimeZone = TimezoneHelper.LocalSAST,
                     QueueName = HangfireQueueConfiguration.NormalPriority
                 });
         }
@@ -98,7 +100,7 @@
                 ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_Seasons_JobCronExpression"],
                 new RecurringJobOptions
                 {
-                    TimeZone = TimeZoneInfo.Local,
+                    TimeZone = TimezoneHelper.LocalSAST,
                     QueueName = HangfireQueueConfiguration.NormalPriority
                 });
         }
@@ -111,7 +113,7 @@
                 ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_Races_JobCronExpression"],
                 new RecurringJobOptions
                 {
-                    TimeZone = TimeZoneInfo.Local,
+                    TimeZone = TimezoneHelper.LocalSAST,
                     QueueName = HangfireQueueConfiguration.NormalPriority
                 });
         }
@@ -131,7 +133,7 @@
 
             var recurringJobOptions = new RecurringJobOptions
             {
-                TimeZone = TimeZoneInfo.Local,
+                TimeZone = TimezoneHelper.LocalSAST,
                 QueueName = HangfireQueueConfiguration.NormalPriority
             };
 
@@ -151,7 +153,7 @@
                 ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_RaceEvents_JobCronExpression"],
                 new RecurringJobOptions
                 {
-                    TimeZone = TimeZoneInfo.Local,
+                    TimeZone = TimezoneHelper.LocalSAST,
                     QueueName = HangfireQueueConfiguration.NormalPriority
                 });
         }
@@ -164,7 +166,7 @@
                 ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_Drivers_JobCronExpression"],
                 new RecurringJobOptions
                 {
-                    TimeZone = TimeZoneInfo.Local,
+                    TimeZone = TimezoneHelper.LocalSAST,
                     QueueName = HangfireQueueConfiguration.NormalPriority
                 });
         }
@@ -177,7 +179,7 @@
                 ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_Teams_JobCronExpression"],
                 new RecurringJobOptions
                 {
-                    TimeZone = TimeZoneInfo.Local,
+                    TimeZone = TimezoneHelper.LocalSAST,
                     QueueName = HangfireQueueConfiguration.NormalPriority
                 });
         }
@@ -193,7 +195,7 @@
                 ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_ActiveLeaguesRaceEventsGrids_JobCronExpression"],
                 new RecurringJobOptions
                 {
-                    TimeZone = TimeZoneInfo.Local,
+                    TimeZone = TimezoneHelper.LocalSAST,
                     QueueName = HangfireQueueConfiguration.NormalPriority
                 });
         }
@@ -230,7 +232,7 @@
 
             var recurringJobOptions = new RecurringJobOptions
             {
-                TimeZone = TimeZoneInfo.Local,
+                TimeZone = TimezoneHelper.LocalSAST,
                 QueueName = HangfireQueueConfiguration.NormalPriority
             };
 
@@ -253,7 +255,7 @@
 
             var recurringJobOptions = new RecurringJobOptions
             {
-                TimeZone = TimeZoneInfo.Local,
+                TimeZone = TimezoneHelper.LocalSAST,
                 QueueName = HangfireQueueConfiguration.NormalPriority
             };
 
@@ -276,7 +278,7 @@
 
             var recurringJobOptions = new RecurringJobOptions
             {
-                TimeZone = TimeZoneInfo.Local,
+                TimeZone = TimezoneHelper.LocalSAST,
                 QueueName = HangfireQueueConfiguration.NormalPriority
             };
 
@@ -299,7 +301,7 @@
 
             var recurringJobOptions = new RecurringJobOptions
             {
-                TimeZone = TimeZoneInfo.Local,
+                TimeZone = TimezoneHelper.LocalSAST,
                 QueueName = HangfireQueueConfiguration.NormalPriority
             };
 
@@ -322,7 +324,7 @@
 
             var recurringJobOptions = new RecurringJobOptions
             {
-                TimeZone = TimeZoneInfo.Local,
+                TimeZone = TimezoneHelper.LocalSAST,
                 QueueName = HangfireQueueConfiguration.NormalPriority
             };
 
@@ -344,7 +346,7 @@
 
             var recurringJobOptions = new RecurringJobOptions
             {
-                TimeZone = TimeZoneInfo.Local,
+                TimeZone = TimezoneHelper.LocalSAST,
                 QueueName = HangfireQueueConfiguration.NormalPriority
             };
 
@@ -363,7 +365,7 @@
                 ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_HistoricRaceEventsGrids_JobCronExpression"],
                 new RecurringJobOptions
                 {
-                    TimeZone = TimeZoneInfo.Local,
+                    TimeZone = TimezoneHelper.LocalSAST,
                     QueueName = HangfireQueueConfiguration.NormalPriority
                 });
         }
@@ -376,7 +378,7 @@
                 ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_HistoricRaceEvents_JobCronExpression"],
                 new RecurringJobOptions
                 {
-                    TimeZone = TimeZoneInfo.Local,
+                    TimeZone = TimezoneHelper.LocalSAST,
                     QueueName = HangfireQueueConfiguration.NormalPriority
                 });
         }
@@ -389,7 +391,7 @@
                 ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_HistoricRaces_JobCronExpression"],
                 new RecurringJobOptions
                 {
-                    TimeZone = TimeZoneInfo.Local,
+                    TimeZone = TimezoneHelper.LocalSAST,
                     QueueName = HangfireQueueConfiguration.NormalPriority
                 });
         }
@@ -402,7 +404,7 @@
                 ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_HistoricRaceEventsResults_JobCronExpression"],
                 new RecurringJobOptions
                 {
-                    TimeZone = TimeZoneInfo.Local,
+                    TimeZone = TimezoneHelper.LocalSAST,
                     QueueName = HangfireQueueConfiguration.NormalPriority
                 });
         }
@@ -415,7 +417,7 @@
                 ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_HistoricTeamStandings_JobCronExpression"],
                 new RecurringJobOptions
                 {
-                    TimeZone = TimeZoneInfo.Local,
+                    TimeZone = TimezoneHelper.LocalSAST,
                     QueueName = HangfireQueueConfiguration.NormalPriority
                 });
         }
@@ -428,7 +430,7 @@
                 ConfigurationManager.AppSettings["MotorsportFixedScheduleJob_HistoricDriverStandings_JobCronExpression"],
                 new RecurringJobOptions
                 {
-                    TimeZone = TimeZoneInfo.Local,
+                    TimeZone = TimezoneHelper.LocalSAST,
                     QueueName = HangfireQueueConfiguration.NormalPriority
                 });
         }

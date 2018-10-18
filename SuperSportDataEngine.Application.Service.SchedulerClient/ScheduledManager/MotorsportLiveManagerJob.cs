@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledManager
+﻿using SuperSportDataEngine.Common.Helpers;
+
+namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledManager
 {
     using System;
     using System.Linq;
@@ -333,7 +335,7 @@
             var pollingDurationInMinutes =
                 int.Parse(ConfigurationManager.AppSettings["MotorsportChildJob_RaceEventGrid_PollingDurationInMinutes"]);
 
-            var jobOptions = new RecurringJobOptions { TimeZone = TimeZoneInfo.Local, QueueName = HangfireQueueConfiguration.HighPriority };
+            var jobOptions = new RecurringJobOptions { TimeZone = TimezoneHelper.LocalSAST, QueueName = HangfireQueueConfiguration.HighPriority };
 
             _recurringJobManager.AddOrUpdate(
                 jobId,
@@ -372,7 +374,7 @@
             var pollingDurationInMinutes =
                 int.Parse(ConfigurationManager.AppSettings["MotorsportChildJob_LeagueCalendar_PollingDurationInMinutes"]);
 
-            var jobOptions = new RecurringJobOptions { TimeZone = TimeZoneInfo.Local, QueueName = HangfireQueueConfiguration.HighPriority };
+            var jobOptions = new RecurringJobOptions { TimeZone = TimezoneHelper.LocalSAST, QueueName = HangfireQueueConfiguration.HighPriority };
 
             _recurringJobManager.AddOrUpdate(
                 jobId,
@@ -407,7 +409,7 @@
                 var threadSleepPollingInSeconds =
                     int.Parse(ConfigurationManager.AppSettings["Motorsport_LiveRaceJob_ThreadSleepPollingInSeconds"]);
 
-                var jobOptions = new RecurringJobOptions { TimeZone = TimeZoneInfo.Local, QueueName = HangfireQueueConfiguration.HighPriority };
+                var jobOptions = new RecurringJobOptions { TimeZone = TimezoneHelper.LocalSAST, QueueName = HangfireQueueConfiguration.HighPriority };
 
                 _recurringJobManager.AddOrUpdate(
                     jobId,
@@ -448,7 +450,7 @@
                 var pollingDurationInMinutes =
                     int.Parse(ConfigurationManager.AppSettings["MotorsportChildJob_RaceEventsResults_PollingDurationInMinutes"]);
 
-                var jobOptions = new RecurringJobOptions { TimeZone = TimeZoneInfo.Local, QueueName = HangfireQueueConfiguration.HighPriority };
+                var jobOptions = new RecurringJobOptions { TimeZone = TimezoneHelper.LocalSAST, QueueName = HangfireQueueConfiguration.HighPriority };
 
                 _recurringJobManager.AddOrUpdate(
                     jobId,
@@ -496,7 +498,7 @@
 
             var jobCronExpression = ConfigurationManager.AppSettings["MotorsportChildJob_TeamStandings_JobCronExpression"];
 
-            var jobOptions = new RecurringJobOptions { TimeZone = TimeZoneInfo.Local, QueueName = HangfireQueueConfiguration.HighPriority };
+            var jobOptions = new RecurringJobOptions { TimeZone = TimezoneHelper.LocalSAST, QueueName = HangfireQueueConfiguration.HighPriority };
 
             var threadSleepPollingInSeconds =
                 int.Parse(ConfigurationManager.AppSettings["MotorsportChildJob_TeamStandings_ThreadSleepInSeconds"]);
@@ -526,7 +528,7 @@
             var pollingDurationInMinutes =
                 int.Parse(ConfigurationManager.AppSettings["MotorsportChildJob_DriverStandings_PollingDurationInMinutes"]);
 
-            var jobOptions = new RecurringJobOptions { TimeZone = TimeZoneInfo.Local, QueueName = HangfireQueueConfiguration.HighPriority };
+            var jobOptions = new RecurringJobOptions { TimeZone = TimezoneHelper.LocalSAST, QueueName = HangfireQueueConfiguration.HighPriority };
 
             _recurringJobManager.AddOrUpdate(
                 jobId,

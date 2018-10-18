@@ -6,6 +6,7 @@ using System.Threading;
 using System;
 using Hangfire.Common;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
+using SuperSportDataEngine.Common.Helpers;
 using SuperSportDataEngine.Common.Logging;
 using Unity;
 
@@ -51,7 +52,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
                 ConfigurationManager.AppSettings["FixedScheduledJob_LiveData_PastfewDaysFixtures_JobCronExpression"],
                 new RecurringJobOptions()
                 {
-                    TimeZone = TimeZoneInfo.Local,
+                    TimeZone = TimezoneHelper.LocalSAST,
                     QueueName = HangfireQueueConfiguration.HighPriority
                 });
         }
@@ -64,7 +65,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
                 ConfigurationManager.AppSettings["FixedScheduledJob_PastSeasonsFixtures_ActiveTournaments_JobCronExpression"],
                 new RecurringJobOptions()
                 {
-                    TimeZone = TimeZoneInfo.Local,
+                    TimeZone = TimezoneHelper.LocalSAST,
                     QueueName = HangfireQueueConfiguration.HighPriority
                 });
         }
@@ -77,7 +78,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
                 ConfigurationManager.AppSettings["FixedScheduledJob_LiveData_PastFixtures_JobCronExpression"],
                 new RecurringJobOptions()
                 {
-                    TimeZone = TimeZoneInfo.Local,
+                    TimeZone = TimezoneHelper.LocalSAST,
                     QueueName = HangfireQueueConfiguration.HighPriority
                 });
         }
@@ -90,7 +91,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
                 ConfigurationManager.AppSettings["FixedScheduledJob_Lineups_Hourly_JobCronExpression"],
                 new RecurringJobOptions()
                 {
-                    TimeZone = TimeZoneInfo.Local,
+                    TimeZone = TimezoneHelper.LocalSAST,
                     QueueName = HangfireQueueConfiguration.HighPriority
                 });
         }
@@ -103,7 +104,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
                 ConfigurationManager.AppSettings["FixedScheduledJob_Lineups_PastGames_Hourly_JobCronExpression"],
                 new RecurringJobOptions()
                 {
-                    TimeZone = TimeZoneInfo.Local,
+                    TimeZone = TimezoneHelper.LocalSAST,
                     QueueName = HangfireQueueConfiguration.HighPriority
                 });
         }
@@ -116,7 +117,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
                 ConfigurationManager.AppSettings["FixedScheduledJob_Cleanup_Monthly_JobCronExpression"],
                 new RecurringJobOptions()
                 {
-                    TimeZone = TimeZoneInfo.Local,
+                    TimeZone = TimezoneHelper.LocalSAST,
                     QueueName = HangfireQueueConfiguration.NormalPriority
                 });
         }
@@ -131,7 +132,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
                 Job.FromExpression(() => (_container.Resolve<IRugbyIngestWorkerService>()).IngestResultsForFixturesInResultsState(CancellationToken.None)),
                 ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_Hourly_PollingExpression"],
                 new RecurringJobOptions() {
-                    TimeZone = TimeZoneInfo.Local,
+                    TimeZone = TimezoneHelper.LocalSAST,
                     QueueName = HangfireQueueConfiguration.NormalPriority
                 });
         }
@@ -146,7 +147,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
                 ConfigurationManager.AppSettings["FixedScheduledJob_ReferenceData_JobCronExpression"],
                 new RecurringJobOptions()
                 {
-                    TimeZone = TimeZoneInfo.Local,
+                    TimeZone = TimezoneHelper.LocalSAST,
                     QueueName = HangfireQueueConfiguration.NormalPriority
                 });
         }
@@ -161,7 +162,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
                 ConfigurationManager.AppSettings["FixedScheduledJob_FixturesData_JobCronExpression"],
                 new RecurringJobOptions()
                 {
-                    TimeZone = TimeZoneInfo.Local,
+                    TimeZone = TimezoneHelper.LocalSAST,
                     QueueName = HangfireQueueConfiguration.NormalPriority
                 });
 
@@ -178,7 +179,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
                 ConfigurationManager.AppSettings["FixedScheduledJob_LogsData_ActiveTournaments_JobCronExpression"],
                 new RecurringJobOptions()
                 {
-                    TimeZone = TimeZoneInfo.Local,
+                    TimeZone = TimezoneHelper.LocalSAST,
                     QueueName = HangfireQueueConfiguration.NormalPriority
                 });
         }
@@ -191,7 +192,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
                 ConfigurationManager.AppSettings["FixedScheduledJob_LogsData_CurrentTournaments_JobId"],
                 Job.FromExpression(() => (_container.Resolve<IRugbyIngestWorkerService>()).IngestLogsForCurrentTournaments(CancellationToken.None)),
                 ConfigurationManager.AppSettings["FixedScheduledJob_LogsData_CurrentTournaments_JobCronExpression"],
-                TimeZoneInfo.Local,
+                TimezoneHelper.LocalSAST,
                 HangfireQueueConfiguration.NormalPriority);
         }
 
@@ -206,7 +207,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
                 ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_Daily_PollingExpression"],
                 new RecurringJobOptions()
                 {
-                    TimeZone = TimeZoneInfo.Local,
+                    TimeZone = TimezoneHelper.LocalSAST,
                     QueueName = HangfireQueueConfiguration.NormalPriority
                 });
         }
@@ -222,7 +223,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
                 ConfigurationManager.AppSettings["FixedScheduledJob_ResultsData_OnFixtureDay_PollingExpression"],
                 new RecurringJobOptions()
                 {
-                    TimeZone = TimeZoneInfo.Local,
+                    TimeZone = TimezoneHelper.LocalSAST,
                     QueueName = HangfireQueueConfiguration.HighPriority
                 });
         }
@@ -238,7 +239,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.FixedSchedule
             //    ConfigurationManager.AppSettings["FixedScheduledJob_PlayerStatsData_CurrentTournaments_JobCronExpression"],
             //    new RecurringJobOptions()
             //    {
-            //        TimeZone = TimeZoneInfo.Local,
+            //        TimeZone = TimezoneHelper.LocalSAST,
             //        QueueName = HangfireQueueConfiguration.HighPriority
             //    });
         }
