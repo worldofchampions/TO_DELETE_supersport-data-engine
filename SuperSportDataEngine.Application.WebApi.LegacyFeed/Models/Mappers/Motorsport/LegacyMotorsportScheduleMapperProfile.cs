@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Motorsport
+﻿using SuperSportDataEngine.Common.Helpers;
+
+namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers.Motorsport
 {
     using AutoMapper;
     using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Motorsport;
@@ -48,7 +50,7 @@
 
                 .ForMember(dest => dest.Date, expression => expression.MapFrom(
                     src => src.StartDateTimeUtc != null
-                        ? ((DateTimeOffset)src.StartDateTimeUtc).ToLocalTime().ToString("s")
+                        ? ((DateTimeOffset)src.StartDateTimeUtc).FromUtcToSastDateTimeOffset().ToString("s")
                         : ""))
 
                 .ForMember(dest => dest.RaceEventStatus, expression => expression.MapFrom(

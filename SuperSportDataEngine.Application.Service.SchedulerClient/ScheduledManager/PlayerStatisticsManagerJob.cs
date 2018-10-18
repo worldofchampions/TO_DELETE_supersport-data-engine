@@ -8,6 +8,7 @@ using Hangfire.Common;
 using SuperSportDataEngine.Application.Service.Common.Hangfire.Configuration;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
 using SuperSportDataEngine.ApplicationLogic.Services;
+using SuperSportDataEngine.Common.Helpers;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledManager
 {
@@ -83,7 +84,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
                 jobCronExpression,
                 new RecurringJobOptions
                 {
-                    TimeZone = TimeZoneInfo.Local,
+                    TimeZone = TimezoneHelper.LocalSAST,
                     QueueName = HangfireQueueConfiguration.HighPriority
                 });
         }

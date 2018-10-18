@@ -89,6 +89,7 @@
     <Compile Include="Interfaces\ICache.cs" />
     <Compile Include="Logging\ILoggingService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Helpers\TimezoneHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
