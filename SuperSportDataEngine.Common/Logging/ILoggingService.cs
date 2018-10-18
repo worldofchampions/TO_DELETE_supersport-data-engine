@@ -33,5 +33,7 @@ namespace SuperSportDataEngine.Common.Logging
         Task Warn(string key, Exception exception);
         Task Warn(string key, string format, TimeSpan loggingTtlInMinutes = default(TimeSpan), params object[] args);
         Task Warn(string key, Exception exception, string format, TimeSpan loggingTtlInMinutes = default(TimeSpan), params object[] args);
+
+        void SendTelemetry(string dependencyTypeName, string dependencyName, string data, DateTimeOffset startTime, TimeSpan duration, bool success);
     }
 }

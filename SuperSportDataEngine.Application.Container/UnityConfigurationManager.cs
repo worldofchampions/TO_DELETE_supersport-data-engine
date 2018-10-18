@@ -1,19 +1,16 @@
-﻿using Unity;
-using Unity.Injection;
-using Unity.Lifetime;
-
-namespace SuperSportDataEngine.Application.Container
+﻿namespace SuperSportDataEngine.Application.Container
 {
-    using Hangfire;
     using Hangfire.SqlServer;
+    using Hangfire;
+    using MongoDB.Driver.Core.Events;
     using MongoDB.Driver;
     using StackExchange.Redis;
     using SuperSportDataEngine.Application.Container.Enums;
     using SuperSportDataEngine.Application.Service.Common.Interfaces;
     using SuperSportDataEngine.Application.Service.Common.Services;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces.DeprecatedFeed;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces.LegacyFeed;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.CmsLogic.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.DeprecatedFeed.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.Stats.Interfaces;
@@ -21,10 +18,10 @@ namespace SuperSportDataEngine.Application.Container
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
-    using SuperSportDataEngine.ApplicationLogic.Services;
     using SuperSportDataEngine.ApplicationLogic.Services.Cms;
     using SuperSportDataEngine.ApplicationLogic.Services.DeprecatedFeed;
     using SuperSportDataEngine.ApplicationLogic.Services.LegacyFeed;
+    using SuperSportDataEngine.ApplicationLogic.Services;
     using SuperSportDataEngine.Common.Caching;
     using SuperSportDataEngine.Common.Interfaces;
     using SuperSportDataEngine.Common.Logging;
@@ -38,16 +35,18 @@ namespace SuperSportDataEngine.Application.Container
     using SuperSportDataEngine.Repository.EntityFramework.SystemSportData.Context;
     using SuperSportDataEngine.Repository.EntityFramework.SystemSportData.UnitOfWork;
     using SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories;
-    using System;
     using System.Configuration;
     using System.Data.Entity;
-    using Microsoft.ApplicationInsights;
+    using System;
+    using Unity.Injection;
+    using Unity.Lifetime;
+    using Unity;
 
     public static class UnityConfigurationManager
     {
         private const string PublicSportDataRepository = "PublicSportDataRepository";
         private const string SystemSportDataRepository = "SystemSportDataRepository";
-        private static ILoggingService logger = LoggingService.GetLoggingService();
+        private static readonly ILoggingService Logger = LoggingService.GetLoggingService();
 
         private static readonly Lazy<ConnectionMultiplexer> LazyRedisConnection = new Lazy<ConnectionMultiplexer>(() =>
         {
@@ -58,8 +57,29 @@ namespace SuperSportDataEngine.Application.Container
 
         private static readonly Lazy<IMongoClient> LazyMongoClient = new Lazy<IMongoClient>(() =>
         {
-            var mongoClient = new MongoClient(
-                ConfigurationManager.ConnectionStrings["MongoDB"].ConnectionString);
+            var connectionString = ConfigurationManager.ConnectionStrings["MongoDB"].ConnectionString;
+            var mongoUrl = new MongoUrl(connectionString);
+            var mongoClientSettings = MongoClientSettings.FromUrl(mongoUrl);
+            mongoClientSettings.ClusterConfigurator = clusterConfigurator =>
+            {
+                const string dependencyTypeName = "MongoDb";
+                var dependencyName = connectionString;
+
+                clusterConfigurator.Subscribe<CommandSucceededEvent>(e =>
+                {
+                    // Log a successful dependency event on every CommandSucceededEvent
+                    Logger.SendTelemetry(dependencyTypeName, dependencyName, e.CommandName, DateTimeOffset.UtcNow.Subtract(e.Duration), e.Duration, true);
+                });
+
+                clusterConfigurator.Subscribe<CommandFailedEvent>(e =>
+                {
+                    // Log a failed dependency event on every CommandFailedEvent 
+                    Logger.SendTelemetry(dependencyTypeName, dependencyName, e.Failure.Message, DateTimeOffset.UtcNow.Subtract(e.Duration), e.Duration, false);
+                });
+            };
+
+            var mongoClient = new MongoClient(mongoClientSettings);
+
             return mongoClient;
         });
 
@@ -102,7 +122,7 @@ namespace SuperSportDataEngine.Application.Container
 
         private static void ApplyRegistrationsForLogging(IUnityContainer container)
         {
-            container.RegisterType<ILoggingService>(new InjectionFactory(l => logger));
+            container.RegisterType<ILoggingService>(new InjectionFactory(l => Logger));
         }
 
         private static void ApplyRegistrationsForApplicationLogic(IUnityContainer container, ApplicationScope applicationScope)
@@ -139,13 +159,13 @@ namespace SuperSportDataEngine.Application.Container
                 container.RegisterType<ICache>(new ContainerControlledLifetimeManager(),
                     new InjectionFactory(x => new Cache(RedisConnection)));
 
-                logger.Cache = container.Resolve<ICache>();
+                Logger.Cache = container.Resolve<ICache>();
             }
             catch (Exception exception)
             {
                 container.RegisterType<ICache>(new ContainerControlledLifetimeManager(), new InjectionFactory(x => null));
 
-                logger.Error("NoCacheInDIContainer",
+                Logger.Error("NoCacheInDIContainer",
                     exception,
                     $"Message: {exception.Message}\n" +
                     $"StackTrace: {exception.StackTrace}\n" +
@@ -178,7 +198,7 @@ namespace SuperSportDataEngine.Application.Container
                 var motorsportWebRequest = new StatsMotorsportMotorsportWebRequest("http://api.stats.com", "ta3dprpc4sn79ecm2wg7tqbg", "JDgQnhPVZQ");
                 container.RegisterType<IStatsMotorsportIngestService, StatsMotorsportIngestService>(
                     new HierarchicalLifetimeManager(),
-                    new InjectionConstructor(motorsportWebRequest, logger));
+                    new InjectionConstructor(motorsportWebRequest, Logger));
             }
         }
 

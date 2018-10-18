@@ -3,7 +3,7 @@ using NLog.Config;
 using SuperSportDataEngine.Common.Logging;
 using System;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
+using Microsoft.ApplicationInsights;
 using NLog.Internal;
 using SuperSportDataEngine.Common.Interfaces;
 
@@ -181,6 +181,16 @@ namespace SuperSportDataEngine.Logging.NLog.Logging
             if (!IsWarnEnabled) return;
             var logEvent = GetLogEvent(LoggerName, LogLevel.Warn, exception, format, args);
             await LogWithCache(key, logEvent, ttlTimeSpan);
+        }
+
+        public void SendTelemetry(string dependencyTypeName, string dependencyName, string data, DateTimeOffset startTime, TimeSpan duration, bool success)
+        {
+            if (!IsTraceEnabled) return;
+
+            var telemetryClient = new TelemetryClient();
+            {
+                telemetryClient.TrackDependency(dependencyTypeName, dependencyName, data, startTime, duration, success);
+            }
         }
 
         public ICache Cache { get; set; }

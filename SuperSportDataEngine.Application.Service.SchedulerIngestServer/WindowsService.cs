@@ -1,32 +1,33 @@
-﻿using System.Threading.Tasks;
-using Hangfire.Unity;
-using SuperSportDataEngine.Common.Logging;
-using Unity;
-
-namespace SuperSportDataEngine.Application.Service.SchedulerIngestServer
+﻿namespace SuperSportDataEngine.Application.Service.SchedulerIngestServer
 {
-    using Hangfire;
-    using Hangfire.Logging;
     using Common.Hangfire.Configuration;
     using Common.Hangfire.Filters;
     using Common.Interfaces;
+    using Hangfire;
+    using Hangfire.Logging;
+    using Hangfire.Unity;
+    using Microsoft.ApplicationInsights.DependencyCollector;
+    using Microsoft.ApplicationInsights.Extensibility;
+    using SuperSportDataEngine.Common.Logging;
     using System;
     using System.Configuration;
+    using System.Threading.Tasks;
+    using Unity;
 
     internal class WindowsService : IWindowsServiceContract
     {
         private readonly UnityContainer _container;
         private BackgroundJobServer _jobServer;
         private ILoggingService _logger;
-        private int _concurrentJobTimeoutInSeconds;
+        private readonly int _concurrentJobTimeoutInSeconds;
 
         public WindowsService(UnityContainer container)
         {
             _container = container;
 
             _logger = _container.Resolve<ILoggingService>();
-            _concurrentJobTimeoutInSeconds =
-                int.Parse(ConfigurationManager.AppSettings["ConcurrentJobTimeoutInSeconds"]);
+
+            _concurrentJobTimeoutInSeconds = int.Parse(ConfigurationManager.AppSettings["ConcurrentJobTimeoutInSeconds"]);
         }
 
         public void StartService()
@@ -35,6 +36,14 @@ namespace SuperSportDataEngine.Application.Service.SchedulerIngestServer
         }
 
         private void DoServiceWork()
+        {
+            using (GetApplicationInsightDependencyTrackingModule())
+            {
+                RunSever();
+            }
+        }
+
+        private void RunSever()
         {
             GlobalConfiguration.Configuration.UseStorage(HangfireConfiguration.JobStorage);
             GlobalConfiguration.Configuration.UseUnityActivator(_container);
@@ -79,6 +88,23 @@ namespace SuperSportDataEngine.Application.Service.SchedulerIngestServer
                 throw new Exception("Didn't find hangfire automaticRetryAttribute something very wrong");
 
             GlobalJobFilters.Filters.Remove(automaticRetryAttribute);
+        }
+
+        private static IDisposable GetApplicationInsightDependencyTrackingModule()
+        {
+            var configuration = TelemetryConfiguration.Active;
+
+            configuration.InstrumentationKey = ConfigurationManager.AppSettings["AppInsightsInstrumentationKey"];
+
+            configuration.TelemetryInitializers.Add(new OperationCorrelationTelemetryInitializer());
+
+            configuration.TelemetryInitializers.Add(new HttpDependenciesParsingTelemetryInitializer());
+
+            var dependencyTrackingTelemetryModule = new DependencyTrackingTelemetryModule();
+
+            dependencyTrackingTelemetryModule.Initialize(configuration);
+
+            return dependencyTrackingTelemetryModule;
         }
     }
 }
