@@ -8,6 +8,7 @@ $resourceGroup = "SuperSport-SSDE-Staging"
 $sqlServerName = "awe-ssde-s-sql-server"
 $location = "West Europe"
 $credentials = Get-Credential
+$collationName = "SQL_Latin1_General_CP1_CI_AS"
 
 New-AzureRmSqlServer `
     -ResourceGroupName $resourceGroup `

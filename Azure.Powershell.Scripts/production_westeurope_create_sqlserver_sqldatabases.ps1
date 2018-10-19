@@ -9,6 +9,7 @@ $sqlServerName = "awe-ssde-p-sql-server"
 $location = "West Europe"
 $credentials = Get-Credential
 $edition = "Standard"
+$collationName = "SQL_Latin1_General_CP1_CI_AS"
 
 New-AzureRmSqlServer `
     -ResourceGroupName $resourceGroup `
