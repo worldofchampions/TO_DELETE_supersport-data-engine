@@ -15,4 +15,12 @@ New-AzureRmAppServicePlan `
     -ResourceGroupName $resourceGroupName `
     -Location $location `
     -Tier $appServiceTier `
-    -Name $appServicePlanName
+    -Name $appServicePlanName `
+    -NumberofWorkers 2
+
+# Create Production Legacy Feed instance
+New-AzureRmWebApp `
+    -ResourceGroupName $resourceGroupName `
+    -Name 'awe-ssde-p-legacy-feed' `
+    -Location $location `
+    -AppServicePlan $appServicePlanName
