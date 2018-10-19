@@ -18,7 +18,7 @@
     {
         private readonly UnityContainer _container;
         private BackgroundJobServer _jobServer;
-        private ILoggingService _logger;
+        private readonly ILoggingService _logger;
         private readonly int _concurrentJobTimeoutInSeconds;
 
         public WindowsService(UnityContainer container)
@@ -37,8 +37,28 @@
 
         private void DoServiceWork()
         {
-            using (GetApplicationInsightDependencyTrackingModule())
+            try
             {
+                var appInsightKey = ConfigurationManager.AppSettings["AppInsightsInstrumentationKey"];
+
+                var temp = GetApplicationInsightDependencyTrackingModule(appInsightKey);
+
+                if (temp != null)
+                {
+                    using (temp)
+                    {
+                        RunSever();
+                    }
+                }
+                else
+                {
+                    RunSever();
+                }
+            }
+            catch (Exception exception)
+            {
+                _logger.Warn("AppInsightsInstrumentationKey-Missing", exception);
+
                 RunSever();
             }
         }
@@ -90,11 +110,11 @@
             GlobalJobFilters.Filters.Remove(automaticRetryAttribute);
         }
 
-        private static IDisposable GetApplicationInsightDependencyTrackingModule()
+        private static IDisposable GetApplicationInsightDependencyTrackingModule(string appInsightKey)
         {
             var configuration = TelemetryConfiguration.Active;
 
-            configuration.InstrumentationKey = ConfigurationManager.AppSettings["AppInsightsInstrumentationKey"];
+            configuration.InstrumentationKey = appInsightKey;
 
             configuration.TelemetryInitializers.Add(new OperationCorrelationTelemetryInitializer());
 
