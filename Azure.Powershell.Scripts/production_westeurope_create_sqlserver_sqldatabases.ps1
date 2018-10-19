@@ -8,6 +8,7 @@ $resourceGroup = "SuperSport-SSDE-Prod"
 $sqlServerName = "awe-ssde-p-sql-server"
 $location = "West Europe"
 $credentials = Get-Credential
+$edition = "Standard"
 
 New-AzureRmSqlServer `
     -ResourceGroupName $resourceGroup `
@@ -19,16 +20,19 @@ New-AzureRmSqlDatabase `
     -DatabaseName "SuperSportDataEngine_Hangfire" `
     -ResourceGroupName $resourceGroup `
     -CollationName $collationName `
-    -ServerName $sqlServerName
+    -ServerName $sqlServerName `
+    -Edition $edition
 
 New-AzureRmSqlDatabase `
     -DatabaseName "SuperSportDataEngine_PublicSportData" `
     -ResourceGroupName $resourceGroup `
     -CollationName $collationName `
-    -ServerName $sqlServerName
+    -ServerName $sqlServerName `
+    -Edition $edition
 
 New-AzureRmSqlDatabase `
     -DatabaseName "SuperSportDataEngine_SystemSportData" `
     -ResourceGroupName $resourceGroup `
     -CollationName $collationName `
-    -ServerName $sqlServerName
+    -ServerName $sqlServerName `
+    -Edition $edition

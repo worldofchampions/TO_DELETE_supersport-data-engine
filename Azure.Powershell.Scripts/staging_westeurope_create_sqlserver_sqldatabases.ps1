@@ -19,16 +19,19 @@ New-AzureRmSqlDatabase `
     -DatabaseName "SuperSportDataEngine_Hangfire" `
     -ResourceGroupName $resourceGroup `
     -CollationName $collationName `
-    -ServerName $sqlServerName
+    -ServerName $sqlServerName `
+    -Edition $edition
 
 New-AzureRmSqlDatabase `
     -DatabaseName "SuperSportDataEngine_PublicSportData" `
     -ResourceGroupName $resourceGroup `
     -CollationName $collationName `
-    -ServerName $sqlServerName
+    -ServerName $sqlServerName `
+    -Edition $edition
 
 New-AzureRmSqlDatabase `
     -DatabaseName "SuperSportDataEngine_SystemSportData" `
     -ResourceGroupName $resourceGroup `
     -CollationName $collationName `
-    -ServerName $sqlServerName
+    -ServerName $sqlServerName `
+    -Edition $edition

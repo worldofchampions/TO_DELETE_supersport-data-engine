@@ -8,6 +8,7 @@ $resourceGroup = "SuperSport-SSDE-QA"
 $sqlServerName = "awe-ssde-q-sql-server"
 $location = "West Europe"
 $credentials = Get-Credential
+$collationName = "SQL_Latin1_General_CP1_CI_AS"
 
 New-AzureRmSqlServer `
     -ResourceGroupName $resourceGroup `
@@ -18,17 +19,20 @@ New-AzureRmSqlServer `
 New-AzureRmSqlDatabase `
     -DatabaseName "SuperSportDataEngine_Hangfire" `
     -ResourceGroupName $resourceGroup `
-    -CollationName "SQL_Latin1_General_CP1_CI_AS" `
-    -ServerName $sqlServerName
+    -CollationName $collationName `
+    -ServerName $sqlServerName `
+    -Edition $edition
 
 New-AzureRmSqlDatabase `
     -DatabaseName "SuperSportDataEngine_PublicSportData" `
     -ResourceGroupName $resourceGroup `
-    -CollationName "SQL_Latin1_General_CP1_CI_AS" `
-    -ServerName $sqlServerName
+    -CollationName $collationName `
+    -ServerName $sqlServerName `
+    -Edition $edition
 
 New-AzureRmSqlDatabase `
     -DatabaseName "SuperSportDataEngine_SystemSportData" `
     -ResourceGroupName $resourceGroup `
-    -CollationName "SQL_Latin1_General_CP1_CI_AS" `
-    -ServerName $sqlServerName
+    -CollationName $collationName `
+    -ServerName $sqlServerName `
+    -Edition $edition
