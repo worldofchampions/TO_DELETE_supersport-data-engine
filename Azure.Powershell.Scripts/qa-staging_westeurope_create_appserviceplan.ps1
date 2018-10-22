@@ -9,11 +9,11 @@ $stagingResourceGroupName = "SuperSport-SSDE-Staging"
 $appServicePlanName = "awe-ssde-s-appserviceplan"
 $location = "West Europe"
 $appServiceTier = "Standard"
+$appServiceSize = "Small"
 
 ####
-# This script will create an App Service with 1 worker with 4 Legacy Feeds on it.
-# Two staging feeds, and two QA feeds (is this even necessary?)
-# Cost will be 1x the cost of the App Service.
+# This script will create an App Service with 2 worker with 2 Legacy Feeds on each one (staging and QA).
+# Cost will be 2x the cost of the App Service.
 ####
 
 # Create a new Azure App Service for Staging/QA.
@@ -21,32 +21,20 @@ New-AzureRmAppServicePlan `
     -ResourceGroupName $stagingResourceGroupName `
     -Location $location `
     -Tier $appServiceTier `
-    -Name $appServicePlanName
+    -WorkerSize $appServiceSize `
+    -Name $appServicePlanName `
+    -NumberOfWorkers 2
 
-# Create Staging Legacy Feed instance 1
+# Create Staging Legacy Feed instance
 New-AzureRmWebApp `
     -ResourceGroupName $stagingResourceGroupName `
-    -Name 'awe-ssde-s-legacy-feed1' `
+    -Name 'awe-ssde-s-legacy-feed' `
     -Location $location `
     -AppServicePlan $appServicePlanName
 
-# Create Staging Legacy Feed instance 2
+# Create QA Legacy Feed instance
 New-AzureRmWebApp `
     -ResourceGroupName $stagingResourceGroupName `
-    -Name 'awe-ssde-s-legacy-feed2' `
-    -Location $location `
-    -AppServicePlan $appServicePlanName
-
-# Create QA Legacy Feed instance 1
-New-AzureRmWebApp `
-    -ResourceGroupName $stagingResourceGroupName `
-    -Name 'awe-ssde-q-legacy-feed1' `
-    -Location $location `
-    -AppServicePlan $appServicePlanName
-
-# Create QA Legacy Feed instance 2
-New-AzureRmWebApp `
-    -ResourceGroupName $stagingResourceGroupName `
-    -Name 'awe-ssde-q-legacy-feed2' `
+    -Name 'awe-ssde-q-legacy-feed' `
     -Location $location `
     -AppServicePlan $appServicePlanName

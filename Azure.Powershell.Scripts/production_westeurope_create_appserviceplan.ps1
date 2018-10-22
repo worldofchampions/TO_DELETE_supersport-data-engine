@@ -9,12 +9,19 @@ $resourceGroupName = "SuperSport-SSDE-Prod"
 $appServicePlanName = "awe-ssde-p-appserviceplan"
 $location = "West Europe"
 $appServiceTier = "Standard"
+$appServiceSize = "Small"
+
+####
+# This script will create an App Service with 2 workers with one Legacy Feed on each of the workers.
+# Cost will be 2x the cost of the App Service.
+####
 
 # Create a new Azure App Service for production.
 New-AzureRmAppServicePlan `
     -ResourceGroupName $resourceGroupName `
     -Location $location `
     -Tier $appServiceTier `
+    -WorkerSize $appServiceSize `
     -Name $appServicePlanName `
     -NumberofWorkers 2
 
