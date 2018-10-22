@@ -16,7 +16,7 @@ $appServiceSize = "Small"
 # Cost will be 1x the cost of the App Service.
 ####
 
-# Create a new Azure App Service for Staging/QA.
+# Create a new Azure App Service for Staging.
 New-AzureRmAppServicePlan `
     -ResourceGroupName $stagingResourceGroupName `
     -Location $location `
@@ -24,7 +24,7 @@ New-AzureRmAppServicePlan `
     -WorkerSize $appServiceSize `
     -Name $appServicePlanName
 
-# Create QA Legacy Feed instance
+# Create Staging Legacy Feed instance
 New-AzureRmWebApp `
     -ResourceGroupName $stagingResourceGroupName `
     -Name 'awe-ssde-s-legacy-feed' `

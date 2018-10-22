@@ -16,7 +16,7 @@ $appServiceSize = "Small"
 # Cost will be 1x the cost of the App Service.
 ####
 
-# Create a new Azure App Service for Staging/QA.
+# Create a new Azure App Service for QA.
 New-AzureRmAppServicePlan `
     -ResourceGroupName $qaResourceGroupName `
     -Location $location `
