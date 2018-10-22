@@ -12,8 +12,8 @@ $appServiceTier = "Standard"
 $appServiceSize = "Small"
 
 ####
-# This script will create an App Service with 2 worker with 2 Legacy Feeds on each one (staging and QA).
-# Cost will be 2x the cost of the App Service.
+# This script will create an App Service with one web app on it.
+# Cost will be 1x the cost of the App Service.
 ####
 
 # Create a new Azure App Service for Staging/QA.
@@ -22,19 +22,11 @@ New-AzureRmAppServicePlan `
     -Location $location `
     -Tier $appServiceTier `
     -WorkerSize $appServiceSize `
-    -Name $appServicePlanName `
-    -NumberOfWorkers 2
-
-# Create Staging Legacy Feed instance
-New-AzureRmWebApp `
-    -ResourceGroupName $stagingResourceGroupName `
-    -Name 'awe-ssde-s-legacy-feed' `
-    -Location $location `
-    -AppServicePlan $appServicePlanName
+    -Name $appServicePlanName
 
 # Create QA Legacy Feed instance
 New-AzureRmWebApp `
     -ResourceGroupName $stagingResourceGroupName `
-    -Name 'awe-ssde-q-legacy-feed' `
+    -Name 'awe-ssde-s-legacy-feed' `
     -Location $location `
     -AppServicePlan $appServicePlanName
