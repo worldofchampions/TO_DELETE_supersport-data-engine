@@ -1,3 +1,5 @@
+using System.Configuration;
+
 namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
 {
     using AutoMapper;
@@ -261,8 +263,9 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Controllers
         [ResponseType(typeof(LiveMotorsportModel))]
         public async Task<IHttpActionResult> GetLive(string category)
         {
+            var env = ConfigurationManager.AppSettings["ENVIRONMENT"];
             // TODO: @motorsport-feed: implement.
-            return await Task.FromResult(Content(HttpStatusCode.OK, "DEBUG GetLive"));
+            return await Task.FromResult(Content(HttpStatusCode.OK, $"{env} GetLive"));
         }
 
         // [TODO] Refactor this method out of this class and into a base class that has the cache.

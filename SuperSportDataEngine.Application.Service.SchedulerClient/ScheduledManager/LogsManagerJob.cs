@@ -2,6 +2,7 @@
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.Models.Enums;
 using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
+using SuperSportDataEngine.Common.Helpers;
 
 namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledManager
 {
@@ -118,7 +119,7 @@ namespace SuperSportDataEngine.Application.Service.SchedulerClient.ScheduledMana
                 jobCronExpression,
                 new RecurringJobOptions()
                 {
-                    TimeZone = TimeZoneInfo.Local,
+                    TimeZone = TimezoneHelper.LocalSAST,
                     QueueName = HangfireQueueConfiguration.HighPriority
                 });
         }
