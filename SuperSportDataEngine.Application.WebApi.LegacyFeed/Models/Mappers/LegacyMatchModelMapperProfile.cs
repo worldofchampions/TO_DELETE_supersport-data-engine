@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
+﻿using SuperSportDataEngine.Common.Helpers;
+
+namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
 {
     using AutoMapper;
     using SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Shared;
@@ -59,11 +61,11 @@
 
                 // Use sortable datetime format for legacy feed
                 .ForMember(dest => dest.MatchDateTime, expression => expression.MapFrom(
-                    src => Convert.ToDateTime(src.StartDateTime.UtcDateTime.ToLocalTime().ToString("s"))))
+                    src => Convert.ToDateTime(src.StartDateTime.UtcDateTime.FromUtcToSastDateTime().ToString("s"))))
 
                 // Use sortable datetime format for legacy feed
                 .ForMember(dest => dest.MatchDateTimeString, expression => expression.MapFrom(
-                    src => src.StartDateTime.UtcDateTime.ToLocalTime().ToString("s")))
+                    src => src.StartDateTime.UtcDateTime.FromUtcToSastDateTime().ToString("s")))
 
                 // Use sortable datetime format for legacy feed
                 .ForMember(dest => dest.MatchEndDateTimeString, expression => expression.UseValue(
