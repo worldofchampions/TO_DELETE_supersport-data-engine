@@ -30,14 +30,17 @@
                     src => (src.TeamAIsHomeTeam ? src.TeamBScore : src.TeamAScore)))
 
                 .ForMember(dest => dest.Location, expression => expression.MapFrom(
-                    src => src.RugbyVenue == null ?
-                        "TBC" : (src.RugbyVenue.NameCmsOverride ?? src.RugbyVenue.Name)))
+                    src => src.RugbyVenue == null ? "TBC" : (src.RugbyVenue.NameCmsOverride ?? src.RugbyVenue.Name)))
+
+                .ForMember(dest => dest.ShowFixtureMatchNumber, exp => exp.MapFrom(src => src.RugbyTournament.HasFixtureMatchNumber))
 
                 .ForMember(dest => dest.MatchNumber, exp => exp.MapFrom(
-                    src => src.MatchNumberCmsOverride ?? src.MatchNumber))
+                    src => src.RugbyTournament.HasFixtureMatchNumber ? (src.MatchNumberCmsOverride ?? src.MatchNumber) : null))
+
+                .ForMember(dest => dest.ShowFixtureRoundName, exp => exp.MapFrom(src => src.RugbyTournament.HasFixtureRoundName))
 
                 .ForMember(dest => dest.RoundName, exp => exp.MapFrom(
-                    src => src.RoundNameCmsOverride ?? src.RoundName))
+                    src => src.RugbyTournament.HasFixtureRoundName ? (src.RoundNameCmsOverride ?? src.RoundName) : null))
 
                 .ForMember(dest => dest.Preview, src => src.Ignore())
 
@@ -45,8 +48,7 @@
 
                 .ForMember(dest => dest.Channels, expression => expression.UseValue(LegacyFeedConstants.EmptyChannelsList))
 
-                .ForMember(dest => dest.Status, exp => exp.MapFrom(
-                        src => LegacyFeedConstants.GetFixtureStatusDescription(src.RugbyFixtureStatus)))
+                .ForMember(dest => dest.Status, exp => exp.MapFrom(src => LegacyFeedConstants.GetFixtureStatusDescription(src.RugbyFixtureStatus)))
 
                 .ForMember(dest => dest.video, src => src.Ignore());
         }

@@ -53,11 +53,15 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
                 .ForMember(dest => dest.MatchID, expression => expression.MapFrom(
                     src => src.LegacyFixtureId))
 
+                .ForMember(dest => dest.ShowFixtureMatchNumber, exp => exp.MapFrom(src => src.RugbyTournament.HasFixtureMatchNumber))
+
                 .ForMember(dest => dest.MatchNumber, exp => exp.MapFrom(
-                    src => src.MatchNumberCmsOverride ?? src.MatchNumber))
-                
+                    src => src.RugbyTournament.HasFixtureMatchNumber ? (src.MatchNumberCmsOverride ?? src.MatchNumber) : null))
+
+                .ForMember(dest => dest.ShowFixtureRoundName, exp => exp.MapFrom(src => src.RugbyTournament.HasFixtureRoundName))
+
                 .ForMember(dest => dest.RoundName, exp => exp.MapFrom(
-                    src => src.RoundNameCmsOverride ?? src.RoundName))
+                    src => src.RugbyTournament.HasFixtureRoundName ? (src.RoundNameCmsOverride ?? src.RoundName) : null))
 
                 // Use sortable datetime format for legacy feed
                 .ForMember(dest => dest.MatchDateTime, expression => expression.MapFrom(

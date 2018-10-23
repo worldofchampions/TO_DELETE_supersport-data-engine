@@ -284,6 +284,10 @@
     <Compile Include="Migrations\201810030716278_Rugby_Add_RoundNameAndItsCmsOverride_ForFixtures.Designer.cs">
       <DependentUpon>201810030716278_Rugby_Add_RoundNameAndItsCmsOverride_ForFixtures.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201810231342127_Rugby_Add_HasFixtureRoundNameAndHasFixtureMatchNumber.cs" />
+    <Compile Include="Migrations\201810231342127_Rugby_Add_HasFixtureRoundNameAndHasFixtureMatchNumber.Designer.cs">
+      <DependentUpon>201810231342127_Rugby_Add_HasFixtureRoundNameAndHasFixtureMatchNumber.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Seed\Motorsport\SeedMotorsportCurrentSeasons.cs" />
     <Compile Include="Migrations\Seed\Rugby\LogGroups\ChampionsCup\SeedRugbyLogGroupsForChampionsCup2019.cs" />
@@ -489,6 +493,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201810030716278_Rugby_Add_RoundNameAndItsCmsOverride_ForFixtures.resx">
       <DependentUpon>201810030716278_Rugby_Add_RoundNameAndItsCmsOverride_ForFixtures.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201810231342127_Rugby_Add_HasFixtureRoundNameAndHasFixtureMatchNumber.resx">
+      <DependentUpon>201810231342127_Rugby_Add_HasFixtureRoundNameAndHasFixtureMatchNumber.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

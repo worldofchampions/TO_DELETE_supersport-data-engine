@@ -64,12 +64,15 @@ namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Mappers
 
                 .ForMember(dest => dest.TeamBCards, src => src.UseValue(LegacyFeedConstants.EmptyTeamCardsList))
 
-                // Fixture Specific Details
+                .ForMember(dest => dest.ShowFixtureMatchNumber, exp => exp.MapFrom(src => src.RugbyFixture.RugbyTournament.HasFixtureMatchNumber))
+
                 .ForMember(dest => dest.MatchNumber, exp => exp.MapFrom(
-                    src => src.RugbyFixture.MatchNumberCmsOverride ?? src.RugbyFixture.MatchNumber))
+                    src => src.RugbyFixture.RugbyTournament.HasFixtureMatchNumber ? (src.RugbyFixture.MatchNumberCmsOverride ?? src.RugbyFixture.MatchNumber) : null))
+
+                .ForMember(dest => dest.ShowFixtureRoundName, exp => exp.MapFrom(src => src.RugbyFixture.RugbyTournament.HasFixtureRoundName))
 
                 .ForMember(dest => dest.RoundName, exp => exp.MapFrom(
-                    src => src.RugbyFixture.RoundNameCmsOverride ?? src.RugbyFixture.RoundName))
+                    src => src.RugbyFixture.RugbyTournament.HasFixtureRoundName ? (src.RugbyFixture.RoundNameCmsOverride ?? src.RugbyFixture.RoundName) : null))
 
                 .ForMember(dest => dest.Teamsheet, exp => exp.MapFrom(src => src.TeamsLineups))
 
