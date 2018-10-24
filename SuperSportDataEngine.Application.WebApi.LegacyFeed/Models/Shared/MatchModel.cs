@@ -31,6 +31,7 @@
         public int AwayTeamPenalties { get; set; }
         public bool Postponed { get; set; }
         public bool WalkOver { get; set; }
+        public bool ShowFixtureMatchNumber { get; set; }
         public string MatchNumber { get; set; }
         public string MatchComment { get; set; }
         public string MatchType { get; set; }
@@ -45,6 +46,7 @@
         public bool IsFeatured { get; set; }
         public bool International { get; set; }
         public int Round { get; set; }
+        public bool ShowFixtureRoundName { get; set; }
         public string RoundName { get; set; }
         public int Stage { get; set; }
         public string StageName { get; set; }
