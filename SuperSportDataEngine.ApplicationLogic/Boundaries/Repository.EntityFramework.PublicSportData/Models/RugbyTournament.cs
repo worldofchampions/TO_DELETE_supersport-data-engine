@@ -1,9 +1,8 @@
-﻿using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models.Enums;
-
-namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models
+﻿namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models
 {
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Base;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.Common.Models.Enums;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.Models.Enums;
     using System;
 
     public class RugbyTournament : BaseModel
@@ -40,6 +39,13 @@ namespace SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFram
 
         /// <summary> A CMS driven value to indicate if the tournament has logs/ladder standings. </summary>
         public bool HasLogs { get; set; }
+
+        /// <summary> A CMS driven value to indicate if a tournament has round names. </summary>
+        public bool HasFixtureRoundName { get; set; }
+
+        /// <summary> A CMS driven value to indicate if a tournament has match numbers. </summary>
+        public bool HasFixtureMatchNumber { get; set; }
+        
         /// <summary>
         /// A seeding driven value for the default rugby log type.
         /// </summary>
