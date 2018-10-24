@@ -1,4 +1,6 @@
 BEGIN TRAN
+	UPDATE [dbo].[RugbyTournaments] SET HasFixtureMatchNumber = 1, HasFixtureRoundName = 1 WHERE DataProvider = 2 AND ProviderTournamentId IN (850)
+	------------------------------------------------------------------------------------------------------------------------------------------------
 	UPDATE [SuperSportDataEngine_PublicSportData].[dbo].[RugbyFixtures] SET MatchNumberCmsOverride = 1 WHERE ProviderFixtureId = 20158500100
 	UPDATE [SuperSportDataEngine_PublicSportData].[dbo].[RugbyFixtures] SET MatchNumberCmsOverride = 2 WHERE ProviderFixtureId = 20158500110
 	UPDATE [SuperSportDataEngine_PublicSportData].[dbo].[RugbyFixtures] SET MatchNumberCmsOverride = 3 WHERE ProviderFixtureId = 20158500120

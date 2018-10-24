@@ -7,13 +7,13 @@ namespace SuperSportDataEngine.Repository.EntityFramework.PublicSportData.Migrat
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.2.0-61023")]
-    public sealed partial class Rugby_Add_MatchNumberAndItsCmsOverride_ForFixtures : IMigrationMetadata
+    public sealed partial class Rugby_MatchNumber_RoundName : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(Rugby_Add_MatchNumberAndItsCmsOverride_ForFixtures));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(Rugby_MatchNumber_RoundName));
         
         string IMigrationMetadata.Id
         {
-            get { return "201810021011114_Rugby_Add_MatchNumberAndItsCmsOverride_ForFixtures"; }
+            get { return "201810241311354_Rugby_MatchNumber_RoundName"; }
         }
         
         string IMigrationMetadata.Source
