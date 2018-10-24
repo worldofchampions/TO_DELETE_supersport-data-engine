@@ -1,4 +1,4 @@
-﻿namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby
+namespace SuperSportDataEngine.Application.WebApi.LegacyFeed.Models.Rugby
 {
     using System;
     using System.Collections.Generic;
