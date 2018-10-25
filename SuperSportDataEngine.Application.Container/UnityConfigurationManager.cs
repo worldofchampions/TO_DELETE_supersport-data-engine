@@ -201,11 +201,8 @@ namespace SuperSportDataEngine.Application.Container
                 container.RegisterType<IStatsProzoneRugbyIngestService, StatsProzoneRugbyIngestService>(
                     new HierarchicalLifetimeManager());
 
-
-                var instrumentationKey = ConfigurationManager.AppSettings["ConcurrentJobTimeoutInSeconds"];
-
-                container.RegisterType<IApplicationInsightDependencyTrackingModule, ApplicationInsightDependencyTrackingModule>(
-                    new TransientLifetimeManager(), new InjectionConstructor(instrumentationKey));
+                container.RegisterType<IApplicationInsightDependencyTrackingModule>(
+                    new ContainerControlledLifetimeManager(), new InjectionFactory(x => DependencyTrackingModule));
             }
         }
 
