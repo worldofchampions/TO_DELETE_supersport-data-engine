@@ -38,7 +38,7 @@ New-AzureRmSqlDatabase `
     -Edition $edition
 
 $dateOfExport = "2018-10-25"
-$storageAccountKey = "kB/Fi+wLHnvAdirZS8BZJbJHcDDDsNpLkWnPVT8kyQQ/HIacI1OEXgdGKQWA0LyQ00iR7iwnvcIFPJZMxku2vw=="
+$storageAccountKey = ###STORAGE KEY###
 $hangfireStorageUri = "https://ssdestorage.blob.core.windows.net/sqlbackups/" + $dateOfExport + "/SuperSportDataEngine_Hangfire.bacpac"
 $publicSportDataStorageUri = "https://ssdestorage.blob.core.windows.net/sqlbackups/" + $dateOfExport + "/SuperSportDataEngine_PublicSportData.bacpac"
 $systemSportDataStorageUri = "https://ssdestorage.blob.core.windows.net/sqlbackups/" + $dateOfExport + "/SuperSportDataEngine_SystemSportData.bacpac"
