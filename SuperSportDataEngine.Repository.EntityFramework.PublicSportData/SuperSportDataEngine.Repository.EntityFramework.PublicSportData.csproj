@@ -276,6 +276,10 @@
     <Compile Include="Migrations\201809031917128_Rugby_Add_DefaultRugbyLogType_RugbyTournament.Designer.cs">
       <DependentUpon>201809031917128_Rugby_Add_DefaultRugbyLogType_RugbyTournament.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201810241311354_Rugby_MatchNumber_RoundName.cs" />
+    <Compile Include="Migrations\201810241311354_Rugby_MatchNumber_RoundName.Designer.cs">
+      <DependentUpon>201810241311354_Rugby_MatchNumber_RoundName.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Migrations\Seed\Motorsport\SeedMotorsportCurrentSeasons.cs" />
     <Compile Include="Migrations\Seed\Rugby\LogGroups\ChampionsCup\SeedRugbyLogGroupsForChampionsCup2019.cs" />
@@ -475,6 +479,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201809031917128_Rugby_Add_DefaultRugbyLogType_RugbyTournament.resx">
       <DependentUpon>201809031917128_Rugby_Add_DefaultRugbyLogType_RugbyTournament.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201810241311354_Rugby_MatchNumber_RoundName.resx">
+      <DependentUpon>201810241311354_Rugby_MatchNumber_RoundName.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

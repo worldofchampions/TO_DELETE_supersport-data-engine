@@ -64,6 +64,12 @@
 
         public int RoundNumber { get; set; }
 
+        public bool ShowFixtureRoundName { get; set; }
+
+        public string RoundName { get; set; }
+
+        public bool ShowFixtureMatchNumber { get; set; }
+
         public int MatchNumber { get; set; }
 
         public string Attendance { get; set; }
