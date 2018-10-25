@@ -214,6 +214,9 @@ namespace SuperSportDataEngine.Application.Container
                 container.RegisterType<IStatsMotorsportIngestService, StatsMotorsportIngestService>(
                     new HierarchicalLifetimeManager(),
                     new InjectionConstructor(motorsportWebRequest, Logger));
+
+                container.RegisterType<IApplicationInsightDependencyTrackingModule>(
+                    new ContainerControlledLifetimeManager(), new InjectionFactory(x => DependencyTrackingModule));
             }
         }
 
