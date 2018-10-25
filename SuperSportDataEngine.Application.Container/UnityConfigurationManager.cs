@@ -1,4 +1,6 @@
-﻿namespace SuperSportDataEngine.Application.Container
+﻿using SuperSportDataEngine.Common.DependencyTracking;
+
+namespace SuperSportDataEngine.Application.Container
 {
     using Hangfire.SqlServer;
     using Hangfire;
@@ -83,8 +85,18 @@
             return mongoClient;
         });
 
+        private static readonly Lazy<ApplicationInsightDependencyTrackingModule> LazyDependencyTrackingModule = new Lazy<ApplicationInsightDependencyTrackingModule>(() =>
+        {
+            var instrumentationKey = ConfigurationManager.AppSettings["AppInsightsInstrumentationKey"];
+
+            var connectionMultiplexer = new ApplicationInsightDependencyTrackingModule(instrumentationKey);
+
+            return connectionMultiplexer;
+        });
+
         private static ConnectionMultiplexer RedisConnection => LazyRedisConnection.Value;
         private static IMongoClient MongoClient => LazyMongoClient.Value;
+        private static ApplicationInsightDependencyTrackingModule DependencyTrackingModule => LazyDependencyTrackingModule.Value;
 
         public static void RegisterTypes(IUnityContainer container, ApplicationScope applicationScope)
         {
@@ -188,6 +200,12 @@
             {
                 container.RegisterType<IStatsProzoneRugbyIngestService, StatsProzoneRugbyIngestService>(
                     new HierarchicalLifetimeManager());
+
+
+                var instrumentationKey = ConfigurationManager.AppSettings["ConcurrentJobTimeoutInSeconds"];
+
+                container.RegisterType<IApplicationInsightDependencyTrackingModule, ApplicationInsightDependencyTrackingModule>(
+                    new TransientLifetimeManager(), new InjectionConstructor(instrumentationKey));
             }
         }
 

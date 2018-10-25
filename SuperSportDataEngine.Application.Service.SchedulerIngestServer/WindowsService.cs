@@ -6,8 +6,7 @@
     using Hangfire;
     using Hangfire.Logging;
     using Hangfire.Unity;
-    using Microsoft.ApplicationInsights.DependencyCollector;
-    using Microsoft.ApplicationInsights.Extensibility;
+    using SuperSportDataEngine.Common.DependencyTracking;
     using SuperSportDataEngine.Common.Logging;
     using System;
     using System.Configuration;
@@ -20,6 +19,7 @@
         private BackgroundJobServer _jobServer;
         private readonly ILoggingService _logger;
         private readonly int _concurrentJobTimeoutInSeconds;
+        private readonly IApplicationInsightDependencyTrackingModule _dependencyTrackingModule;
 
         public WindowsService(UnityContainer container)
         {
@@ -28,6 +28,8 @@
             _logger = _container.Resolve<ILoggingService>();
 
             _concurrentJobTimeoutInSeconds = int.Parse(ConfigurationManager.AppSettings["ConcurrentJobTimeoutInSeconds"]);
+
+            _dependencyTrackingModule = _container.Resolve<IApplicationInsightDependencyTrackingModule>();
         }
 
         public void StartService()
@@ -37,28 +39,17 @@
 
         private void DoServiceWork()
         {
-            try
+            var trackingModuleInstance = _dependencyTrackingModule;
+
+            if (trackingModuleInstance != null)
             {
-                var appInsightKey = ConfigurationManager.AppSettings["AppInsightsInstrumentationKey"];
-
-                var temp = GetApplicationInsightDependencyTrackingModule(appInsightKey);
-
-                if (temp != null)
-                {
-                    using (temp)
-                    {
-                        RunSever();
-                    }
-                }
-                else
+                using (trackingModuleInstance)
                 {
                     RunSever();
                 }
             }
-            catch (Exception exception)
+            else
             {
-                _logger.Warn("AppInsightsInstrumentationKey-Missing", exception);
-
                 RunSever();
             }
         }
@@ -108,23 +99,6 @@
                 throw new Exception("Didn't find hangfire automaticRetryAttribute something very wrong");
 
             GlobalJobFilters.Filters.Remove(automaticRetryAttribute);
-        }
-
-        private static IDisposable GetApplicationInsightDependencyTrackingModule(string appInsightKey)
-        {
-            var configuration = TelemetryConfiguration.Active;
-
-            configuration.InstrumentationKey = appInsightKey;
-
-            configuration.TelemetryInitializers.Add(new OperationCorrelationTelemetryInitializer());
-
-            configuration.TelemetryInitializers.Add(new HttpDependenciesParsingTelemetryInitializer());
-
-            var dependencyTrackingTelemetryModule = new DependencyTrackingTelemetryModule();
-
-            dependencyTrackingTelemetryModule.Initialize(configuration);
-
-            return dependencyTrackingTelemetryModule;
         }
     }
 }
