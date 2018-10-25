@@ -4,33 +4,42 @@ Login-AzureRmAccount
 # Use the SuperSport subscription.
 Set-AzureRmContext -SubscriptionId "1b355cd4-4b64-4890-a31b-840bafbb63b1"
 
-$deploymentResourceGroup = "SuperSport-SSDE-Staging"
-$vmName = "awe-ssde-s-sc"
-$vmSize = "Standard_F4s_v2"
+$deploymentResourceGroup = "SuperSport-SSDE-QA"
+$vmSize = "Standard_D2s_v3"
+$vmName = "awe-ssde-q-sis1"
 ## UPDATE THIS IF THE BASE IMAGE CHANGES ##
 $baseImageUri = "/subscriptions/1b355cd4-4b64-4890-a31b-840bafbb63b1/resourceGroups/SuperSport-SSDE-Common/providers/Microsoft.Compute/images/SSDE-BASE-IMAGE-20181025101839"
-$storageAccountName = "awessdesstorage"
+$storageAccountName = "awessdeqstorage"
 
-# Create a new Network Security Group which 
-# allows port 9622 to be opened and accessed.
-
-$httprule = New-AzureRmNetworkSecurityRuleConfig `
-    -Name "allow_hangfire_dashboard_access" `
-    -Description "Allow HTTP" `
-    -Access "Allow" `
-    -Protocol "Tcp" `
-    -Direction "Inbound" `
-    -Priority "100" `
-    -SourceAddressPrefix "*" `
-    -SourcePortRange * `
-    -DestinationAddressPrefix * `
-    -DestinationPortRange 9622
-
+# Create a new Network Security Group
 $nsg = New-AzureRmNetworkSecurityGroup `
     -ResourceGroupName $deploymentResourceGroup `
     -Location "West Europe" `
-    -Name $vmName `
-    -SecurityRules $httprule
+    -Name $vmName
+
+# Create the VM in the existing Virtual Network.
+New-AzureRmResourceGroupDeployment `
+    -Name "deployment" `
+    -ResourceGroupName $deploymentResourceGroup `
+    -TemplateUri 201-vm-different-rg-vnet/azuredeploy.json `
+    -vmName $vmName `
+    -newStorageAccountName $storageAccountName `
+    -adminUsername "SuperSportDataEngine" `
+    -virtualNetworkName "SuperSport-API-Vnet" `
+    -virtualNetworkResourceGroup "SuperSport-API-Backend-Prod" `
+    -subnet1Name "default" `
+    -nicName $vmName `
+    -vmSize $vmSize `
+    -publicIPName $vmName `
+    -baseImageUri $baseImageUri
+
+$vmName = "awe-ssde-q-sis2"
+
+# Create a new Network Security Group
+$nsg = New-AzureRmNetworkSecurityGroup `
+    -ResourceGroupName $deploymentResourceGroup `
+    -Location "West Europe" `
+    -Name $vmName
 
 # Create the VM in the existing Virtual Network.
 New-AzureRmResourceGroupDeployment `

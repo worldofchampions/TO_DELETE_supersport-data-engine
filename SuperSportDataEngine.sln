@@ -89,13 +89,35 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SuperSportDataEngine.Loggin
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Azure.Powershell.Scripts", "Azure.Powershell.Scripts", "{6BDA0D6D-9F5B-497A-8DE9-3DB8414F4DCA}"
 	ProjectSection(SolutionItems) = preProject
+		Azure.Powershell.Scripts\production_create_scheduler_client_vm.ps1 = Azure.Powershell.Scripts\production_create_scheduler_client_vm.ps1
+		Azure.Powershell.Scripts\production_create_scheduler_ingest_vms.ps1 = Azure.Powershell.Scripts\production_create_scheduler_ingest_vms.ps1
 		Azure.Powershell.Scripts\production_westeurope_create_appserviceplan.ps1 = Azure.Powershell.Scripts\production_westeurope_create_appserviceplan.ps1
 		Azure.Powershell.Scripts\production_westeurope_create_redis.ps1 = Azure.Powershell.Scripts\production_westeurope_create_redis.ps1
 		Azure.Powershell.Scripts\production_westeurope_create_sqlserver_sqldatabases.ps1 = Azure.Powershell.Scripts\production_westeurope_create_sqlserver_sqldatabases.ps1
 		Azure.Powershell.Scripts\qa-staging_westeurope_create_appserviceplan.ps1 = Azure.Powershell.Scripts\qa-staging_westeurope_create_appserviceplan.ps1
 		Azure.Powershell.Scripts\qa-staging_westeurope_create_redis.ps1 = Azure.Powershell.Scripts\qa-staging_westeurope_create_redis.ps1
+		Azure.Powershell.Scripts\qa_create_scheduler_client_vm.ps1 = Azure.Powershell.Scripts\qa_create_scheduler_client_vm.ps1
+		Azure.Powershell.Scripts\qa_create_scheduler_ingest_vms.ps1 = Azure.Powershell.Scripts\qa_create_scheduler_ingest_vms.ps1
+		Azure.Powershell.Scripts\qa_westeurope_create_appserviceplan.ps1 = Azure.Powershell.Scripts\qa_westeurope_create_appserviceplan.ps1
 		Azure.Powershell.Scripts\qa_westeurope_create_sqlserver_sqldatabases.ps1 = Azure.Powershell.Scripts\qa_westeurope_create_sqlserver_sqldatabases.ps1
+		Azure.Powershell.Scripts\staging_create_scheduler_client_vm.ps1 = Azure.Powershell.Scripts\staging_create_scheduler_client_vm.ps1
+		Azure.Powershell.Scripts\staging_create_scheduler_ingest_vms.ps1 = Azure.Powershell.Scripts\staging_create_scheduler_ingest_vms.ps1
+		Azure.Powershell.Scripts\staging_westeurope_create_appserviceplan.ps1 = Azure.Powershell.Scripts\staging_westeurope_create_appserviceplan.ps1
 		Azure.Powershell.Scripts\staging_westeurope_create_sqlserver_sqldatabases.ps1 = Azure.Powershell.Scripts\staging_westeurope_create_sqlserver_sqldatabases.ps1
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "201-vm-different-rg-vnet", "201-vm-different-rg-vnet", "{6A31D245-2D32-4B20-BE84-5E8A183485D2}"
+	ProjectSection(SolutionItems) = preProject
+		Azure.Powershell.Scripts\201-vm-different-rg-vnet\azuredeploy.json = Azure.Powershell.Scripts\201-vm-different-rg-vnet\azuredeploy.json
+		Azure.Powershell.Scripts\201-vm-different-rg-vnet\azuredeploy.parameters.json = Azure.Powershell.Scripts\201-vm-different-rg-vnet\azuredeploy.parameters.json
+		Azure.Powershell.Scripts\201-vm-different-rg-vnet\metadata.json = Azure.Powershell.Scripts\201-vm-different-rg-vnet\metadata.json
+		Azure.Powershell.Scripts\201-vm-different-rg-vnet\README.md = Azure.Powershell.Scripts\201-vm-different-rg-vnet\README.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "prereqs", "prereqs", "{CC3F0C08-3865-4901-A15B-46D533A79A92}"
+	ProjectSection(SolutionItems) = preProject
+		Azure.Powershell.Scripts\201-vm-different-rg-vnet\prereqs\prereq.azuredeploy.json = Azure.Powershell.Scripts\201-vm-different-rg-vnet\prereqs\prereq.azuredeploy.json
+		Azure.Powershell.Scripts\201-vm-different-rg-vnet\prereqs\prereq.azuredeploy.parameters.json = Azure.Powershell.Scripts\201-vm-different-rg-vnet\prereqs\prereq.azuredeploy.parameters.json
 	EndProjectSection
 EndProject
 Global
@@ -426,6 +448,8 @@ Global
 		{A523C0E3-097D-4869-977F-15A717EA3E83} = {F0C66F43-4553-484A-AB49-9C16A609A7BE}
 		{F7A61858-4830-4F2A-A16B-3C655D85598B} = {F0C66F43-4553-484A-AB49-9C16A609A7BE}
 		{05791F34-A9B8-42F3-A18B-4CDA7AF43307} = {F0C66F43-4553-484A-AB49-9C16A609A7BE}
+		{6A31D245-2D32-4B20-BE84-5E8A183485D2} = {6BDA0D6D-9F5B-497A-8DE9-3DB8414F4DCA}
+		{CC3F0C08-3865-4901-A15B-46D533A79A92} = {6A31D245-2D32-4B20-BE84-5E8A183485D2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C5886B26-8567-4EC5-AC74-21D7466CDD3D}
