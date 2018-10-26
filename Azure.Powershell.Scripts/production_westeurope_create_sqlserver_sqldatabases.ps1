@@ -38,10 +38,11 @@ New-AzureRmSqlDatabase `
     -ServerName $sqlServerName `
     -Edition $edition
 
-$storageAccountKey = ###INSERT KEY###
-$hangfireStorageUri = ###INSERT URI### 
-$publicSportDataStorageUri = ###INSERT URI### 
-$systemSportDataStorageUri = ###INSERT URI### 
+$dateOfExport = "2018-10-25"
+$storageAccountKey = ###STORAGE KEY###
+$hangfireStorageUri = "https://ssdestorage.blob.core.windows.net/sqlbackups/" + $dateOfExport + "/SuperSportDataEngine_Hangfire.bacpac"
+$publicSportDataStorageUri = "https://ssdestorage.blob.core.windows.net/sqlbackups/" + $dateOfExport + "/SuperSportDataEngine_PublicSportData.bacpac"
+$systemSportDataStorageUri = "https://ssdestorage.blob.core.windows.net/sqlbackups/" + $dateOfExport + "/SuperSportDataEngine_SystemSportData.bacpac"
 $adminUsername = ###ADMIN USERNAME###
 $adminPassword = ###ADMIN USERNAME###
 
@@ -70,6 +71,7 @@ while ($importStatus.Status -eq "InProgress")
 [Console]::WriteLine("")
 $importStatus
 
+# Import request for SuperSportDataEngine_PublicSportData
 $importRequest = New-AzureRmSqlDatabaseImport -ResourceGroupName "SuperSport-SSDE-Prod" `
     -ServerName $sqlServerName `
     -DatabaseName "SuperSportDataEngine_PublicSportData" `

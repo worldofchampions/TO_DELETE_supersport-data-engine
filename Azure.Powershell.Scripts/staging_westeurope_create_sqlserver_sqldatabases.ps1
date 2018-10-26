@@ -37,82 +37,84 @@ New-AzureRmSqlDatabase `
     -ServerName $sqlServerName `
     -Edition $edition
 
-    $storageAccountKey = ###INSERT KEY###
-    $hangfireStorageUri = ###INSERT URI### 
-    $publicSportDataStorageUri = ###INSERT URI### 
-    $systemSportDataStorageUri = ###INSERT URI### 
-    $adminUsername = ###ADMIN USERNAME###
-    $adminPassword = ###ADMIN USERNAME###
-    
-    # Import request for SuperSportDataEngine_Hangfire
-    $importRequest = New-AzureRmSqlDatabaseImport -ResourceGroupName "SuperSport-SSDE-Prod" `
-        -ServerName $sqlServerName `
-        -DatabaseName "SuperSportDataEngine_Hangfire" `
-        -DatabaseMaxSizeBytes "262144000" `
-        -StorageKeyType "StorageAccessKey" `
-        -StorageKey $storageAccountKey `
-        -StorageUri $hangfireStorageUri `
-        -Edition "Standard" `
-        -ServiceObjectiveName "P6" `
-        -AdministratorLogin $adminUsername `
-        -AdministratorLoginPassword $(ConvertTo-SecureString -String $adminPassword -AsPlainText -Force)
-    
-    # Track the status of importing SuperSportDataEngine_Hangfire
+$dateOfExport = "2018-10-25"
+$storageAccountKey = ###STORAGE KEY###
+$hangfireStorageUri = "https://ssdestorage.blob.core.windows.net/sqlbackups/" + $dateOfExport + "/SuperSportDataEngine_Hangfire.bacpac"
+$publicSportDataStorageUri = "https://ssdestorage.blob.core.windows.net/sqlbackups/" + $dateOfExport + "/SuperSportDataEngine_PublicSportData.bacpac"
+$systemSportDataStorageUri = "https://ssdestorage.blob.core.windows.net/sqlbackups/" + $dateOfExport + "/SuperSportDataEngine_SystemSportData.bacpac"
+$adminUsername = ###ADMIN USERNAME###
+$adminPassword = ###ADMIN USERNAME###
+
+# Import request for SuperSportDataEngine_Hangfire
+$importRequest = New-AzureRmSqlDatabaseImport -ResourceGroupName "SuperSport-SSDE-Prod" `
+    -ServerName $sqlServerName `
+    -DatabaseName "SuperSportDataEngine_Hangfire" `
+    -DatabaseMaxSizeBytes "262144000" `
+    -StorageKeyType "StorageAccessKey" `
+    -StorageKey $storageAccountKey `
+    -StorageUri $hangfireStorageUri `
+    -Edition "Standard" `
+    -ServiceObjectiveName "P6" `
+    -AdministratorLogin $adminUsername `
+    -AdministratorLoginPassword $(ConvertTo-SecureString -String $adminPassword -AsPlainText -Force)
+
+# Track the status of importing SuperSportDataEngine_Hangfire
+$importStatus = Get-AzureRmSqlDatabaseImportExportStatus -OperationStatusLink $importRequest.OperationStatusLink
+[Console]::Write("Importing SuperSportDataEngine_Hangfire")
+while ($importStatus.Status -eq "InProgress")
+{
     $importStatus = Get-AzureRmSqlDatabaseImportExportStatus -OperationStatusLink $importRequest.OperationStatusLink
-    [Console]::Write("Importing SuperSportDataEngine_Hangfire")
-    while ($importStatus.Status -eq "InProgress")
-    {
-        $importStatus = Get-AzureRmSqlDatabaseImportExportStatus -OperationStatusLink $importRequest.OperationStatusLink
-        [Console]::Write(".")
-        Start-Sleep -s 10
-    }
-    [Console]::WriteLine("")
-    $importStatus
-    
-    $importRequest = New-AzureRmSqlDatabaseImport -ResourceGroupName "SuperSport-SSDE-Prod" `
-        -ServerName $sqlServerName `
-        -DatabaseName "SuperSportDataEngine_PublicSportData" `
-        -DatabaseMaxSizeBytes "262144000" `
-        -StorageKeyType "StorageAccessKey" `
-        -StorageKey $storageAccountKey `
-        -StorageUri $publicSportDataStorageUri `
-        -Edition "Standard" `
-        -ServiceObjectiveName "P6" `
-        -AdministratorLogin $adminUsername `
-        -AdministratorLoginPassword $(ConvertTo-SecureString -String $adminPassword -AsPlainText -Force)
-    
+    [Console]::Write(".")
+    Start-Sleep -s 10
+}
+[Console]::WriteLine("")
+$importStatus
+
+# Import request for SuperSportDataEngine_PublicSportData
+$importRequest = New-AzureRmSqlDatabaseImport -ResourceGroupName "SuperSport-SSDE-Prod" `
+    -ServerName $sqlServerName `
+    -DatabaseName "SuperSportDataEngine_PublicSportData" `
+    -DatabaseMaxSizeBytes "262144000" `
+    -StorageKeyType "StorageAccessKey" `
+    -StorageKey $storageAccountKey `
+    -StorageUri $publicSportDataStorageUri `
+    -Edition "Standard" `
+    -ServiceObjectiveName "P6" `
+    -AdministratorLogin $adminUsername `
+    -AdministratorLoginPassword $(ConvertTo-SecureString -String $adminPassword -AsPlainText -Force)
+
+$importStatus = Get-AzureRmSqlDatabaseImportExportStatus -OperationStatusLink $importRequest.OperationStatusLink
+[Console]::Write("Importing SuperSportDataEngine_PublicSportData")
+while ($importStatus.Status -eq "InProgress")
+{
     $importStatus = Get-AzureRmSqlDatabaseImportExportStatus -OperationStatusLink $importRequest.OperationStatusLink
-    [Console]::Write("Importing SuperSportDataEngine_PublicSportData")
-    while ($importStatus.Status -eq "InProgress")
-    {
-        $importStatus = Get-AzureRmSqlDatabaseImportExportStatus -OperationStatusLink $importRequest.OperationStatusLink
-        [Console]::Write(".")
-        Start-Sleep -s 10
-    }
-    [Console]::WriteLine("")
-    $importStatus
-    
-    # Import request for SuperSportDataEngine_SystemSportData
-    $importRequest = New-AzureRmSqlDatabaseImport -ResourceGroupName "SuperSport-SSDE-Prod" `
-        -ServerName $sqlServerName `
-        -DatabaseName "SuperSportDataEngine_SystemSportData" `
-        -DatabaseMaxSizeBytes "262144000" `
-        -StorageKeyType "StorageAccessKey" `
-        -StorageKey $storageAccountKey `
-        -StorageUri $systemSportDataStorageUri `
-        -Edition "Standard" `
-        -ServiceObjectiveName "P6" `
-        -AdministratorLogin $adminUsername `
-        -AdministratorLoginPassword $(ConvertTo-SecureString -String $adminPassword -AsPlainText -Force)
-    
-    # Track status for importing SuperSportDataEngine_SystemSportData
+    [Console]::Write(".")
+    Start-Sleep -s 10
+}
+[Console]::WriteLine("")
+$importStatus
+
+# Import request for SuperSportDataEngine_SystemSportData
+$importRequest = New-AzureRmSqlDatabaseImport -ResourceGroupName "SuperSport-SSDE-Prod" `
+    -ServerName $sqlServerName `
+    -DatabaseName "SuperSportDataEngine_SystemSportData" `
+    -DatabaseMaxSizeBytes "262144000" `
+    -StorageKeyType "StorageAccessKey" `
+    -StorageKey $storageAccountKey `
+    -StorageUri $systemSportDataStorageUri `
+    -Edition "Standard" `
+    -ServiceObjectiveName "P6" `
+    -AdministratorLogin $adminUsername `
+    -AdministratorLoginPassword $(ConvertTo-SecureString -String $adminPassword -AsPlainText -Force)
+
+# Track status for importing SuperSportDataEngine_SystemSportData
+$importStatus = Get-AzureRmSqlDatabaseImportExportStatus -OperationStatusLink $importRequest.OperationStatusLink
+[Console]::Write("Importing SuperSportDataEngine_SystemSportData")
+while ($importStatus.Status -eq "InProgress")
+{
     $importStatus = Get-AzureRmSqlDatabaseImportExportStatus -OperationStatusLink $importRequest.OperationStatusLink
-    [Console]::Write("Importing SuperSportDataEngine_SystemSportData")
-    while ($importStatus.Status -eq "InProgress")
-    {
-        $importStatus = Get-AzureRmSqlDatabaseImportExportStatus -OperationStatusLink $importRequest.OperationStatusLink
-        [Console]::Write(".")
-        Start-Sleep -s 10
-    }
-    [Console]::WriteLine("")
-    $importStatus
+    [Console]::Write(".")
+    Start-Sleep -s 10
+}
+[Console]::WriteLine("")
+$importStatus
