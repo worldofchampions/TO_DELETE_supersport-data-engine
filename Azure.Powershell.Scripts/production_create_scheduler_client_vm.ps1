@@ -10,7 +10,7 @@ $vmSize = "Standard_F4s_v2"
 ## UPDATE THIS IF THE BASE IMAGE CHANGES ##
 $baseImageUri = "/subscriptions/1b355cd4-4b64-4890-a31b-840bafbb63b1/resourceGroups/SuperSport-SSDE-Common/providers/Microsoft.Compute/images/SSDE-BASE-IMAGE-20181025101839"
 $storageAccountName = "awessdepstorage"
-
+    
 # Create a new Network Security Group which 
 # allows port 9622 to be opened and accessed.
 
