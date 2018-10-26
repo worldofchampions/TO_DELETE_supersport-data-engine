@@ -3,13 +3,13 @@
     using Microsoft.ApplicationInsights.DependencyCollector;
     using Microsoft.ApplicationInsights.Extensibility;
 
-    public class ApplicationInsightDependencyTrackingModule : IApplicationInsightDependencyTrackingModule
+    public class ApplicationInsightsDependencyTrackingModule : IApplicationInsightsDependencyTrackingModule
     {
         private readonly string _appInsightKey;
 
         private DependencyTrackingTelemetryModule _dependencyTrackingTelemetryModule;
 
-        public ApplicationInsightDependencyTrackingModule(string appInsightKey)
+        public ApplicationInsightsDependencyTrackingModule(string appInsightKey)
         {
             _appInsightKey = appInsightKey;
 
@@ -18,11 +18,13 @@
 
         public void Dispose()
         {
-            _dependencyTrackingTelemetryModule.Dispose();
+            _dependencyTrackingTelemetryModule?.Dispose();
         }
 
         private void InitializeDependencyTracker()
         {
+            if (_appInsightKey == null) return;
+
             var configuration = TelemetryConfiguration.Active;
 
             configuration.InstrumentationKey = _appInsightKey;

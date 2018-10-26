@@ -1,18 +1,16 @@
-﻿using SuperSportDataEngine.Common.DependencyTracking;
-
-namespace SuperSportDataEngine.Application.Container
+﻿namespace SuperSportDataEngine.Application.Container
 {
-    using Hangfire.SqlServer;
     using Hangfire;
-    using MongoDB.Driver.Core.Events;
+    using Hangfire.SqlServer;
     using MongoDB.Driver;
+    using MongoDB.Driver.Core.Events;
     using StackExchange.Redis;
     using SuperSportDataEngine.Application.Container.Enums;
     using SuperSportDataEngine.Application.Service.Common.Interfaces;
     using SuperSportDataEngine.Application.Service.Common.Services;
+    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces.DeprecatedFeed;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces.LegacyFeed;
-    using SuperSportDataEngine.ApplicationLogic.Boundaries.ApplicationLogic.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.CmsLogic.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.DeprecatedFeed.Interfaces;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Gateway.Http.Stats.Interfaces;
@@ -20,11 +18,12 @@ namespace SuperSportDataEngine.Application.Container
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.PublicSportData.UnitOfWork;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.EntityFramework.SystemSportData.UnitOfWork;
     using SuperSportDataEngine.ApplicationLogic.Boundaries.Repository.MongoDb.PayloadData.Interfaces;
+    using SuperSportDataEngine.ApplicationLogic.Services;
     using SuperSportDataEngine.ApplicationLogic.Services.Cms;
     using SuperSportDataEngine.ApplicationLogic.Services.DeprecatedFeed;
     using SuperSportDataEngine.ApplicationLogic.Services.LegacyFeed;
-    using SuperSportDataEngine.ApplicationLogic.Services;
     using SuperSportDataEngine.Common.Caching;
+    using SuperSportDataEngine.Common.DependencyTracking;
     using SuperSportDataEngine.Common.Interfaces;
     using SuperSportDataEngine.Common.Logging;
     using SuperSportDataEngine.Gateway.Http.DeprecatedFeed.Services;
@@ -37,12 +36,13 @@ namespace SuperSportDataEngine.Application.Container
     using SuperSportDataEngine.Repository.EntityFramework.SystemSportData.Context;
     using SuperSportDataEngine.Repository.EntityFramework.SystemSportData.UnitOfWork;
     using SuperSportDataEngine.Repository.MongoDb.PayloadData.Repositories;
+    using System;
     using System.Configuration;
     using System.Data.Entity;
-    using System;
+    using Unity;
     using Unity.Injection;
     using Unity.Lifetime;
-    using Unity;
+
 
     public static class UnityConfigurationManager
     {
@@ -59,44 +59,27 @@ namespace SuperSportDataEngine.Application.Container
 
         private static readonly Lazy<IMongoClient> LazyMongoClient = new Lazy<IMongoClient>(() =>
         {
-            var connectionString = ConfigurationManager.ConnectionStrings["MongoDB"].ConnectionString;
-            var mongoUrl = new MongoUrl(connectionString);
-            var mongoClientSettings = MongoClientSettings.FromUrl(mongoUrl);
-            mongoClientSettings.ClusterConfigurator = clusterConfigurator =>
-            {
-                const string dependencyTypeName = "MongoDb";
-                var dependencyName = connectionString;
-
-                clusterConfigurator.Subscribe<CommandSucceededEvent>(e =>
-                {
-                    // Log a successful dependency event on every CommandSucceededEvent
-                    Logger.SendTelemetry(dependencyTypeName, dependencyName, e.CommandName, DateTimeOffset.UtcNow.Subtract(e.Duration), e.Duration, true);
-                });
-
-                clusterConfigurator.Subscribe<CommandFailedEvent>(e =>
-                {
-                    // Log a failed dependency event on every CommandFailedEvent 
-                    Logger.SendTelemetry(dependencyTypeName, dependencyName, e.Failure.Message, DateTimeOffset.UtcNow.Subtract(e.Duration), e.Duration, false);
-                });
-            };
+            var mongoClientSettings = GetMongoClientSettings();
 
             var mongoClient = new MongoClient(mongoClientSettings);
 
             return mongoClient;
         });
 
-        private static readonly Lazy<IApplicationInsightDependencyTrackingModule> LazyDependencyTrackingModule = new Lazy<IApplicationInsightDependencyTrackingModule>(() =>
+        private static readonly Lazy<IApplicationInsightsDependencyTrackingModule> LazyDependencyTrackingModule = new Lazy<IApplicationInsightsDependencyTrackingModule>(() =>
         {
             var instrumentationKey = ConfigurationManager.AppSettings["AppInsightsInstrumentationKey"];
 
-            var dependencyTrackingModule = new ApplicationInsightDependencyTrackingModule(instrumentationKey);
+            if (instrumentationKey == null) return null;
+
+            var dependencyTrackingModule = new ApplicationInsightsDependencyTrackingModule(instrumentationKey);
 
             return dependencyTrackingModule;
         });
 
         private static ConnectionMultiplexer RedisConnection => LazyRedisConnection.Value;
         private static IMongoClient MongoClient => LazyMongoClient.Value;
-        private static IApplicationInsightDependencyTrackingModule DependencyTrackingModule => LazyDependencyTrackingModule.Value;
+        private static IApplicationInsightsDependencyTrackingModule DependencyTrackingModule => LazyDependencyTrackingModule.Value;
 
         public static void RegisterTypes(IUnityContainer container, ApplicationScope applicationScope)
         {
@@ -201,7 +184,7 @@ namespace SuperSportDataEngine.Application.Container
                 container.RegisterType<IStatsProzoneRugbyIngestService, StatsProzoneRugbyIngestService>(
                     new HierarchicalLifetimeManager());
 
-                container.RegisterType<IApplicationInsightDependencyTrackingModule>(
+                container.RegisterType<IApplicationInsightsDependencyTrackingModule>(
                     new ContainerControlledLifetimeManager(), new InjectionFactory(x => DependencyTrackingModule));
             }
         }
@@ -215,7 +198,7 @@ namespace SuperSportDataEngine.Application.Container
                     new HierarchicalLifetimeManager(),
                     new InjectionConstructor(motorsportWebRequest, Logger));
 
-                container.RegisterType<IApplicationInsightDependencyTrackingModule>(
+                container.RegisterType<IApplicationInsightsDependencyTrackingModule>(
                     new ContainerControlledLifetimeManager(), new InjectionFactory(x => DependencyTrackingModule));
             }
         }
@@ -275,6 +258,32 @@ namespace SuperSportDataEngine.Application.Container
 
                 container.RegisterType<ISchedulerClientService, SchedulerClientService>();
             }
+        }
+
+        private static MongoClientSettings GetMongoClientSettings()
+        {
+            var connectionString = ConfigurationManager.ConnectionStrings["MongoDB"].ConnectionString;
+            var mongoUrl = new MongoUrl(connectionString);
+            var mongoClientSettings = MongoClientSettings.FromUrl(mongoUrl);
+            mongoClientSettings.ClusterConfigurator = clusterConfigurator =>
+            {
+                const string dependencyTypeName = "MongoDb";
+                var dependencyName = connectionString;
+
+                clusterConfigurator.Subscribe<CommandSucceededEvent>(e =>
+                {
+                    // Log a successful dependency event on every CommandSucceededEvent
+                    Logger.SendTelemetry(dependencyTypeName, dependencyName, e.CommandName, DateTimeOffset.UtcNow.Subtract(e.Duration), e.Duration, true);
+                });
+
+                clusterConfigurator.Subscribe<CommandFailedEvent>(e =>
+                {
+                    // Log a failed dependency event on every CommandFailedEvent 
+                    Logger.SendTelemetry(dependencyTypeName, dependencyName, e.Failure.Message, DateTimeOffset.UtcNow.Subtract(e.Duration), e.Duration, false);
+                });
+            };
+
+            return mongoClientSettings;
         }
     }
 }

@@ -108,8 +108,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Caching\Cache.cs" />
-    <Compile Include="DependencyTracking\ApplicationInsightDependencyTrackingModule.cs" />
-    <Compile Include="DependencyTracking\IApplicationInsightDependencyTrackingModule.cs" />
+    <Compile Include="DependencyTracking\ApplicationInsightsDependencyTrackingModule.cs" />
+    <Compile Include="DependencyTracking\IApplicationInsightsDependencyTrackingModule.cs" />
     <Compile Include="Extentions\WebRequestExtentions.cs" />
     <Compile Include="Interfaces\ICache.cs" />
     <Compile Include="Logging\ILoggingService.cs" />

@@ -19,7 +19,7 @@
         private BackgroundJobServer _jobServer;
         private readonly ILoggingService _logger;
         private readonly int _concurrentJobTimeoutInSeconds;
-        private readonly IApplicationInsightDependencyTrackingModule _dependencyTrackingModule;
+        private readonly IApplicationInsightsDependencyTrackingModule _dependencyTrackingModule;
 
         public WindowsService(UnityContainer container)
         {
@@ -29,7 +29,7 @@
 
             _concurrentJobTimeoutInSeconds = int.Parse(ConfigurationManager.AppSettings["ConcurrentJobTimeoutInSeconds"]);
 
-            _dependencyTrackingModule = _container.Resolve<IApplicationInsightDependencyTrackingModule>();
+            _dependencyTrackingModule = _container.Resolve<IApplicationInsightsDependencyTrackingModule>();
         }
 
         public void StartService()
