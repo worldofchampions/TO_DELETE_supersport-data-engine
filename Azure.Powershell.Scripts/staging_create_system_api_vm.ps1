@@ -10,6 +10,8 @@ $vmSize = "Standard_D2s_v3"
 ## UPDATE THIS IF THE BASE IMAGE CHANGES ##
 $baseImageUri = "/subscriptions/1b355cd4-4b64-4890-a31b-840bafbb63b1/resourceGroups/SuperSport-SSDE-Common/providers/Microsoft.Compute/images/SSDE-BASE-IMAGE-20181025101839"
 $storageAccountName = "awessdesstorage"
+$deploymentGroup = "SSDE-S-SAPI"
+$pATToken = ## INSERT VSTS PAT TOKEN HERE ##
 
 # Create a new Network Security Group
 $nsg = New-AzureRmNetworkSecurityGroup `
@@ -31,7 +33,9 @@ New-AzureRmResourceGroupDeployment `
     -nicName $vmName `
     -vmSize $vmSize `
     -publicIPName $vmName `
-    -baseImageUri $baseImageUri
+    -baseImageUri $baseImageUri `
+    -DeploymentGroup $deploymentGroup `
+    -PATToken (ConvertTo-SecureString -AsPlainText $pATToken -Force)
 
 # Install IIS
 $PublicSettings = '{"commandToExecute":"powershell Add-WindowsFeature Web-Server"}'

@@ -9,6 +9,8 @@ $vmSize = "Standard_D2s_v3"
 $vmName = "awe-ssde-p-sis1"
 $baseImageUri = "/subscriptions/1b355cd4-4b64-4890-a31b-840bafbb63b1/resourceGroups/SuperSport-SSDE-Common/providers/Microsoft.Compute/images/SSDE-BASE-IMAGE-20181025101839"
 $storageAccountName = "awessdepstorage"
+$deploymentGroup = "SSDE-P-SIS"
+$pATToken = ## INSERT VSTS PAT TOKEN HERE ##
 
 # Create a new Network Security Group
 $nsg = New-AzureRmNetworkSecurityGroup `
@@ -30,7 +32,9 @@ New-AzureRmResourceGroupDeployment `
     -nicName $vmName `
     -vmSize $vmSize `
     -publicIPName $vmName `
-    -baseImageUri $baseImageUri
+    -baseImageUri $baseImageUri `
+    -DeploymentGroup $deploymentGroup `
+    -PATToken (ConvertTo-SecureString -AsPlainText $pATToken -Force)
 
 $vmName = "awe-ssde-p-sis2"
 
@@ -54,4 +58,6 @@ New-AzureRmResourceGroupDeployment `
     -nicName $vmName `
     -vmSize $vmSize `
     -publicIPName $vmName `
-    -baseImageUri $baseImageUri
+    -baseImageUri $baseImageUri `
+    -DeploymentGroup $deploymentGroup `
+    -PATToken (ConvertTo-SecureString -AsPlainText $pATToken -Force)

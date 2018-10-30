@@ -31,6 +31,12 @@
         },
         "imageSKU": {
             "value": "18.04-LTS"
+        },
+        "DeploymentGroup": {
+            "value": ""
+        },
+        "PATToken": {
+            "value": ""
         }
     }
 }

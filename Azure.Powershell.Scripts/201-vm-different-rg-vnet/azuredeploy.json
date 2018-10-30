@@ -121,11 +121,18 @@
       "metadata": {
         "description": "Location for all resources."
       }
+    },
+    "DeploymentGroup": {
+      "type": "string"
+    },
+    "PATToken": {
+      "type": "securestring"
     }
   },
   "variables": {
     "vnetID": "[resourceId(parameters('virtualNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
-    "subnet1Ref": "[concat(variables('vnetID'),'/subnets/', parameters('subnet1Name'))]"
+    "subnet1Ref": "[concat(variables('vnetID'),'/subnets/', parameters('subnet1Name'))]",
+    "extensionsApi": "2015-06-15"
   },
   "resources": [
     {
@@ -227,6 +234,31 @@
           }
         }
       }
+    },
+    {
+      "name": "[concat(parameters('vmName'),'/TeamServicesAgent')]",
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "location": "[parameters('location')]",
+      "apiVersion": "2015-06-15",
+      "properties": {
+        "publisher": "Microsoft.VisualStudio.Services",
+        "type": "TeamServicesAgent",
+        "typeHandlerVersion": "1.0",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "VSTSAccountUrl": "https://immedia-studio.visualstudio.com",
+          "TeamProject": "SuperSport",
+          "DeploymentGroup": "[parameters('DeploymentGroup')]",
+          "AgentName": "[parameters('vmName')]",
+          "Tags": ""
+        },
+        "protectedSettings": {
+          "PATToken": "[parameters('PATToken')]"
+        }
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', parameters('vmName'))]"
+      ]
     }
   ]
 }

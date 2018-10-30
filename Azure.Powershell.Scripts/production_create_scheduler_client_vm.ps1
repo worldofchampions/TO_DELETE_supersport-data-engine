@@ -10,7 +10,9 @@ $vmSize = "Standard_F4s_v2"
 ## UPDATE THIS IF THE BASE IMAGE CHANGES ##
 $baseImageUri = "/subscriptions/1b355cd4-4b64-4890-a31b-840bafbb63b1/resourceGroups/SuperSport-SSDE-Common/providers/Microsoft.Compute/images/SSDE-BASE-IMAGE-20181025101839"
 $storageAccountName = "awessdepstorage"
-    
+$deploymentGroup = "SSDE-P-SC"
+$pATToken = ## INSERT VSTS PAT TOKEN HERE ##
+
 # Create a new Network Security Group which 
 # allows port 9622 to be opened and accessed.
 
@@ -46,4 +48,6 @@ New-AzureRmResourceGroupDeployment `
     -nicName $vmName `
     -vmSize $vmSize `
     -publicIPName $vmName `
-    -baseImageUri $baseImageUri
+    -baseImageUri $baseImageUri `
+    -DeploymentGroup $deploymentGroup `
+    -PATToken (ConvertTo-SecureString -AsPlainText $pATToken -Force)

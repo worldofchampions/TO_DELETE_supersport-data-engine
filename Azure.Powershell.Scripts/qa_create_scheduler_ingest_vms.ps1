@@ -31,7 +31,9 @@ New-AzureRmResourceGroupDeployment `
     -nicName $vmName `
     -vmSize $vmSize `
     -publicIPName $vmName `
-    -baseImageUri $baseImageUri
+    -baseImageUri $baseImageUri `
+    -DeploymentGroup $deploymentGroup `
+    -PATToken (ConvertTo-SecureString -AsPlainText $pATToken -Force)
 
 $vmName = "awe-ssde-q-sis2"
 
@@ -55,4 +57,6 @@ New-AzureRmResourceGroupDeployment `
     -nicName $vmName `
     -vmSize $vmSize `
     -publicIPName $vmName `
-    -baseImageUri $baseImageUri
+    -baseImageUri $baseImageUri `
+    -DeploymentGroup $deploymentGroup `
+    -PATToken (ConvertTo-SecureString -AsPlainText $pATToken -Force)
