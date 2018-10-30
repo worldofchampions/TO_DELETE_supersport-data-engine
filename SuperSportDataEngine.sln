@@ -90,7 +90,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Azure.Powershell.Scripts", "Azure.Powershell.Scripts", "{6BDA0D6D-9F5B-497A-8DE9-3DB8414F4DCA}"
 	ProjectSection(SolutionItems) = preProject
 		Azure.Powershell.Scripts\production_westeurope_create_appserviceplan.ps1 = Azure.Powershell.Scripts\production_westeurope_create_appserviceplan.ps1
+		Azure.Powershell.Scripts\production_westeurope_create_redis.ps1 = Azure.Powershell.Scripts\production_westeurope_create_redis.ps1
+		Azure.Powershell.Scripts\production_westeurope_create_sqlserver_sqldatabases.ps1 = Azure.Powershell.Scripts\production_westeurope_create_sqlserver_sqldatabases.ps1
 		Azure.Powershell.Scripts\qa-staging_westeurope_create_appserviceplan.ps1 = Azure.Powershell.Scripts\qa-staging_westeurope_create_appserviceplan.ps1
+		Azure.Powershell.Scripts\qa-staging_westeurope_create_redis.ps1 = Azure.Powershell.Scripts\qa-staging_westeurope_create_redis.ps1
+		Azure.Powershell.Scripts\qa_westeurope_create_sqlserver_sqldatabases.ps1 = Azure.Powershell.Scripts\qa_westeurope_create_sqlserver_sqldatabases.ps1
+		Azure.Powershell.Scripts\staging_westeurope_create_sqlserver_sqldatabases.ps1 = Azure.Powershell.Scripts\staging_westeurope_create_sqlserver_sqldatabases.ps1
 	EndProjectSection
 EndProject
 Global
